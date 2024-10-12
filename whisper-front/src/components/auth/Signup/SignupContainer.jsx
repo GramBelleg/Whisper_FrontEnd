@@ -20,29 +20,6 @@ const SignupContainer = () => {
         navigate('/email-verification');
     }
 
-    // try {
-    //   const response = await fetch("/api/signup", {
-    //     method: "POST",
-    //     headers: {
-    //       "Content-Type": "application/json",
-    //     },
-    //     body: JSON.stringify({
-    //       email: values.email,
-    //       phonenumber: values.phoneNumber,
-    //       password: values.password,
-    //     }),
-    //   });
-
-    //   const data = await response.json();
-    //   if (response.ok) {
-    //     setMessage(data.message);
-    //     navigate("/email-verification");
-    //   } else {
-    //     setMessage(data.message); 
-    //   }
-    // } catch (error) {
-    //   setMessage("An error occurred during signup");
-    // }
     actions.resetForm();
   };
 
