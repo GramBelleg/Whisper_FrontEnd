@@ -49,7 +49,7 @@ console.log(messageState)
         return (
           <div className="image-message">
             <FontAwesomeIcon icon={faCamera} className={`image-icon ${messageState === 2  ? 'active' : ''}`} />
-            <span className="image-text">Image</span>
+            <span className={`image-text ${messageState === 2  ? 'active' : ''}`}>Image</span>
           </div>
         );
       case "audio":

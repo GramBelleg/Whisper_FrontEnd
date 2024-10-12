@@ -20,6 +20,7 @@
     overflow: hidden; /* Hide overflow text */
     position: relative; /* Position relative for the pseudo-element */
     max-width: 100%; /* Ensure the text doesn't overflow outside the bubble */
+    color: #999898;
 }
 
 .text-message::after {
@@ -50,20 +51,20 @@
     width: 0%;
 }
 /* Audio & Voice Note Message Styling */
-.audio-message, .voice-note-message, .video-message, .sticker-message {
+.audio-message, .voice-note-message, .video-message, .sticker-message, .image-message {
     width: 100%;
     height: 100%;
-    color: white;
+    color: #999898;
     display: flex;
     margin-top: 5%
 }
 
 
-.mic-icon, .video-icon, .sticker-icon {
+.mic-icon, .video-icon, .sticker-icon, .image-icon {
     margin-right: 3%;
 
 }
-.mic-icon.active, .audio-duration.active, .video-icon.active, .video-text.active, .sticker-text.active, .sticker-icon.active {
+.mic-icon.active, .audio-duration.active, .video-icon.active, .video-text.active, .sticker-text.active, .sticker-icon.active, .image-icon.active, .image-text.active {
     color: #4cb9cf;
 }
 
