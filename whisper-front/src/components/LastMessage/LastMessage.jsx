@@ -1,19 +1,20 @@
 import React, { useEffect, useRef, useState } from "react";
 import "./LastMessage.css";
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faMicrophone } from  '@fortawesome/free-solid-svg-icons';
+import { faMicrophone , faVideo, faCamera } from  '@fortawesome/free-solid-svg-icons';
 const LastMessage = ({ messageType, message, messageState,  index }) => {
   const [audioDuration, setAudioDuration] = useState(null);
   const [isTextOverflowing, setIsTextOverflowing] = useState(false);
   const textRef = useRef(null);
   const audioRef = useRef(null);
+
 console.log(messageState)
   useEffect(() => {
     const checkTextOverflow = () => {
       if (textRef.current) {
         const { scrollWidth, clientWidth } = textRef.current;
         setIsTextOverflowing(scrollWidth > clientWidth);
-      }
+      } 
     };
 
     checkTextOverflow();
@@ -45,7 +46,12 @@ console.log(messageState)
           </p>
         );
       case "image":
-        return <img src={message} alt="Image" className="message-image" />;
+        return (
+          <div className="image-message">
+            <FontAwesomeIcon icon={faCamera} className={`image-icon ${messageState === 0  ? '' : 'active'}`} />
+            <span className="image-text">Video</span>
+          </div>
+        );
       case "audio":
       case "voiceNote":
         return (
@@ -61,10 +67,10 @@ console.log(messageState)
         );
       case "video":
         return (
-          <video controls className="message-video">
-            <source src={message} type="video/mp4" />
-            Your browser does not support the video tag.
-          </video>
+          <div className="video-message">
+            <FontAwesomeIcon icon={faVideo} className={`video-icon ${messageState === 0  ? '' : 'active'}`} />
+            <span className="video-text">Video</span>
+          </div>
         );
       default:
         return null;

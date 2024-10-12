@@ -50,7 +50,7 @@
     width: 0%;
 }
 /* Audio & Voice Note Message Styling */
-.audio-message, .voice-note-message {
+.audio-message, .voice-note-message, .video-message {
     width: 100%;
     height: 100%;
     color: white;
@@ -58,11 +58,12 @@
     margin-top: 5%
 }
 
-.mic-icon {
+
+.mic-icon, .video-icon {
     margin-right: 3%;
 
 }
-.mic-icon.active, .audio-duration.active {
+.mic-icon.active, .audio-duration.active, .video-icon.active {
     color: #4cb9cf;
 }
 
