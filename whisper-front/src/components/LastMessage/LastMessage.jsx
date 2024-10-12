@@ -1,7 +1,7 @@
 import React, { useEffect, useRef, useState } from "react";
 import "./LastMessage.css";
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faMicrophone , faVideo, faCamera } from  '@fortawesome/free-solid-svg-icons';
+import { faMicrophone , faVideo, faCamera, faNoteSticky } from  '@fortawesome/free-solid-svg-icons';
 const LastMessage = ({ messageType, message, messageState,  index }) => {
   const [audioDuration, setAudioDuration] = useState(null);
   const [isTextOverflowing, setIsTextOverflowing] = useState(false);
@@ -48,8 +48,8 @@ console.log(messageState)
       case "image":
         return (
           <div className="image-message">
-            <FontAwesomeIcon icon={faCamera} className={`image-icon ${messageState === 0  ? '' : 'active'}`} />
-            <span className="image-text">Video</span>
+            <FontAwesomeIcon icon={faCamera} className={`image-icon ${messageState === 2  ? 'active' : ''}`} />
+            <span className="image-text">Image</span>
           </div>
         );
       case "audio":
@@ -61,15 +61,22 @@ console.log(messageState)
               Your browser does not support the audio element.
             </audio>
             
-            <FontAwesomeIcon icon={faMicrophone} className={`mic-icon ${messageState === 0  ? '' : 'active'}`} />
-            {audioDuration && <span className={`audio-duration ${messageState === 0  ? '' : 'active'}`}>{audioDuration}s</span>}
+            <FontAwesomeIcon icon={faMicrophone} className={`mic-icon ${messageState === 2  ? 'active' : ''}`} />
+            {audioDuration && <span className={`audio-duration ${messageState === 2  ? 'active' : ''}`}>{audioDuration}s</span>}
           </div>
         );
       case "video":
         return (
           <div className="video-message">
-            <FontAwesomeIcon icon={faVideo} className={`video-icon ${messageState === 0  ? '' : 'active'}`} />
-            <span className="video-text">Video</span>
+            <FontAwesomeIcon icon={faVideo} className={`video-icon ${messageState === 2  ? 'active' : ''}`} />
+            <span className={`video-text ${messageState === 2  ? 'active' : ''}`}>Video</span>
+          </div>
+        );
+      case "sticker":
+        return (
+          <div className="sticker-message">
+            <FontAwesomeIcon icon={faNoteSticky} className={`sticker-icon ${messageState === 2  ? 'active' : ''}`}/>
+            <span className={`sticker-text ${messageState === 2  ? 'active' : ''}`}>Sticker</span>
           </div>
         );
       default:
