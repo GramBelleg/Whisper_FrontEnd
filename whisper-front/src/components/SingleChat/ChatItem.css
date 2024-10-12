@@ -1,0 +1,122 @@
+:root {
+    --primary-color: #0A122F; /* Define the color as a CSS variable */
+    --dots-color: #0A122F;
+    --secondary-color: #0A254A;
+}
+
+.single-chat{
+    border: 1px solid var(--secondary-color);
+    height: 100%;
+    width: 100%;
+    box-sizing: border-box; /* This prevents border from exceeding required */
+}
+
+.single-chat:hover {
+    background-color: var(--secondary-color);
+}
+
+.single-chat-content {
+    color: white;
+    height: 100%;
+    width: 100%;
+    display: flex;
+    align-items: center;
+}
+
+.profile-pic {
+    border-radius: 50%; /* Make it circular */
+    width: 10%;
+    height: 90%;
+    margin-left: 1%;
+}
+
+.content {
+    display: flex;
+    flex-direction: column;
+    width: 90%;
+    height: 100%;
+    margin-left: 3%;
+}
+
+.user-info {
+    display: flex;
+    height: 50%;
+    width: 100%;
+    align-items: center;
+}
+
+.name-container {
+    width: 75%;     /* Limit the width to 80% of its parent */
+    height: 100%;
+    display: flex;
+    justify-content: flex-start; /* Align items to the start (optional) */
+    align-items: center;
+    margin-top: 2%;
+}
+
+.ticks-info {
+    width: 25%;
+    height: 100%;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-top: 5%;
+    margin-right: 1%;
+}
+
+.tick {
+    width: 30%;
+    height: 100%;
+}
+
+.message-time{
+    width: 70%;
+    height: 100%;
+}
+
+.user-name {
+    font-size: 25px;
+    color: white;
+    height: 100%;
+    display: flex;
+    white-space: nowrap; /* Prevent wrapping */
+    overflow: hidden; /* Hide overflow text */
+    position: relative; /* Position relative for the pseudo-element */
+}
+
+.user-name::after {
+    content: '...'; /* Show dots as a pseudo-element */
+    position: absolute; /* Position it absolutely */
+    right: 0; /* Align to the right */
+    background: #0A122F; /* Match the background color */
+    padding-left: 5px; /* Space before the dots */
+    visibility: hidden; /* Hide by default */
+}
+
+.user-name.hovered::after {
+    content: '...'; /* Show dots as a pseudo-element */
+    position: absolute; /* Position it absolutely */
+    right: 0; /* Align to the right */
+    background: var(--secondary-color); /* Match the background color */
+    padding-left: 5px; /* Space before the dots */
+    visibility: hidden; /* Hide by default */
+}
+
+.user-name.overflow::after {
+    visibility: visible; /* Show dots when overflow occurs */
+}
+
+
+.muted-bell {
+    width: 20%;
+    height: 100%;
+    margin-top: 3%;
+}
+
+
+.messaging-info {
+    display: flex;
+    height: 50%;
+    align-items: center;
+    width: 100%;
+}
