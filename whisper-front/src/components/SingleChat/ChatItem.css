@@ -88,17 +88,15 @@
     content: '...'; /* Show dots as a pseudo-element */
     position: absolute; /* Position it absolutely */
     right: 0; /* Align to the right */
-    background: #0A122F; /* Match the background color */
-    padding-left: 5px; /* Space before the dots */
+    background: var(--primary-color); /* Match the background color */
     visibility: hidden; /* Hide by default */
 }
 
 .user-name.hovered::after {
     content: '...'; /* Show dots as a pseudo-element */
     position: absolute; /* Position it absolutely */
-    right: 0; /* Align to the right */
+    right: 0; /* Aign to the right */
     background: var(--secondary-color); /* Match the background color */
-    padding-left: 5px; /* Space before the dots */
     visibility: hidden; /* Hide by default */
 }
 
