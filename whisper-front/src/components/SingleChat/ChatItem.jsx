@@ -9,6 +9,7 @@ import ReadTicks from "../ReadTicks/ReadTicks";
 import SentTicks from "../SentTicks/SentTicks";
 import DeliveredTicks from "../DeliveredTicks/DeliveredTicks";
 import { checkDisplayTime } from "../../services/chatservice/checkDisplayTime";
+import LastMessage from "../LastMessage/LastMessage";
 
 
 const ChatItem = ({ index, standaloneChat }) => {
@@ -25,7 +26,8 @@ const ChatItem = ({ index, standaloneChat }) => {
         muted: true,
         last_seen: "",
         unread_notifications: 3,
-        message_time:""
+        message_time:"",
+        message_type:""
     });
 
     console.log("Chat Item", myChat);
@@ -106,9 +108,7 @@ const ChatItem = ({ index, standaloneChat }) => {
                             </div>
                         </div>
                         <div className="messaging-info">
-                            <p className="message-text">
-                                {myChat.last_message}
-                            </p>
+                            <LastMessage messageType={myChat.message_type} message={myChat.message} index={index} messageState={myChat.message_state}/>
                         </div>
                     </div>
                 </div>
