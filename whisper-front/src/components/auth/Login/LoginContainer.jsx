@@ -1,17 +1,21 @@
 import loginSchema from "../../../utils/loginSchema";
 import LoginForm from "./LoginForm";
 import {useFormik} from "formik";
+import useAuth from "../../../hooks/useAuth";
 import { useNavigate } from "react-router-dom";
 
    
 const LoginContainer = () => {
 
+    const {handleLogin,loading,error}=useAuth();
     const navigate = useNavigate();
 
     const onSubmit =async (values,actions) => {
-        //axios request
+        handleLogin(values);
         actions.resetForm();
-       
+        if (!error) {
+            navigate('/chats');
+        }
     
       };
     const formik= useFormik({
@@ -31,7 +35,8 @@ const LoginContainer = () => {
             errors={formik.errors}
             touched={formik.touched}
             isSubmitting={formik.isSubmitting}
-
+            loading={loading}
+            error={error}
          />
     );
 };
