@@ -10,6 +10,7 @@ import SentTicks from "../SentTicks/SentTicks";
 import DeliveredTicks from "../DeliveredTicks/DeliveredTicks";
 import { checkDisplayTime } from "../../services/chatservice/checkDisplayTime";
 import LastMessage from "../LastMessage/LastMessage";
+import UnRead from "../UnRead/UnRead";
 
 
 const ChatItem = ({ index, standaloneChat }) => {
@@ -27,7 +28,8 @@ const ChatItem = ({ index, standaloneChat }) => {
         last_seen: "",
         unread_notifications: 3,
         message_time:"",
-        message_type:""
+        message_type:"",
+        tagged: false
     });
 
     console.log("Chat Item", myChat);
@@ -102,13 +104,15 @@ const ChatItem = ({ index, standaloneChat }) => {
                                     } 
                                 </div>
                                 <div className="message-time">
-                                    {myChat.display_time}
+                                    <span className={myChat.unread_notifications ? 'unread-time' : ''}>
+                                        {myChat.display_time}
+                                    </span>
                                 </div>
-                            
                             </div>
                         </div>
                         <div className="messaging-info">
                             <LastMessage messageType={myChat.message_type} message={myChat.message} index={index} messageState={myChat.message_state}/>
+                            { (myChat.unread_notifications || myChat.tagged) && <UnRead unReadMessages={myChat.unread_notifications} tag={myChat.tagged}/>}
                         </div>
                     </div>
                 </div>
