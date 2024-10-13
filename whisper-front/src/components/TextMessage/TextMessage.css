@@ -1,0 +1,36 @@
+:root {
+    --primary-color: #0A122F; /* Define the color as a CSS variable */
+    --dots-color: #0A122F;
+    --secondary-color: #0A254A;
+}
+
+.text-message {
+    font-size: 17px;
+    white-space: nowrap; /* Prevent wrapping */
+    display: flex;
+    overflow: hidden; /* Hide overflow text */
+    position: relative; /* Position relative for the pseudo-element */
+    max-width: 100%; /* Ensure the text doesn't overflow outside the bubble */
+    color: #999898;
+}
+
+.text-message::after {
+    content: '...'; /* Show dots as a pseudo-element */
+    position: absolute; /* Position it absolutely */
+    right: 0; /* Align to the right of the container */
+    background: var(--primary-color); /* Add background to hide overflow text under the ellipsis */
+    visibility: hidden; /* Hide by default */
+}
+
+.text-message.overflow::after {
+    visibility: visible; /* Show dots when overflow occurs */
+}
+
+
+.text-message.overflow.hovered::after {
+    content: '...'; /* Show dots as a pseudo-element */
+    position: absolute; /* Position it absolutely */
+    right: 0; /* Aign to the right */
+    background: var(--secondary-color); /* Match the background color */
+    visibility: visible; /* Hide by default */
+}
