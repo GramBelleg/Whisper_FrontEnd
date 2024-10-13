@@ -14,27 +14,6 @@
 }
 
 
-.audio-itself {
-    visibility: hidden;
-    width: 0%;
-}
-/* Audio & Voice Note Message Styling */
-.audio-message, .voice-note-message {
-    width: 100%;
-    height: 100%;
-    color: #999898;
-    display: flex;
-    margin-top: 5%
-}
-
-
-.mic-icon {
-    margin-right: 3%;
-
-}
-.mic-icon.active, .audio-duration.active {
-    color: #4cb9cf;
-}
 
 
 

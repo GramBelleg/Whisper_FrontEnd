@@ -1,45 +1,39 @@
-import React, { useEffect, useRef, useState } from "react";
 import "./LastMessage.css";
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import TextMessage from "../TextMessage/TextMessage";
 import ImageMessage from "../ImageMessage/ImageMessage";
 import StickerMessage from "../StickerMessage/StickerMessage";
 import VideoMessage from "../VideoMessage/VideoMessage";
 import AudioVoiceNoteMessage from "../AudioVoiceNoteMessage/AudioVoiceNoteMessage";
-const LastMessage = ({ messageType, message, messageState,  index }) => {
-  
+import DeletedMessage from "../DeletedMessage/DeletedMessage"; // Fixed typo here
 
-  const renderMessageContent = () => {
-    switch (messageType) {
-      case "text":
-        return (
-          <TextMessage index={index} message={message}/>
-        );
-      case "image":
-        return (
-          <ImageMessage messageState={messageState}/>
-        );
-      case "audio":
-      case "voiceNote":
-        return (
-          <AudioVoiceNoteMessage messageType={messageType} messageState={messageState} message={message}/>
-        );
-      case "video":
-        return (
-          <VideoMessage messageState={messageState}/>
-        );
-      case "sticker":
-        return (
-          <StickerMessage messageState={messageState}/>
-        );
-      default:
-        return null;
-    }
-  };
-
+const LastMessage = ({ messageType, message, messageState, index }) => {
   return (
     <div className="last-message">
-      {renderMessageContent()}
+      {messageState === 3 ? (
+        <DeletedMessage /> // Fixed typo here
+      ) : (
+        <>
+          {messageType === "text" && (
+            <TextMessage index={index} message={message} />
+          )}
+          {messageType === "image" && (
+            <ImageMessage messageState={messageState} />
+          )}
+          {(messageType === "audio" || messageType === "voiceNote") && (
+            <AudioVoiceNoteMessage
+              messageType={messageType}
+              messageState={messageState}
+              message={message}
+            />
+          )}
+          {messageType === "video" && (
+            <VideoMessage messageState={messageState} />
+          )}
+          {messageType === "sticker" && (
+            <StickerMessage messageState={messageState} />
+          )}
+        </>
+      )}
     </div>
   );
 };
