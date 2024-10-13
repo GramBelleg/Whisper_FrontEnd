@@ -6,9 +6,12 @@
     justify-content: flex-start;
     height: 100%;
     width: 100%;
+    overflow-y: 'auto';
+    
 }
 
 .chat-item-container {
-    height: 8%;
+    height: 80px;
     width: 100%;
+    background-color: #0A122F;
 }
