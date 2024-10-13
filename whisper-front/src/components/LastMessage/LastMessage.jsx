@@ -6,11 +6,11 @@ import VideoMessage from "../VideoMessage/VideoMessage";
 import AudioVoiceNoteMessage from "../AudioVoiceNoteMessage/AudioVoiceNoteMessage";
 import DeletedMessage from "../DeletedMessage/DeletedMessage"; // Fixed typo here
 
-const LastMessage = ({ messageType, message, messageState, index }) => {
+const LastMessage = ({ sender, messageType, message, messageState, index }) => {
   return (
     <div className="last-message">
       {messageState === 3 ? (
-        <DeletedMessage /> // Fixed typo here
+        <DeletedMessage sender={sender}/> // Fixed typo here
       ) : (
         <>
           {messageType === "text" && (
