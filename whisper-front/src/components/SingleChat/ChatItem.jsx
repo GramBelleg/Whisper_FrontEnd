@@ -29,7 +29,8 @@ const ChatItem = ({ index, standaloneChat }) => {
         unread_notifications: 3,
         message_time:"",
         message_type:"",
-        tagged: false
+        tagged: false,
+        sender:""
     });
 
     console.log("Chat Item", myChat);
@@ -111,7 +112,7 @@ const ChatItem = ({ index, standaloneChat }) => {
                             </div>
                         </div>
                         <div className="messaging-info">
-                            <LastMessage messageType={myChat.message_type} message={myChat.message} index={index} messageState={myChat.message_state}/>
+                            <LastMessage sender={myChat.sender} messageType={myChat.message_type} message={myChat.message} index={index} messageState={myChat.message_state}/>
                             { (myChat.unread_notifications || myChat.tagged) && <UnRead unReadMessages={myChat.unread_notifications} tag={myChat.tagged}/>}
                         </div>
                     </div>

@@ -27,8 +27,8 @@
 
 .profile-pic {
     border-radius: 50%; /* Make it circular */
-    width: 10%;
-    height: 90%;
+    width: 70px;
+    height: 70px;
     margin-left: 1%;
 }
 
