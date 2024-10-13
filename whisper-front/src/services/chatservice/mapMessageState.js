@@ -8,6 +8,8 @@ export const mapMessageState = (state) => {
       return 2;
     case "sent":
       return 0;
+    case "deleted":
+      return 3;
     default:
       return -1; // null
   }
