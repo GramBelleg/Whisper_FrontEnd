@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { signUp, login } from '../services/authService';
+import { signUp, login, forgotPassword } from '../services/authService';
 
 const useAuth = () => {
   const [user, setUser] = useState(null);      
@@ -50,6 +50,17 @@ const useAuth = () => {
       setLoading(false);
     }
   };
+  const handleForgotPassword = async (email) => {
+    setLoading(true);
+    setError(null); 
+    try {
+      await forgotPassword(email);
+    } catch (err) {
+      setError(err.message);
+    } finally {
+      setLoading(false);
+    }
+  };
 
   
 
@@ -60,6 +71,7 @@ const useAuth = () => {
     error,
     handleSignUp,
     handleLogin,
+    handleForgotPassword
   };
 };
 

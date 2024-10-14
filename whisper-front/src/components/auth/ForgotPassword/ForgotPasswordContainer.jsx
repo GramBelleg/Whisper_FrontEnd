@@ -1,12 +1,13 @@
 import React, { useState } from 'react';
 import ForgotPassword from './ForgotPassword';
+import useAuth from "../../../hooks/useAuth";
 const ForgotPasswordContainer = () => {
 
     const [email, setEmail] = useState('');
-    const [loading, setLoading] = useState(false);
-    const [error, setError] = useState('');
+    const {handleForgotPassword,loading,error}=useAuth();
     const handleSubmit = async () => {
         // post request by axios
+        handleForgotPassword(email);
         setEmail('');
     };
     const handleChange = (e) => {
