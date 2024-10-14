@@ -107,7 +107,7 @@ export const Chats = [
         message_type: "sticker",
         unread_notifications: 0,
         tagged: false,
-        group: false
+        group: true
     },
     {
         sender: "John",
@@ -149,7 +149,7 @@ export const Chats = [
         message_type: "image",
         unread_notifications: 2,
         tagged: false,
-        group: true
+        group: false
     },
 
 
