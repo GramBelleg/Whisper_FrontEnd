@@ -1,0 +1,52 @@
+:root {
+    --primary-color: #0A122F; /* Define the color as a CSS variable */
+    --dots-color: #0A122F;
+    --secondary-color: #0A254A;
+    --third-color:#8D6AEE;
+
+}
+
+.info {
+    position: absolute; /* Absolute positioning within .messaging-info */
+    right: 0; /* Align to the rightmost edge */
+    margin-right: 6px; /* Optional: add some spacing from the right edge */
+    color: white; /* Use your third color for the text */
+    font-size: 15px; /* Adjust font size if necessary */
+    text-align: right; /* Ensure the text inside the div is right-aligned */
+    display: flex; /* Optional: If you plan to add icons or other elements */
+    align-items: center; /* Vertically align any content */
+    white-space: nowrap; /* Prevent wrapping of content */
+}
+
+/* Add this to your Info.css */
+.dropdown {
+    position: absolute;
+    top: 100%; /* Position it below the info */
+    right: 0; /* Align to the rightmost edge */
+    background-color: #081d3c;
+    border: 1px solid #081d3c;
+    border-radius: 10px;
+    text-align: left;
+    z-index: 1000; /* Ensure it stays on top */
+    width: 200px; /* Set width of dropdown */
+  }
+  
+  .dropdown ul {
+    list-style-type: none;
+    border-radius: 5px;
+    background-color: #081d3c;
+    border: 1px solid #081d3c;
+    padding: 0;
+    margin: 0;
+  }
+  
+  .dropdown li {
+    padding: 8px 12px;
+    cursor: pointer;
+    border-radius: 10px;
+  }
+  
+  .dropdown li:hover {
+    background-color: var(--third-color); /* Add a hover effect */
+  }
+  
