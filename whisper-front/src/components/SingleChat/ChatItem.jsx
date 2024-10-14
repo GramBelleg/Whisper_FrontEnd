@@ -1,24 +1,36 @@
 import React, { useMemo, useState, useEffect, useRef } from "react";
+
+// Import Utility Functions
 import { isValidChat } from "../../services/chatservice/isValidChat";
-import "./ChatItem.css";
-import noUser from "../../assets/images/no-user.png";
+import { checkDisplayTime } from "../../services/chatservice/checkDisplayTime";
 import { handleNoUserImage } from "../../services/chatservice/addDefaultImage";
-import NotificationBell from "../NotificationBell/NotificationBell";
 import { mapMessageState } from "../../services/chatservice/mapMessageState";
+
+// Import Components
+import noUser from "../../assets/images/no-user.png";
+import NotificationBell from "../NotificationBell/NotificationBell";
 import ReadTicks from "../ReadTicks/ReadTicks";
 import SentTicks from "../SentTicks/SentTicks";
 import DeliveredTicks from "../DeliveredTicks/DeliveredTicks";
-import { checkDisplayTime } from "../../services/chatservice/checkDisplayTime";
 import LastMessage from "../LastMessage/LastMessage";
 import UnRead from "../UnRead/UnRead";
+import Info from "../Info/Info";
+
+import "./ChatItem.css";
 
 
 const ChatItem = ({ index, standaloneChat }) => {
     
-
+    // Use memo helps validate the chat  on every render
     const isValid = useMemo(() => isValidChat(standaloneChat), [standaloneChat]);
-    
 
+    // Track overflow of text
+    const [isOverflowing, setIsOverflowing] = useState(false); 
+
+    // Create a ref for the user name
+    const userNameRef = useRef(null); 
+
+    // The local obhect of the chat
     const [myChat, setMyChat] = useState({
         name: "",
         profile_pic: "",
@@ -30,14 +42,11 @@ const ChatItem = ({ index, standaloneChat }) => {
         message_time:"",
         message_type:"",
         tagged: false,
-        sender:""
+        sender:"",
+        group:false
     });
 
-    console.log("Chat Item", myChat);
-    const userNameRef = useRef(null); // Create a ref for the user name
-    const [isOverflowing, setIsOverflowing] = useState(false); // State to track overflow
-
-
+    // Use Effect that renders on change in the coming object
     useEffect(() => {
         // Update chat state from standaloneChat
         setMyChat((prevChat) => ({
@@ -114,6 +123,7 @@ const ChatItem = ({ index, standaloneChat }) => {
                         <div className="messaging-info">
                             <LastMessage sender={myChat.sender} messageType={myChat.message_type} message={myChat.message} index={index} messageState={myChat.message_state}/>
                             { (myChat.unread_notifications || myChat.tagged) && <UnRead unReadMessages={myChat.unread_notifications} tag={myChat.tagged}/>}
+                            <Info index={index} group={myChat.group}/>
                         </div>
                     </div>
                 </div>
