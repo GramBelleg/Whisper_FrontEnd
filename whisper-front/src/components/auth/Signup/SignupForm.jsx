@@ -57,10 +57,10 @@ const SignupForm = ({
         </button>
         {error && <label className="text-red-600 text-sm mt-1">{error}</label>}
       </form>
-      <div className="flex flex-col items-center border-t border-light mt-8 py-4 w-full">
-        <GoogleButton/>
-        <FacebookButton/>
-        <GithubButton/>
+      <div className="w-full border-t border-gray-200 mt-8 pt-6">
+        <GoogleButton classStyle={`w-full bg-secondary text-white rounded-lg hover:bg-primary font-bold transition duration-300`}/>
+        <GithubButton classStyle={`flex items-center justify-center p-3 font-bold rounded-lg transition duration-300 p-3 font-bold text-dark bg-light rounded-lg cursor-pointer hover:bg-primary hover:text-light transition duration-300 mt-2 mb-2`}/>
+        <FacebookButton classStyle={`w-full p-3 mb-3 bg-light text-dark rounded-lg hover:bg-primary hover:text-light font-bold transition duration-300`}/>
         <p className="text-light text-sm opacity-80 hover:opacity-100 transition duration-300">
           already a member? <a href="/login" className="text-primary hover:underline">Log in</a>
         </p>

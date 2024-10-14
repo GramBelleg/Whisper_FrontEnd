@@ -3,6 +3,9 @@ import CustomButton from "../../common/CustomButton";
 import CustomInput from "../../common/CustomInput";
 import { FaGithub, FaGoogle, FaFacebookF } from "react-icons/fa";
 import { Link } from "react-router-dom";
+import GoogleButton from '../../common/GoogleButton';
+import GithubButton from '../../common/GithubButton';
+import FacebookButton from '../../common/FacebookButton';
 
 const LoginForm = ({
   handleChange,
@@ -18,12 +21,6 @@ const LoginForm = ({
   const inputFields = [
     { type: "email", id: "email", placeholder: "Email" },
     { type: "password", id: "password", placeholder: "Password" },
-  ];
-
-  const buttonConfigs = [
-    { label: "Log in with Google", icon: FaGoogle },
-    { label: "Log in with Facebook", icon: FaFacebookF },
-    { label: "Log in with Github", icon: FaGithub },
   ];
 
   return (
@@ -62,15 +59,9 @@ const LoginForm = ({
         </Link>
       </form>
       <div className="w-full border-t border-gray-200 mt-8 pt-6">
-        {buttonConfigs.map((button, index) => (
-          <CustomButton
-            key={index}
-            icon={button.icon}
-            label={button.label}
-            onClick={() => console.log(`Clicked ${button.label}`)}
-            className="w-full py-2 mb-3 bg-secondary text-white rounded-lg hover:bg-dark transition duration-300"
-          />
-        ))}
+        <GoogleButton classStyle="w-full mb-3 bg-secondary text-white rounded-lg hover:bg-primary font-bold transition duration-300"/>
+        <GithubButton classStyle="w-full py-2 mb-3 bg-secondary text-white rounded-lg hover:bg-primary font-bold transition duration-300"/>
+        <FacebookButton classStyle="w-full py-2 mb-3 bg-secondary text-white rounded-lg hover:bg-primary font-bold transition duration-300"/>
       </div>
     </div>
   );

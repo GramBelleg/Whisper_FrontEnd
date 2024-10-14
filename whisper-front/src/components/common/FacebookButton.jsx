@@ -2,7 +2,7 @@ import React from 'react';
 import FacebookLogin from 'react-facebook-login';
 import { FaFacebookF } from 'react-icons/fa';
 
-const FacebookButton = () => {
+const FacebookButton = ({classStyle}) => {
   const handleResponse = (response) => {
     if (response.status === 'unknown') {
       console.error('Facebook Login Failed:', response);
@@ -17,17 +17,8 @@ const FacebookButton = () => {
       autoLoad={false}
       callback={handleResponse}
       fields="name,email,picture"
-      redirectUri="google.com"
-      render={(renderProps) => (
-        <button
-          onClick={renderProps.onClick}
-          className="w-full p-3 font-bold text-dark bg-light rounded-lg cursor-pointer hover:bg-primary hover:text-light transition duration-300 mt-2 mb-2"
-          disabled={renderProps.isDisabled}
-        >
-          <FaFacebookF className="mr-2" />
-          Sign up with Facebook
-        </button>
-      )}
+      cssClass={`${classStyle}`}
+      redirectUri='http://localhost:3000/login'
     />
   );
 };
