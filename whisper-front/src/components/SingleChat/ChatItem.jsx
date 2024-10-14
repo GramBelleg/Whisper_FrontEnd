@@ -88,7 +88,7 @@ const ChatItem = ({ index, standaloneChat }) => {
                                 <div className="tick">
                                 {
                                         myChat.message_state === 0  && (
-                                            <SentTicks/>
+                                            <SentTicks width="12px"/>
                                         ) 
                                         || 
                                         myChat.message_state ==  1 && (

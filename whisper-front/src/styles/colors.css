@@ -1,0 +1,19 @@
+/* TODO add another color scheme for light mode */
+:root {
+    --primary-color: #0A122F;
+    --dots-color: #0A122F;
+    --secondary-color: #0A254A;
+    --accent-color: #8D6AEE;
+    --chat-background-color: #0A254A;
+    --text-color: #fff;
+    --text-color-rgb: 255, 255, 255;
+}
+
+.dark {
+    --primary-color: #0A122F;
+    --dots-color: #0A122F;
+    --secondary-color: #0A254A;
+    --chat-background-color: #0A254A;
+    --text-color: #fff;
+}
+
