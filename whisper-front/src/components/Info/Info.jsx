@@ -29,7 +29,7 @@ const Info = ({ index, group }) => {
         <>
         {index && (
             <div className="info" onClick={toggleDropdown}>
-            <FontAwesomeIcon icon={faChevronDown} />
+            <FontAwesomeIcon icon={faChevronDown} style={{color:"grey"}}/>
             {isVisible && (
                 <div
                 className="dropdown" // Add a class for dropdown styling
