@@ -1,0 +1,27 @@
+.emojis-picker-container {
+    position: relative;
+}
+
+.emojis-picker-icon {
+    cursor: pointer;
+    font-size: 24px;
+    color: var(--accent-color);
+}
+
+.emojis-picker-icon.active {
+    color: #684eb0;
+}
+
+.emojis-picker {
+    position: absolute;
+    bottom: 50px;
+    left: 0;
+    background-color: white;
+    border-radius: 10px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    padding: 0;
+}
+
+.emojis-picker input {
+    font-size: 16px;
+}

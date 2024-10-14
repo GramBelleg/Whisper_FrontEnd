@@ -1,7 +1,16 @@
 @import url('https://fonts.googleapis.com/css2?family=ABeeZee:ital@0;1&display=swap');
 
-body, html {
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+body,
+html {
     margin: 0;
     padding: 0;
     font-family: 'ABeeZee', sans-serif;
+}
+
+:root {
+    --right-sidebar-width: 25vw;
 }

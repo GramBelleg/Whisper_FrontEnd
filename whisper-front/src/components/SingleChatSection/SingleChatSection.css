@@ -13,7 +13,6 @@
     background-color: var(--chat-background-color);
 }
 
-
 .single-chat-header {
     background-color: var(--primary-color);
     display: flex;
@@ -24,7 +23,7 @@
     padding: 10px 16px;
 }
 
-.header-avatar img{
+.header-avatar img {
     width: 40px;
     height: 40px;
     border-radius: 50%;
@@ -67,14 +66,13 @@
     flex-direction: column-reverse;
 }
 
-
 .message {
     display: flex;
     justify-content: space-between;
     gap: 0.5rem;
     max-width: 50%;
     border-radius: 6px;
-    padding-bottom: 9px;
+    padding-bottom: 7px;
     padding-top: 9px;
     padding-left: 9px;
     padding-right: 7px;
@@ -100,6 +98,66 @@
     gap: 0.5rem;
 }
 
-.message-status, .message .time  {
+.message-status,
+.message .time {
     font-size: 12px;
+}
+
+.chat-actions-container {
+    display: flex;
+    gap: 10px;
+    padding: 10px;
+    margin: 10px 0;
+    align-items: center;
+    justify-content: center;
+    width: calc(100% - var(--right-sidebar-width));
+}
+
+.input-container {
+    display: flex;
+    gap: 1rem;
+    padding: 10px 16px;
+    border-radius: 8px;
+    background-color: var(--primary-color);
+    align-items: center;
+    flex-grow: 1;
+}
+
+.input-container .search-input {
+    background-color: var(--primary-color);
+    color: var(--text-color);
+    border: none;
+    padding: 5px 10px;
+    outline: none;
+    flex-grow: 1;
+}
+
+.input-container .emojis-container,
+.input-container .attachements-container {
+    color: var(--accent-color);
+    font-size: 24px;
+}
+
+.input-container .search-input::placeholder {
+    color: var(--text-color);
+}
+
+.voice-container {
+    display: flex;
+    font-size: 24px;
+    color: var(--accent-color);
+    width: 52px;
+    height: 52px;
+    background-color: var(--primary-color);
+    border-radius: 50%;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.3s;
+    cursor: pointer;
+}
+
+.voice-container:hover,
+.voice-container.active {
+    background-color: var(--accent-color);
+    color: var(--text-color);
 }
