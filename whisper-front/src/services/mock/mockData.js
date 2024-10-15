@@ -22,7 +22,8 @@ export const Chats = [
         message_type:"text",
         unread_notifications: 101,
         tagged: false,
-        group: false
+        group: false,
+        story: false,
         
     },
     {
@@ -37,7 +38,8 @@ export const Chats = [
         message_type: "text",
         unread_notifications: 0,
         tagged: false,
-        group: false
+        group: false,
+        story: true,
     },
     {
         sender: "John",
@@ -51,7 +53,8 @@ export const Chats = [
         message_type: "text",
         unread_notifications: 0,
         tagged: false,
-        group: false
+        group: false,
+        story: true,
     },
     {
         sender: "John",
@@ -65,7 +68,8 @@ export const Chats = [
         message_type: "audio",
         unread_notifications: 0,
         tagged: false,
-        group: false
+        group: false,
+        story: false,
     },
     {
         sender: "Hana",
@@ -79,7 +83,8 @@ export const Chats = [
         message_type: "audio",
         unread_notifications: 1,
         tagged: false,
-        group: false
+        group: false,
+        story: false,
     },
     {
         sender: "John",
@@ -93,7 +98,8 @@ export const Chats = [
         message_type: "video",
         unread_notifications: 0,
         tagged: false,
-        group: false
+        group: false,
+        story: false,
     },
     {
         sender: "John",
@@ -107,7 +113,8 @@ export const Chats = [
         message_type: "sticker",
         unread_notifications: 0,
         tagged: false,
-        group: true
+        group: true,
+        story: false
     },
     {
         sender: "John",
@@ -121,7 +128,8 @@ export const Chats = [
         message_type: "sticker",
         unread_notifications: 0,
         tagged: false,
-        group: false
+        group: false,
+        story: true,
     },
     {
         sender: "Ashraf",
@@ -135,7 +143,8 @@ export const Chats = [
         message_type: "text",
         unread_notifications: 2,
         tagged: false,
-        group: false
+        group: false,
+        story: false,
     },
     {
         sender: "Adham",
@@ -149,7 +158,8 @@ export const Chats = [
         message_type: "image",
         unread_notifications: 2,
         tagged: false,
-        group: false
+        group: false,
+        story: false,
     },
 
 
