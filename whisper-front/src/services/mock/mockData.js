@@ -11,13 +11,13 @@ export const signupResponse = {
 // Chat List  API Response
 export const Chats = [
     {
-        sender:"John",
-        name:"Ziad Samer Mohamed Tawfik",
+        sender:"Ziad",
+        name:"Ziad Samer Mohamed Tawfik Radwan Gabr Aly",
         profile_pic:"",
         last_seen: "12:00:00",
-        muted: false,
+        muted: true,
         message:"hello",
-        message_state:"noting",
+        message_state:"delivered",
         message_time:"2024-10-12 05:50:50",
         message_type:"text",
         unread_notifications: 101,
@@ -26,12 +26,12 @@ export const Chats = [
         
     },
     {
-        sender: "ziad",
+        sender: "John",
         name: "Zeyad Dawood",
         profile_pic: "./assets/images/Grambell.png",
         last_seen: "10:00",
         muted: false,
-        message: "ezyaka ysta, enta kont fen? bklmk mn embar7 telephonak",
+        message: "ezyaka ysta, enta kont fen? bklmk mn embar7 telephonak m2fol mn embar7",
         message_state: "delivered",
         message_time: "2024-10-11 04:21:21",
         message_type: "text",
