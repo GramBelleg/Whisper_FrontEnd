@@ -17,9 +17,16 @@ import UnRead from "../UnRead/UnRead";
 import Info from "../Info/Info";
 
 import "./ChatItem.css";
+import { whoAmI } from "../../services/chatservice/chatParams";
 
 
 const ChatItem = ({ index, standaloneChat }) => {
+
+    const maxLength = (
+        
+        (standaloneChat.muted) ? 33 : 
+        (standaloneChat.sender === whoAmI) ? 30 : 15
+    )
     
     // Use memo helps validate the chat  on every render
     const isValid = useMemo(() => isValidChat(standaloneChat), [standaloneChat]);
@@ -28,7 +35,11 @@ const ChatItem = ({ index, standaloneChat }) => {
     const [isOverflowing, setIsOverflowing] = useState(false); 
 
     // Create a ref for the user name
-    const userNameRef = useRef(null); 
+    const userNameRef = useRef(null);
+    
+    const trimName = (name) => {
+        return name.length > maxLength ? `${name.slice(0, maxLength - 3)}...` : name;
+    }
 
     // The local obhect of the chat
     const [myChat, setMyChat] = useState({
@@ -53,7 +64,8 @@ const ChatItem = ({ index, standaloneChat }) => {
             ...prevChat,
             ...standaloneChat,
             message_state: mapMessageState(standaloneChat.message_state),
-            display_time: checkDisplayTime(standaloneChat.message_time)
+            display_time: checkDisplayTime(standaloneChat.message_time),
+            name: trimName(standaloneChat.name)
         }));
 
         // Check for overflow when the name changes
@@ -76,11 +88,14 @@ const ChatItem = ({ index, standaloneChat }) => {
         <div className="single-chat">
             {isValid && (
                 <div className="single-chat-content">
-                    <img 
-                        src={myChat.profile_pic || noUser}
-                        className="profile-pic"
-                        onError={(e) => handleNoUserImage(e)} // Correct capitalization
-                    />
+                    <div className={`profile-pic-wrapper ${myChat.story ? 'has-story' : ''}`}>
+                        <img 
+                            src={myChat.profile_pic || noUser}
+                            className={`profile-pic`} // Add the conditional class
+                            onError={(e) => handleNoUserImage(e)}
+                        />
+                    </div>
+
                     <div className="content">
                         <div className="user-info">
                             <div className="name-container">

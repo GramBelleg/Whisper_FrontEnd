@@ -25,12 +25,28 @@
     align-items: center;
 }
 
-.profile-pic {
+
+.profile-pic-wrapper {
+    display: flex; /* Use flexbox to center the inner circle */
+    justify-content: center; /* Horizontally center the profile image */
+    align-items: center; /* Vertically center the profile image */
     border-radius: 50%; /* Make it circular */
     width: 70px;
     height: 70px;
     margin-left: 1%;
+    border: none; /* Default: no border */
 }
+.profile-pic-wrapper.has-story {
+    border: 1px solid var(--third-color); /* Apply third color if story is true */
+}
+
+.profile-pic {
+    border-radius: 50%; /* Make it circular */
+    width: 65px;
+    height: 65px;
+    border: none; /* Default: no border */
+}
+
 
 .content {
     display: flex;
