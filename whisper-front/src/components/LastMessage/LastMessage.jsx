@@ -14,7 +14,7 @@ const LastMessage = ({ sender, messageType, message, messageState, index }) => {
       ) : (
         <>
           {messageType === "text" && (
-            <TextMessage index={index} message={message} />
+            <TextMessage index={index} message={message}/>
           )}
           {messageType === "image" && (
             <ImageMessage messageState={messageState} />
