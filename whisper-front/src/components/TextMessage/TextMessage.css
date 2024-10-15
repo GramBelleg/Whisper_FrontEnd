@@ -14,23 +14,3 @@
     color: #999898;
 }
 
-.text-message::after {
-    content: '...'; /* Show dots as a pseudo-element */
-    position: absolute; /* Position it absolutely */
-    right: 0; /* Align to the right of the container */
-    background: var(--primary-color); /* Add background to hide overflow text under the ellipsis */
-    visibility: hidden; /* Hide by default */
-}
-
-.text-message.overflow::after {
-    visibility: visible; /* Show dots when overflow occurs */
-}
-
-
-.text-message.overflow.hovered::after {
-    content: '...'; /* Show dots as a pseudo-element */
-    position: absolute; /* Position it absolutely */
-    right: 0; /* Aign to the right */
-    background: var(--secondary-color); /* Match the background color */
-    visibility: visible; /* Hide by default */
-}

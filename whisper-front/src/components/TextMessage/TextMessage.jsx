@@ -1,31 +1,22 @@
 // This renders sent or recieved text
 // It is used by the last message
 
-import { useEffect, useRef, useState } from "react";
+import { useRef } from "react";
 import "./TextMessage.css";
 
 const TextMessage = ({index, message}) => {
     const textRef = useRef(null);
-    const [isTextOverflowing, setIsTextOverflowing] = useState(false);
 
-    useEffect(() => {
-        const checkTextOverflow = () => {
-            if (textRef.current) {
-              const { scrollWidth, clientWidth } = textRef.current;
-              setIsTextOverflowing(scrollWidth > clientWidth);
-            } 
-          };
-      
-        checkTextOverflow();
-        window.addEventListener("resize", checkTextOverflow);
+    const maxLength =  54; // Set the maximum number of characters to display
 
-        return () => {
-            window.removeEventListener("resize", checkTextOverflow);
-        };
-    })
+    const trimmedMessage = message.length > maxLength
+        ? `${message.slice(0, maxLength - 3)}...`
+        : message;
+
+    
     return ( 
-        <p ref={textRef} className={`text-message ${isTextOverflowing ? 'overflow' : ''} ${index ? 'hovered' : ''}`}>
-            {message}
+        <p ref={textRef} className={`text-message ${index ? 'hovered' : ''}`}>
+            {trimmedMessage}
         </p>
     );
 }
