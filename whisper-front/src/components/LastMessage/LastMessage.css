@@ -1,0 +1,69 @@
+:root {
+    --primary-color: #0a122f; /* Define the color as a CSS variable */
+    --dots-color: #0a122f;
+    --secondary-color: #0a254a;
+}
+
+/* Container for the last message */
+.last-message {
+    display: flex;
+    align-items: center;
+    justify-content: flex-start;
+    width: 80%;
+    height: 100%;
+}
+
+.text-message {
+    font-size: 17px;
+    white-space: nowrap; /* Prevent wrapping */
+    display: flex;
+    overflow: hidden; /* Hide overflow text */
+    position: relative; /* Position relative for the pseudo-element */
+    max-width: 100%; /* Ensure the text doesn't overflow outside the bubble */
+}
+
+.text-message::after {
+    content: '...'; /* Show dots as a pseudo-element */
+    position: absolute; /* Position it absolutely */
+    right: 0; /* Align to the right of the container */
+    background: var(--primary-color); /* Add background to hide overflow text under the ellipsis */
+    visibility: hidden; /* Hide by default */
+}
+
+.text-message.overflow::after {
+    visibility: visible; /* Show dots when overflow occurs */
+}
+
+.text-message.overflow.hovered::after {
+    content: '...'; /* Show dots as a pseudo-element */
+    position: absolute; /* Position it absolutely */
+    right: 0; /* Aign to the right */
+    background: var(--secondary-color); /* Match the background color */
+    visibility: visible; /* Hide by default */
+}
+
+.audio-itself {
+    visibility: hidden;
+    width: 0%;
+}
+/* Audio & Voice Note Message Styling */
+.audio-message,
+.voice-note-message {
+    width: 100%;
+    height: 100%;
+    color: white;
+    display: flex;
+    margin-top: 5%;
+}
+
+.mic-icon {
+    margin-right: 3%;
+}
+.mic-icon.active,
+.audio-duration.active {
+    color: #4cb9cf;
+}
+
+/*
+    style={{color: "#4cb9cf",}}
+*/

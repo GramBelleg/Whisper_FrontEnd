@@ -1,0 +1,14 @@
+.sampleHome {
+    display: flex;
+    height: 100vh;
+}
+
+.side-bar-container {
+    width: 5%;
+    height: 100%;
+}
+
+.chat-page-container {
+    width: 30%;
+    height: 100%;
+}
