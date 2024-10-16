@@ -4,6 +4,8 @@ import ReCAPATCHA from "react-google-recaptcha";
 import GoogleButton from "../../common/GoogleButton";
 import FacebookButton from "../../common/FacebookButton";
 import GithubButton from "../../common/GithubButton";
+import PhoneInput from 'react-phone-input-2';
+import 'react-phone-input-2/lib/style.css';
 
 const SignupForm = ({
   handleChange,
@@ -19,7 +21,6 @@ const SignupForm = ({
 }) => {
   const inputFields = [
     { type: "email", id: "email", placeholder: "Email" },
-    { type: "tel", id: "phoneNumber", placeholder: "Phone Number" },
     { type: "password", id: "password", placeholder: "Password" },
     {
       type: "password",
@@ -45,6 +46,24 @@ const SignupForm = ({
             className="w-full p-3 text-light bg-dark border border-light rounded-md focus:border-primary focus:outline-none"
           />
         ))}
+        <div>
+          <PhoneInput
+            country={"eg"} 
+            value={values.phoneNumber}
+            onChange={(phone) => {
+              handleChange({ target: { name: "phoneNumber", value: phone } });
+            }}
+            placeholder="Phone Number"
+            inputClass="phone-input" 
+            style={{  }}
+            inputStyle={{height: "3rem" }}
+            
+            
+          />
+          {errors.phoneNumber && touched.phoneNumber && (
+            <label className="text-red-600 text-sm mt-1">{errors.phoneNumber}</label>
+          )}
+        </div>
         <ReCAPATCHA sitekey={process.env.REACT_APP_SITE_KEY} onChange={handleCaptchaChange} />
         {errors.captcha && <label className="text-red-600 text-sm mt-1">{errors.captcha}</label>}
         <button

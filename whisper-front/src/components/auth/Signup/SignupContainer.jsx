@@ -15,6 +15,7 @@ const SignupContainer = () => {
   const {handleSignUp,loading,error}=useAuth();
   const onSubmit = async (values, actions) => {
     //post request by axios
+    console.log(values)
     handleSignUp({email: values.email,password:values.password,phone:values.phoneNumber,captcha:values.captcha,isVerified:false});
     if(!error){
         navigate('/email-verification');

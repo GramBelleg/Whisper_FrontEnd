@@ -16,6 +16,8 @@ export const signupSchema = yup.object().shape({
     .string()
     .oneOf([yup.ref("password"), null], "Passwords must match")
     .required("Required"),
-  phoneNumber: yup.string().required("Required"),
+  phoneNumber: yup.string().required("Required")
+    .min(10, "Phone number can't be shorter than 10 characters")
+    .max(15, "Phone number can't be longer than 15 characters"),
   captcha: yup.string().required('CAPTCHA is required'),
 });
