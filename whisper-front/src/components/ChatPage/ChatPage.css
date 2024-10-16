@@ -1,4 +1,6 @@
-.chat-page {
+
+
+/* .chat-page {
     display: flex;
     flex-direction: column;
     justify-content: flex-start;
@@ -11,8 +13,39 @@
     color: white;
     width: 100%;
     height: 20%;
-}
-.chat-list-container {
+}*/
+/* .sidebar__other-content {
     width: 100%;
     height: 80%;
-}
+}  */
+.sidebar {
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+    width: 60%;
+    min-width: 20%;
+    max-width: 80%;
+    background-color: #0A122F;
+    border-right: 3px solid #8D6AEE;
+    position: relative;
+  }
+  
+  .sidebar__stories {
+    flex: 0 0 20px;
+  }
+  
+  .sidebar__other-content {
+    width: 100%;
+    height: 80%;
+  }
+  
+  .sidebar__resizer {
+    width: 5px;
+    height: 100%;
+    background: #8D6AEE;
+    position: absolute;
+    right: -5px;
+    top: 0;
+    cursor: col-resize;
+    z-index: 1;
+  }

@@ -1,0 +1,16 @@
+:root {
+    --primary-color: #0A122F; /* Define the color as a CSS variable */
+    --dots-color: #0A122F;
+    --secondary-color: #0A254A;
+}
+
+.text-message {
+    font-size: 17px;
+    white-space: nowrap; /* Prevent wrapping */
+    display: flex;
+    overflow: hidden; /* Hide overflow text */
+    position: relative; /* Position relative for the pseudo-element */
+    max-width: 100%; /* Ensure the text doesn't overflow outside the bubble */
+    color: #999898;
+}
+

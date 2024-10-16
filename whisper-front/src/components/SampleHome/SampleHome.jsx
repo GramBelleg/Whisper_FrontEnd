@@ -3,6 +3,8 @@ import { useState } from 'react'
 import ChatPage from '../ChatPage/ChatPage'
 import '../SampleHome/SampleHome.css'
 import SingleChatSection from '../SingleChatSection/SingleChatSection'
+import "../SampleHome/SampleHome.css"
+import ButtonsBar from "../ButtonsBar/ButtonsBar";
 
 const SampleHome = () => {
     const [selectedUser, setSelectedUser] = useState({
@@ -10,15 +12,24 @@ const SampleHome = () => {
         name: 'John Doe'
     })
 
-    return (
-        <div className='sampleHome'>
-            <div className='side-bar-container'>Hello</div>
-            <div className='chat-page-container'>
-                <ChatPage changeSelectedUser={setSelectedUser} />
-            </div>
-            <div className='chatting'>
+    return ( 
+        <div className="sampleHome">
+            <ButtonsBar />
+            { true && <ChatPage/>}
+
+            <div className="chatting">
                 <SingleChatSection selectedUser={selectedUser} />
             </div>
+
+            {/* <div className="side-bar-container">
+                <ButtonsBar />
+            </div>
+            <div className="chat-page-container">
+                { true && <ChatPage/>}
+            </div>
+            <div className="chatting">
+               
+            </div> */}
         </div>
     )
 }

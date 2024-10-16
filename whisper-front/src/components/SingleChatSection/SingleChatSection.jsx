@@ -66,9 +66,9 @@ const SingleChatSection = ({ selectedUser }) => {
                     <span className='header-subtitle'>Last seen at {userDetails.last_seen_at}</span>
                 </div>
                 <div className='header-icons'>
-                    <FontAwesomeIcon className='icon' icon={faSearch} />
-                    <FontAwesomeIcon className='icon' icon={faPhone} />
-                    <FontAwesomeIcon className='icon' icon={faEllipsisV} />
+                    <FontAwesomeIcon height={24} className='icon' icon={faSearch} />
+                    <FontAwesomeIcon height={24} className='icon' icon={faPhone} />
+                    <FontAwesomeIcon height={24} className='icon' icon={faEllipsisV} />
                 </div>
             </div>
             <div className='messages'>
