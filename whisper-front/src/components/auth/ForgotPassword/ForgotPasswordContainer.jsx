@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import ForgotPassword from './ForgotPassword';
-import useAuth from "../../../hooks/useAuth";
+import useAuth from '../../../hooks/useAuth';
 const ForgotPasswordContainer = () => {
 
     const [email, setEmail] = useState('');

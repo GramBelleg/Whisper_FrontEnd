@@ -10,6 +10,16 @@ export const signUp = async (userData) => {
   }
 };
 
+export const verify = async (code) => {
+  try {
+    const response = await axiosInstance.post('/verify', code);
+    console.log(response.data);
+    return response.data;
+  } catch (error) {
+    throw new Error('verify failed');
+  }
+};
+
 export const login = async (credentials) => {
   try {
     const response = await axiosInstance.post('/login', credentials);

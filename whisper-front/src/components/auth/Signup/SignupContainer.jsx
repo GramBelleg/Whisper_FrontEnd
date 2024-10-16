@@ -1,8 +1,8 @@
-import React, { useState } from "react";
+import React from "react";
 import { signupSchema } from "../../../utils/SignupSchema";
 import { useFormik } from "formik";
 import SignupForm from "./SignupForm";
-import useAuth from "../../../hooks/useAuth";
+import useAuth from '../../../hooks/useAuth';
 import { useNavigate } from "react-router-dom";
 
 const SignupContainer = () => {
@@ -15,7 +15,7 @@ const SignupContainer = () => {
   const {handleSignUp,loading,error}=useAuth();
   const onSubmit = async (values, actions) => {
     //post request by axios
-    handleSignUp(values);
+    handleSignUp({email: values.email,password:values.password,phone:values.phoneNumber,captcha:values.captcha,isVerified:false});
     if(!error){
         navigate('/email-verification');
     }
