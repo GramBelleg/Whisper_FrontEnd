@@ -3,7 +3,7 @@
 // It then calls the SingleChat page for each chat
 
 import { useState } from "react";
-import ChatItem from "../SingleChat/ChatItem";
+import ChatItem from "../ChatItem/ChatItem";
 import "./ChatList.css"
 
 
