@@ -5,8 +5,7 @@ import axiosInstance from '../services/axiosInstance'; // Import the axios insta
 const useFetch = (url) => {
     const [data, setData] = useState(null)
     const [error, setError] = useState(null)
-    const [loading, setLoading] = useState(false)
-
+    const [loading, setLoading] = useState(true)
     useEffect(() => {
         const fetchData = async () => {
             setLoading(true)
