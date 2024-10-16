@@ -1,6 +1,12 @@
-// src/contexts/AuthContext.js
-import React, { useState, useEffect, createContext } from 'react';
-import { signUp, login, forgotPassword, verify } from '../services/authService';
+import { useState, useEffect, createContext } from 'react';
+import {
+  signUp,
+  login,
+  forgotPassword,
+  verify,
+  setAuthData
+} from '../services/authService';
+import { loadAuthData } from '../services/tokenService';
 
 const AuthContext = createContext();
 
@@ -11,12 +17,12 @@ export const AuthProvider = ({ children }) => {
   const [error, setError] = useState(null);    
 
   useEffect(() => {
-    const storedToken = localStorage.getItem('token');
-    const storedUser = localStorage.getItem('user'); 
+
+    const { token: storedToken, user: storedUser } = loadAuthData();
 
     if (storedToken && storedUser) {
       setToken(storedToken);
-      setUser(JSON.parse(storedUser)); 
+      setUser(storedUser); 
     }
   }, []);
 
@@ -26,7 +32,7 @@ export const AuthProvider = ({ children }) => {
     try {
       const data = await signUp(userData);    
       setUser(data);                          
-      localStorage.setItem('user', JSON.stringify(data));
+      setAuthData(data, data.token);  
     } catch (err) {
       setError(err.message);
     } finally {
@@ -41,8 +47,7 @@ export const AuthProvider = ({ children }) => {
       const data = await verify(code);    
       setToken(data.token);
       setUser(data);                          
-      localStorage.setItem('token', data.token);
-      localStorage.setItem('user', JSON.stringify(data));
+      setAuthData(data, data.token);  
     } catch (err) {
       setError(err.message);
     } finally {
@@ -57,8 +62,7 @@ export const AuthProvider = ({ children }) => {
       const data = await login(credentials);  
       setToken(data.token);
       setUser(data);                          
-      localStorage.setItem('token', data.token);
-      localStorage.setItem('user', JSON.stringify(data));
+      setAuthData(data, data.token);  
     } catch (err) {
       setError(err.message);
     } finally {

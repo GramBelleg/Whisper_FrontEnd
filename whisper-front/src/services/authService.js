@@ -37,4 +37,15 @@ export const forgotPassword = async (email) => {
   } catch (error) {
     throw new Error('Forgot password failed');
   }
-}
+};
+
+export const setAuthData = (user, token) => {
+  localStorage.setItem('user', JSON.stringify(user));
+  localStorage.setItem('token', token);
+};
+
+export const clearAuthData = () => {
+  localStorage.removeItem('user');
+  localStorage.removeItem('token');
+};
+

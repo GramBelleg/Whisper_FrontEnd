@@ -29,7 +29,7 @@ const SignupForm = ({
   ];
 
   return (
-    <div className="form-container p-6">
+    <div className="form-container p-6 ">
       <h1 className="text-primary text-2xl font-bold mb-4">Create Account</h1>
       <form onSubmit={handleSubmit} className="grid grid-cols-1 lg:grid-cols-2 gap-4 bg-dark p-4 rounded-lg">
         {inputFields.map((field) => (

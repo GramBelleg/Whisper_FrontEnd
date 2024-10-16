@@ -1,7 +1,7 @@
 import React from 'react';
 import ReactDOM from 'react-dom/client';
 import './index.css';
-import AuthProvider from './contexts/AuthContext';
+import {AuthProvider} from './contexts/AuthContext';
 import App from './App';
 if(process.env.NODE_ENV === 'development'){
   //initialize axios mock
