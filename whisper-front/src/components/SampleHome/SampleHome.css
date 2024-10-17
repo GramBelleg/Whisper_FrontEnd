@@ -1,24 +1,4 @@
 
-
-/* .sampleHome {
-    display: flex;
-    height: 100vh;
-}
-
-.side-bar-container {
-    width: 5%;
-    height: 100%;
-}
-
-.chat-page-container {
-    width: 30%;
-    height: 100%;
-}
-.chatting {
-    width: 65%;
-    height: 100%;
-} */
-
 .sampleHome {
     display: flex;
     flex-direction: row; 
@@ -32,10 +12,17 @@
     margin: 0 0px; 
 }
 
-.sampleHome> *:first-child {
+.buttons-bar-container {
+    width: 5%;
     margin-left: 0; 
 }
 
-.sampleHome > *:last-child {
+.chatpage-container {
+    margin-left: 0px;
+    width: 30%;
+    
+}
+.chatting {
     margin-right: 0; 
+    width: 65%;
 }

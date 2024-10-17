@@ -14,22 +14,15 @@ const SampleHome = () => {
 
     return ( 
         <div className="sampleHome">
-            <ButtonsBar />
-            { true && <ChatPage/>}
-
+            <div className="buttons-bar-container">
+                <ButtonsBar />
+            </div>
+            <div className="chatpage-container">
+                <ChatPage/>
+            </div>
             <div className="chatting">
                 <SingleChatSection selectedUser={selectedUser} />
             </div>
-
-            {/* <div className="side-bar-container">
-                <ButtonsBar />
-            </div>
-            <div className="chat-page-container">
-                { true && <ChatPage/>}
-            </div>
-            <div className="chatting">
-               
-            </div> */}
         </div>
     )
 }

@@ -107,7 +107,7 @@
 
 .user-name {
     text-overflow: ellipsis; /* Adds ... at the end of overflowing text */
-    font-size: clamp(16px, 5vw, 25px); /* Responsive font size */
+    font-size: clamp(15px, 5vw, 20px); /* Responsive font size */
     color: white;
     height: 100%;
     display: flex;
