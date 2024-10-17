@@ -123,13 +123,23 @@
     flex-grow: 1;
 }
 
-.input-container .search-input {
+.input-container .message-input {
     background-color: var(--primary-color);
-    color: var(--text-color);
     border: none;
-    padding: 5px 10px;
     outline: none;
     flex-grow: 1;
+}
+
+.input-container {
+    color: var(--text-color);
+    padding: 5px 10px;
+}
+
+.message-input {
+    min-height: 25px;
+    max-height: 300px; /* Max height you want the input to grow to */
+    overflow-y: auto; /* Adds a scrollbar when max height is reached */
+    resize: none; /* Prevents manual resizing by the user */
 }
 
 .input-container .emojis-container,
@@ -138,11 +148,11 @@
     font-size: 24px;
 }
 
-.input-container .search-input::placeholder {
+.input-container {
     color: var(--text-color);
 }
 
-.voice-container {
+.voice-send-container {
     display: flex;
     font-size: 24px;
     color: var(--accent-color);
@@ -156,8 +166,9 @@
     cursor: pointer;
 }
 
-.voice-container:hover,
-.voice-container.active {
+
+.voice-send-container:hover,
+.voice-send-container.active {
     background-color: var(--accent-color);
     color: var(--text-color);
 }

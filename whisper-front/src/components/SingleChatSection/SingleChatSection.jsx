@@ -1,15 +1,13 @@
 import { useEffect, useState } from 'react'
 import './SingleChatSection.css'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import { faEllipsisV, faMicrophone, faMicrophoneAlt, faPaperclip, faPhone, faSearch, faSmile } from '@fortawesome/free-solid-svg-icons'
-import SentTicks from '../SentTicks/SentTicks'
-import DeliveredTicks from '../DeliveredTicks/DeliveredTicks'
-import ReadTicks from '../ReadTicks/ReadTicks'
+import { faEllipsisV, faMicrophone, faMicrophoneAlt, faPaperclip, faPhone, faSearch, faSmile, faPaperPlane } from '@fortawesome/free-solid-svg-icons'
 import CustomEmojisPicker from '../CustomEmojisPicker/CustomEmojisPicker'
+import SingleChatMessaging from '../SingleChatMessaging/SingleChatMessaging'
 
 const SingleChatSection = ({ selectedUser }) => {
-    const [messages, setMessages] = useState([])
     const [newMessage, setNewMessage] = useState('')
+    const [isTyping, setIsTyping] = useState(false);
     const [userDetails, setUserDetails] = useState({
         id: 1,
         name: 'John Doe',
@@ -20,34 +18,14 @@ const SingleChatSection = ({ selectedUser }) => {
         setNewMessage((prevMessage) => prevMessage + emojiObject.emoji)
     }
 
-    const updateNewMessage = (event) => {
-        setNewMessage(event.target.value)
+    
+
+    const updateIconSend = (isTyping) => {
+        setIsTyping(isTyping);
     }
 
     useEffect(() => {
         // simpulate fetching chat data
-
-        setMessages([
-            {
-                id: 1,
-                sender: 'John Doe',
-                message: 'Hello',
-                datetime: '2024-10-13 10:00:50'
-            },
-            {
-                id: 2,
-                sender: 'John Doe',
-                message: 'How are you?',
-                datetime: '2024-10-05 10:00:51'
-            },
-            {
-                id: 3,
-                sender: 'John Doe',
-                message: 'I am fine',
-                datetime: '2024-10-13 10:00:52'
-            }
-        ])
-
         setUserDetails({
             id: 1,
             name: 'John Doe',
@@ -72,6 +50,8 @@ const SingleChatSection = ({ selectedUser }) => {
                 </div>
             </div>
             <div className='messages'>
+
+                {/*
                 <div className='message sender shadow'>
                     <div className='message-text'>
                         I plan to go to Norway, Tom said that you can tell about interesting places. I am very interested in the city of
@@ -94,6 +74,7 @@ const SingleChatSection = ({ selectedUser }) => {
                         <span className='time'>12:51</span>
                     </div>
                 </div>
+                */}
             </div>
 
             <div className='w-full flex items-center justify-center'>
@@ -102,19 +83,15 @@ const SingleChatSection = ({ selectedUser }) => {
                         <div className='emojis-container'>
                             <CustomEmojisPicker handleEmojiClick={handleEmojiClick} />
                         </div>
-                        <input
-                            type='text'
-                            value={newMessage}
-                            onInput={updateNewMessage}
-                            className='search-input'
-                            placeholder='Message Here'
-                        />
+                        <div className="message-input">
+                            <SingleChatMessaging updateIconSend={updateIconSend}/>
+                        </div>
                         <div className='attachements-container'>
                             <FontAwesomeIcon icon={faPaperclip} />
                         </div>
                     </div>
-                    <div className='voice-container shadow'>
-                        <FontAwesomeIcon icon={faMicrophoneAlt} />
+                    <div className="voice-send-container">
+                        {isTyping ? <FontAwesomeIcon icon={faPaperPlane}/> : <FontAwesomeIcon icon={faMicrophoneAlt} />}
                     </div>
                 </div>
             </div>
@@ -122,4 +99,4 @@ const SingleChatSection = ({ selectedUser }) => {
     )
 }
 
-export default SingleChatSection
+export default SingleChatSection;
