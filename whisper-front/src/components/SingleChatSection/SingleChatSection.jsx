@@ -3,20 +3,15 @@ import './SingleChatSection.css'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faEllipsisV, faMicrophone, faMicrophoneAlt, faPaperclip, faPhone, faSearch, faSmile, faPaperPlane } from '@fortawesome/free-solid-svg-icons'
 import SingleChatMessaging from '../SingleChatMessaging/SingleChatMessaging'
-import { messageTypes } from '../../services/sendTypeEnum'
+import { messageTypes } from '../../services/sendTypeEnum';
+import useFetch from "../../services/useFetch"
 
 const SingleChatSection = ({ selectedUser }) => {
     const [isTyping, setIsTyping] = useState(false);
-    const [userDetails, setUserDetails] = useState({
-        id: 1,
-        name: 'John Doe',
-        last_seen_at: '10:00:50'
-    })
+    const [userDetails, setUserDetails] = useState({})
+    
 
-    /*const handleEmojiClick = (emojiObject) => {
-        setNewMessage((prevMessage) => prevMessage + emojiObject.emoji)
-    }*/
-
+    const {data:userDetailsFromBack, loading, error} = useFetch('/userDetails');
     
     const sendMessage = (type, message) => {
 
@@ -31,14 +26,9 @@ const SingleChatSection = ({ selectedUser }) => {
     }
 
     useEffect(() => {
-        // simpulate fetching chat data
-        setUserDetails({
-            id: 1,
-            name: 'John Doe',
-            profile_pic: './assets/images/Grambell.png',
-            last_seen_at: '10:00:50'
-        })
-    }, [])
+        if(userDetailsFromBack && !error && !loading)
+            setUserDetails(userDetailsFromBack);
+    }, [userDetailsFromBack])
     return (
         <div className='single-chat-container'>
             <div className='single-chat-header shadow-md'>
