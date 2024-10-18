@@ -59,9 +59,9 @@ const LoginForm = ({
         </Link>
       </form>
       <div className="w-full border-t border-gray-200 mt-8 pt-6">
-        <GoogleButton classStyle="w-full mb-3 bg-secondary text-white rounded-lg hover:bg-primary font-bold transition duration-300"/>
-        <GithubButton classStyle="w-full py-2 mb-3 bg-secondary text-white rounded-lg hover:bg-primary font-bold transition duration-300"/>
-        <FacebookButton classStyle="w-full py-2 mb-3 bg-secondary text-white rounded-lg hover:bg-primary font-bold transition duration-300"/>
+        <GoogleButton classStyle="flex items-center justify-center w-full mb-3 bg-secondary text-white rounded-lg hover:bg-primary font-bold transition duration-300 p-3"/>
+        <GithubButton classStyle="w-full p-3 mb-3 bg-secondary text-white rounded-lg hover:bg-primary font-bold transition duration-300"/>
+        <FacebookButton classStyle=" flex items-center justify-center w-full p-3 mb-3 bg-secondary text-white rounded-lg hover:bg-primary font-bold transition duration-300"/>
       </div>
     </div>
   );

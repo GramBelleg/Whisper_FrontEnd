@@ -1,25 +1,17 @@
-import React from 'react';
-import FacebookLogin from 'react-facebook-login';
-import { FaFacebookF } from 'react-icons/fa';
+import React from "react";
+import FacebookLogin from "react-facebook-login";
+import { FaFacebookF } from "react-icons/fa";
 
-const FacebookButton = ({classStyle}) => {
-  const handleResponse = (response) => {
-    if (response.status === 'unknown') {
-      console.error('Facebook Login Failed:', response);
-    } else {
-      console.log('Facebook Success:', response);
-    }
+const FacebookButton = ({ classStyle }) => {
+  const handleFacebookAuth = () => {
+    window.location.href = "http://localhost:5000/api/auth/facebook";
   };
 
   return (
-    <FacebookLogin
-      appId={process.env.REACT_APP_FACEBOOK_CLIENT_ID}
-      autoLoad={false}
-      callback={handleResponse}
-      fields="name,email,picture"
-      cssClass={`${classStyle}`}
-      redirectUri='http://localhost:3000/login'
-    />
+    <div className={`${classStyle} flex flex-row`} onClick={handleFacebookAuth}>
+      <FaFacebookF  className="mr-2"/>
+      <button>Sign In With Facebook</button>
+    </div>
   );
 };
 
