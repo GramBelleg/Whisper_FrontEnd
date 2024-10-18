@@ -1,0 +1,11 @@
+
+.single-chat-messages-list {
+    width: 85%;
+    height: 100%;
+    margin: 0 auto; /* centers the div horizontally */
+    display: flex;
+    overflow-y: auto;
+    flex-grow: 1;
+    gap: 1rem;
+    flex-direction: column-reverse;
+}
