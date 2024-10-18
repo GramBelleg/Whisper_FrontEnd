@@ -197,8 +197,8 @@ export const messagesForUser  = [
         expiresAfter: 5,
         parentMessageId: null,
         sender: 1,
-        time:'12:50',
-        state:"delivered"
+        time:'12:52',
+        state:"sent"
     },
     {
         content: "I plan to go to Norway, Tom said that you can tell about interesting places. I am very interested in the city of Stavanger. Have you been to this city?",
@@ -209,7 +209,7 @@ export const messagesForUser  = [
         expiresAfter: 5,
         parentMessageId: null,
         sender: 2,
-        time : '12:51',
-        state: 'read'
+        time : '12:50',
+        state: 'nothing'
     }
 ]
