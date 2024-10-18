@@ -5,6 +5,7 @@ import { faEllipsisV, faMicrophone, faMicrophoneAlt, faPaperclip, faPhone, faSea
 import SingleChatMessaging from '../SingleChatMessaging/SingleChatMessaging'
 import { messageTypes } from '../../services/sendTypeEnum';
 import useFetch from "../../services/useFetch"
+import SingleChatMessagesList from '../SingleChatMessagesList/SingleChatMessagesList'
 
 const SingleChatSection = ({ selectedUser }) => {
     const [isTyping, setIsTyping] = useState(false);
@@ -46,31 +47,7 @@ const SingleChatSection = ({ selectedUser }) => {
                 </div>
             </div>
             <div className='messages'>
-
-                {/*
-                <div className='message sender shadow'>
-                    <div className='message-text'>
-                        I plan to go to Norway, Tom said that you can tell about interesting places. I am very interested in the city of
-                        Stavanger. Have you been to this city?
-                    </div>
-                    <div className='message-info'>
-                        <span className='time'>12:51</span>
-                        <span className='message-status'>
-                            <SentTicks width='12px' />
-                        </span>
-                    </div>
-                </div>
-
-                <div className='message receiver shadow'>
-                    <div className='message-text'>
-                        I plan to go to Norway, Tom said that you can tell about interesting places. I am very interested in the city of
-                        Stavanger. Have you been to this city?
-                    </div>
-                    <div className='message-info'>
-                        <span className='time'>12:51</span>
-                    </div>
-                </div>
-                */}
+                <SingleChatMessagesList user={selectedUser}/>
             </div>
 
             <div className='w-full flex items-center justify-center'>
