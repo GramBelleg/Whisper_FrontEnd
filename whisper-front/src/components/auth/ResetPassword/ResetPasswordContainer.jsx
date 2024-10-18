@@ -1,11 +1,11 @@
 import React from "react";
-import { signupSchema as resetSchema } from "../../../utils/SignupSchema";
+import { resetSchema } from "../../../utils/resetSchema";
 import { useFormik } from "formik";
 import useAuth from '../../../hooks/useAuth';
 import { useNavigate } from "react-router-dom";
 import ResetPassword from "./ResetPassword";
 
-const ResetPasswordContainer = () => {
+const ResetPasswordContainer = ({email,handleClose}) => {
   const navigate = useNavigate();
 
   const {handleReset,loading,error}=useAuth();
@@ -14,7 +14,10 @@ const ResetPasswordContainer = () => {
     //post request by axios
     console.log("debugging")
     console.log(values)
-    handleReset({email: values.email,password:values.password,confirmPassword:values.confirmPassword});
+    handleReset({email: email,
+      password:values.password,
+      confirmPassword:values.confirmPassword,
+      resetCode:values.resetCode});
     actions.resetForm();
     if(!error){
         alert("Password reset successfully")
@@ -27,8 +30,9 @@ const ResetPasswordContainer = () => {
       email: "",
       password: "",
       confirmPassword: "",
+      resetCode: "",
     },
-    validationSchema: resetSchema.omit(["phoneNumber","captcha"]),
+    validationSchema: resetSchema,
     onSubmit,
   });
   return (
@@ -42,6 +46,7 @@ const ResetPasswordContainer = () => {
       isSubmitting={formik.isSubmitting}
       loading={loading}
       error={error}
+      handleClose={handleClose}
     />
   );
 };

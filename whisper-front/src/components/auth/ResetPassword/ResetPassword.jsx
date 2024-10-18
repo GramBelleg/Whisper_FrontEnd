@@ -10,10 +10,11 @@ const ResetPassword = ({
   touched,
   isSubmitting,
   loading,
-  error
+  error,
+  handleClose
 }) => {
   const inputFields = [
-    { type: "email", id: "email", placeholder: "Email" },
+    { type: "text", id: "resetCode", placeholder: "Reset Code" },
     { type: "password", id: "password", placeholder: "Password" },
     {
       type: "password",
@@ -24,10 +25,18 @@ const ResetPassword = ({
 
   return (
     <div className="min-h-screen flex justify-center items-center bg-dark">
+      
       <div className="form-container w-full max-w-md p-8 bg-light rounded-lg shadow-md">
+        <button
+              onClick={handleClose}
+              className="text-xl text-gray-500 hover:text-gray-700 focus:outline-none"
+        >
+              &times; 
+        </button>
         <h1 className="text-primary text-2xl font-bold mb-6 text-center">
           Reset Password
         </h1>
+        
         <form onSubmit={handleSubmit} className="space-y-4">
           {inputFields.map((field) => (
             <CustomInput

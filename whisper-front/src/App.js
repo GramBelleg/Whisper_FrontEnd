@@ -10,7 +10,6 @@ import ForgotPassword from "./pages/ForgotPassword";
 import SignupPage from "./pages/SignupPage";
 import useAuth from "./hooks/useAuth";
 import EmailVerification from "./pages/EmailVerification";
-import ResetPasswordPage from "./pages/ResetPasswordPage";
 
 function App() {
   const { user } = useAuth();
@@ -43,7 +42,6 @@ function App() {
             <Route path="/login" element={<LoginPage />} />
             <Route path="/signup" element={<SignupPage />} />
             <Route path="/forgot-password" element={<ForgotPassword />} />
-            <Route path="/reset-password" element={<ResetPasswordPage />}/>
             <Route path="/*" element={<Navigate to="/signup" />} />
           </>
         )}
