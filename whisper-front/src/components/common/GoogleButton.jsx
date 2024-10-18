@@ -1,23 +1,15 @@
 import { useGoogleLogin} from "@react-oauth/google";
 import { FaGoogle } from "react-icons/fa";
-import { googleAuthRoute } from "../../utils/APIRoutes";
-import axios from "axios";
 import CustomButton from "./CustomButton";
+import useAuth from "../../hooks/useAuth";
 
 const GoogleButton = ({ classStyle }) => {
+  const {handleGoogleSignUp,loading,error}=useAuth();
+
   const handleGoogleAuth = useGoogleLogin({
     flow: "auth-code",
     onSuccess: async (codeResponse) => {
-      try {
-        console.log(codeResponse);
-        // Send the authorization code to the backend
-        const res = await axios.post(googleAuthRoute, {
-          code: codeResponse.code,
-        });
-        console.log("Server response:", res.data);
-      } catch (error) {
-        console.error("Error exchanging code:", error);
-      }
+      await handleGoogleSignUp(codeResponse);
     },
   });
   return (

@@ -1,3 +1,5 @@
+import axios from 'axios';
+import { googleAuthRoute } from '../utils/APIRoutes';
 import axiosInstance from './axiosInstance';
 
 export const signUp = async (userData) => {
@@ -7,6 +9,17 @@ export const signUp = async (userData) => {
     return response.data;
   } catch (error) {
     throw new Error('Sign-up failed');
+  }
+};
+
+export const googleSignUp = async (codeResponse) => {
+  try {
+    const res = await axios.post(googleAuthRoute, {
+      code: codeResponse.code,
+    });
+    return res.data;
+  } catch (error) {
+    console.error("Error exchanging code:", error);
   }
 };
 

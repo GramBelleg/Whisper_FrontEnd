@@ -6,6 +6,7 @@ import {
   verify,
   resetPassword,
   setAuthData,
+  googleSignUp,
 } from '../services/authService';
 import { loadAuthData } from '../services/tokenService';
 
@@ -34,6 +35,21 @@ export const AuthProvider = ({ children }) => {
       const data = await signUp(userData);    
       setUser(data);                          
       setAuthData(data, data.token);  
+    } catch (err) {
+      setError(err.message);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleGoogleSignUp = async (userData) => {
+    setLoading(true);
+    setError(null); 
+    try {
+      const data = await googleSignUp(userData);  
+      setUser(data.user);      
+      setToken(data.userToken);                    
+      setAuthData(data.user, data.userToken);  
     } catch (err) {
       setError(err.message);
     } finally {
@@ -109,6 +125,7 @@ export const AuthProvider = ({ children }) => {
       loading,
       error,
       handleSignUp,
+      handleGoogleSignUp,
       handleLogin,
       handleForgotPassword,
       handleVerify,

@@ -12,13 +12,13 @@ import useAuth from "./hooks/useAuth";
 import EmailVerification from "./pages/EmailVerification";
 
 function App() {
-  const { user } = useAuth();
-  console.log(user);
+  const { user,token } = useAuth();
+
   return (
     <Router>
       <Routes>
         {user ? (
-          user.isVerified ? (
+          token ? (
             user.role !== "admin" ? (
               <>
                 <Route path="/" element={<div>home</div>} /> 
