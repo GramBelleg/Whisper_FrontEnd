@@ -2,11 +2,10 @@ import { useEffect, useState } from 'react'
 import './SingleChatSection.css'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faEllipsisV, faMicrophone, faMicrophoneAlt, faPaperclip, faPhone, faSearch, faSmile, faPaperPlane } from '@fortawesome/free-solid-svg-icons'
-import CustomEmojisPicker from '../CustomEmojisPicker/CustomEmojisPicker'
 import SingleChatMessaging from '../SingleChatMessaging/SingleChatMessaging'
+import { messageTypes } from '../../services/sendTypeEnum'
 
 const SingleChatSection = ({ selectedUser }) => {
-    const [newMessage, setNewMessage] = useState('')
     const [isTyping, setIsTyping] = useState(false);
     const [userDetails, setUserDetails] = useState({
         id: 1,
@@ -14,11 +13,18 @@ const SingleChatSection = ({ selectedUser }) => {
         last_seen_at: '10:00:50'
     })
 
-    const handleEmojiClick = (emojiObject) => {
+    /*const handleEmojiClick = (emojiObject) => {
         setNewMessage((prevMessage) => prevMessage + emojiObject.emoji)
-    }
+    }*/
 
     
+    const sendMessage = (type, message) => {
+
+        if(type === messageTypes.TEXT) {
+            // Todo: do the call
+            console.log("call ", message);
+        }
+    }
 
     const updateIconSend = (isTyping) => {
         setIsTyping(isTyping);
@@ -80,11 +86,8 @@ const SingleChatSection = ({ selectedUser }) => {
             <div className='w-full flex items-center justify-center'>
                 <div className='chat-actions-container'>
                     <div className='input-container shadow'>
-                        <div className='emojis-container'>
-                            <CustomEmojisPicker handleEmojiClick={handleEmojiClick} />
-                        </div>
-                        <div className="message-input">
-                            <SingleChatMessaging updateIconSend={updateIconSend}/>
+                        <div className="textmessage-emoji-container">
+                            <SingleChatMessaging updateIconSend={updateIconSend} sendMessage={sendMessage}/>
                         </div>
                         <div className='attachements-container'>
                             <FontAwesomeIcon icon={faPaperclip} />
