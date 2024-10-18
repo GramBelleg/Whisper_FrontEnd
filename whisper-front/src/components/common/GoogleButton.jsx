@@ -1,20 +1,17 @@
-import {
-  GoogleOAuthProvider,
-  GoogleLogin,
-  useGoogleLogin,
-} from "@react-oauth/google";
+import { useGoogleLogin} from "@react-oauth/google";
 import { FaGoogle } from "react-icons/fa";
-import CustomButton from "./CustomButton";
+import { googleAuthRoute } from "../../utils/APIRoutes";
 import axios from "axios";
+import CustomButton from "./CustomButton";
 
 const GoogleButton = ({ classStyle }) => {
-  const login = useGoogleLogin({
+  const handleGoogleAuth = useGoogleLogin({
     flow: "auth-code",
     onSuccess: async (codeResponse) => {
       try {
         console.log(codeResponse);
         // Send the authorization code to the backend
-        const res = await axios.post("http://localhost:5000/api/auth/google", {
+        const res = await axios.post(googleAuthRoute, {
           code: codeResponse.code,
         });
         console.log("Server response:", res.data);
@@ -24,10 +21,12 @@ const GoogleButton = ({ classStyle }) => {
     },
   });
   return (
-    <div className={`${classStyle}`} onClick={() => login()}>
-      <FaGoogle className="mr-2" />
-      <button>Sign in with Google</button>
-    </div>
+    <CustomButton
+      icon={FaGoogle}
+      label="Sign In With Google"
+      onClick={handleGoogleAuth}
+      className={`${classStyle} w-full`}
+    />
   );
 };
 

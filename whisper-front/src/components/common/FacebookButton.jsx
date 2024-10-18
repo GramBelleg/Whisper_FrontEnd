@@ -1,17 +1,20 @@
 import React from "react";
-import FacebookLogin from "react-facebook-login";
+import { facebookAuthRoute } from "../../utils/APIRoutes";
 import { FaFacebookF } from "react-icons/fa";
+import CustomButton from "./CustomButton";
 
 const FacebookButton = ({ classStyle }) => {
   const handleFacebookAuth = () => {
-    window.location.href = "http://localhost:5000/api/auth/facebook";
+    window.location.href = facebookAuthRoute;
   };
 
   return (
-    <div className={`${classStyle} flex flex-row`} onClick={handleFacebookAuth}>
-      <FaFacebookF  className="mr-2"/>
-      <button>Sign In With Facebook</button>
-    </div>
+    <CustomButton
+      icon={FaFacebookF}
+      label="Sign In With Facebook"
+      onClick={handleFacebookAuth}
+      className={`${classStyle} flex flex-row w-full`}
+    />
   );
 };
 
