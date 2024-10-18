@@ -186,3 +186,30 @@ export const userDetails = {
     last_seen_at: '10:00:50'
 };
 
+
+export const messagesForUser  = [
+    {
+        content: "Astonishing!",
+        chatId: 3,
+        type: "text",
+        forwarded: false,
+        selfDestruct: true,
+        expiresAfter: 5,
+        parentMessageId: null,
+        sender: 1,
+        time:'12:50',
+        state:"delivered"
+    },
+    {
+        content: "I plan to go to Norway, Tom said that you can tell about interesting places. I am very interested in the city of Stavanger. Have you been to this city?",
+        chatId: 3,
+        type: "text",
+        forwarded: false,
+        selfDestruct: true,
+        expiresAfter: 5,
+        parentMessageId: null,
+        sender: 2,
+        time : '12:51',
+        state: 'read'
+    }
+]
