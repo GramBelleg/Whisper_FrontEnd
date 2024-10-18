@@ -4,7 +4,8 @@ import {
   login,
   forgotPassword,
   verify,
-  setAuthData
+  resetPassword,
+  setAuthData,
 } from '../services/authService';
 import { loadAuthData } from '../services/tokenService';
 
@@ -54,6 +55,18 @@ export const AuthProvider = ({ children }) => {
       setLoading(false);
     }
   };
+  const handleReset=async (userData)=>{
+    setLoading(true);
+    setError(null);
+    try{
+      const data=await resetPassword(userData);
+      console.log(data);
+    }catch(err){
+      setError(err.message);
+    }finally{
+      setLoading(false);
+    }
+  }
 
   const handleLogin = async (credentials) => {
     setLoading(true);
@@ -99,6 +112,7 @@ export const AuthProvider = ({ children }) => {
       handleLogin,
       handleForgotPassword,
       handleVerify,
+      handleReset,
       logout
     }}>
       {children}

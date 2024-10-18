@@ -12,4 +12,6 @@ export const initializeMock = () => {
   mock.onPost('/verify').reply(201, verifyResonse);
 
   mock.onPost('/forgot-password').reply(200, forgotPasswordResponse);
+
+  mock.onPost('/reset-password').reply(200, {message:'Password reset successfully'});
 };

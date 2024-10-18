@@ -39,6 +39,16 @@ export const forgotPassword = async (email) => {
   }
 };
 
+export const resetPassword = async (userData) => {
+  try {
+    const response = await axiosInstance.post('/reset-password', userData);
+    console.log(response.data);
+    return response.data;
+  } catch (error) {
+    throw new Error('Reset password failed');
+  }
+}
+
 export const setAuthData = (user, token) => {
   localStorage.setItem('user', JSON.stringify(user));
   localStorage.setItem('token', token);
