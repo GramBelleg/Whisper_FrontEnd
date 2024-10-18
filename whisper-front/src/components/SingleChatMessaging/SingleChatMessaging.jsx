@@ -2,8 +2,11 @@
 
 import { useEffect, useMemo, useRef, useState } from "react";
 import "./SingleChatMessaging.css" 
+import { messageTypes } from "../../services/sendTypeEnum";
+import CustomEmojisPicker from '../CustomEmojisPicker/CustomEmojisPicker';
 
-const SingleChatMessaging = ({ updateIconSend }) => {
+
+const SingleChatMessaging = ({ updateIconSend, sendMessage }) => {
 
     const [currentMessage, setCurrentMessage] = useState('');
     const textareaRef = useRef(null);
@@ -11,18 +14,23 @@ const SingleChatMessaging = ({ updateIconSend }) => {
     const handleKeyPress = (e) => {
         if (e.key === 'Enter' && !e.shiftKey) {
             e.preventDefault();  // Prevents new line from being added
-            sendMessage();
+            mySendMessage();
         }
 
     }
 
-    const sendMessage = () => {
+    const handleEmojiClick = (emojiObject) => {
+        setCurrentMessage((prevMessage) => prevMessage + emojiObject.emoji)
+    }
+
+    const mySendMessage = () => {
         
         if (currentMessage.trim()) {
             console.log("Message sent:", currentMessage);
             setCurrentMessage('');  // Clear message input after sending
             updateIconSend(false);  // Reset typing icon state
             textareaRef.current.style.height = 'auto'; // Reset height to auto first
+            sendMessage(messageTypes.TEXT,  currentMessage);
         }
     }
 
@@ -31,11 +39,10 @@ const SingleChatMessaging = ({ updateIconSend }) => {
             updateIconSend(true);
         }
         else {
-            
-            
             updateIconSend(false);
         }
     }, [currentMessage])
+
 
     const updateNewMessage = (event) => {
         const value = event.target.value;
@@ -51,16 +58,21 @@ const SingleChatMessaging = ({ updateIconSend }) => {
     }
 
     return ( 
-        <textarea
-            type='text'
-            ref={textareaRef}
-            value={currentMessage}
-            onInput={updateNewMessage}
-            onKeyDown={handleKeyPress}
-            className='message-input'
-            placeholder='Message Here'
-            rows={1} // Set to 1 to ensure it's minimized when empty
-        />
+        <>
+            <div className='emojis-container'>
+                <CustomEmojisPicker handleEmojiClick={handleEmojiClick} />
+            </div>
+            <textarea
+                type='text'
+                ref={textareaRef}
+                value={currentMessage}
+                onInput={updateNewMessage}
+                onKeyDown={handleKeyPress}
+                className='message-input'
+                placeholder='Message Here'
+                rows={1} 
+            />
+        </>
     );
 }
  
