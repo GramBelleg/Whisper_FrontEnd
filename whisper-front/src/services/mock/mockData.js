@@ -177,3 +177,12 @@ export const storiesData = [
     {userId: 9, user:"fatma", profilePicture: profilePicture, seen: false, date: "1/2/2022", content: "hello from fatma"},
     {userId: 10, user:"hana", profilePicture: profilePicture, seen: true, date: "1/2/2022", content: "hello from hana"},
 ]; 
+
+
+export const userDetails = {
+    id: 1,
+    name: 'John Doe',
+    profile_pic: './assets/images/Grambell.png',
+    last_seen_at: '10:00:50'
+};
+
