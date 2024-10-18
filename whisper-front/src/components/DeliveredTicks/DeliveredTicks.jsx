@@ -2,9 +2,9 @@
 // It displays the single tick to be use by chats
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faCheckDouble } from "@fortawesome/free-solid-svg-icons";
-import "./DeliveredTicks.css"
+import "./DeliveredTicks.css";
 
-const SentTicks = () => {
+const DeliveredTicks = () => {
     return ( 
         <div className="delivered-ticks">
             <FontAwesomeIcon icon={faCheckDouble} className="delivered-icon"/>
@@ -12,4 +12,4 @@ const SentTicks = () => {
     );
 }
 
-export default SentTicks
+export default DeliveredTicks;
