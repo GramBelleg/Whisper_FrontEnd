@@ -1,14 +1,15 @@
 
+import { useState } from "react";
 import useFetch from "../../services/useFetch";
 import ChattingTextMessage from "../ChattingTextMessage/ChattingTextMessage";
 import "./SingleChatMessagesList.css"
 
 
-const SingleChatMessagesList = ({ user }) => {
+const SingleChatMessagesList = ({ user, messages }) => {
 
-
+    
     // TODO: the user should have the name of the other side I am contacting
-    const {data: messages, loading, error} = useFetch('/userMessages');
+    
 
     return ( 
         <div className="single-chat-messages-list">
