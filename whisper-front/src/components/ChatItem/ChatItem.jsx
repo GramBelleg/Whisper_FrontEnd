@@ -18,6 +18,7 @@ import Info from "../Info/Info";
 
 import "./ChatItem.css";
 import { whoAmI } from "../../services/chatservice/chatParams";
+import PendingSend from "../PendingSend/PendingSend";
 
 
 const ChatItem = ({ index, standaloneChat }) => {
@@ -124,6 +125,10 @@ const ChatItem = ({ index, standaloneChat }) => {
                                         || 
                                         myChat.message_state ==  2 && (
                                             <ReadTicks/>
+                                        )
+                                        || 
+                                        myChat.message_state ==  4 && (
+                                            <PendingSend/>
                                         )
                                         
                                     } 
