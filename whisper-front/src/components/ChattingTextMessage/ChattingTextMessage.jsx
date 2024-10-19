@@ -25,7 +25,7 @@ const ChattingTextMessage = ({ key, message }) => {
     return ( 
         <>
             <div key={key} className={`message ${myMessage.sender === 1 ? 'sender shadow' : 'reciever shadow'}`}>
-                <div className="message-text">
+                <div className="message-text" style={{ whiteSpace: 'pre-line' }}>
                     {myMessage.content}
                 </div>  
                 <div className="message-info">
