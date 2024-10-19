@@ -1,8 +1,9 @@
+import React from 'react';
 import { Link } from "react-router-dom";
 import CustomInput from "../../common/CustomInput";
 import CustomButton from "../../common/CustomButton";
 
-const ForgotPassword = ({ email, loading, handleChange, handleSubmit, error }) => {
+const ForgotPassword = ({ email, loading, handleChange, handleSubmit, error, canResend, handleResend, timer }) => {
   return (
     <div className="flex flex-col justify-center items-center min-h-screen px-4">
       <div className="w-full max-w-md mx-auto flex flex-col items-center justify-between h-[300px] p-4 bg-white rounded-lg shadow-md">
@@ -24,20 +25,24 @@ const ForgotPassword = ({ email, loading, handleChange, handleSubmit, error }) =
         <CustomButton
           label="Send Reset Email"
           onClick={handleSubmit}
-          disabled={loading}
+          disabled={loading || !canResend}
           className="w-4/5 bg-primary text-white py-2 rounded-lg hover:bg-dark transition duration-300"
         />
+
+        {!canResend && timer > 0 && (
+          <p className="text-sm text-gray-500 mt-2">
+            Resend code in {timer} seconds
+          </p>
+        )}
         <Link to="/login" className="text-primary underline mt-4">
           Back to login
         </Link>
-        {
-        error &&  
-        <span className="text-red-600 text-sm mt-1">
-        {error}
-        </span>
-        }
-     
-      </div> 
+        {error && (
+          <span className="text-red-600 text-sm mt-1">
+            {error}
+          </span>
+        )}
+      </div>
     </div>
   );
 };
