@@ -2,7 +2,7 @@ import { Link } from "react-router-dom";
 import CustomInput from "../../common/CustomInput";
 import CustomButton from "../../common/CustomButton";
 
-const ForgotPassword = ({ email, loading, handleChange, handleSubmit }) => {
+const ForgotPassword = ({ email, loading, handleChange, handleSubmit, error }) => {
   return (
     <div className="flex flex-col justify-center items-center min-h-screen px-4">
       <div className="w-full max-w-md mx-auto flex flex-col items-center justify-between h-[300px] p-4 bg-white rounded-lg shadow-md">
@@ -30,7 +30,14 @@ const ForgotPassword = ({ email, loading, handleChange, handleSubmit }) => {
         <Link to="/login" className="text-primary underline mt-4">
           Back to login
         </Link>
-      </div>
+        {
+        error &&  
+        <span className="text-red-600 text-sm mt-1">
+        {error}
+        </span>
+        }
+     
+      </div> 
     </div>
   );
 };

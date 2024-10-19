@@ -38,9 +38,11 @@ export const AuthProvider = ({ children }) => {
       console.log("user data",data);  
       setUser(data.userData);                          
       setAuthData(data.userData, data.userToken);  
+      return {data: data, success: true};
     } catch (err) {
       console.log("error in auth",err.message);
       setError(err.message);
+      return { error: err, success: false };
     } finally {
       setLoading(false);
     }
@@ -69,8 +71,10 @@ export const AuthProvider = ({ children }) => {
       setToken(data.token);
       setUser(data);                          
       setAuthData(data, data.token);  
+      return {data: data, success: true};
     } catch (err) {
       setError(err.message);
+      return { error: err, success: false };
     } finally {
       setLoading(false);
     }
@@ -81,8 +85,10 @@ export const AuthProvider = ({ children }) => {
     try{
       const data=await resetPassword(userData);
       console.log(data);
+      return {data: data, success: true};
     }catch(err){
       setError(err.message);
+      return { error: err, success: false };
     }finally{
       setLoading(false);
     }
@@ -96,8 +102,11 @@ export const AuthProvider = ({ children }) => {
       setToken(data.userToken);
       setUser(data.user);                          
       setAuthData(data.user, data.token);  
+      return {data: data, success: true};
     } catch (err) {
+      console.log(err)
       setError(err.message);
+      return { error: err, success: false };
     } finally {
       setLoading(false);
     }
@@ -107,9 +116,12 @@ export const AuthProvider = ({ children }) => {
     setLoading(true);
     setError(null); 
     try {
-      await forgotPassword(email);
+      const data=await forgotPassword(email);
+      return {data: data, success: true};
+
     } catch (err) {
       setError(err.message);
+      return { error: err, success: false };
     } finally {
       setLoading(false);
     }
@@ -120,6 +132,10 @@ export const AuthProvider = ({ children }) => {
     setToken(null);
     localStorage.removeItem('token');
     localStorage.removeItem('user');
+  };
+
+  const clearError = () => {
+    setError(null);
   };
 
   return (
@@ -134,7 +150,8 @@ export const AuthProvider = ({ children }) => {
       handleForgotPassword,
       handleVerify,
       handleReset,
-      logout
+      logout,
+      clearError
     }}>
       {children}
     </AuthContext.Provider>

@@ -4,12 +4,13 @@ import { useFormik } from "formik";
 import SignupForm from "./SignupForm";
 import useAuth from '../../../hooks/useAuth';
 import { useNavigate } from "react-router-dom";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { parsePhoneNumberFromString } from "libphonenumber-js";
 
 const SignupContainer = () => {
   const navigate = useNavigate();
   const [country,setCountry]=useState("EG");
+  const {handleSignUp,loading,error,clearError}=useAuth();
 
   const formatPhoneNumber = (phone) => {
     const phoneNumber = parsePhoneNumberFromString(phone, country); 
@@ -20,12 +21,15 @@ const SignupContainer = () => {
     formik.setFieldValue("captcha", value);
   };
 
-  const {handleSignUp,loading,error}=useAuth();
+
+  useEffect(() => {
+        clearError(); 
+    }, []);
 
   const onSubmit = async (values, actions) => {
     //post request by axios
     console.log(values)
-    handleSignUp({
+    const res=await handleSignUp({
       email: values.email,
       password:values.password,
       phoneNumber:formatPhoneNumber(values.phoneNumber),
@@ -34,7 +38,7 @@ const SignupContainer = () => {
       name: "dummyHANA"
 
     });
-    if(!error){
+    if(res.success){
         navigate('/email-verification');
     }
 

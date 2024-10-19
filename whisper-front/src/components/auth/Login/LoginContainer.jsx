@@ -3,17 +3,22 @@ import LoginForm from "./LoginForm";
 import {useFormik} from "formik";
 import useAuth from '../../../hooks/useAuth';
 import { useNavigate } from "react-router-dom";
+import { useEffect } from "react";
 
    
 const LoginContainer = () => {
 
-    const {handleLogin,loading,error}=useAuth();
+    const {handleLogin,loading,error,clearError}=useAuth();
     const navigate = useNavigate();
 
+    useEffect(() => {
+        clearError(); 
+    }, []);
+
     const onSubmit =async (values,actions) => {
-        handleLogin(values);
+        const res=await handleLogin(values);
         actions.resetForm();
-        if (!error) {
+        if (res.success) {
             navigate('/chats');
         }
     

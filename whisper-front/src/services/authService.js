@@ -30,7 +30,7 @@ export const verify = async (code) => {
     console.log(response.data);
     return response.data;
   } catch (error) {
-    throw new Error('Verify failed');
+    throw new Error(error.response?.data?.message || "An error occurred");
   }
 };
 
@@ -41,7 +41,7 @@ export const login = async (credentials) => {
     return response.data;
   } catch (error) {
     console.log("login error", error);
-    throw new Error('Login failed');
+    throw new Error(error.response?.data?.message || "An error occurred");
   }
 };
 
@@ -53,7 +53,7 @@ export const forgotPassword = async (email) => {
     console.log(response.data);
     return response.data;
   } catch (error) {
-    throw new Error('Forgot password failed');
+    throw new Error(error.response?.data?.message || "An error occurred");
   }
 };
 
@@ -63,7 +63,7 @@ export const resetPassword = async (userData) => {
     console.log(response.data);
     return response.data;
   } catch (error) {
-    throw new Error('Reset password failed');
+    throw new Error(error.response?.data?.message || "An error occurred");
   }
 };
 

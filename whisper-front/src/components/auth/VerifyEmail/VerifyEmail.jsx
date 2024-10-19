@@ -2,7 +2,7 @@ import React from 'react'
 import CustomInput from "../../common/CustomInput";
 import CustomButton from "../../common/CustomButton";
 
-const VerifyEmail = ({ code, loading, handleChange, handleSubmit,resendCode }) => {
+const VerifyEmail = ({ code, loading, handleChange, handleSubmit, error, resendCode }) => {
   return (
     <div className="flex flex-col justify-center items-center min-h-screen p-4">
       <div className="w-full max-w-md mx-auto flex flex-col items-center justify-between h-[300px] p-4 bg-white rounded-lg shadow-md">
@@ -30,6 +30,12 @@ const VerifyEmail = ({ code, loading, handleChange, handleSubmit,resendCode }) =
             onChange={handleChange}
           />
         </div>
+        {
+        error &&  
+        <span className="text-red-600 text-sm mt-1">
+        {error}
+        </span>
+        }
         <CustomButton
           label="Verify"
           onClick={handleSubmit}

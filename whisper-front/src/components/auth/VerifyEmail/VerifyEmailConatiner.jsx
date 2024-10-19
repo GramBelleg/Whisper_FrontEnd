@@ -7,7 +7,7 @@ const VerifyEmailConatiner = () => {
     const {handleVerify,loading,error}=useAuth();
 
     const handleSubmit = async () => {
-        handleVerify(code);
+        await handleVerify(code);
         setCode('');
     };
     const handleChange = (e) => {
@@ -23,6 +23,7 @@ const VerifyEmailConatiner = () => {
          loading={loading}
          handleChange={handleChange}
          handleSubmit={handleSubmit} 
+         error={error}
          resendCode={resendCode}/>
         
      );
