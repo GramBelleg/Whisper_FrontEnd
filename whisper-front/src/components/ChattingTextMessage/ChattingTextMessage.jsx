@@ -4,10 +4,11 @@ import SentTicks from "../SentTicks/SentTicks";
 import DeliveredTicks from "../DeliveredTicks/DeliveredTicks";
 import ReadTicks from "../ReadTicks/ReadTicks";
 import { mapMessageState } from "../../services/chatservice/mapMessageState";
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import PendingSend from "../PendingSend/PendingSend";
+import AudioVoiceMessage from "../AudioVoiceMessage/AudioVoiceMessage";
 
-const ChattingTextMessage = ({ key, message }) => {
+const ChattingTextMessage = ({ message }) => {
 
     const [myMessage, setMyMessage] = useState({});
 
@@ -19,15 +20,25 @@ const ChattingTextMessage = ({ key, message }) => {
                 state: mapMessageState(message.state),
             })
         )
-        console.log(myMessage)
     }, [message])
+
+    const renderMessageContent = useMemo(() => {
+        switch (myMessage.type) {
+          case 'text':
+            return <div className="message-text">{myMessage.content}</div>;
+          case 'audio':
+            return <AudioVoiceMessage audioUrl={myMessage.content} />; // Pass the audio URL to your AudioMessage component
+          case 'image':
+            return <img src={myMessage.content} alt="message" className="message-image" />;
+          default:
+            return null; // Handle unknown message types
+        }
+      },[myMessage]);
     
     return ( 
         <>
-            <div key={key} className={`message ${myMessage.sender === 1 ? 'sender shadow' : 'reciever shadow'}`}>
-                <div className="message-text">
-                    {myMessage.content}
-                </div>  
+            <div className={`message shadow ${myMessage.sender === 1 ? 'sender ' : 'reciever'}`}>
+                {renderMessageContent} 
                 <div className="message-info">
                     <span className="time">
                         {myMessage.time}
