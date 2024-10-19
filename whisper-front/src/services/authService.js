@@ -9,7 +9,7 @@ export const signUp = async (userData) => {
     return response.data;
   } catch (error) {
     console.log(error);
-    throw new Error('Sign-up failed');
+    throw new Error('Sign-up failed'+error.response.data.message);
   }
 };
 

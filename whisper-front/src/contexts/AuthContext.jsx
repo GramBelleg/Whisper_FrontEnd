@@ -34,9 +34,10 @@ export const AuthProvider = ({ children }) => {
     setError(null); 
     try {
       console.log("signUp will get called")
-      const data = await signUp(userData);    
-      setUser(data);                          
-      setAuthData(data, data.token);  
+      const data = await signUp(userData);  
+      console.log("user data",data);  
+      setUser(data.userData);                          
+      setAuthData(data.userData, data.userToken);  
     } catch (err) {
       console.log("error in auth",err.message);
       setError(err.message);
@@ -92,9 +93,9 @@ export const AuthProvider = ({ children }) => {
     setError(null); 
     try {
       const data = await login(credentials);  
-      setToken(data.token);
-      setUser(data);                          
-      setAuthData(data, data.token);  
+      setToken(data.userToken);
+      setUser(data.user);                          
+      setAuthData(data.user, data.token);  
     } catch (err) {
       setError(err.message);
     } finally {

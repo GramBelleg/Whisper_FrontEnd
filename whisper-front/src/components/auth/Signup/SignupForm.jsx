@@ -12,6 +12,7 @@ const SignupForm = ({
   handleSubmit,
   handleBlur,
   values,
+  handleCountryChange,
   errors,
   touched,
   isSubmitting,
@@ -53,6 +54,9 @@ const SignupForm = ({
             value={values.phoneNumber}
             onChange={(phone) => {
               handleChange({ target: { name: "phoneNumber", value: phone } });
+            }}
+            onCountryChange={(country) => {
+              handleCountryChange(country); 
             }}
             placeholder="Phone Number"
             inputClass="phone-input" 
