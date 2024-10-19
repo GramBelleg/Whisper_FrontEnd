@@ -44,6 +44,8 @@ const SignupContainer = () => {
   const formik = useFormik({
     initialValues: {
       email: "",
+      name: "",
+      userName:"",
       password: "",
       confirmPassword: "",
       phoneNumber: "",
