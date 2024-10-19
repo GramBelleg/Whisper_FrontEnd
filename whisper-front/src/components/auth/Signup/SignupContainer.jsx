@@ -12,7 +12,9 @@ const SignupContainer = () => {
   const handleCaptchaChange = (value) => {
     formik.setFieldValue("captcha", value);
   };
+  
   const {handleSignUp,loading,error}=useAuth();
+
   const onSubmit = async (values, actions) => {
     //post request by axios
     console.log(values)

@@ -29,13 +29,16 @@ export const AuthProvider = ({ children }) => {
   }, []);
 
   const handleSignUp = async (userData) => {
+    console.log(userData,"handle sign up")
     setLoading(true);
     setError(null); 
     try {
+      console.log("signUp will get called")
       const data = await signUp(userData);    
       setUser(data);                          
       setAuthData(data, data.token);  
     } catch (err) {
+      console.log("error in auth",err.message);
       setError(err.message);
     } finally {
       setLoading(false);

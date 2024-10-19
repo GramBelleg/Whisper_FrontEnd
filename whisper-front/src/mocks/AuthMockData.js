@@ -1,23 +1,28 @@
-export const signupResponse={
-    "status": "success",
-    "message": "unverified user",
-    "isVerified":false,
-    "role":"user"
-}
-export const verifyResonse={
-    "status": "success",
-    "message": "created user",
-    "token": "fake-token",
-    "isVerified":true,
-    "role":"user"
+export const signupResponse = {
+    status: "success",
+    userData: {
+      name: "Omar Mohammed",
+      email: "hanamostafa@gmail.com",
+    },
+  };
+export const verifyResponse={
+    status: "success",
+    message: "created user",
 }
 export const loginResponse={
-    "status": "success",
-    "message": "User logged in successfully",
-    "token": "fake-token",
-    "email": "fake@gmail.com",
-    "isVerified":true
+    status: "success",
+    user: {
+      name: "Omar Mohammed",
+      email: "hanamostafa@gmail.com",
+    },
+    userToken: "fake-token-JWT1234"
 }
 export const forgotPasswordResponse={
-    "message": "If the email exists in our system, a password reset link has been sent to it."
+    status: "success",
+    message: "If the email exists in our system, a password reset link has been sent to it."
 }
+export const resetPasswordResponse={
+    status: "success",
+    message: "Reset Password successfully"
+}
+

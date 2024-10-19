@@ -1,17 +1,24 @@
 import axiosInstance from '../services/axiosInstance';
 import MockAdapter from 'axios-mock-adapter';
-import {signupResponse,loginResponse,forgotPasswordResponse, verifyResonse} from './AuthMockData'
+import {
+  signupResponse,
+  loginResponse,
+  forgotPasswordResponse,
+  verifyResponse,
+  resetPasswordResponse,
+} from './AuthMockData';
+import authRoutes from '../utils/APIRoutes';
 
 export const initializeMock = () => {
   const mock = new MockAdapter(axiosInstance);
 
-  mock.onPost('/login').reply(200, loginResponse);
+  mock.onPost(authRoutes.login).reply(200, loginResponse);
 
-  mock.onPost('/signup').reply(201, signupResponse);
+  mock.onPost(authRoutes.signup).reply(201, signupResponse);
 
-  mock.onPost('/verify').reply(201, verifyResonse);
+  mock.onPost(authRoutes.confirmEmail).reply(201, verifyResponse);
 
-  mock.onPost('/forgot-password').reply(200, forgotPasswordResponse);
+  mock.onPost(authRoutes.sendResetCode).reply(200, forgotPasswordResponse);
 
-  mock.onPost('/reset-password').reply(200, {message:'Password reset successfully'});
+  mock.onPost(authRoutes.resetPassword).reply(200, resetPasswordResponse);
 };

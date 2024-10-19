@@ -1,20 +1,21 @@
 import axios from 'axios';
-import { googleAuthRoute } from '../utils/APIRoutes';
 import axiosInstance from './axiosInstance';
+import authRoutes from '../utils/APIRoutes';
 
 export const signUp = async (userData) => {
   try {
-    const response = await axiosInstance.post('/signup', userData);
+    const response = await axiosInstance.post(authRoutes.signup, userData);
     console.log(response.data);
     return response.data;
   } catch (error) {
+    console.log(error);
     throw new Error('Sign-up failed');
   }
 };
 
 export const googleSignUp = async (codeResponse) => {
   try {
-    const res = await axios.post(googleAuthRoute, {
+    const res = await axios.post(authRoutes.googleAuth, {
       code: codeResponse.code,
     });
     return res.data;
@@ -25,26 +26,30 @@ export const googleSignUp = async (codeResponse) => {
 
 export const verify = async (code) => {
   try {
-    const response = await axiosInstance.post('/verify', code);
+    const response = await axiosInstance.post(authRoutes.confirmEmail, code);
     console.log(response.data);
     return response.data;
   } catch (error) {
-    throw new Error('verify failed');
+    throw new Error('Verify failed');
   }
 };
 
 export const login = async (credentials) => {
   try {
-    const response = await axiosInstance.post('/login', credentials);
+    const response = await axiosInstance.post(authRoutes.login, credentials);
     console.log(response.data);
     return response.data;
   } catch (error) {
+    console.log("login error", error);
     throw new Error('Login failed');
   }
 };
+
 export const forgotPassword = async (email) => {
   try {
-    const response = await axiosInstance.post('/forgot-password', { email });
+    const response = await axiosInstance.post(authRoutes.sendResetCode, {
+      email,
+    });
     console.log(response.data);
     return response.data;
   } catch (error) {
@@ -54,13 +59,13 @@ export const forgotPassword = async (email) => {
 
 export const resetPassword = async (userData) => {
   try {
-    const response = await axiosInstance.post('/reset-password', userData);
+    const response = await axiosInstance.post(authRoutes.resetPassword, userData);
     console.log(response.data);
     return response.data;
   } catch (error) {
     throw new Error('Reset password failed');
   }
-}
+};
 
 export const setAuthData = (user, token) => {
   localStorage.setItem('user', JSON.stringify(user));
@@ -71,4 +76,3 @@ export const clearAuthData = () => {
   localStorage.removeItem('user');
   localStorage.removeItem('token');
 };
-

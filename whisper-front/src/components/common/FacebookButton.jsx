@@ -1,11 +1,11 @@
 import React from "react";
-import { facebookAuthRoute } from "../../utils/APIRoutes";
+import authRoutes from "../../utils/APIRoutes";
 import { FaFacebookF } from "react-icons/fa";
 import CustomButton from "./CustomButton";
 
 const FacebookButton = ({ classStyle }) => {
   const handleFacebookAuth = () => {
-    window.location.href = facebookAuthRoute;
+    window.location.href = authRoutes.facebookAuth;
   };
 
   return (

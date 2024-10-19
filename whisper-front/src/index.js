@@ -6,6 +6,7 @@ import App from './App';
 import { GoogleOAuthProvider } from '@react-oauth/google';
 if(process.env.NODE_ENV === 'development'){
   //initialize axios mock
+  console.log("initializing mock");
   const {initializeMock} = require('./mocks/mock');
   initializeMock();
 }

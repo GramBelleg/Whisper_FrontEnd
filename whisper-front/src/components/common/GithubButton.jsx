@@ -1,10 +1,10 @@
 import { FaGithub } from "react-icons/fa";
-import { githubAuthRoute } from "../../utils/APIRoutes";
+import authRoutes from "../../utils/APIRoutes";
 import CustomButton from "./CustomButton";
 
 const GithubButton = ({ classStyle }) => {
   const handleGitAuth = () => {
-    window.location.href = githubAuthRoute;
+    window.location.href = authRoutes.githubAuth;
   };
 
   return (
