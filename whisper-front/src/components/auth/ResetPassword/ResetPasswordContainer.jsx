@@ -17,7 +17,7 @@ const ResetPasswordContainer = ({email,handleClose}) => {
     handleReset({email: email,
       password:values.password,
       confirmPassword:values.confirmPassword,
-      resetCode:values.resetCode});
+      code:values.resetCode});
     actions.resetForm();
     if(!error){
         alert("Password reset successfully")

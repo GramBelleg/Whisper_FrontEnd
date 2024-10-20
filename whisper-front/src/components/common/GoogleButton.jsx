@@ -18,6 +18,7 @@ const GoogleButton = ({ classStyle }) => {
       label="Sign In With Google"
       onClick={handleGoogleAuth}
       className={`${classStyle} w-full`}
+      disabled={loading}
     />
   );
 };

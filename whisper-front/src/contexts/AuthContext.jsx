@@ -7,6 +7,8 @@ import {
   resetPassword,
   setAuthData,
   googleSignUp,
+  facebookSignUp,
+  githubSignUp,
 } from '../services/authService';
 import { loadAuthData } from '../services/tokenService';
 
@@ -63,14 +65,44 @@ export const AuthProvider = ({ children }) => {
     }
   };
 
+  const handleFacebookSignUp = async (userData) => {
+    setLoading(true);
+    setError(null); 
+    try {
+      const data = await facebookSignUp(userData);  
+      setUser(data.user);      
+      setToken(data.userToken);                    
+      setAuthData(data.user, data.userToken);  
+    } catch (err) {
+      setError(err.message);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleGithubSignUp = async (userData) => {
+    setLoading(true);
+    setError(null); 
+    try {
+      const data = await githubSignUp(userData);  
+      setUser(data.user);      
+      setToken(data.userToken);                    
+      setAuthData(data.user, data.userToken);  
+    } catch (err) {
+      setError(err.message);
+    } finally {
+      setLoading(false);
+    }
+  };
+
   const handleVerify = async (code) => {
     setLoading(true);
     setError(null); 
     try {
-      const data = await verify(code);    
-      setToken(data.token);
+      const data = await verify(code,user.email);    
+      setToken(data.userToken);
       setUser(data);                          
-      setAuthData(data, data.token);  
+      setAuthData(data, data.userToken);  
       return {data: data, success: true};
     } catch (err) {
       setError(err.message);
@@ -146,6 +178,8 @@ export const AuthProvider = ({ children }) => {
       error,
       handleSignUp,
       handleGoogleSignUp,
+      handleFacebookSignUp,
+      handleGithubSignUp,
       handleLogin,
       handleForgotPassword,
       handleVerify,

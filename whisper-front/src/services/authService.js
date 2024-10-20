@@ -15,7 +15,7 @@ export const signUp = async (userData) => {
 
 export const googleSignUp = async (codeResponse) => {
   try {
-    const res = await axios.post(authRoutes.googleAuth, {
+    const res = await axiosInstance.post(authRoutes.googleAuth, {
       code: codeResponse.code,
     });
     return res.data;
@@ -24,9 +24,34 @@ export const googleSignUp = async (codeResponse) => {
   }
 };
 
-export const verify = async (code) => {
+export const facebookSignUp = async (codeResponse) => {
   try {
-    const response = await axiosInstance.post(authRoutes.confirmEmail, code);
+    const res = await axiosInstance.post(authRoutes.facebookAuth, {
+      token: codeResponse,
+    });
+    return res.data;
+  } catch (error) {
+    console.error("Error exchanging code:", error);
+  }
+};
+
+export const githubSignUp = async (codeResponse) => {
+  try {
+    const res = await axiosInstance.post(authRoutes.githubAuth, {
+      code: codeResponse,
+    });
+    return res.data;
+  } catch (error) {
+    console.error("Error exchanging code:", error);
+  }
+};
+
+export const verify = async (code,email) => {
+  try {
+    const response = await axiosInstance.post(authRoutes.confirmEmail, {
+      email: email, 
+      code: code,   
+  });
     console.log(response.data);
     return response.data;
   } catch (error) {

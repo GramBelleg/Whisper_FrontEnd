@@ -10,10 +10,11 @@ import ForgotPassword from "./pages/ForgotPassword";
 import SignupPage from "./pages/SignupPage";
 import useAuth from "./hooks/useAuth";
 import EmailVerification from "./pages/EmailVerification";
+import GithubCallback from "./pages/GithubCallback";
 
 function App() {
   const { user,token } = useAuth();
-
+  
   return (
     <Router>
       <Routes>
@@ -45,6 +46,7 @@ function App() {
             <Route path="/*" element={<Navigate to="/signup" />} />
           </>
         )}
+        <Route path="/github-callback" element={<GithubCallback />} />
       </Routes>
     </Router>
   );

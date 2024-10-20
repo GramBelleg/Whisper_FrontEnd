@@ -21,5 +21,9 @@ export const signupSchema = yup.object().shape({
     .max(15, "Phone number can't be longer than 15 characters"),
   captcha: yup.string().required('CAPTCHA is required'),
   name: yup.string().required("Name is required").min(8),
-  userName: yup.string().required("User name is required").min(8)
+  userName: yup
+    .string()
+    .required("User name is required")
+    .min(8, "User name must be at least 8 characters")
+    .matches(/^[a-zA-Z0-9]+$/, "User name can only contain letters and numbers"),
 });

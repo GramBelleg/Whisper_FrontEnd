@@ -1,10 +1,15 @@
-import { FaGithub } from "react-icons/fa";
-import authRoutes from "../../utils/APIRoutes";
-import CustomButton from "./CustomButton";
+import React from 'react';
+import CustomButton from './CustomButton';
+import { FaGithub } from 'react-icons/fa';
 
-const GithubButton = ({ classStyle }) => {
+const GithubButton = ({classStyle}) => {
   const handleGitAuth = () => {
-    window.location.href = authRoutes.githubAuth;
+    const clientId = process.env.REACT_APP_GITHUB_CLIENT_ID;
+    const redirectUri = 'http://localhost:3000/github-callback';
+    const scope = 'user:email';
+
+    const url = `https://github.com/login/oauth/authorize?client_id=${clientId}&redirect_uri=${encodeURIComponent(redirectUri)}&scope=${scope}`;
+    window.location.href = url;
   };
 
   return (
