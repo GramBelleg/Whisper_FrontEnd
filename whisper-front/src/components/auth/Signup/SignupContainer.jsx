@@ -34,8 +34,9 @@ const SignupContainer = () => {
       password:values.password,
       phoneNumber:formatPhoneNumber(values.phoneNumber),
       confirmPassword:values.confirmPassword,
-      userName: "dummyHaanaa",
-      name: "dummyHANA"
+      robotToken:values.captcha,
+      userName: values.userName,
+      name: values.name
 
     });
     if(res.success){

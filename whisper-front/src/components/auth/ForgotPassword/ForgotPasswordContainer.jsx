@@ -6,7 +6,7 @@ import ResetPasswordContainer from '../ResetPassword/ResetPasswordContainer';
 const ForgotPasswordContainer = () => {
     const [email, setEmail] = useState('');
     const [resetPassword, setResetPassword] = useState(false);
-    const [canResend, setCanResend] = useState(false);
+    const [canResend, setCanResend] = useState(true);
     const [timer, setTimer] = useState(60);
     const { handleForgotPassword, loading, error, clearError } = useAuth();
 
