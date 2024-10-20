@@ -8,9 +8,9 @@ import StoriesContainer from "../StoriesContainer/StoriesContainer";
 import SearchBar from "../SearchBar/SearchBar";
 import React, { useState, useEffect, useRef } from 'react';
 
-const ChatPage = () => {
+const ChatPage = ({ chatList, chooseChat }) => {
 
-    const {data: chatList, error, loading} = useFetch('/chats');
+    
     const [sidebarWidth, setSidebarWidth] = useState(100); 
     const sidebarRef = useRef(null);
     const isResizing = useRef(false);
@@ -58,19 +58,12 @@ const ChatPage = () => {
                 { true && <StoriesContainer /> }
             </div>
             <div className="sidebar__other-content">
-                {chatList &&  <ChatList chatList={chatList}/>}
+                {chatList &&  <ChatList chatList={chatList} chooseChat={chooseChat}/>}
             </div>
             <div
                 className="sidebar__resizer"
                 onMouseDown={startResizing}
             />
-        {/* </div> */}
-            {/* <div className="stories-container">
-                <h1>Stories</h1>
-            </div>
-            <div className="chat-list-container">
-                {chatList &&  <ChatList chatList={chatList}/>}
-            </div> */}
         </div>
     )
 }

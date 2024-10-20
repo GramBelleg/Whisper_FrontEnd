@@ -6,9 +6,10 @@ import { useState } from "react";
 import ChatItem from "../ChatItem/ChatItem";
 import "./ChatList.css"
 
-const ChatList = ({chatList}) => {
+const ChatList = ({ chatList, chooseChat }) => {
 
     const [hoveredIndex, setHoveredIndex] = useState(null); // Track hovered index
+
     return ( 
         <div className="chat-list">
             {
@@ -18,7 +19,7 @@ const ChatList = ({chatList}) => {
                             onMouseEnter={() => {setHoveredIndex(index)}}
                             onMouseLeave={() => setHoveredIndex(null)}
                         >
-                            <ChatItem index={index === hoveredIndex} standaloneChat={element}/>
+                            <ChatItem index={index === hoveredIndex} standaloneChat={element} chooseChat={chooseChat}/>
                         </div>
                     );  
                     
