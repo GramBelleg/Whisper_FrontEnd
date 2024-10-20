@@ -5,7 +5,7 @@
 import "./DeletedMessage.css";
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faBan } from  '@fortawesome/free-solid-svg-icons';
-import { whoAmI } from "../../services/chatservice/chatParams";
+import { whoAmI } from "../../services/chatservice/whoAmI";
 import { useEffect, useState } from "react";
 
 const DeltedMessage = ({sender}) => {
@@ -13,7 +13,7 @@ const DeltedMessage = ({sender}) => {
     const [user, setUser] = useState("You");
 
     useEffect(() => {
-        if (whoAmI === sender) {
+        if (whoAmI.name === sender) {
             setUser("You");
         }
         else {
