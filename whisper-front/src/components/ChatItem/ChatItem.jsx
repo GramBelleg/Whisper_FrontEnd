@@ -1,7 +1,6 @@
 import React, { useMemo, useState, useEffect, useRef } from "react";
 
 // Import Utility Functions
-import { isValidChat } from "../../services/chatservice/isValidChat";
 import { checkDisplayTime } from "../../services/chatservice/checkDisplayTime";
 import { handleNoUserImage } from "../../services/chatservice/addDefaultImage";
 import { mapMessageState } from "../../services/chatservice/mapMessageState";
@@ -17,20 +16,19 @@ import UnRead from "../UnRead/UnRead";
 import Info from "../Info/Info";
 
 import "./ChatItem.css";
-import { whoAmI } from "../../services/chatservice/chatParams";
+import { whoAmI } from "../../services/chatservice/whoAmI";
 import PendingSend from "../PendingSend/PendingSend";
 
 
-const ChatItem = ({ index, standaloneChat }) => {
+const ChatItem = ({ index, standaloneChat, chooseChat }) => {
 
     const maxLength = (
         
         (standaloneChat.muted) ? 33 : 
-        (standaloneChat.sender === whoAmI) ? 30 : 15
+        (standaloneChat.sender === whoAmI.name) ? 30 : 15
     )
     
     // Use memo helps validate the chat  on every render
-    const isValid = useMemo(() => isValidChat(standaloneChat), [standaloneChat]);
 
     // Track overflow of text
     const [isOverflowing, setIsOverflowing] = useState(false); 
@@ -44,19 +42,33 @@ const ChatItem = ({ index, standaloneChat }) => {
 
     // The local obhect of the chat
     const [myChat, setMyChat] = useState({
-        name: "",
-        profile_pic: "",
-        message: "",
-        message_state: 1,
-        muted: true,
-        last_seen: "",
-        unread_notifications: 3,
-        message_time:"",
-        message_type:"",
+        id: -1,
+        senderId: -1,
+        sender:'',
+        type: "",
+        unreadMessageCount: 0,
+        lastMessageId: -1,
+        lastMessage:"",
+        name:"",
+        lastSeen: "",
+        muted: false,
+        messageState:"",
+        messageTime:"",
+        messageType:"",
         tagged: false,
-        sender:"",
-        group:false
+        group: false,
+        story: false,
+        profilePic:''
     });
+
+    // Function to handle clicks and call chooseChat
+    const handleClick = (e) => {
+        // Check if the click is on the Info component
+        const infoElement = e.target.closest('.info'); // Assuming .info-component is the class for the Info component
+        if (!infoElement) {
+            chooseChat(myChat.id); // Call chooseChat if not clicking on Info
+        }
+    };
 
     // Use Effect that renders on change in the coming object
     useEffect(() => {
@@ -64,10 +76,11 @@ const ChatItem = ({ index, standaloneChat }) => {
         setMyChat((prevChat) => ({
             ...prevChat,
             ...standaloneChat,
-            message_state: mapMessageState(standaloneChat.message_state),
-            display_time: checkDisplayTime(standaloneChat.message_time),
+            messageState: mapMessageState(standaloneChat.messageState),
+            messageTime: checkDisplayTime(standaloneChat.messageTime),
             name: trimName(standaloneChat.name)
         }));
+        console.log(standaloneChat.profilePic)
 
         // Check for overflow when the name changes
         const checkOverflow = () => {
@@ -76,6 +89,7 @@ const ChatItem = ({ index, standaloneChat }) => {
                 setIsOverflowing(scrollWidth > clientWidth); // Update overflow state
             }
         };
+        console.log("chat ", myChat);
 
         checkOverflow(); // Initial check
         window.addEventListener("resize", checkOverflow); // Check on resize
@@ -86,12 +100,12 @@ const ChatItem = ({ index, standaloneChat }) => {
     }, [standaloneChat, myChat.name]); // Dependencies
 
     return ( 
-        <div className="single-chat">
-            {isValid && (
+        <div className="single-chat" onClick={handleClick}>
+            {(
                 <div className="single-chat-content">
                     <div className={`profile-pic-wrapper ${myChat.story ? 'has-story' : ''}`}>
                         <img 
-                            src={myChat.profile_pic || noUser}
+                            src={myChat.profilePic || noUser}
                             className={`profile-pic`} // Add the conditional class
                             onError={(e) => handleNoUserImage(e)}
                         />
@@ -115,34 +129,34 @@ const ChatItem = ({ index, standaloneChat }) => {
                             <div className="ticks-info">
                                 <div className="tick">
                                 {
-                                        myChat.message_state === 0  && (
+                                        myChat.messageState === 0  && (
                                             <SentTicks/>
                                         ) 
                                         || 
-                                        myChat.message_state ==  1 && (
+                                        myChat.messageState ==  1 && (
                                             <DeliveredTicks/>
                                         )
                                         || 
-                                        myChat.message_state ==  2 && (
+                                        myChat.messageState ==  2 && (
                                             <ReadTicks/>
                                         )
                                         || 
-                                        myChat.message_state ==  4 && (
+                                        myChat.messageState ==  4 && (
                                             <PendingSend/>
                                         )
                                         
                                     } 
                                 </div>
                                 <div className="message-time">
-                                    <span className={myChat.unread_notifications ? 'unread-time' : ''}>
-                                        {myChat.display_time}
+                                    <span className={myChat.unreadMessageCount ? 'unread-time' : ''}>
+                                        {myChat.messageTime}
                                     </span>
                                 </div>
                             </div>
                         </div>
                         <div className="messaging-info">
-                            <LastMessage sender={myChat.sender} messageType={myChat.message_type} message={myChat.message} index={index} messageState={myChat.message_state}/>
-                            { (myChat.unread_notifications || myChat.tagged) && <UnRead unReadMessages={myChat.unread_notifications} tag={myChat.tagged}/>}
+                            <LastMessage sender={myChat.sender} messageType={myChat.messageType} message={myChat.lastMessage} index={index} messageState={myChat.messageState}/>
+                            { (myChat.unreadMessageCount || myChat.tagged) && <UnRead unReadMessages={myChat.unreadMessageCount} tag={myChat.tagged}/>}
                             <Info index={index} group={myChat.group}/>
                         </div>
                     </div>
