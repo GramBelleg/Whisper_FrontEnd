@@ -6,6 +6,7 @@ import ReadTicks from "../ReadTicks/ReadTicks";
 import { mapMessageState } from "../../services/chatservice/mapMessageState";
 import { useEffect, useState } from "react";
 import PendingSend from "../PendingSend/PendingSend";
+import { whoAmI } from "../../services/chatservice/whoAmI";
 
 const ChattingTextMessage = ({ key, message }) => {
 
@@ -17,14 +18,14 @@ const ChattingTextMessage = ({ key, message }) => {
                 ...prevMessage,
                 ...message,
                 state: mapMessageState(message.state),
-            })
+            }),
         )
-        console.log(myMessage)
     }, [message])
-    
+
+    console.log(myMessage.state);
     return ( 
         <>
-            <div key={key} className={`message ${myMessage.sender === 1 ? 'sender shadow' : 'reciever shadow'}`}>
+            <div key={key} className={`message ${myMessage.senderId === whoAmI.id ? 'sender shadow' : 'reciever shadow'}`}>
                 <div className="message-text" style={{ whiteSpace: 'pre-line' }}>
                     {myMessage.content}
                 </div>  
@@ -33,9 +34,9 @@ const ChattingTextMessage = ({ key, message }) => {
                         {myMessage.time}
                     </span>
                     {
-                        myMessage.sender === 1 && 
+                        myMessage.senderId === whoAmI.id && 
                         <span className='message-status'>
-                        {
+                        { 
                             myMessage.state === 0  && (
                                 <SentTicks width='12px'/>
                             ) 
