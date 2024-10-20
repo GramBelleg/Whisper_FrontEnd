@@ -5,12 +5,46 @@ import '../SampleHome/SampleHome.css'
 import SingleChatSection from '../SingleChatSection/SingleChatSection'
 import "../SampleHome/SampleHome.css"
 import ButtonsBar from "../ButtonsBar/ButtonsBar";
+import useFetch from "../../services/useFetch";
+import NoChatOpened from '../NoChatOpened/NoChatOpened'
+
 
 const SampleHome = () => {
-    const [selectedUser, setSelectedUser] = useState({
-        id: 1,
-        name: 'John Doe'
-    })
+
+    const [currentSelectedChat, setCurrentSelectedChat] = useState({});
+    const [currentSelectedUser, setCurrentSelectedUser] = useState({});
+    const {data: chatList, error: errorChats, loading: loadingChats} = useFetch('/chats');
+    const {data:allUserDetailsFromBack, loading:loadingAllUsers, error: errorAllUser} = useFetch('/userDetails');
+
+    const chooseChat = (id) => {
+        if (!loadingChats) {
+            console.log(id)
+            const currentChat = chatList.filter(
+                (chat) => chat.id === id
+            )[0];
+            
+            if (currentChat) {
+                const currentUser = allUserDetailsFromBack.filter(
+                    (user) => user.userId === currentChat.othersId
+                )[0];
+                console.log("chat ",currentChat)
+                console.log("user ",currentUser)
+                if (currentUser) {
+                    
+                    // Add profile picture to currentChat
+                    currentChat.sender = currentUser.name;
+
+                    console.log("chat ",currentChat)
+                    console.log("user ",currentUser)
+                    // Set the updated currentChat and currentUser
+                    setCurrentSelectedChat(currentChat);
+                    setCurrentSelectedUser(currentUser);
+                }
+            }
+        }
+        
+    }
+
 
     return ( 
         <div className="sampleHome">
@@ -18,10 +52,14 @@ const SampleHome = () => {
                 <ButtonsBar />
             </div>
             <div className="chatpage-container">
-                <ChatPage/>
+                {!loadingChats && <ChatPage chatList={chatList} chooseChat={chooseChat}/>}
             </div>
             <div className="chatting">
-                <SingleChatSection selectedUser={selectedUser} />
+                {
+                    Object.keys(currentSelectedChat).length === 0 ?
+                    <NoChatOpened /> :
+                    !loadingAllUsers && <SingleChatSection selectedUser={currentSelectedUser}/>
+                }
             </div>
         </div>
     )
