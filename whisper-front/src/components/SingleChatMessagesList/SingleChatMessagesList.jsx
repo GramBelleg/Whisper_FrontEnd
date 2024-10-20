@@ -10,7 +10,6 @@ const SingleChatMessagesList = ({ user, messages }) => {
     
     // TODO: the user should have the name of the other side I am contacting
     
-
     return ( 
         <div className="single-chat-messages-list">
             {

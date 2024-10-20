@@ -7,38 +7,41 @@ import { messageTypes } from '../../services/sendTypeEnum';
 import useFetch from "../../services/useFetch"
 import SingleChatMessagesList from '../SingleChatMessagesList/SingleChatMessagesList';
 import usePost from '../../services/usePost';
+import { whoAmI } from '../../services/chatservice/whoAmI'
 
 
 const SingleChatSection = ({ selectedUser }) => {
     const [isTyping, setIsTyping] = useState(false);
-    const [userDetails, setUserDetails] = useState({});
     const [messageToSend, setMessageToSend] = useState(null);
     const [localMessages, setLocalMessages] = useState([]);
     
 
-    const {data:userDetailsFromBack, loading, error} = useFetch('/userDetails');
+    
     const { data: messages, loading: messagesLoading, error: messagesError} = useFetch('/userMessages');
     const { data: sentMessageData, error: sendError, loading: sendLoading } = usePost('/userMessages', messageToSend);
 
     const sendMessage = (type, message) => {
         if(type === messageTypes.TEXT) {
-        const tempMessageObject = {
-            content: message,
-            chatId: 3,
-            type: type,
-            forwarded: false,
-            selfDestruct: true,
-            expiresAfter: 5,
-            parentMessageId: null,
-            sender: 1,
-            time: new Date().toLocaleTimeString(),
-            state: "pending" // until back responds
-        }
+            const tempMessageObject = {
+                id:4,
+                chatId: localMessages.chatId,
+                senderId: whoAmI.id,
+                content: message,
+                type: "text",
+                forwarded: false,
+                selfDestruct: true,
+                expiresAfter: 5,
+                parentMessageId: null,
+                time:new Date().toLocaleTimeString(),
+                state:"pending",
+                othersId: selectedUser.userId,
+            }
             setMessageToSend(tempMessageObject);
             setLocalMessages((prevMessages) => [tempMessageObject, ...prevMessages]);
         }
     }
 
+    console.log("user" ,selectedUser)
     
 
     const updateIconSend = (isTyping) => {
@@ -46,21 +49,25 @@ const SingleChatSection = ({ selectedUser }) => {
     }
 
     useEffect(() => {
-        if(userDetailsFromBack && !error && !loading)
-            setUserDetails(userDetailsFromBack);
 
-        if(messages && !messagesError && !messagesLoading)
-            setLocalMessages(messages);
-    }, [userDetailsFromBack, messages])
+        if(messages && !messagesError && !messagesLoading) {
+            console.log(messages)
+            const thisChatMessages = messages.filter(
+                (message) =>  message.othersId === selectedUser.userId
+            );
+            console.log(thisChatMessages)
+            setLocalMessages(thisChatMessages);
+        }
+    }, [messages, selectedUser])
     return (
         <div className='single-chat-container'>
             <div className='single-chat-header shadow-md'>
                 <div className='header-avatar'>
-                    <img src={userDetails.profile_pic} alt={userDetails.name} />
+                    <img src={selectedUser.profilePic} alt={selectedUser.name} />
                 </div>
                 <div className='header-details'>
-                    <span className='header-title'>{userDetails.name}</span>
-                    <span className='header-subtitle'>Last seen at {userDetails.last_seen_at}</span>
+                    <span className='header-title'>{selectedUser.name}</span>
+                    <span className='header-subtitle'>Last seen at {selectedUser.lastSeen}</span>
                 </div>
                 <div className='header-icons'>
                     <FontAwesomeIcon height={24} className='icon' icon={faSearch} />
