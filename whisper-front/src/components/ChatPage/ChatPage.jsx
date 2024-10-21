@@ -7,6 +7,7 @@ import "./ChatPage.css";
 import StoriesContainer from "../StoriesContainer/StoriesContainer";
 import SearchBar from "../SearchBar/SearchBar";
 import React, { useState, useEffect, useRef } from 'react';
+import AddNewButton from "../AddNewButton/AddNewButton";
 
 const ChatPage = ({ chatList, chooseChat }) => {
 
@@ -31,6 +32,11 @@ const ChatPage = ({ chatList, chooseChat }) => {
             }
         }
     };
+
+    const handleAddNewClick = () => {
+        console.log('Add new clicked');
+    };
+
 
     useEffect(() => {
         const handleMouseUp = stopResizing;
@@ -59,6 +65,7 @@ const ChatPage = ({ chatList, chooseChat }) => {
             </div>
             <div className="sidebar__other-content">
                 {chatList &&  <ChatList chatList={chatList} chooseChat={chooseChat}/>}
+                <AddNewButton onClick={handleAddNewClick} />
             </div>
             <div
                 className="sidebar__resizer"

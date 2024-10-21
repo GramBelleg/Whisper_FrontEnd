@@ -1,23 +1,4 @@
 
-
-/* .chat-page {
-    display: flex;
-    flex-direction: column;
-    justify-content: flex-start;
-    width: 100%;
-    height: 100%;
-    background-color: #0a122f;
-}
-
-.stories-container {
-    color: white;
-    width: 100%;
-    height: 20%;
-}*/
-/* .sidebar__other-content {
-    width: 100%;
-    height: 80%;
-}  */
 .sidebar {
     display: flex;
     flex-direction: column;
