@@ -1,0 +1,17 @@
+.waveform .canvases {
+    transform: scaleY(0.5); /* Scale down to show only half */
+    transform-origin: bottom; /* Set the origin to the bottom */
+  }
+
+.play-pause-button {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 48px;
+    height: 48px;
+    border-radius: 50%;
+    background-color: #fff;
+    color: var(--accent-color);
+    cursor: pointer;
+    margin-right: 10px;
+}

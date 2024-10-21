@@ -120,7 +120,7 @@
     flex-grow: 1;
     align-items: center;
 }
-.voice-send-container {
+.voice-send-container, .cancel-voice-recording {
     display: flex;
     font-size: 24px;
     color: var(--accent-color);
@@ -139,4 +139,12 @@
 .voice-send-container.active {
     background-color: var(--accent-color);
     color: var(--text-color);
+}
+
+.cancel-voice-recording {
+    color: var(--danger-color);
+}
+
+.cancel-voice-recording:hover {
+    background-color: #322525;
 }
