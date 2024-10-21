@@ -23,6 +23,7 @@ const ChattingTextMessage = ({ message }) => {
         )
     }, [message])
 
+    console.log(myMessage)
     const renderMessageContent = useMemo(() => {
         switch (myMessage.type) {
           case 'text':
@@ -38,7 +39,7 @@ const ChattingTextMessage = ({ message }) => {
     
     return ( 
         <>
-            <div className={`message shadow ${myMessage.sender === 1 ? 'sender ' : 'reciever'}`}>
+            <div className={`message shadow ${myMessage.senderId === whoAmI.id ? 'sender ' : 'reciever'}`}>
                 {renderMessageContent} 
                 <div className="message-info">
                     <span className="time">

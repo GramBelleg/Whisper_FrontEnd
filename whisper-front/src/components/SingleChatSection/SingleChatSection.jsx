@@ -15,53 +15,83 @@ import { messageTypes } from '../../services/sendTypeEnum';
 import useFetch from "../../services/useFetch"
 import SingleChatMessagesList from '../SingleChatMessagesList/SingleChatMessagesList';
 import usePost from '../../services/usePost';
+import { whoAmI } from '../../services/chatservice/whoAmI'
+import useVoiceRecorder from '@/hooks/useVoiceRecorder'
+import { formatDuration } from '@/utils/formatDuration'
 
 
 const SingleChatSection = ({ selectedUser }) => {
     const [isTyping, setIsTyping] = useState(false);
-    const [userDetails, setUserDetails] = useState({});
     const [messageToSend, setMessageToSend] = useState(null);
     const [localMessages, setLocalMessages] = useState([]);
-    
+    const {isRecording, duration, audioUrl, startRecording, stopRecording, discardRecording} = useVoiceRecorder()
+    const [userDetails, setUserDetails] = useState({})
 
-    const {data:userDetailsFromBack, loading, error} = useFetch('/userDetails');
+
+    
     const { data: messages, loading: messagesLoading, error: messagesError} = useFetch('/userMessages');
     const { data: sentMessageData, error: sendError, loading: sendLoading } = usePost('/userMessages', messageToSend);
+    const { data: userDetailsFromBack, loading, error } = useFetch('/userDetails')
 
+
+    const showSendIcon = useMemo(() => isTyping || isRecording, [isTyping, isRecording])
+
+
+    // TODO : move the message sending logic to the message component to handle failures and retrying
     const sendMessage = (type, message) => {
-        if(type === messageTypes.TEXT) {
         const tempMessageObject = {
-            content: message,
-            chatId: 3,
-            type: type,
+            id:4,
+            chatId: localMessages.chatId,
+            senderId: whoAmI.id,
             forwarded: false,
             selfDestruct: true,
             expiresAfter: 5,
             parentMessageId: null,
-            sender: 1,
-            time: new Date().toLocaleTimeString(),
-            state: "pending" // until back responds
+            time:new Date().toLocaleTimeString(),
+            state:"pending",
+            othersId: selectedUser.userId,
         }
-            setMessageToSend(tempMessageObject);
-            setLocalMessages((prevMessages) => [tempMessageObject, ...prevMessages]);
-        }
-    }
 
-    
+        if(isRecording) {
+            stopRecording((url) => {
+                // This will execute after the audio URL is available
+                tempMessageObject.content = url; // Now it has the correct audio URL
+                tempMessageObject.type = messageTypes.AUDIO;
+                setMessageToSend(tempMessageObject)
+                setLocalMessages((prevMessages) => [tempMessageObject, ...prevMessages])
+            })
+            return;
+        }
+
+        if (type === messageTypes.TEXT) {
+            tempMessageObject.content = message
+            tempMessageObject.type = messageTypes.TEXT
+        }
+            
+        setMessageToSend(tempMessageObject);
+        setLocalMessages((prevMessages) => [tempMessageObject, ...prevMessages]);
+    }
 
     const updateIconSend = (isTyping) => {
         setIsTyping(isTyping)
     }
 
-    const showSendIcon = useMemo(() => isTyping || isRecording, [isTyping, isRecording])
-
     useEffect(() => {
-        if(userDetailsFromBack && !error && !loading)
-            setUserDetails(userDetailsFromBack);
 
-        if(messages && !messagesError && !messagesLoading)
-            setLocalMessages(messages);
-    }, [userDetailsFromBack, messages])
+        if(messages && !messagesError && !messagesLoading) {
+            console.log(messages)
+            const thisChatMessages = messages.filter(
+                (message) =>  message.othersId === selectedUser.userId
+            );
+            console.log(thisChatMessages)
+            setLocalMessages(thisChatMessages);
+        }
+
+        if (userDetailsFromBack && !error && !loading) setUserDetails(userDetailsFromBack)
+            
+    }, [messages, selectedUser, userDetailsFromBack])
+
+
     return (
         <div className='single-chat-container'>
             <div className='single-chat-header shadow-md'>
