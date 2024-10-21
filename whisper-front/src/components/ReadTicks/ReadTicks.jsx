@@ -1,22 +1,15 @@
-// This is the SVG of the Read tick
-// It displays the double ticks of read messages
+// This is the SVG of the sent tick
+// It displays the single tick to be use by chats
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faCheckDouble } from "@fortawesome/free-solid-svg-icons";
+import "./ReadTicks.css"
 
 const ReadTicks = () => {
-    return (
-        <div className='read-ticks'>
-            <svg
-                fill='none'
-                xmlns='http://www.w3.org/2000/svg'
-                viewBox='0 0 12 12'
-                width='50%'
-                height='50%'
-                preserveAspectRatio='xMidYMid meet'
-            >
-                <path d='M1 3.55102L3.78226 6L8.5 1' stroke='#4CB9CF' stroke-linecap='round' stroke-linejoin='round' />
-                <path d='M6 3.55102L8.78226 6L13.5 1' stroke='#4CB9CF' stroke-linecap='round' stroke-linejoin='round' />
-            </svg>
+    return ( 
+        <div className="read-ticks" width='100%' height='100%'>
+            <FontAwesomeIcon icon={faCheckDouble} className="read-icon"/>
         </div>
-    )
+    );
 }
 
 export default ReadTicks

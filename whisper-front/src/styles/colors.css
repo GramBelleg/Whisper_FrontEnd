@@ -7,6 +7,9 @@
     --chat-background-color: #0a254a;
     --text-color: #fff;
     --text-color-rgb: 255, 255, 255;
+    --ticks-color: #4cb9cf;
+    --danger-color: #ff4d4f;
+    --light-danger-color: rgba(255, 89, 90, 0.08);
 }
 
 .dark {

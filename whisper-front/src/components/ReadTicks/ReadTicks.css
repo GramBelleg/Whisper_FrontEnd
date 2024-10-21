@@ -1,0 +1,9 @@
+
+.read-ticks {
+    width: 100%;
+    height: 100%;
+}
+
+.read-icon {
+    color: var(--ticks-color);
+}

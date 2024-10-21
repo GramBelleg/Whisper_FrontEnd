@@ -11,7 +11,7 @@ import React, { useState, useEffect, useRef } from 'react';
 const ChatPage = () => {
 
     const {data: chatList, error, loading} = useFetch('/chats');
-    const [sidebarWidth, setSidebarWidth] = useState(35); 
+    const [sidebarWidth, setSidebarWidth] = useState(100); 
     const sidebarRef = useRef(null);
     const isResizing = useRef(false);
 

@@ -1,60 +1,79 @@
-import { useEffect, useState } from 'react'
+import { useEffect, useMemo, useState } from 'react'
 import './SingleChatSection.css'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import { faEllipsisV, faMicrophone, faMicrophoneAlt, faPaperclip, faPhone, faSearch, faSmile } from '@fortawesome/free-solid-svg-icons'
-import SentTicks from '../SentTicks/SentTicks'
-import DeliveredTicks from '../DeliveredTicks/DeliveredTicks'
-import ReadTicks from '../ReadTicks/ReadTicks'
-import CustomEmojisPicker from '../CustomEmojisPicker/CustomEmojisPicker'
+import {
+    faEllipsisV,
+    faMicrophoneAlt,
+    faPaperclip,
+    faPhone,
+    faSearch,
+    faPaperPlane,
+    faTrashAlt
+} from '@fortawesome/free-solid-svg-icons'
+import SingleChatMessaging from '../SingleChatMessaging/SingleChatMessaging'
+import { messageTypes } from '../../services/sendTypeEnum'
+import useFetch from '../../services/useFetch'
+import SingleChatMessagesList from '../SingleChatMessagesList/SingleChatMessagesList'
+import usePost from '../../services/usePost'
+import useVoiceRecorder from '@/hooks/useVoiceRecorder'
+import { formatDuration } from '@/utils/formatDuration'
 
 const SingleChatSection = ({ selectedUser }) => {
-    const [messages, setMessages] = useState([])
-    const [newMessage, setNewMessage] = useState('')
-    const [userDetails, setUserDetails] = useState({
-        id: 1,
-        name: 'John Doe',
-        last_seen_at: '10:00:50'
-    })
+    const [isTyping, setIsTyping] = useState(false)
+    const [userDetails, setUserDetails] = useState({})
+    const [messageToSend, setMessageToSend] = useState(null)
+    const [localMessages, setLocalMessages] = useState([])
 
-    const handleEmojiClick = (emojiObject) => {
-        setNewMessage((prevMessage) => prevMessage + emojiObject.emoji)
+    const {isRecording, duration, audioUrl, startRecording, stopRecording, discardRecording} = useVoiceRecorder()
+
+    const { data: userDetailsFromBack, loading, error } = useFetch('/userDetails')
+    const { data: messages, loading: messagesLoading, error: messagesError } = useFetch('/userMessages')
+    const { data: sentMessageData, error: sendError, loading: sendLoading } = usePost('/userMessages', messageToSend)
+
+    // TODO : move the message sending logic to the message component to handle failures and retrying
+    const sendMessage = (type, message) => {
+        const tempMessageObject = {
+            chatId: 3,
+            forwarded: false,
+            selfDestruct: true,
+            expiresAfter: 5,
+            parentMessageId: null,
+            sender: 1,
+            time: new Date().toLocaleTimeString(),
+            state: 'pending' // until back responds
+        }
+
+        if(isRecording) {
+            stopRecording((url) => {
+                // This will execute after the audio URL is available
+                tempMessageObject.content = url; // Now it has the correct audio URL
+                tempMessageObject.type = messageTypes.AUDIO;
+                setMessageToSend(tempMessageObject)
+                setLocalMessages((prevMessages) => [tempMessageObject, ...prevMessages])
+            })
+            return;
+        }
+
+        if (type === messageTypes.TEXT) {
+            tempMessageObject.content = message
+            tempMessageObject.type = messageTypes.TEXT
+        }
+        setMessageToSend(tempMessageObject)
+        setLocalMessages((prevMessages) => [tempMessageObject, ...prevMessages])
     }
 
-    const updateNewMessage = (event) => {
-        setNewMessage(event.target.value)
+    const updateIconSend = (isTyping) => {
+        setIsTyping(isTyping)
     }
+
+    const showSendIcon = useMemo(() => isTyping || isRecording, [isTyping, isRecording])
 
     useEffect(() => {
-        // simpulate fetching chat data
+        if (userDetailsFromBack && !error && !loading) setUserDetails(userDetailsFromBack)
 
-        setMessages([
-            {
-                id: 1,
-                sender: 'John Doe',
-                message: 'Hello',
-                datetime: '2024-10-13 10:00:50'
-            },
-            {
-                id: 2,
-                sender: 'John Doe',
-                message: 'How are you?',
-                datetime: '2024-10-05 10:00:51'
-            },
-            {
-                id: 3,
-                sender: 'John Doe',
-                message: 'I am fine',
-                datetime: '2024-10-13 10:00:52'
-            }
-        ])
+        if (messages && !messagesError && !messagesLoading) setLocalMessages(messages)
+    }, [userDetailsFromBack, messages])
 
-        setUserDetails({
-            id: 1,
-            name: 'John Doe',
-            profile_pic: './assets/images/Grambell.png',
-            last_seen_at: '10:00:50'
-        })
-    }, [])
     return (
         <div className='single-chat-container'>
             <div className='single-chat-header shadow-md'>
@@ -72,49 +91,36 @@ const SingleChatSection = ({ selectedUser }) => {
                 </div>
             </div>
             <div className='messages'>
-                <div className='message sender shadow'>
-                    <div className='message-text'>
-                        I plan to go to Norway, Tom said that you can tell about interesting places. I am very interested in the city of
-                        Stavanger. Have you been to this city?
-                    </div>
-                    <div className='message-info'>
-                        <span className='time'>12:51</span>
-                        <span className='message-status'>
-                            <SentTicks width='12px' />
-                        </span>
-                    </div>
-                </div>
-
-                <div className='message receiver shadow'>
-                    <div className='message-text'>
-                        I plan to go to Norway, Tom said that you can tell about interesting places. I am very interested in the city of
-                        Stavanger. Have you been to this city?
-                    </div>
-                    <div className='message-info'>
-                        <span className='time'>12:51</span>
-                    </div>
-                </div>
+                <SingleChatMessagesList user={selectedUser} messages={localMessages} />
             </div>
 
             <div className='w-full flex items-center justify-center'>
                 <div className='chat-actions-container'>
-                    <div className='input-container shadow'>
-                        <div className='emojis-container'>
-                            <CustomEmojisPicker handleEmojiClick={handleEmojiClick} />
+                    <div className='input-container shadow transition-all'>
+                        <div className='textmessage-emoji-container'>
+                            <SingleChatMessaging updateIconSend={updateIconSend} sendMessage={sendMessage} />
                         </div>
-                        <input
-                            type='text'
-                            value={newMessage}
-                            onInput={updateNewMessage}
-                            className='search-input'
-                            placeholder='Message Here'
-                        />
-                        <div className='attachements-container'>
-                            <FontAwesomeIcon icon={faPaperclip} />
-                        </div>
+
+                        {isRecording ? (
+                            <div className="flex items-center justify-center space-x-2">
+                                <span className="text-lg font-semibold">{formatDuration(duration)}</span>
+                                <div className="w-3 h-3 rounded-full bg-red-500 animate-pulse"></div>
+                            </div>
+                        ) : (
+                            <div className='attachements-container'>
+                                <FontAwesomeIcon icon={faPaperclip} />
+                            </div>
+                        )}
                     </div>
-                    <div className='voice-container shadow'>
-                        <FontAwesomeIcon icon={faMicrophoneAlt} />
+                    {isRecording && (
+                        <div className='cancel-voice-recording' onClick={discardRecording}>
+                            <FontAwesomeIcon icon={faTrashAlt} />
+                        </div>
+                    )}
+                    <div className={`voice-send-container ${showSendIcon ? 'active' : ''}`} onClick={showSendIcon ? sendMessage : startRecording}>
+                        <FontAwesomeIcon
+                            icon={showSendIcon ? faPaperPlane : faMicrophoneAlt}
+                        />
                     </div>
                 </div>
             </div>

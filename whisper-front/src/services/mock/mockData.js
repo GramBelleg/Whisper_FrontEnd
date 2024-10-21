@@ -177,3 +177,39 @@ export const storiesData = [
     {userId: 9, user:"fatma", profilePicture: profilePicture, seen: false, date: "1/2/2022", content: "hello from fatma"},
     {userId: 10, user:"hana", profilePicture: profilePicture, seen: true, date: "1/2/2022", content: "hello from hana"},
 ]; 
+
+
+export const userDetails = {
+    id: 1,
+    name: 'John Doe',
+    profile_pic: './assets/images/Grambell.png',
+    last_seen_at: '10:00:50'
+};
+
+
+export const messagesForUser  = [
+    {
+        content: "Astonishing!",
+        chatId: 3,
+        type: "text",
+        forwarded: false,
+        selfDestruct: true,
+        expiresAfter: 5,
+        parentMessageId: null,
+        sender: 1,
+        time:'12:52',
+        state:"sent"
+    },
+    {
+        content: "I plan to go to Norway, Tom said that you can tell about interesting places. I am very interested in the city of Stavanger. Have you been to this city?",
+        chatId: 3,
+        type: "text",
+        forwarded: false,
+        selfDestruct: true,
+        expiresAfter: 5,
+        parentMessageId: null,
+        sender: 2,
+        time : '12:50',
+        state: 'nothing'
+    }
+]
