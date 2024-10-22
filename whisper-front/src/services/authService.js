@@ -27,7 +27,7 @@ export const googleSignUp = async (codeResponse) => {
 export const facebookSignUp = async (codeResponse) => {
   try {
     const res = await axiosInstance.post(authRoutes.facebookAuth, {
-      token: codeResponse,
+      code: codeResponse,
     });
     return res.data;
   } catch (error) {

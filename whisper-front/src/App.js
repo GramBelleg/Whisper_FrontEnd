@@ -11,10 +11,11 @@ import SignupPage from "./pages/SignupPage";
 import useAuth from "./hooks/useAuth";
 import EmailVerification from "./pages/EmailVerification";
 import GithubCallback from "./pages/GithubCallback";
+import FacebookCallback from "./pages/FacebookCallback";
 
 function App() {
-  const { user,token } = useAuth();
-  
+  const { user, token } = useAuth();
+
   return (
     <Router>
       <Routes>
@@ -22,7 +23,14 @@ function App() {
           token ? (
             user.role !== "admin" ? (
               <>
-                <Route path="/" element={<div>home</div>} /> 
+                <Route
+                  path="/"
+                  element={
+                    <div className="flex justify-center align-center items-center bg-dark min-h-screen p-6">
+                      <p className="text-lg font-bold text-primary">home</p>
+                    </div>
+                  }
+                />
                 <Route path="/*" element={<Navigate to="/" />} />
               </>
             ) : (
@@ -34,8 +42,14 @@ function App() {
             )
           ) : (
             <>
-              <Route path="/email-verification" element={<EmailVerification />} />
-              <Route path="/*" element={<Navigate to="/email-verification" />} />
+              <Route
+                path="/email-verification"
+                element={<EmailVerification />}
+              />
+              <Route
+                path="/*"
+                element={<Navigate to="/email-verification" />}
+              />
             </>
           )
         ) : (
@@ -47,6 +61,7 @@ function App() {
           </>
         )}
         <Route path="/github-callback" element={<GithubCallback />} />
+        <Route path="/facebook-callback" element={<FacebookCallback />} />
       </Routes>
     </Router>
   );
