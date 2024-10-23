@@ -1,0 +1,25 @@
+import React from 'react';
+import CustomButton from './CustomButton';
+import { FaGithub } from 'react-icons/fa';
+
+const GithubButton = ({classStyle}) => {
+  const handleGitAuth = () => {
+    const clientId = process.env.REACT_APP_GITHUB_CLIENT_ID;
+    const redirectUri = 'http://localhost:3000/github-callback';
+    const scope = 'user:email';
+
+    const url = `https://github.com/login/oauth/authorize?client_id=${clientId}&redirect_uri=${encodeURIComponent(redirectUri)}&scope=${scope}`;
+    window.location.href = url;
+  };
+
+  return (
+    <CustomButton
+      icon={FaGithub}
+      label="Sign In With Github"
+      onClick={handleGitAuth}
+      className={`${classStyle} flex flex-row items-center justify-center w-full`}
+    />
+  );
+};
+
+export default GithubButton;
