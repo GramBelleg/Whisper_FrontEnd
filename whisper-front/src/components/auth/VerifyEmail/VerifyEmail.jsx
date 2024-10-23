@@ -2,7 +2,7 @@ import React from 'react'
 import CustomInput from "../../common/CustomInput";
 import CustomButton from "../../common/CustomButton";
 
-const VerifyEmail = ({ code, loading, handleChange, handleSubmit, error, resendCode }) => {
+const VerifyEmail = ({ code, loading, handleChange, handleSubmit, error, resendCode, backToSignUp }) => {
   return (
     <div className="flex flex-col justify-center items-center min-h-screen p-4">
       <div className="w-full max-w-md mx-auto flex flex-col items-center justify-between h-[300px] p-4 bg-white rounded-lg shadow-md">
@@ -42,6 +42,9 @@ const VerifyEmail = ({ code, loading, handleChange, handleSubmit, error, resendC
           disabled={loading}
           className="w-4/5 bg-primary text-white py-2 rounded-lg hover:bg-dark transition duration-300"
         />
+        <div>
+          <p className='text-dark underline cursor-pointer' onClick={backToSignUp}>Back To Sign Up</p>
+        </div>
       </div>
     </div>
   )

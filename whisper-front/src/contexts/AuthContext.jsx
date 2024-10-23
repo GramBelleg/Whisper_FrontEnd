@@ -9,6 +9,7 @@ import {
   googleSignUp,
   facebookSignUp,
   githubSignUp,
+  resendCode,
 } from '../services/authService';
 import { loadAuthData } from '../services/tokenService';
 
@@ -111,6 +112,20 @@ export const AuthProvider = ({ children }) => {
       setLoading(false);
     }
   };
+
+  const handleResendCode = async (code) => {
+    setLoading(true);
+    setError(null); 
+    try {
+      await resendCode(user.email); 
+    } catch (err) {
+      setError(err.message);
+      return { error: err, success: false };
+    } finally {
+      setLoading(false);
+    }
+  };
+
   const handleReset=async (userData)=>{
     setLoading(true);
     setError(null);
@@ -170,6 +185,13 @@ export const AuthProvider = ({ children }) => {
     setError(null);
   };
 
+  const handleBackToSignUp = () =>{
+    setUser(null);
+    setToken(null);
+    localStorage.removeItem('token');
+    localStorage.removeItem('user');
+  }
+
   return (
     <AuthContext.Provider value={{
       user,
@@ -182,10 +204,12 @@ export const AuthProvider = ({ children }) => {
       handleGithubSignUp,
       handleLogin,
       handleForgotPassword,
+      handleResendCode,
       handleVerify,
       handleReset,
       logout,
-      clearError
+      clearError,
+      handleBackToSignUp
     }}>
       {children}
     </AuthContext.Provider>

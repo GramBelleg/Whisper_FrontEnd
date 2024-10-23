@@ -1,7 +1,7 @@
 const authRoutes = {
     login: '/auth/login',
     signup: '/auth/signup',
-    resendCode: '/auth/sendConfirmCode',
+    resendCode: '/auth/resendConfirmCode',
     confirmEmail: '/auth/confirmEmail',
     sendResetCode: '/auth/sendResetCode',
     resetPassword: '/auth/resetPassword',

@@ -59,6 +59,18 @@ export const verify = async (code,email) => {
   }
 };
 
+export const resendCode = async (email) => {
+  try {
+    const response = await axiosInstance.post(authRoutes.resendCode, {
+      email: email, 
+  });
+    console.log(response.data);
+    return response.data;
+  } catch (error) {
+    throw new Error(error.response?.data?.message || "An error occurred");
+  }
+}
+
 export const login = async (credentials) => {
   try {
     const response = await axiosInstance.post(authRoutes.login, credentials);

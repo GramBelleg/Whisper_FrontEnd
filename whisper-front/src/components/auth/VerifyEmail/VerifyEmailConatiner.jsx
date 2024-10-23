@@ -4,7 +4,7 @@ import VerifyEmail from './VerifyEmail';
 
 const VerifyEmailConatiner = () => {
     const [code, setCode] = useState('');
-    const {handleVerify,loading,error}=useAuth();
+    const {handleVerify,handleResendCode,handleBackToSignUp,loading,error}=useAuth();
 
     const handleSubmit = async () => {
         await handleVerify(code);
@@ -14,7 +14,12 @@ const VerifyEmailConatiner = () => {
         setCode(e.target.value);
     }
 
-    const resendCode = () => {
+    const resendCode = async () => {
+        await handleResendCode();
+    }
+
+    const backToSignUp = async () => {
+        handleBackToSignUp();
     }
 
     return ( 
@@ -24,8 +29,8 @@ const VerifyEmailConatiner = () => {
          handleChange={handleChange}
          handleSubmit={handleSubmit} 
          error={error}
-         resendCode={resendCode}/>
-        
+         resendCode={resendCode}
+         backToSignUp={backToSignUp}/>
      );
 }
 
