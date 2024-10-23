@@ -4,7 +4,7 @@ import authRoutes from '../utils/APIRoutes';
 
 export const signUp = async (userData) => {
   try {
-    const response = await axiosInstance.post(authRoutes.signup, userData);
+    const response = await axios.post("http://localhost:5000/api/auth/signup", userData);
     console.log(response.data);
     return response.data;
   } catch (error) {
@@ -16,7 +16,9 @@ export const signUp = async (userData) => {
 export const googleSignUp = async (codeResponse) => {
   try {
     const res = await axios.post("http://localhost:5000/api/auth/google", {
-      code: codeResponse.code,
+      code: codeResponse.code, 
+    },{
+      withCredentials: true, // Ensure credentials are included
     });
     return res.data;
   } catch (error) {
@@ -28,6 +30,8 @@ export const facebookSignUp = async (codeResponse) => {
   try {
     const res = await axiosInstance.post("http://localhost:5000/api/auth/facebook", {
       code: codeResponse,
+    },{
+      withCredentials: true, // Ensure credentials are included
     });
     return res.data;
   } catch (error) {
@@ -39,6 +43,8 @@ export const githubSignUp = async (codeResponse) => {
   try {
     const res = await axiosInstance.post(authRoutes.githubAuth, {
       code: codeResponse,
+    },{
+      withCredentials: true, // Ensure credentials are included
     });
     return res.data;
   } catch (error) {
@@ -73,7 +79,8 @@ export const resendCode = async (email) => {
 
 export const login = async (credentials) => {
   try {
-    const response = await axiosInstance.post(authRoutes.login, credentials);
+    
+    const response = await axios.post("http://localhost:5000/api/auth/login", credentials);
     console.log(response.data);
     return response.data;
   } catch (error) {
