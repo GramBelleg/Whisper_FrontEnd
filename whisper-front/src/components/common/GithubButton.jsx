@@ -4,8 +4,8 @@ import { FaGithub } from 'react-icons/fa';
 
 const GithubButton = ({classStyle}) => {
   const handleGitAuth = () => {
-    const clientId = process.env.REACT_APP_GITHUB_CLIENT_ID;
-    const redirectUri = 'http://localhost:3000/github-callback';
+    const clientId = import.meta.env.VITE_APP_GITHUB_CLIENT_ID;
+    const redirectUri = 'http://localhost:5173/github-callback';
     const scope = 'user:email';
 
     const url = `https://github.com/login/oauth/authorize?client_id=${clientId}&redirect_uri=${encodeURIComponent(redirectUri)}&scope=${scope}`;

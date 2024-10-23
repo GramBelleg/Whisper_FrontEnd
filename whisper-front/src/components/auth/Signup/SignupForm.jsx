@@ -75,7 +75,7 @@ const SignupForm = ({
         </div>
         <div>
           <ReCAPATCHA
-            sitekey={process.env.REACT_APP_SITE_KEY}
+            sitekey={import.meta.env.VITE_APP_SITE_KEY}
             onChange={handleCaptchaChange}
           />
           {errors.captcha && (
