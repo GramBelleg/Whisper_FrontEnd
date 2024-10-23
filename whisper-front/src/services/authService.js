@@ -15,7 +15,7 @@ export const signUp = async (userData) => {
 
 export const googleSignUp = async (codeResponse) => {
   try {
-    const res = await axiosInstance.post(authRoutes.googleAuth, {
+    const res = await axios.post("http://localhost:5000/api/auth/google", {
       code: codeResponse.code,
     });
     return res.data;
