@@ -17,7 +17,9 @@ import SingleChatMessagesList from '../SingleChatMessagesList/SingleChatMessages
 import usePost from '../../services/usePost';
 import { whoAmI } from '../../services/chatservice/whoAmI'
 import useVoiceRecorder from '@/hooks/useVoiceRecorder'
-import { formatDuration } from '@/utils/formatDuration'
+import { formatDuration } from '@/utils/formatDuration';
+import { socket } from '@/services/messagingservice/sockets/sockets'
+
 
 
 const SingleChatSection = ({ selectedUser }) => {
@@ -62,13 +64,13 @@ const SingleChatSection = ({ selectedUser }) => {
             })
             return;
         }
-
         if (type === messageTypes.TEXT) {
             tempMessageObject.content = message
             tempMessageObject.type = messageTypes.TEXT
         }
             
-        setMessageToSend(tempMessageObject);
+        //setMessageToSend(tempMessageObject);
+        socket.emit("send", tempMessageObject);
         setLocalMessages((prevMessages) => [tempMessageObject, ...prevMessages]);
     }
 
