@@ -27,7 +27,7 @@ const ChattingTextMessage = ({ message }) => {
     const renderMessageContent = useMemo(() => {
         switch (myMessage.type) {
           case 'text':
-            return <div className="message-text">{myMessage.content}</div>;
+            return <div className="message-text" style={{ whiteSpace: 'pre-wrap' }}>{myMessage.content}</div>;
           case 'audio':
             return <AudioVoiceMessage audioUrl={myMessage.content} />; // Pass the audio URL to your AudioMessage component
           case 'image':
