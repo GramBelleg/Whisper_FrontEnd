@@ -26,7 +26,7 @@ export const googleSignUp = async (codeResponse) => {
 
 export const facebookSignUp = async (codeResponse) => {
   try {
-    const res = await axiosInstance.post(authRoutes.facebookAuth, {
+    const res = await axiosInstance.post("http://localhost:5000/api/auth/facebook", {
       code: codeResponse,
     });
     return res.data;

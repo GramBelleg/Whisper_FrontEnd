@@ -1,16 +1,16 @@
 const authRoutes = {
-    login: '/auth/login',
-    signup: '/auth/signup',
-    resendCode: '/auth/resendConfirmCode',
-    confirmEmail: '/auth/confirmEmail',
-    sendResetCode: '/auth/sendResetCode',
-    resetPassword: '/auth/resetPassword',
-    googleAuth: '/auth/google',
-    facebookAuth: '/auth/facebook',
-    githubAuth: '/auth/github',
-    logOneOut: '/auth/logoutOne',
-    logAllOut: '/auth/logoutAll',
-    sendConfirmCode: '/auth/sendConfirmCode',
+    login: '/api/auth/login',
+    signup: '/api/auth/signup',
+    resendCode: '/api/auth/resendConfirmCode',
+    confirmEmail: '/api/auth/confirmEmail',
+    sendResetCode: '/api/auth/sendResetCode',
+    resetPassword: '/api/auth/resetPassword',
+    googleAuth: '/api/auth/google',
+    facebookAuth: '/api/auth/facebook',
+    githubAuth: '/api/auth/github',
+    logOneOut: '/api/auth/logoutOne',
+    logAllOut: '/api/auth/logoutAll',
+    sendConfirmCode: '/api/auth/sendConfirmCode',
   };
   
   export default authRoutes;
