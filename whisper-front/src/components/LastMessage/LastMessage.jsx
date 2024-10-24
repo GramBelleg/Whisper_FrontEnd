@@ -7,29 +7,30 @@ import AudioVoiceNoteMessage from "../AudioVoiceNoteMessage/AudioVoiceNoteMessag
 import DeletedMessage from "../DeletedMessage/DeletedMessage"; // Fixed typo here
 
 const LastMessage = ({ sender, messageType, message, messageState, index }) => {
+
   return (
     <div className="last-message">
       {messageState === 3 ? (
         <DeletedMessage sender={sender}/> // Fixed typo here
       ) : (
         <>
-          {messageType === "text" && (
+          {messageType.toLowerCase() === "text".toLowerCase() && (
             <TextMessage index={index} message={message}/>
           )}
-          {messageType === "image" && (
+          {messageType.toLowerCase() === "image".toLowerCase() && (
             <ImageMessage messageState={messageState} />
           )}
-          {(messageType === "audio" || messageType === "voiceNote") && (
+          {(messageType.toLowerCase() === "audio".toLowerCase() || messageType.toLowerCase() === "voiceNote".toLowerCase()) && (
             <AudioVoiceNoteMessage
               messageType={messageType}
               messageState={messageState}
               message={message}
             />
           )}
-          {messageType === "video" && (
+          {messageType.toLowerCase() === "video".toLowerCase() && (
             <VideoMessage messageState={messageState} />
           )}
-          {messageType === "sticker" && (
+          {messageType.toLowerCase() === "sticker".toLowerCase() && (
             <StickerMessage messageState={messageState} />
           )}
         </>
