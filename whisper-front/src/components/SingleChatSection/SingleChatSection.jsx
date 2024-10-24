@@ -209,13 +209,60 @@ const SingleChatSection = ({ selectedUser }) => {
 
             <div className='w-full flex items-center justify-center'>
                 <div className='chat-actions-container'>
+                    {
+                        sending && (
+                            <FontAwesomeIcon icon={faCircleNotch} spin />
+                        )
+                    }
+                    {
+                        attachedFile && (
+                                    <div className="attachment-preview">
+                                        <span>{formatFileName(attachedFile.name,10)}</span>
+                                        <button onClick={removeAttachment} className="remove-attachment">
+                                            <FontAwesomeIcon icon={faTimes} />
+                                        </button>
+                                    </div>
+                        )
+                    }
                     <div className='input-container shadow'>
                         <div className="textmessage-emoji-container">
                             <SingleChatMessaging updateIconSend={updateIconSend} sendMessage={sendMessage}/>
                         </div>
-                        <div className='attachements-container'>
-                            <FontAwesomeIcon icon={faPaperclip} />
+                        <input 
+                            type="file" 
+                            onChange={handleFileChange}
+                            style={{ display: 'none' }} 
+                            id="file-input" 
+                            ref={fileInputRef}
+                        />
+                        <input 
+                            type="file" 
+                            accept="image/*,video/*" 
+                            onChange={handleFileChange}
+                            style={{ display: 'none' }} 
+                            id="image-input" 
+                            ref={imageInputRef}
+                        />
+                         {isRecording ? (
+                            <div className="flex items-center justify-center space-x-2">
+                                <span className="text-lg font-semibold">{formatDuration(duration)}</span>
+                                <div className="w-3 h-3 rounded-full bg-red-500 animate-pulse"></div>
+                            </div>
+                        ) : (
+                        <div className="attachements-container relative">
+                            <FontAwesomeIcon icon={faPaperclip} onClick={toggleAttachMenu} />
+                            {showAttachMenu && (
+                                <div className="attach-menu absolute bottom-full left-0 bg-white shadow-md rounded-md p-2">
+                                    <button onClick={handleFileAttach} className="block w-full text-left py-1 px-2 hover:bg-gray-100">
+                                        <FontAwesomeIcon icon={faFile} className="mr-2" />
+                                    </button>
+                                    <button onClick={handleImageAttach} className="block w-full text-left py-1 px-2 hover:bg-gray-100">
+                                        <FontAwesomeIcon icon={faImage} className="mr-2" />
+                                    </button>
+                                </div>
+                            )}
                         </div>
+                        )}
                     </div>
                     {isRecording && (
                         <div className='cancel-voice-recording' onClick={discardRecording}>
