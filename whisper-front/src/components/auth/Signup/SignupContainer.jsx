@@ -41,9 +41,10 @@ const SignupContainer = () => {
     });
     if(res.success){
         navigate('/email-verification');
+        actions.resetForm();
     }
 
-    actions.resetForm();
+    
   };
 
   const formik = useFormik({
