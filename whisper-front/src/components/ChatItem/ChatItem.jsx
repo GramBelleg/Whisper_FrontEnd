@@ -6,7 +6,6 @@ import { handleNoUserImage } from "../../services/chatservice/addDefaultImage";
 import { mapMessageState } from "../../services/chatservice/mapMessageState";
 
 // Import Components
-import noUser from "../../assets/images/no-user.png";
 import NotificationBell from "../NotificationBell/NotificationBell";
 import ReadTicks from "../ReadTicks/ReadTicks";
 import SentTicks from "../SentTicks/SentTicks";
@@ -21,15 +20,12 @@ import PendingSend from "../PendingSend/PendingSend";
 
 
 const ChatItem = ({ index, standaloneChat, chooseChat }) => {
-
     const maxLength = (
         
         (standaloneChat.muted) ? 33 : 
         (standaloneChat.sender === whoAmI.name) ? 30 : 15
     )
     
-    // Use memo helps validate the chat  on every render
-
     // Track overflow of text
     const [isOverflowing, setIsOverflowing] = useState(false); 
 
@@ -44,21 +40,22 @@ const ChatItem = ({ index, standaloneChat, chooseChat }) => {
     const [myChat, setMyChat] = useState({
         id: -1,
         senderId: -1,
-        sender:'',
         type: "",
         unreadMessageCount: 0,
         lastMessageId: -1,
         lastMessage:"",
-        name:"",
+        sender:"",
         lastSeen: "",
         muted: false,
+        media: false,
         messageState:"",
         messageTime:"",
         messageType:"",
         tagged: false,
         group: false,
         story: false,
-        profilePic:''
+        othersId: -1,
+        profilePic: '',
     });
 
     // Function to handle clicks and call chooseChat
@@ -78,9 +75,8 @@ const ChatItem = ({ index, standaloneChat, chooseChat }) => {
             ...standaloneChat,
             messageState: mapMessageState(standaloneChat.messageState),
             messageTime: checkDisplayTime(standaloneChat.messageTime),
-            name: trimName(standaloneChat.name)
+            sender: trimName(standaloneChat.sender)
         }));
-        console.log(standaloneChat.profilePic)
 
         // Check for overflow when the name changes
         const checkOverflow = () => {
@@ -89,7 +85,6 @@ const ChatItem = ({ index, standaloneChat, chooseChat }) => {
                 setIsOverflowing(scrollWidth > clientWidth); // Update overflow state
             }
         };
-        console.log("chat ", myChat);
 
         checkOverflow(); // Initial check
         window.addEventListener("resize", checkOverflow); // Check on resize
@@ -97,7 +92,7 @@ const ChatItem = ({ index, standaloneChat, chooseChat }) => {
         return () => {
             window.removeEventListener("resize", checkOverflow); // Cleanup
         };
-    }, [standaloneChat, myChat.name]); // Dependencies
+    }, [standaloneChat]); // Dependencies
 
     return ( 
         <div className="single-chat" onClick={handleClick}>
@@ -105,7 +100,7 @@ const ChatItem = ({ index, standaloneChat, chooseChat }) => {
                 <div className="single-chat-content">
                     <div className={`profile-pic-wrapper ${myChat.story ? 'has-story' : ''}`}>
                         <img 
-                            src={myChat.profilePic || noUser}
+                            src={myChat.profilePic}
                             className={`profile-pic`} // Add the conditional class
                             onError={(e) => handleNoUserImage(e)}
                         />
@@ -118,7 +113,7 @@ const ChatItem = ({ index, standaloneChat, chooseChat }) => {
                                     ref={userNameRef} // Attach the ref to the user name element
                                     className={`user-name ${myChat.muted ? 'muted' : ''} ${isOverflowing ? 'overflow' : ''} ${index ? 'hovered' : ''}`} // Add overflow class conditionally
                                 >
-                                    {myChat.name}
+                                    {myChat.sender}
                                 </p>
                                 {myChat.muted && (
                                     <div className="muted-bell">
@@ -155,7 +150,7 @@ const ChatItem = ({ index, standaloneChat, chooseChat }) => {
                             </div>
                         </div>
                         <div className="messaging-info">
-                            <LastMessage sender={myChat.sender} messageType={myChat.messageType} message={myChat.lastMessage} index={index} messageState={myChat.messageState}/>
+                            <LastMessage sender={myChat.senderId} messageType={myChat.messageType} message={myChat.lastMessage} index={index} messageState={myChat.messageState}/>
                             { (myChat.unreadMessageCount || myChat.tagged) && <UnRead unReadMessages={myChat.unreadMessageCount} tag={myChat.tagged}/>}
                             <Info index={index} group={myChat.group}/>
                         </div>
