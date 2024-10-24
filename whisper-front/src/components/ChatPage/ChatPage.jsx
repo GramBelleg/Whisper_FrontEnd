@@ -51,7 +51,6 @@ const ChatPage = ({ chatList, chooseChat }) => {
         };
     }, []);
     return ( 
-        // <div className="chat-page">
             <div
             className="sidebar"
             ref={sidebarRef}

@@ -9,7 +9,6 @@ import "./ChatList.css"
 const ChatList = ({ chatList, chooseChat }) => {
 
     const [hoveredIndex, setHoveredIndex] = useState(null); // Track hovered index
-
     return ( 
         <div className="chat-list">
             {
