@@ -12,6 +12,7 @@ import {
   resendCode,
 } from '../services/authService';
 import { loadAuthData } from '../services/tokenService';
+import { whoAmI } from '@/services/chatservice/whoAmI';
 
 const AuthContext = createContext();
 
@@ -145,19 +146,24 @@ export const AuthProvider = ({ children }) => {
     setLoading(true);
     setError(null); 
     try {
+      console.log(credentials);
+      
       const data = await login(credentials);  
-      setToken(data.userToken);
+      
+      setToken(data.userToken); // Ensure userToken is correct
       setUser(data.user);                          
-      setAuthData(data.user, data.token);  
-      return {data: data, success: true};
+      setAuthData(data.user, data.userToken); // Use consistent naming for token
+      
+      return { data, success: true };
     } catch (err) {
-      console.log(err)
+      console.log(err);
       setError(err.message);
       return { error: err, success: false };
     } finally {
       setLoading(false);
     }
   };
+  
 
   const handleForgotPassword = async (email) => {
     setLoading(true);
@@ -179,6 +185,7 @@ export const AuthProvider = ({ children }) => {
     setToken(null);
     localStorage.removeItem('token');
     localStorage.removeItem('user');
+    Object.assign(whoAmI, {});
   };
 
   const clearError = () => {
@@ -190,6 +197,7 @@ export const AuthProvider = ({ children }) => {
     setToken(null);
     localStorage.removeItem('token');
     localStorage.removeItem('user');
+    Object.assign(whoAmI, {});
   }
 
   return (
