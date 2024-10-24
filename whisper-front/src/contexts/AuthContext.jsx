@@ -133,6 +133,9 @@ export const AuthProvider = ({ children }) => {
     try{
       const data=await resetPassword(userData);
       console.log(data);
+      setToken(data.userToken);
+      setUser(data.user);                          
+      setAuthData(data.user, data.token);  
       return {data: data, success: true};
     }catch(err){
       setError(err.message);

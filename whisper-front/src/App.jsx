@@ -19,7 +19,7 @@ function App() {
       <Router>
       <Routes>
         {user ? (
-          token ? (
+          token && token !== 'undefined' ? (
             user.role !== "admin" ? (
               <>
                 <Route

@@ -3,7 +3,7 @@ import CustomInput from "../../common/CustomInput";
 import CustomButton from "../../common/CustomButton";
 import ResendTimer from '../../common/ResendTimer'; 
 
-const VerifyEmail = ({ code, loading, handleChange, handleSubmit, error, resendCode, backToSignUp, canResend, setCanResend }) => {
+const VerifyEmail = ({ code, loading, handleChange, handleSubmit, error, resendCode, backToSignUp, canResend, timer }) => {
   return (
     <div className="flex flex-col justify-center items-center min-h-screen p-4">
       <div className="w-full max-w-md mx-auto flex flex-col items-center justify-between h-[300px] p-4 bg-white rounded-lg shadow-md">
@@ -22,9 +22,7 @@ const VerifyEmail = ({ code, loading, handleChange, handleSubmit, error, resendC
 
         {!canResend && (
           <ResendTimer
-            initialTime={60} 
-            canResend={canResend}
-            setCanResend={setCanResend}
+            timer={timer}
           />
         )}
 

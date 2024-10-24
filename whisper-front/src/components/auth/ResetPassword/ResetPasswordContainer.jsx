@@ -14,14 +14,13 @@ const ResetPasswordContainer = ({email,handleClose}) => {
     //post request by axios
     console.log("debugging")
     console.log(values)
-    handleReset({email: email,
+    const res=await handleReset({email: email,
       password:values.password,
       confirmPassword:values.confirmPassword,
       code:values.resetCode});
     actions.resetForm();
-    if(!error){
+    if(res.success){
         alert("Password reset successfully")
-        navigate('/login');
     }
   };
 

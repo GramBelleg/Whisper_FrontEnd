@@ -3,12 +3,13 @@ import ForgotPassword from './ForgotPassword';
 import useAuth from '../../../hooks/useAuth';
 import ResetPasswordContainer from '../ResetPassword/ResetPasswordContainer';
 import ResendTimer from '../../common/ResendTimer';
+import useResendTimer from '../../../hooks/useResendTimer';
 
 const ForgotPasswordContainer = () => {
     const [email, setEmail] = useState('');
     const [resetPassword, setResetPassword] = useState(false);
-    const [canResend, setCanResend] = useState(true);
     const { handleForgotPassword, loading, error, clearError } = useAuth();
+    const { timer, canResend, resetTimer } = useResendTimer(0,"lastResetTime");
 
     useEffect(() => {
         clearError();
@@ -19,7 +20,7 @@ const ForgotPasswordContainer = () => {
         const res = await handleForgotPassword(email);
         if (res.success) {
             setResetPassword(true);
-            setCanResend(false);
+            resetTimer(60);
         }
     };
     
@@ -44,9 +45,7 @@ const ForgotPasswordContainer = () => {
                 >
                     {!canResend && (
                         <ResendTimer
-                            initialTime={60} 
-                            canResend={canResend}
-                            setCanResend={setCanResend}
+                            timer={timer}
                         />
                     )}
                 </ForgotPassword>

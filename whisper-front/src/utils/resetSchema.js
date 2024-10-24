@@ -16,4 +16,5 @@ export const resetSchema = yup.object().shape({
     .required("Required"),
   resetCode: yup.string()
     .required("Code is required")
+    .min(8, 'Code must be 8 characters')
 });
