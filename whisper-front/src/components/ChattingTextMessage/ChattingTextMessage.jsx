@@ -7,6 +7,7 @@ import { mapMessageState } from "../../services/chatservice/mapMessageState";
 import { useEffect, useState } from "react";
 import PendingSend from "../PendingSend/PendingSend";
 import { whoAmI } from "../../services/chatservice/whoAmI";
+import MessageAttachmentRenderer from '../MessageAttachment/MessageAttachmentRenderer';
 
 const ChattingTextMessage = ({ key, message }) => {
 
@@ -21,12 +22,25 @@ const ChattingTextMessage = ({ key, message }) => {
             }),
         )
     }, [message])
+    const updateObjectLink = (objectLink) => {
+        setMyMessage(prev => ({
+          ...prev,
+          objectLink,
+        }));
+        if (message) {
+            message.objectLink = objectLink;
+        }
+        console.log(message);
+      };
+    
 
     console.log(myMessage.state);
     return ( 
         <>
             <div key={key} className={`message ${myMessage.senderId === whoAmI.id ? 'sender shadow' : 'reciever shadow'}`}>
                 <div className="message-text" style={{ whiteSpace: 'pre-line' }}>
+                    {myMessage.file && <MessageAttachmentRenderer myMessage={myMessage}  onUpdateLink={updateObjectLink}  />}
+
                     {myMessage.content}
                 </div>  
                 <div className="message-info">
