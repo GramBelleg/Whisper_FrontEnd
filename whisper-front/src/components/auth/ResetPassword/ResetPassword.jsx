@@ -51,6 +51,11 @@ const ResetPassword = ({
               className="w-full p-3 text-light bg-gray-700 border border-light rounded-md focus:border-primary focus:outline-none"
             />
           ))}
+          {error && (
+          <span className="text-red-600 text-sm mt-1">
+            {error}
+          </span>
+          )}
           <button
             onClick={handleSubmit}
             className={`w-full py-2 mt-4 bg-primary text-white font-bold rounded-lg hover:bg-dark transition duration-300 ${isSubmitting || loading ? 'opacity-50 cursor-not-allowed' : ''}`}
