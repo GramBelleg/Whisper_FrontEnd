@@ -78,19 +78,6 @@ export const resendCode = async (email) => {
   }
 }
 
-  export const login = async (credentials) => {
-    try {
-      
-      const response = await axios.post("http://localhost:5000/api/auth/login", credentials, {
-        withCredentials: true
-      });
-      console.log(response.data);
-      return response.data;
-    } catch (error) {
-      console.log("login error", error);
-      throw new Error(error.response?.data?.message || "An error occurred");
-    }
-  };
 export const login = async (credentials) => {
   try {
     
