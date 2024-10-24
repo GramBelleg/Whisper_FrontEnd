@@ -8,6 +8,7 @@ import { useEffect, useMemo, useState } from "react";
 import PendingSend from "../PendingSend/PendingSend";
 import { whoAmI } from "../../services/chatservice/whoAmI";
 import AudioVoiceMessage from "../AudioVoiceMessage/AudioVoiceMessage";
+import MessageAttachmentRenderer from '../MessageAttachment/MessageAttachmentRenderer';
 
 const ChattingTextMessage = ({ message }) => {
 
@@ -22,12 +23,28 @@ const ChattingTextMessage = ({ message }) => {
             }),
         )
     }, [message])
+    const updateObjectLink = (objectLink) => {
+        setMyMessage(prev => ({
+          ...prev,
+          objectLink,
+        }));
+        if (message) {
+            message.objectLink = objectLink;
+        }
+        console.log(message);
+      };
+    
 
     console.log(myMessage)
     const renderMessageContent = useMemo(() => {
         switch (myMessage.type) {
           case 'text':
-            return <div className="message-text">{myMessage.content}</div>;
+            return (
+                <div className="message-text" style={{ whiteSpace: 'pre-line' }}>
+                    {myMessage.file && <MessageAttachmentRenderer myMessage={myMessage}  onUpdateLink={updateObjectLink}  />}
+                    {myMessage.content}
+                </div>  
+            )
           case 'audio':
             return <AudioVoiceMessage audioUrl={myMessage.content} />; // Pass the audio URL to your AudioMessage component
           case 'image':
@@ -40,7 +57,7 @@ const ChattingTextMessage = ({ message }) => {
     return ( 
         <>
             <div className={`message shadow ${myMessage.senderId === whoAmI.id ? 'sender ' : 'reciever'}`}>
-                {renderMessageContent} 
+                {renderMessageContent}                 
                 <div className="message-info">
                     <span className="time">
                         {myMessage.time}

@@ -36,3 +36,36 @@
 .message .time {
     font-size: 12px;
 }
+
+.message-content {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+  }
+  
+  .message-text {
+    word-wrap: break-word;
+  }
+  
+  .message-file {
+    max-width: 100%;
+    overflow: hidden;
+    margin-bottom: 8px;
+  }
+  
+  .message-image {
+    max-width: 100%;
+    border-radius: 8px;
+  }
+  
+  .message-file a {
+    display: inline-block;
+    max-width: 100%;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    /* color: var(--link-color); */
+    text-decoration: none;
+    font-weight: 500;
+  }
+  
