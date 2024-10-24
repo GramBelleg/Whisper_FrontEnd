@@ -19,79 +19,115 @@ import { whoAmI } from '../../services/chatservice/whoAmI'
 import useVoiceRecorder from '@/hooks/useVoiceRecorder'
 import { formatDuration } from '@/utils/formatDuration';
 import { socket } from '@/services/messagingservice/sockets/sockets'
+import { getMessagesForChatCleaned } from '@/services/chatservice/getMessagesForChat'
 
 
 
 const SingleChatSection = ({ selectedUser }) => {
     const [isTyping, setIsTyping] = useState(false);
-    const [messageToSend, setMessageToSend] = useState(null);
-    const [localMessages, setLocalMessages] = useState([]);
+    const [messages, setMessages] = useState([]);
     const {isRecording, duration, audioUrl, startRecording, stopRecording, discardRecording} = useVoiceRecorder()
-    const [userDetails, setUserDetails] = useState({})
-
-
+    const [areMessagesLoading, setAreMessagesLoading] = useState(true);
+    const [messagesError, setMessagesError] = useState('');
     
-    const { data: messages, loading: messagesLoading, error: messagesError} = useFetch('/userMessages');
-    const { data: sentMessageData, error: sendError, loading: sendLoading } = usePost('/userMessages', messageToSend);
-    const { data: userDetailsFromBack, loading, error } = useFetch('/userDetails')
-
-
+    // getMessagesForChatCleaned
     const showSendIcon = useMemo(() => isTyping || isRecording, [isTyping, isRecording])
 
-
-    // TODO : move the message sending logic to the message component to handle failures and retrying
     const sendMessage = (type, message) => {
         const tempMessageObject = {
-            id:4,
-            chatId: localMessages.chatId,
-            senderId: whoAmI.id,
+            chatId: selectedUser.correspondingChatId,
             forwarded: false,
             selfDestruct: true,
             expiresAfter: 5,
             parentMessageId: null,
-            time:new Date().toLocaleTimeString(),
-            state:"pending",
-            othersId: selectedUser.userId,
+            
+            pinned: false,
+            // state:"pending", TODO: state 
         }
+        /* */
 
         if(isRecording) {
             stopRecording((url) => {
                 // This will execute after the audio URL is available
                 tempMessageObject.content = url; // Now it has the correct audio URL
-                tempMessageObject.type = messageTypes.AUDIO;
-                setMessageToSend(tempMessageObject)
-                setLocalMessages((prevMessages) => [tempMessageObject, ...prevMessages])
+                tempMessageObject.type = messageTypes.AUDIO.toUpperCase();
+                //tempMessageObject.media = false;
             })
-            return;
         }
         if (type === messageTypes.TEXT) {
-            tempMessageObject.content = message
-            tempMessageObject.type = messageTypes.TEXT
+            tempMessageObject.content = message;
+            tempMessageObject.type = messageTypes.TEXT.toUpperCase();
+            //tempMessageObject.media = false;
         }
-            
-        //setMessageToSend(tempMessageObject);
-        socket.emit("send", tempMessageObject);
-        setLocalMessages((prevMessages) => [tempMessageObject, ...prevMessages]);
+        const tempObjectBack = { ...tempMessageObject };
+       
+        tempMessageObject.senderId = whoAmI.id,
+        tempMessageObject.deliveredAt = '';
+        tempMessageObject.time = new Date().toLocaleTimeString(),
+        tempMessageObject.readAt = '';
+        tempMessageObject.deleted = false;
+        tempMessageObject.sender = whoAmI.name;
+        tempMessageObject.state = "pending";
+        tempMessageObject.media = false;
+
+        setMessages((prevMessages) => [tempMessageObject, ...prevMessages]);
+        console.log(tempObjectBack)
+        socket.emit("send", tempObjectBack);
     }
 
     const updateIconSend = (isTyping) => {
         setIsTyping(isTyping)
     }
 
+    // First useEffect for socket events
     useEffect(() => {
-
-        if(messages && !messagesError && !messagesLoading) {
-            console.log(messages)
-            const thisChatMessages = messages.filter(
-                (message) =>  message.othersId === selectedUser.userId
-            );
-            console.log(thisChatMessages)
-            setLocalMessages(thisChatMessages);
+        const handleReceiveMessage = (messageData) => {
+            setMessages(prevMessages => {
+                const messageIndex = prevMessages.findIndex(
+                    (message) => messageData.content === message.content
+                );
+                
+                if (messageIndex !== -1) {
+                    const newMessages = [...prevMessages];
+                    newMessages[messageIndex] = {
+                        ...newMessages[messageIndex],
+                        id: messageData.id,
+                        state: 'sent'
+                    };
+                    console.log(newMessages)
+                    return newMessages;
+                }
+                return prevMessages;
+            });
+        };
+        
+        socket.on("receive", handleReceiveMessage);
+        return () => socket.off("receive", handleReceiveMessage);
+    }, []); // Remove messages dependency to avoid re-registering the listener
+    
+    // Another useEffect to get chat messages based on `selectedUser`
+    useEffect(() => {
+        const getChatMessages = async () => {
+            setMessages([]); // Clear messages when the user changes
+            try {
+                setAreMessagesLoading(true);
+                setMessagesError('');
+                const returnedMessages = await getMessagesForChatCleaned(selectedUser.correspondingChatId);
+                setMessages(returnedMessages);
+                console.log("Messages: ", returnedMessages);
+            } catch (error) {
+                console.log("Error: ", error);
+                setMessagesError(error.message);
+            } finally {
+                setAreMessagesLoading(false);
+            }
+        };
+    
+        if (selectedUser) {
+            getChatMessages();
         }
-
-        if (userDetailsFromBack && !error && !loading) setUserDetails(userDetailsFromBack)
-            
-    }, [messages, selectedUser, userDetailsFromBack])
+    }, [selectedUser]); // This effect runs when `selectedUser` changes
+    
 
 
     return (
@@ -111,7 +147,8 @@ const SingleChatSection = ({ selectedUser }) => {
                 </div>
             </div>
             <div className='messages'>
-                <SingleChatMessagesList user={selectedUser} messages={localMessages} />
+                {messagesError.length === 0 && !areMessagesLoading && 
+                    <SingleChatMessagesList messages={messages} />}
             </div>
 
             <div className='w-full flex items-center justify-center'>
