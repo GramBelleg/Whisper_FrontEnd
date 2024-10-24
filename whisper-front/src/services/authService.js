@@ -1,6 +1,7 @@
 import axios from 'axios';
 import axiosInstance from './axiosInstance';
 import authRoutes from '../utils/APIRoutes';
+import { whoAmI } from './chatservice/whoAmI';
 
 export const signUp = async (userData) => {
   try {
@@ -28,7 +29,7 @@ export const googleSignUp = async (codeResponse) => {
 
 export const facebookSignUp = async (codeResponse) => {
   try {
-    const res = await axiosInstance.post("http://localhost:5000/api/auth/facebook", {
+    const res = await axios.post("http://localhost:5000/api/auth/facebook", {
       code: codeResponse,
     },{
       withCredentials: true, // Ensure credentials are included
@@ -41,7 +42,7 @@ export const facebookSignUp = async (codeResponse) => {
 
 export const githubSignUp = async (codeResponse) => {
   try {
-    const res = await axiosInstance.post(authRoutes.githubAuth, {
+    const res = await axiosInstance.post("http://localhost:5000/api/auth/github", {
       code: codeResponse,
     },{
       withCredentials: true, // Ensure credentials are included
@@ -77,17 +78,19 @@ export const resendCode = async (email) => {
   }
 }
 
-export const login = async (credentials) => {
-  try {
-    
-    const response = await axios.post("http://localhost:5000/api/auth/login", credentials);
-    console.log(response.data);
-    return response.data;
-  } catch (error) {
-    console.log("login error", error);
-    throw new Error(error.response?.data?.message || "An error occurred");
-  }
-};
+  export const login = async (credentials) => {
+    try {
+      
+      const response = await axios.post("http://localhost:5000/api/auth/login", credentials, {
+        withCredentials: true
+      });
+      console.log(response.data);
+      return response.data;
+    } catch (error) {
+      console.log("login error", error);
+      throw new Error(error.response?.data?.message || "An error occurred");
+    }
+  };
 
 export const forgotPassword = async (email) => {
   try {
@@ -114,9 +117,11 @@ export const resetPassword = async (userData) => {
 export const setAuthData = (user, token) => {
   localStorage.setItem('user', JSON.stringify(user));
   localStorage.setItem('token', token);
+  Object.assign(whoAmI, user ? user : {});
 };
 
 export const clearAuthData = () => {
   localStorage.removeItem('user');
   localStorage.removeItem('token');
+  Object.assign(whoAmI, {});
 };
