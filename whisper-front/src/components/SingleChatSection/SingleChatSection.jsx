@@ -26,7 +26,7 @@ const SingleChatSection = ({ selectedUser }) => {
     const [isTyping, setIsTyping] = useState(false);
     const [messageToSend, setMessageToSend] = useState(null);
     const [localMessages, setLocalMessages] = useState([]);
-    const {isRecording, duration, audioUrl, startRecording, stopRecording, discardRecording} = useVoiceRecorder()
+    const {isRecording, duration, startRecording, stopRecording, discardRecording} = useVoiceRecorder()
     const [userDetails, setUserDetails] = useState({})
 
 
@@ -57,7 +57,7 @@ const SingleChatSection = ({ selectedUser }) => {
         if(isRecording) {
             stopRecording((url) => {
                 // This will execute after the audio URL is available
-                tempMessageObject.content = url; // Now it has the correct audio URL
+                tempMessageObject.content = url; 
                 tempMessageObject.type = messageTypes.AUDIO;
                 setMessageToSend(tempMessageObject)
                 setLocalMessages((prevMessages) => [tempMessageObject, ...prevMessages])
@@ -68,8 +68,8 @@ const SingleChatSection = ({ selectedUser }) => {
             tempMessageObject.content = message
             tempMessageObject.type = messageTypes.TEXT
         }
-            
-        //setMessageToSend(tempMessageObject);
+
+
         socket.emit("send", tempMessageObject);
         setLocalMessages((prevMessages) => [tempMessageObject, ...prevMessages]);
     }

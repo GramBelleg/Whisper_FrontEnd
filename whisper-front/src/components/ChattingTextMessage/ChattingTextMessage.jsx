@@ -8,6 +8,7 @@ import { useEffect, useMemo, useState } from "react";
 import PendingSend from "../PendingSend/PendingSend";
 import { whoAmI } from "../../services/chatservice/whoAmI";
 import AudioVoiceMessage from "../AudioVoiceMessage/AudioVoiceMessage";
+import { messageTypes } from "@/services/sendTypeEnum";
 
 const ChattingTextMessage = ({ message }) => {
 
@@ -26,11 +27,11 @@ const ChattingTextMessage = ({ message }) => {
     console.log(myMessage)
     const renderMessageContent = useMemo(() => {
         switch (myMessage.type) {
-          case 'text':
+          case messageTypes.TEXT:
             return <div className="message-text" style={{ whiteSpace: 'pre-wrap' }}>{myMessage.content}</div>;
-          case 'audio':
+          case messageTypes.AUDIO:
             return <AudioVoiceMessage audioUrl={myMessage.content} />; // Pass the audio URL to your AudioMessage component
-          case 'image':
+          case messageTypes.IMAGE:
             return <img src={myMessage.content} alt="message" className="message-image" />;
           default:
             return null; // Handle unknown message types
