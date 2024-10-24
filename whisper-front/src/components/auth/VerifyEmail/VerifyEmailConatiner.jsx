@@ -1,16 +1,21 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import useAuth from '../../../hooks/useAuth';
 import VerifyEmail from './VerifyEmail';
-import ResendTimer from '../../common/ResendTimer';
+import useResendTimer from '../../../hooks/useResendTimer';
 
 const VerifyEmailContainer = () => {
     const [code, setCode] = useState('');
-    const [canResend, setCanResend] = useState(true);
     const { handleVerify, handleResendCode, handleBackToSignUp, loading, error } = useAuth();
+    const { timer, canResend, resetTimer } = useResendTimer(0,"lastVerifyTime");
+    useEffect(() => {
+        resetTimer(60);
+    }
+    , []);
 
     const handleSubmit = async () => {
         await handleVerify(code);
         setCode('');
+        resetTimer(60);
     };
 
     const handleChange = (e) => {
@@ -19,7 +24,7 @@ const VerifyEmailContainer = () => {
 
     const resendCode = async () => {
         await handleResendCode();
-        setCanResend(false);
+        resetTimer(60);
     };
 
     const backToSignUp = async () => {
@@ -36,7 +41,7 @@ const VerifyEmailContainer = () => {
             resendCode={resendCode}
             backToSignUp={backToSignUp}
             canResend={canResend} 
-            setCanResend={setCanResend}
+            timer={timer}
         />
     );
 };
