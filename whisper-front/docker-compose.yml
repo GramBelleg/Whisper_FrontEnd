@@ -1,0 +1,15 @@
+version: '3'
+services:
+    front:
+        build: 
+            context: .
+        container_name: whisperFront
+        env_file:
+            - .env
+        ports:
+              - "80:80"
+        networks:
+              - whisperNet
+
+networks:
+      whisperNet:
