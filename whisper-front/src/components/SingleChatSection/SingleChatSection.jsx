@@ -95,9 +95,10 @@ const SingleChatSection = ({ selectedUser }) => {
         else
         {
             console.log(`file uploaded successfully`);
+            tempMessageObject.blobName = blobName;
             return { blobName };
         }
-        tempMessageObject.blobName = blobName;
+        
     }
     const formatFileName = (fileName, length) => {
         if (fileName.length > 20) {
