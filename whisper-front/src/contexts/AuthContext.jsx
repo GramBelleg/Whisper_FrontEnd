@@ -194,6 +194,7 @@ export const AuthProvider = ({ children }) => {
       localStorage.removeItem('token');
       localStorage.removeItem('user');
       Object.assign(whoAmI, {});
+      return { success: true };
     } catch (err) {
       console.log(err);
       setError(err.message);
