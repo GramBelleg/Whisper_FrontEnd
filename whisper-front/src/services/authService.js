@@ -19,7 +19,7 @@ export const googleSignUp = async (codeResponse) => {
     const res = await axios.post("http://localhost:5000/api/auth/google", {
       code: codeResponse.code, 
     },{
-      withCredentials: true, // Ensure credentials are included
+      withCredentials: true,
     });
     return res.data;
   } catch (error) {
@@ -124,4 +124,20 @@ export const clearAuthData = () => {
   localStorage.removeItem('user');
   localStorage.removeItem('token');
   Object.assign(whoAmI, {});
+};
+
+export const logout = async (token) => {
+  try {
+    const response = await axiosInstance.get(authRoutes.logOneOut,{
+      headers: {
+        'Authorization': `Bearer ${token}`,
+      },
+      withCredentials: true,
+    });
+    console.log(response.data);
+    return response.data;
+  } catch (error) {
+    console.log("logout error", error);
+    throw new Error(error.response?.data?.message || "An error occurred");
+  }
 };

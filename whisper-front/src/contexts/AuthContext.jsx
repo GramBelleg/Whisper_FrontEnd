@@ -10,6 +10,7 @@ import {
   facebookSignUp,
   githubSignUp,
   resendCode,
+  logout,
 } from '../services/authService';
 import { loadAuthData } from '../services/tokenService';
 import { whoAmI } from '@/services/chatservice/whoAmI';
@@ -152,10 +153,10 @@ export const AuthProvider = ({ children }) => {
       console.log(credentials);
       
       const data = await login(credentials);  
-      
-      setToken(data.userToken); // Ensure userToken is correct
+
+      setToken(data.userToken);
       setUser(data.user);                          
-      setAuthData(data.user, data.userToken); // Use consistent naming for token
+      setAuthData(data.user, data.userToken);
       
       return { data, success: true };
     } catch (err) {
@@ -183,12 +184,23 @@ export const AuthProvider = ({ children }) => {
     }
   };
 
-  const logout = () => {
-    setUser(null);
-    setToken(null);
-    localStorage.removeItem('token');
-    localStorage.removeItem('user');
-    Object.assign(whoAmI, {});
+  const handleLogout = async () => {
+    setLoading(true);
+    setError(null); 
+    try {
+      await logout(token); 
+      setUser(null);
+      setToken(null);
+      localStorage.removeItem('token');
+      localStorage.removeItem('user');
+      Object.assign(whoAmI, {});
+    } catch (err) {
+      console.log(err);
+      setError(err.message);
+      return { error: err, success: false };
+    } finally {
+      setLoading(false);
+    }
   };
 
   const clearError = () => {
@@ -218,7 +230,7 @@ export const AuthProvider = ({ children }) => {
       handleResendCode,
       handleVerify,
       handleReset,
-      logout,
+      handleLogout,
       clearError,
       handleBackToSignUp
     }}>

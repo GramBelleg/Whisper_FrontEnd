@@ -9,7 +9,7 @@ export const signupSchema = yup.object().shape({
     .string()
     .min(8)
     .matches(passwordRules, {
-      message: "Please create a stronger password, at least 1 upper case",
+      message: "Password must include both uppercase and lowercase letters.",
     })
     .required("Password is required"),
   confirmPassword: yup
