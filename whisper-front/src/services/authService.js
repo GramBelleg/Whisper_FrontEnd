@@ -60,8 +60,9 @@ export const verify = async (code,email) => {
       code: code,   
   });
     console.log(response.data);
-    return response.data;
+    return {data: response.data, success: true};
   } catch (error) {
+    console.log("verify error", error);
     throw new Error(error.response?.data?.message || "An error occurred");
   }
 };
@@ -74,6 +75,7 @@ export const resendCode = async (email) => {
     console.log(response.data);
     return response.data;
   } catch (error) {
+    console.log("resend code error", error);
     throw new Error(error.response?.data?.message || "An error occurred");
   }
 }
@@ -110,6 +112,7 @@ export const resetPassword = async (userData) => {
     console.log(response.data);
     return response.data;
   } catch (error) {
+    console.log("reset password error", error);
     throw new Error(error.response?.data?.message || "An error occurred");
   }
 };
