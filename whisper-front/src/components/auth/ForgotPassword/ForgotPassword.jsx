@@ -2,6 +2,7 @@ import React from 'react';
 import { Link } from "react-router-dom";
 import CustomInput from "../../common/CustomInput";
 import CustomButton from "../../common/CustomButton";
+import ErrorMessage from '@/components/common/ErrorMessage';
 
 const ForgotPassword = ({ email, loading, handleChange, handleSubmit, error, canResend, children }) => {
   return (
@@ -27,18 +28,15 @@ const ForgotPassword = ({ email, loading, handleChange, handleSubmit, error, can
           onClick={handleSubmit}
           disabled={loading || !canResend}
           className="w-4/5 bg-primary text-white py-2 rounded-lg hover:bg-dark transition duration-300"
+          id="send-reset-btn"
         />
 
         {children}
 
-        <Link to="/login" className="text-primary underline mt-4">
+        <Link to="/login" className="text-primary underline mt-4" id="back-to-login">
           Back to login
         </Link>
-        {error && (
-          <span className="text-red-600 text-sm mt-1">
-            {error}
-          </span>
-        )}
+        <ErrorMessage error={error} id="error-forgot-password" />
       </div>
     </div>
   );

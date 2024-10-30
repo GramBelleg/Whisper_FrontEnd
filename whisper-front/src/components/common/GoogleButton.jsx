@@ -19,6 +19,7 @@ const GoogleButton = ({ classStyle }) => {
       onClick={handleGoogleAuth}
       className={`${classStyle} w-full`}
       disabled={loading}
+      id="googleBtn"
     />
   );
 };
