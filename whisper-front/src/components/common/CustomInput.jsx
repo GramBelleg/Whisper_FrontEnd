@@ -7,7 +7,7 @@ const CustomInput = ({
   value,
   onChange,
   error,
-  touched,
+  touched = true,
 }) => {
   return (
     <div className="mb-4">
