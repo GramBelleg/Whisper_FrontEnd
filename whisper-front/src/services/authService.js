@@ -42,7 +42,7 @@ export const facebookSignUp = async (codeResponse) => {
 
 export const githubSignUp = async (codeResponse) => {
   try {
-    const res = await axiosInstance.post("http://localhost:5000/api/auth/github", {
+    const res = await axios.post("http://localhost:5000/api/auth/github", {
       code: codeResponse,
     },{
       withCredentials: true, // Ensure credentials are included
