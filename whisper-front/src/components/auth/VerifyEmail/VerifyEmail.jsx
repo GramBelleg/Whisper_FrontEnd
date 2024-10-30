@@ -48,6 +48,7 @@ const VerifyEmail = ({ code, loading, handleChange, handleSubmit, error, resendC
           onClick={handleSubmit}
           disabled={loading}
           className="w-4/5 bg-primary text-white py-2 rounded-lg hover:bg-dark transition duration-300"
+          id="verifyBtn"
         />
         <div>
           <p className='text-dark underline cursor-pointer' onClick={backToSignUp}>Back To Sign Up</p>

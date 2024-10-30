@@ -20,7 +20,7 @@ const CustomInput = ({
         className={`w-full p-3 text-dark bg-light border ${error && touched ? 'border-red-500' : 'border-gray-300'} rounded-md focus:border-primary focus:outline-none`}
       />
       {error && touched && (
-        <span className="text-red-600 text-sm mt-1">
+        <span className="text-red-600 text-sm mt-1" id={`error-${id}`}>
           {error}
         </span>
       )}

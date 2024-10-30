@@ -27,6 +27,7 @@ const ForgotPassword = ({ email, loading, handleChange, handleSubmit, error, can
           onClick={handleSubmit}
           disabled={loading || !canResend}
           className="w-4/5 bg-primary text-white py-2 rounded-lg hover:bg-dark transition duration-300"
+          id="sendResetBtn"
         />
 
         {children}
