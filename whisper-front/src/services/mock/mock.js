@@ -14,7 +14,14 @@ export const initializeMock = () => {
     mock.onGet('/stories').reply(200, storiesData);
     mock.onGet('/userDetails').reply(200, userDetails);
 
-    mock.onGet('/userMessages').reply(200, messagesForChat);
+    mock.onGet(/^\/chats\/getMessages\/\d+$/).reply((config) => {
+      const id = config.url.split('/getMessages/')[1];
+      
+      const response = messagesForChat.find((chat) => chat.chatId === parseInt(id));
+      
+      return [200, response?.data || []];
+    });
+
     mock.onPost('/userMessages').reply((config) => {
         console.log("Received POST request to /userMessages");
         try {
