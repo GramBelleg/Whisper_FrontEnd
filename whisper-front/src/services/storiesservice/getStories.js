@@ -1,32 +1,32 @@
 import axios from "axios"
 import noUser from "../../assets/images/no-user.png";
 
-let myChats = [];
-let myUsers = [];
+let myStories = [];
 
-export const getChatsAPI = async () => {
+export const getStoriesAPI = async () => {
 
     try {
-        const chats = await axios.get("http://localhost:5000/api/chats", {
+        const stories = await axios.get("http://localhost:5000/api/stories", {
             withCredentials: true, // Ensure credentials are included
         });
 
-        console.log(chats.data);
+        console.log(stories.data);
 
-        return chats.data;
+        return stories.data;
     } catch (error) {
         console.log("Error ", error.message)
     }
 }
 
-export const getChatsCleaned = async () => {
+export const getStoriesCleaned = async () => {
     try {
-        const chats = await getChatsAPI();
+        const stories = await getStoriesAPI();
 
-        myChats = []
+        myStories = []
         
-        chats.map((chat) => {
-            const flattenedChat = {
+        stories.map((story) => {
+            const flattenedStory = {
+                // TODO: See how stories are returned
                 id: chat.id,
                 lastMessage: chat.lastMessage.content, // Renamed to lastMessage
                 messageTime: chat.lastMessage.createdAt.slice(0, 19).replace("T", " "), // Renamed to messageTime
@@ -47,11 +47,11 @@ export const getChatsCleaned = async () => {
                 unreadMessageCount: 0, // Assuming a value for unreadMessageCount
                 sender : chat.userName
             };
-            myChats.push(flattenedChat);
+            myStories.push(flattenedChat);
         });
 
         setUsers();
-        return myChats;
+        return myStories;
         
         
     } catch (error) {
@@ -59,31 +59,4 @@ export const getChatsCleaned = async () => {
     }
     
     
-}
-
-
-const setUsers = () => {
-    myUsers = []
-
-    myChats.map((chat) => {
-        const user = {
-            userId: chat.othersId,
-            correspondingChatId:  chat.id,
-            name: chat.sender,
-            profilePic: chat.profilePic,
-            lastSeen: "2024-11-11 17:05:32"
-        };
-        myUsers.push(user);
-    })
-}
-
-
-export const getUserForChat = (id) => {
-    if(myUsers) {
-        const requiredUser = myUsers.find((user) => user.correspondingChatId === id);
-        if(requiredUser) {
-            return requiredUser;
-        }
-    }
-    return null;
 }
