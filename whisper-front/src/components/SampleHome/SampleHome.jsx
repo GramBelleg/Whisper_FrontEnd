@@ -19,16 +19,14 @@ const SampleHome = () => {
     const [errorChats, setErrorChats] = useState(false);
     const [loadingChats, setLoadingChats] = useState(true);
     const [loadingAllUsers, setLoadingAllUsers] = useState(true);
-    useEffect(() => {
-        
 
-        getChatsCleaned()
-        .then(allChats => {
+
+    useEffect(() => {
+        getChatsCleaned().then(allChats => {
             setChatList(allChats);
             setLoadingChats(false);
             console.log(allChats)
-        })
-        .catch(error => {
+        }).catch(error => {
             console.log("Error: ", error.message);
         });
 
@@ -37,11 +35,8 @@ const SampleHome = () => {
 
     const chooseChat = (id) => {
         if (!loadingChats) {
-            console.log(id)
             try {
-                
                 const currentUser = getUserForChat(id);
-
                 if (currentUser) {
                     console.log(currentUser)
                     setLoadingAllUsers(false);
@@ -51,9 +46,7 @@ const SampleHome = () => {
                 console.log("Error ", error.message);
             }
         }
-        
     }
-
 
     return ( 
         <div className="sampleHome">
