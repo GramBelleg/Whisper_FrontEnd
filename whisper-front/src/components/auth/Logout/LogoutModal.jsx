@@ -1,6 +1,7 @@
 import useAuth from "@/hooks/useAuth";
 import { useNavigate } from "react-router-dom";
 import { useState } from "react";
+import ErrorMessage from "@/components/common/ErrorMessage";
 
 const LogoutModal = ({ handleCancel }) => {
   const { handleLogout, error, loading } = useAuth();
@@ -30,11 +31,7 @@ const LogoutModal = ({ handleCancel }) => {
       <div className="relative bg-light rounded-lg shadow-lg p-6 w-full max-w-sm sm:max-w-md md:max-w-lg lg:max-w-xl z-10">
         <h2 className="text-lg font-semibold text-gray-800">Are you sure you want to log out?</h2>
 
-        {error && touched && (
-          <p className="mt-2 text-sm text-red-600">
-            Error: {error}
-          </p>
-        )}
+        { touched && <ErrorMessage error={error} id="error-logout" />}
 
         <div className="mt-4 flex justify-end space-x-3">
           <button
@@ -43,6 +40,7 @@ const LogoutModal = ({ handleCancel }) => {
             className={`px-4 py-2 rounded-lg text-white font-semibold ${
               loading ? "bg-gray-400 cursor-not-allowed" : "bg-red-500 hover:bg-red-600"
             }`}
+            id="logout-ok-btn"
           >
             {loading ? "Logging out..." : "Logout"}
           </button>
@@ -50,6 +48,7 @@ const LogoutModal = ({ handleCancel }) => {
           <button
             className="px-4 py-2 rounded-lg bg-gray-300 text-gray-700 font-semibold hover:bg-gray-400"
             onClick={handleCancel}
+            id="cancel-logout-btn"
           >
             Cancel
           </button>

@@ -16,6 +16,7 @@ const VerifyEmail = ({ code, loading, handleChange, handleSubmit, error, resendC
           <span
             className={`text-primary underline cursor-pointer ${!canResend || loading ? 'opacity-50 cursor-not-allowed' : ''}`}
             onClick={canResend ? resendCode : null} 
+            id="resend-verify-btn"
           >
             Resend verification code
           </span>
@@ -24,6 +25,7 @@ const VerifyEmail = ({ code, loading, handleChange, handleSubmit, error, resendC
         {!canResend && (
           <ResendTimer
             timer={timer}
+            id="resend-verify-timer"
           />
         )}
 
@@ -45,10 +47,12 @@ const VerifyEmail = ({ code, loading, handleChange, handleSubmit, error, resendC
           onClick={handleSubmit}
           disabled={loading}
           className="w-4/5 bg-primary text-white py-2 rounded-lg hover:bg-dark transition duration-300"
-          id="verifyBtn"
+          id="verify-btn"
         />
         <div>
-          <p className='text-dark underline cursor-pointer' onClick={backToSignUp}>Back To Sign Up</p>
+          <p className='text-dark underline cursor-pointer' onClick={backToSignUp} id="back-to-signup">
+            Back To Sign Up
+            </p>
         </div>
       </div>
     </div>

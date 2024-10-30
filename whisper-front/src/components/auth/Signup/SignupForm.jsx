@@ -77,7 +77,7 @@ const SignupForm = ({
                     <CustomButton
                         label='Sign Up'
                         onClick={handleSubmit}
-                        id='signupBtn'
+                        id='signup-btn'
                         className='w-full p-3 font-bold text-dark bg-light rounded-lg cursor-pointer hover:bg-primary hover:text-light transition duration-300 mt-2 mb-2 disabled:bg-gray-400 disabled:cursor-not-allowed'
                         disabled={isSubmitting || loading}
                     />
@@ -97,7 +97,7 @@ const SignupForm = ({
 
                 <p className='text-light text-sm opacity-80 hover:opacity-100 transition duration-300'>
                     already a member?{' '}
-                    <a href='/login' className='text-primary hover:underline' id="loginSwitch">
+                    <a href='/login' className='text-primary hover:underline' id="login-switch">
                         Log in
                     </a>
                 </p>

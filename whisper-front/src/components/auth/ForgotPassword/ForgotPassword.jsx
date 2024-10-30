@@ -28,12 +28,12 @@ const ForgotPassword = ({ email, loading, handleChange, handleSubmit, error, can
           onClick={handleSubmit}
           disabled={loading || !canResend}
           className="w-4/5 bg-primary text-white py-2 rounded-lg hover:bg-dark transition duration-300"
-          id="sendResetBtn"
+          id="send-reset-btn"
         />
 
         {children}
 
-        <Link to="/login" className="text-primary underline mt-4">
+        <Link to="/login" className="text-primary underline mt-4" id="back-to-login">
           Back to login
         </Link>
         <ErrorMessage error={error} id="error-forgot-password" />
