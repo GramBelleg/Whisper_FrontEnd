@@ -57,10 +57,10 @@ const ChatPage = ({ chatList, chooseChat }) => {
             style={{ width: `${sidebarWidth}%` }}
         >
             <div>
-                { true && <SearchBar />}
+                <SearchBar />
             </div>
             <div className="sidebar__stories">
-                { true && <StoriesContainer /> }
+                <StoriesContainer />
             </div>
             <div className="sidebar__other-content">
                 {chatList &&  <ChatList chatList={chatList} chooseChat={chooseChat}/>}
