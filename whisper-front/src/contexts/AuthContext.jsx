@@ -88,6 +88,7 @@ export const AuthProvider = ({ children }) => {
     setError(null); 
     try {
       const data = await githubSignUp(userData);  
+      console.log(data);
       setUser(data.user);      
       setToken(data.userToken);                    
       setAuthData(data.user, data.userToken);  

@@ -14,6 +14,7 @@ const GithubCallback = () => {
     const fetchUserData = async () => {
       if (code && !hasFetched.current) {
         hasFetched.current = true;
+        console.log("here");
         await handleGithubSignUp(code);
         navigate("/home");
       } else if (!code) {
