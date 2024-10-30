@@ -19,6 +19,7 @@ export const getStoriesAPI = async () => {
 
 export const getStoriesCleaned = async () => {
     try {
+        
         const stories = await getStoriesAPI();
 
         myStories = []
@@ -33,7 +34,6 @@ export const getStoriesCleaned = async () => {
             };
             myStories.push(flattenedStory);
         });
-        setUsers();
         return myStories;
         
         
