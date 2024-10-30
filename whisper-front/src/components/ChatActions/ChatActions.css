@@ -1,0 +1,80 @@
+.chat-actions-container {
+    display: flex;
+    gap: 10px;
+    padding: 10px 0;
+    margin: 10px 0;
+    align-items: flex-end;
+    justify-content: center;
+    width: calc(100% - var(--right-sidebar-width));
+}
+
+
+
+.input-container {
+    display: flex;
+    flex-direction: column;
+    padding: 8px 16px;
+    border-radius: 8px;
+    background-color: var(--primary-color);
+    color: var(--text-color);
+    border: none;
+    outline: none;
+    flex-grow: 1;
+}
+
+.actions-row {
+    display: flex;
+    gap: 1rem;
+    align-self: stretch;
+    align-items: center;
+}
+
+.input-container .attachements-container {
+    display: flex;
+    gap: 10px;
+}
+
+
+.input-container ,.input-container .attachements-container {
+    color: var(--accent-color);
+    font-size: 24px;
+}
+
+.input-container {
+    color: var(--text-color);
+}
+
+.textmessage-emoji-container {
+    display: flex;
+    flex-grow: 1;
+    align-items: center;
+}
+.voice-send-container, .cancel-voice-recording {
+    display: flex;
+    font-size: 24px;
+    color: var(--accent-color);
+    flex-shrink: 0;
+    width: 52px;
+    height: 52px;
+    background-color: var(--primary-color);
+    border-radius: 50%;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.3s;
+    cursor: pointer;
+}
+
+
+.voice-send-container:hover,
+.voice-send-container.active {
+    background-color: var(--accent-color);
+    color: var(--text-color);
+}
+
+.cancel-voice-recording {
+    color: var(--danger-color);
+}
+
+.cancel-voice-recording:hover {
+    background-color: #322525;
+}

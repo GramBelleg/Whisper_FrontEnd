@@ -18,9 +18,10 @@ import Info from "../Info/Info";
 import "./ChatItem.css";
 import { whoAmI } from "../../services/chatservice/whoAmI";
 import PendingSend from "../PendingSend/PendingSend";
+import { useChat } from "@/contexts/ChatContext";
 
 
-const ChatItem = ({ index, standaloneChat, chooseChat }) => {
+const ChatItem = ({ index, standaloneChat }) => {
 
     const maxLength = (
         
@@ -58,15 +59,18 @@ const ChatItem = ({ index, standaloneChat, chooseChat }) => {
         tagged: false,
         group: false,
         story: false,
-        profilePic:''
+        picture:''
     });
+
+    const { selectChat } = useChat();
 
     // Function to handle clicks and call chooseChat
     const handleClick = (e) => {
         // Check if the click is on the Info component
         const infoElement = e.target.closest('.info'); // Assuming .info-component is the class for the Info component
         if (!infoElement) {
-            chooseChat(myChat.id); // Call chooseChat if not clicking on Info
+
+            selectChat(myChat);
         }
     };
 
@@ -80,7 +84,6 @@ const ChatItem = ({ index, standaloneChat, chooseChat }) => {
             messageTime: checkDisplayTime(standaloneChat.messageTime),
             name: trimName(standaloneChat.name)
         }));
-        console.log(standaloneChat.profilePic)
 
         // Check for overflow when the name changes
         const checkOverflow = () => {
@@ -105,7 +108,7 @@ const ChatItem = ({ index, standaloneChat, chooseChat }) => {
                 <div className="single-chat-content">
                     <div className={`profile-pic-wrapper ${myChat.story ? 'has-story' : ''}`}>
                         <img 
-                            src={myChat.profilePic || noUser}
+                            src={myChat.picture || noUser}
                             className={`profile-pic`} // Add the conditional class
                             onError={(e) => handleNoUserImage(e)}
                         />

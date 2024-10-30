@@ -1,17 +1,14 @@
-// This page Contains Stories and the chats
-// It renders both stories page and chats page
-
-import useFetch from "../../services/useFetch";
 import ChatList from "../ChatList/ChatList";
 import "./ChatPage.css";
 import StoriesContainer from "../StoriesContainer/StoriesContainer";
 import SearchBar from "../SearchBar/SearchBar";
-import React, { useState, useEffect, useRef } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import AddNewButton from "../AddNewButton/AddNewButton";
+import { useChat } from "@/contexts/ChatContext";
 
-const ChatPage = ({ chatList, chooseChat }) => {
+const ChatPage = ({ chatList }) => {
 
-    
+    const { selectChat } = useChat();
     const [sidebarWidth, setSidebarWidth] = useState(100); 
     const sidebarRef = useRef(null);
     const isResizing = useRef(false);
@@ -58,13 +55,13 @@ const ChatPage = ({ chatList, chooseChat }) => {
             style={{ width: `${sidebarWidth}%` }}
         >
             <div>
-                { true && <SearchBar />}
+                <SearchBar />
             </div>
             <div className="sidebar__stories">
-                { true && <StoriesContainer /> }
+                <StoriesContainer />
             </div>
             <div className="sidebar__other-content">
-                {chatList &&  <ChatList chatList={chatList} chooseChat={chooseChat}/>}
+                {chatList &&  <ChatList chatList={chatList} chooseChat={selectChat}/>}
                 <AddNewButton onClick={handleAddNewClick} />
             </div>
             <div
