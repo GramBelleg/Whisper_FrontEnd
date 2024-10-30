@@ -33,7 +33,7 @@ const VerifyEmail = ({ code, loading, handleChange, handleSubmit, error, resendC
           <CustomInput
             type="password"
             id="code"
-            placeholder="Enter 6-digit verification code"
+            placeholder="Enter verification code"
             value={code}
             onChange={handleChange}
           />

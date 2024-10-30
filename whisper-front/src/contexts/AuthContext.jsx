@@ -104,9 +104,9 @@ export const AuthProvider = ({ children }) => {
     setError(null); 
     try {
       const data = await verify(code,user.email);    
-      setToken(data.userToken);
-      setUser(data);                          
-      setAuthData(data, data.userToken);  
+      setUser(data.data.user);      
+      setToken(data.data.userToken);                    
+      setAuthData(data.data.user, data.data.userToken);  
       return {data: data, success: true};
     } catch (err) {
       setError(err.message);
