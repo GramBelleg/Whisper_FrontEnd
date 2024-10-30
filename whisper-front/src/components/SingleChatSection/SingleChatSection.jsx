@@ -22,6 +22,7 @@ import { socket } from '@/services/messagingservice/sockets/sockets'
 import { getMessagesForChatCleaned } from '@/services/chatservice/getMessagesForChat'
 
 
+import { useRef } from 'react'
 
 const SingleChatSection = ({ selectedUser }) => {
     const [isTyping, setIsTyping] = useState(false);
@@ -29,22 +30,33 @@ const SingleChatSection = ({ selectedUser }) => {
     const {isRecording, duration, audioUrl, startRecording, stopRecording, discardRecording} = useVoiceRecorder()
     const [areMessagesLoading, setAreMessagesLoading] = useState(true);
     const [messagesError, setMessagesError] = useState('');
-    
-    // getMessagesForChatCleaned
-    const showSendIcon = useMemo(() => isTyping || isRecording, [isTyping, isRecording])
+    const [sending, setSending] = useState(false);
+    const [attachedFile, setAttachedFile] = useState(null);
+    const [showAttachMenu, setShowAttachMenu] = useState(false);
+    const fileInputRef = useRef(null);
+    const imageInputRef = useRef(null);
+    const [attachmentType, setAttachmentType] = useState(-1);
+    const { data: uploadData, error:errorUpload, loading: loadingUpload } = useFetch('/uploadAttachment');
 
-    const sendMessage = (type, message) => {
+
+
+    const showSendIcon = useMemo(() => isTyping || isRecording, [isTyping, isRecording]);
+
+    const { data: sentMessageData, error: sendError, loading: sendLoading } = usePost('/userMessages', messageToSend);
+
+    // getMessagesForChatCleaned
+
+    const sendMessage = async (type, message) => {
+        setSending(true);
         const tempMessageObject = {
             chatId: selectedUser.correspondingChatId,
             forwarded: false,
             selfDestruct: true,
             expiresAfter: 5,
             parentMessageId: null,
-            
             pinned: false,
             // state:"pending", TODO: state 
         }
-        /* */
 
         if(isRecording) {
             stopRecording((url) => {
@@ -54,10 +66,31 @@ const SingleChatSection = ({ selectedUser }) => {
                 //tempMessageObject.media = false;
             })
         }
+        
         if (type === messageTypes.TEXT) {
             tempMessageObject.content = message;
             tempMessageObject.type = messageTypes.TEXT.toUpperCase();
             //tempMessageObject.media = false;
+
+            tempMessageObject.file = null;
+            tempMessageObject.blobName = null;
+            tempMessageObject.objectLink = "";
+            tempMessageObject.fileType = attachmentType;
+
+            if (attachedFile !== null) {
+                tempMessageObject.file=attachedFile;
+                removeAttachment();
+                if (uploadData) {
+                    let blob = await uploadFile(tempMessageObject,uploadData); // TODO: Make this not await
+                    if (blob) {
+                        tempMessageObject.blobName = blob.blobName;
+                    }
+                    
+                }
+                if (errorUpload) {
+                    console.log(errorUpload)
+                }
+            }
         }
         const tempObjectBack = { ...tempMessageObject };
        
@@ -73,13 +106,79 @@ const SingleChatSection = ({ selectedUser }) => {
         setMessages((prevMessages) => [tempMessageObject, ...prevMessages]);
         console.log(tempObjectBack)
         socket.emit("send", tempObjectBack);
+        setSending(false);
     }
 
     const updateIconSend = (isTyping) => {
         setIsTyping(isTyping)
     }
+    const uploadFile = async (tempMessageObject, data) => {
+        
+        let presignedUrl = data.presignedUrl;
+        let blobName = data.blobName;
+        let blob = new Blob([tempMessageObject.file]);
+        const uploadResponse = await fetch(presignedUrl, {
+            method: "PUT",
+            body: blob,
+            headers: {
+                "x-ms-blob-type": "BlockBlob", 
+            },
+        });
 
-    // First useEffect for socket events
+        if (!uploadResponse.ok) {
+            console.log("Error uploading file");
+            return null;
+        }
+        else
+        {
+            console.log(`file uploaded successfully`);
+            tempMessageObject.blobName = blobName;
+            return { blobName };
+        }
+        
+    }
+    const formatFileName = (fileName, length) => {
+        if (fileName.length > 20) {
+            return `${fileName.slice(0, length)}...`; 
+        }
+        return fileName; 
+    };
+    
+    const handleFileChange = (e) => {
+        if (e.target.files[0]) {
+            setAttachedFile(e.target.files[0]);
+        }
+    }
+
+    console.log("user" ,selectedUser)
+    
+
+    const removeAttachment = () => {
+        setAttachedFile(null);
+        if (fileInputRef.current) {
+            fileInputRef.current.value = '';
+        }
+        if (imageInputRef.current) {
+            imageInputRef.current.value = '';
+        }
+        setAttachmentType(-1)
+    }
+    const toggleAttachMenu = () => {
+        setShowAttachMenu(!showAttachMenu);
+    }
+
+    const handleFileAttach = () => {
+        fileInputRef.current.click();
+        setAttachmentType(0)
+        setShowAttachMenu(false);
+    }
+    const handleImageAttach = () => {
+        imageInputRef.current.click();
+        setAttachmentType(1)
+        setShowAttachMenu(false);
+    }
+
+        // First useEffect for socket events
     useEffect(() => {
         const handleReceiveMessage = (messageData) => {
             setMessages(prevMessages => {
@@ -153,19 +252,57 @@ const SingleChatSection = ({ selectedUser }) => {
 
             <div className='w-full flex items-center justify-center'>
                 <div className='chat-actions-container'>
+                    {
+                        sending && (
+                            <FontAwesomeIcon icon={faCircleNotch} spin />
+                        )
+                    }
+                    {attachedFile && (
+                                    <div className="attachment-preview">
+                                        <span>{formatFileName(attachedFile.name,10)}</span>
+                                        <button onClick={removeAttachment} className="remove-attachment">
+                                            <FontAwesomeIcon icon={faTimes} />
+                                        </button>
+                                    </div>
+                                )}
                     <div className='input-container shadow transition-all'>
                         <div className='textmessage-emoji-container'>
                             <SingleChatMessaging updateIconSend={updateIconSend} sendMessage={sendMessage} />
-                        </div>
 
+                        <input 
+                            type="file" 
+                            onChange={handleFileChange}
+                            style={{ display: 'none' }} 
+                            id="file-input" 
+                            ref={fileInputRef}
+                        />
+                        <input 
+                            type="file" 
+                            accept="image/*,video/*" 
+                            onChange={handleFileChange}
+                            style={{ display: 'none' }} 
+                            id="image-input" 
+                            ref={imageInputRef}
+                        />
+                        </div>
                         {isRecording ? (
                             <div className="flex items-center justify-center space-x-2">
                                 <span className="text-lg font-semibold">{formatDuration(duration)}</span>
                                 <div className="w-3 h-3 rounded-full bg-red-500 animate-pulse"></div>
                             </div>
                         ) : (
-                            <div className='attachements-container'>
-                                <FontAwesomeIcon icon={faPaperclip} />
+                            <div className='attachements-container relative'>
+                                <FontAwesomeIcon icon={faPaperclip} onClick={toggleAttachMenu}/>
+                                {showAttachMenu && (
+                                    <div className="attach-menu absolute bottom-full left-0 bg-white shadow-md rounded-md p-2">
+                                        <button onClick={handleFileAttach} className="block w-full text-left py-1 px-2 hover:bg-gray-100">
+                                            <FontAwesomeIcon icon={faFile} className="mr-2" />
+                                        </button>
+                                        <button onClick={handleImageAttach} className="block w-full text-left py-1 px-2 hover:bg-gray-100">
+                                            <FontAwesomeIcon icon={faImage} className="mr-2" />
+                                        </button>
+                                    </div>
+                                )}
                             </div>
                         )}
                     </div>

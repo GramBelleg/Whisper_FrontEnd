@@ -11,4 +11,7 @@ export const initializeMock = () => {
     // mock.onPost('/signup').reply(201, signupResponse);
     
     // mock.onGet('/stories').reply(200, storiesData);
+    mock.onGet('/stories').reply(200, storiesData);
+    mock.onGet('/uploadAttachment').reply(200,uploadLink);
+    mock.onGet('/downloadAttachment').reply(200,downloadLink);
 };

@@ -7,6 +7,7 @@ import PendingSend from "../PendingSend/PendingSend";
 import { whoAmI } from "../../services/chatservice/whoAmI";
 import AudioVoiceMessage from "../AudioVoiceMessage/AudioVoiceMessage";
 import { mapMessageState } from "../../services/chatservice/mapMessageState";
+import MessageAttachmentRenderer from '../MessageAttachment/MessageAttachmentRenderer';
 
 const ChattingTextMessage = ({ message }) => {
   const [myMessage, setMyMessage] = useState(message || {});
@@ -19,6 +20,17 @@ const ChattingTextMessage = ({ message }) => {
       });
     }
   }, [message]);
+
+  const updateObjectLink = (objectLink) => {
+    setMyMessage(prev => ({
+      ...prev,
+      objectLink,
+    }));
+    if (message) {
+        message.objectLink = objectLink;
+    }
+    console.log(message);
+  };
 
   const renderMessageContent = useMemo(() => {
     if (!myMessage?.type) {
@@ -37,9 +49,10 @@ const ChattingTextMessage = ({ message }) => {
     switch (type) {
       case 'text':
         return (
-          <div className="message-text" style={{ whiteSpace: 'pre-wrap' }}>
+          <div className="message-text" style={{ whiteSpace: 'pre-line' }}>
+            {myMessage.file && <MessageAttachmentRenderer myMessage={myMessage}  onUpdateLink={updateObjectLink}  />}
             {content}
-          </div>
+        </div>  
         );
       case 'audio':
         return <AudioVoiceMessage audioUrl={content} />;
@@ -75,5 +88,4 @@ const ChattingTextMessage = ({ message }) => {
     </div>
   );
 };
-
-export default ChattingTextMessage;
+    
