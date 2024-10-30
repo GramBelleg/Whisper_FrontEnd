@@ -1,5 +1,4 @@
 import axios from "axios"
-import noUser from "../../assets/images/no-user.png";
 
 let myStories = [];
 
@@ -26,30 +25,14 @@ export const getStoriesCleaned = async () => {
         
         stories.map((story) => {
             const flattenedStory = {
-                // TODO: See how stories are returned
-                id: chat.id,
-                lastMessage: chat.lastMessage.content, // Renamed to lastMessage
-                messageTime: chat.lastMessage.createdAt.slice(0, 19).replace("T", " "), // Renamed to messageTime
-                expiresAfter: chat.lastMessage.expiresAfter,
-                forwarded: chat.lastMessage.forwarded !== null ? chat.lastMessage.forwarded: false,
-                parentMessageId: chat.lastMessage.parentMessageId,
-                pinned: chat.lastMessage.pinned,
-                selfDestruct: chat.lastMessage.selfDestruct,
-                senderId: chat.lastMessage.senderId,
-                messageType: chat.lastMessage.type, // Renamed to messageType
-                lastMessageId: chat.lastMessage.id, // Keep this as is
-                type: chat.type,
-                othersId: chat.othersId,
-                media: chat.lastMessage.media !== null ?  chat.media : false,
-                story: chat.story !== null ?  chat.story: false,
-                muted: chat.muted !== null ?  chat.muted: false,
-                profilePic: chat.profilePic !== null ? chat.profilePic : noUser,
-                unreadMessageCount: 0, // Assuming a value for unreadMessageCount
-                sender : chat.userName
+                id: story.id,
+                content: story.content, 
+                media: story.media,
+                likes: story.likes,
+                time: story.time
             };
-            myStories.push(flattenedChat);
+            myStories.push(flattenedStory);
         });
-
         setUsers();
         return myStories;
         
