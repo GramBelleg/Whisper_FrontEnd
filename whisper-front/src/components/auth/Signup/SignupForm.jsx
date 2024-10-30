@@ -7,6 +7,7 @@ import GithubButton from '../../common/GithubButton'
 import PhoneInput from 'react-phone-input-2'
 import 'react-phone-input-2/lib/style.css'
 import CustomButton from '@/components/common/CustomButton'
+import ErrorMessage from '@/components/common/ErrorMessage'
 
 const SignupForm = ({
     handleChange,
@@ -66,11 +67,11 @@ const SignupForm = ({
                         inputStyle={{ height: '3rem' }}
                         id="phoneNumber"
                     />
-                    {errors.phoneNumber && touched.phoneNumber && <label className='text-red-600 text-sm mt-1' id="error-phoneNumber">{errors.phoneNumber}</label>}
+                    { touched.phoneNumber && <ErrorMessage error={errors.phoneNumber} id="error-phoneNumber" />}
                 </div>
                 <div>
                     <ReCAPATCHA sitekey={import.meta.env.VITE_APP_SITE_KEY} onChange={handleCaptchaChange} id="recaptcha"/>
-                    {errors.captcha && <label className='text-red-600 text-sm mt-1' id="error-recaptcha">{errors.captcha}</label>}
+                    <ErrorMessage error={errors.captcha} id="error-recaptcha" />
                 </div>
                 <div>
                     <CustomButton
@@ -81,7 +82,7 @@ const SignupForm = ({
                         disabled={isSubmitting || loading}
                     />
                 </div>
-                {error && <label className='text-red-600 text-sm mt-1' id="error-signup">{error}</label>}
+                <ErrorMessage error={error} id="error-signup" />
             </form>
             <div className='w-full border-t border-gray-200 mt-8 pt-6'>
                 <GoogleButton

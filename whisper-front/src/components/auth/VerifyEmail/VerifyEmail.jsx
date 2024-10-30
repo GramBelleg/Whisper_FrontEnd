@@ -2,6 +2,7 @@ import React from 'react';
 import CustomInput from "../../common/CustomInput";
 import CustomButton from "../../common/CustomButton";
 import ResendTimer from '../../common/ResendTimer'; 
+import ErrorMessage from '@/components/common/ErrorMessage';
 
 const VerifyEmail = ({ code, loading, handleChange, handleSubmit, error, resendCode, backToSignUp, canResend, timer }) => {
   return (
@@ -38,11 +39,7 @@ const VerifyEmail = ({ code, loading, handleChange, handleSubmit, error, resendC
             onChange={handleChange}
           />
         </div>
-        {error && (
-          <span className="text-red-600 text-sm mt-1">
-            {error}
-          </span>
-        )}
+        <ErrorMessage error={error} id="error-verify" />
         <CustomButton
           label="Verify"
           onClick={handleSubmit}

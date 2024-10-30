@@ -1,11 +1,9 @@
-import React from 'react';
-import CustomButton from "../../common/CustomButton";
 import CustomInput from "../../common/CustomInput";
-import { FaGithub, FaGoogle, FaFacebookF } from "react-icons/fa";
 import { Link } from "react-router-dom";
 import GoogleButton from '../../common/GoogleButton';
 import GithubButton from '../../common/GithubButton';
 import FacebookButton from '../../common/FacebookButton';
+import ErrorMessage from '@/components/common/ErrorMessage';
 
 const LoginForm = ({
   handleChange,
@@ -47,7 +45,7 @@ const LoginForm = ({
         >
           Login
         </button>
-        {error && <p className="text-red-500 text-sm mt-2">{error}</p>}
+        <ErrorMessage error={error} id="error-login" />
         <div className="flex items-center justify-between mt-4">
           <span className="text-sm">Don't have an account?</span>
           <Link to="/signup" className="text-primary text-sm hover:underline">
