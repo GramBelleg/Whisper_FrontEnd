@@ -44,8 +44,75 @@ const SingleChatSection = ({ selectedUser }) => {
 
     const { data: sentMessageData, error: sendError, loading: sendLoading } = usePost('/userMessages', messageToSend);
 
-    // getMessagesForChatCleaned
+    const removeAttachment = () => {
+        setAttachedFile(null);
+        if (fileInputRef.current) {
+            fileInputRef.current.value = '';
+        }
+        if (imageInputRef.current) {
+            imageInputRef.current.value = '';
+        }
+        setAttachmentType(-1)
+    }
+    const toggleAttachMenu = () => {
+        setShowAttachMenu(!showAttachMenu);
+    }
 
+    const handleFileAttach = () => {
+        fileInputRef.current.click();
+        setAttachmentType(0)
+        setShowAttachMenu(false);
+    }
+    const handleImageAttach = () => {
+        imageInputRef.current.click();
+        setAttachmentType(1)
+        setShowAttachMenu(false);
+    }
+
+    const updateIconSend = (isTyping) => {
+        setIsTyping(isTyping)
+    }
+
+    const formatFileName = (fileName, length) => {
+        if (fileName.length > 20) {
+            return `${fileName.slice(0, length)}...`; 
+        }
+        return fileName; 
+    };
+    
+    const handleFileChange = (e) => {
+        if (e.target.files[0]) {
+            setAttachedFile(e.target.files[0]);
+        }
+    }   
+
+    const uploadFile = async (tempMessageObject, data) => {
+        
+        let presignedUrl = data.presignedUrl;
+        let blobName = data.blobName;
+        let blob = new Blob([tempMessageObject.file]);
+        const uploadResponse = await fetch(presignedUrl, {
+            method: "PUT",
+            body: blob,
+            headers: {
+                "x-ms-blob-type": "BlockBlob", 
+            },
+        });
+
+        if (!uploadResponse.ok) {
+            console.log("Error uploading file");
+            return null;
+        }
+        else
+        {
+            console.log(`file uploaded successfully`);
+            tempMessageObject.blobName = blobName;
+            return { blobName };
+        }
+        
+    }
+
+    // getMessagesForChatCleaned
     const sendMessage = async (type, message) => {
         setSending(true);
         const tempMessageObject = {
@@ -78,10 +145,10 @@ const SingleChatSection = ({ selectedUser }) => {
             tempMessageObject.fileType = attachmentType;
 
             if (attachedFile !== null) {
-                tempMessageObject.file=attachedFile;
+                tempMessageObject.file = attachedFile;
                 removeAttachment();
                 if (uploadData) {
-                    let blob = await uploadFile(tempMessageObject,uploadData); // TODO: Make this not await
+                    let blob = await uploadFile(tempMessageObject,uploadData);
                     if (blob) {
                         tempMessageObject.blobName = blob.blobName;
                     }
@@ -107,76 +174,7 @@ const SingleChatSection = ({ selectedUser }) => {
         console.log(tempObjectBack)
         socket.emit("send", tempObjectBack);
         setSending(false);
-    }
-
-    const updateIconSend = (isTyping) => {
-        setIsTyping(isTyping)
-    }
-    const uploadFile = async (tempMessageObject, data) => {
-        
-        let presignedUrl = data.presignedUrl;
-        let blobName = data.blobName;
-        let blob = new Blob([tempMessageObject.file]);
-        const uploadResponse = await fetch(presignedUrl, {
-            method: "PUT",
-            body: blob,
-            headers: {
-                "x-ms-blob-type": "BlockBlob", 
-            },
-        });
-
-        if (!uploadResponse.ok) {
-            console.log("Error uploading file");
-            return null;
-        }
-        else
-        {
-            console.log(`file uploaded successfully`);
-            tempMessageObject.blobName = blobName;
-            return { blobName };
-        }
-        
-    }
-    const formatFileName = (fileName, length) => {
-        if (fileName.length > 20) {
-            return `${fileName.slice(0, length)}...`; 
-        }
-        return fileName; 
-    };
-    
-    const handleFileChange = (e) => {
-        if (e.target.files[0]) {
-            setAttachedFile(e.target.files[0]);
-        }
-    }
-
-    console.log("user" ,selectedUser)
-    
-
-    const removeAttachment = () => {
-        setAttachedFile(null);
-        if (fileInputRef.current) {
-            fileInputRef.current.value = '';
-        }
-        if (imageInputRef.current) {
-            imageInputRef.current.value = '';
-        }
-        setAttachmentType(-1)
-    }
-    const toggleAttachMenu = () => {
-        setShowAttachMenu(!showAttachMenu);
-    }
-
-    const handleFileAttach = () => {
-        fileInputRef.current.click();
-        setAttachmentType(0)
-        setShowAttachMenu(false);
-    }
-    const handleImageAttach = () => {
-        imageInputRef.current.click();
-        setAttachmentType(1)
-        setShowAttachMenu(false);
-    }
+    } 
 
         // First useEffect for socket events
     useEffect(() => {
@@ -226,7 +224,6 @@ const SingleChatSection = ({ selectedUser }) => {
             getChatMessages();
         }
     }, [selectedUser]); // This effect runs when `selectedUser` changes
-    
 
 
     return (
@@ -269,21 +266,21 @@ const SingleChatSection = ({ selectedUser }) => {
                         <div className='textmessage-emoji-container'>
                             <SingleChatMessaging updateIconSend={updateIconSend} sendMessage={sendMessage} />
 
-                        <input 
-                            type="file" 
-                            onChange={handleFileChange}
-                            style={{ display: 'none' }} 
-                            id="file-input" 
-                            ref={fileInputRef}
-                        />
-                        <input 
-                            type="file" 
-                            accept="image/*,video/*" 
-                            onChange={handleFileChange}
-                            style={{ display: 'none' }} 
-                            id="image-input" 
-                            ref={imageInputRef}
-                        />
+                            <input 
+                                type="file" 
+                                onChange={handleFileChange}
+                                style={{ display: 'none' }} 
+                                id="file-input" 
+                                ref={fileInputRef}
+                            />
+                            <input 
+                                type="file" 
+                                accept="image/*,video/*" 
+                                onChange={handleFileChange}
+                                style={{ display: 'none' }} 
+                                id="image-input" 
+                                ref={imageInputRef}
+                            />
                         </div>
                         {isRecording ? (
                             <div className="flex items-center justify-center space-x-2">
@@ -322,4 +319,4 @@ const SingleChatSection = ({ selectedUser }) => {
     )
 }
 
-export default SingleChatSection
+export default SingleChatSection;

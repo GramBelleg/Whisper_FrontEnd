@@ -1,4 +1,4 @@
-import profilePicture from "../../assets/images/Grambell.png"
+import profilePicture from "../assets/images/Grambell.png"
 export const loginResponse = {
     userId: 1,
     email: 'mock@gmail.com',

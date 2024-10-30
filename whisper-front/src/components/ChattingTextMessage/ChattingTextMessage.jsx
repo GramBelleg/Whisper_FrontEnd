@@ -88,4 +88,6 @@ const ChattingTextMessage = ({ message }) => {
     </div>
   );
 };
+
+export default ChattingTextMessage;
     
