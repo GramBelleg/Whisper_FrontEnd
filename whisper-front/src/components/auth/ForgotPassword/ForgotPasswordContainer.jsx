@@ -7,6 +7,7 @@ import useResendTimer from '../../../hooks/useResendTimer';
 
 const ForgotPasswordContainer = () => {
     const [email, setEmail] = useState('');
+    const [emailError, setEmailError] = useState(null);
     const [resetPassword, setResetPassword] = useState(false);
     const { handleForgotPassword, loading, error, clearError } = useAuth();
     const { timer, canResend, resetTimer } = useResendTimer(0,"lastResetTime");
@@ -17,15 +18,30 @@ const ForgotPasswordContainer = () => {
 
     const handleSubmit = async (e) => {
         e.preventDefault();
-        const res = await handleForgotPassword(email);
-        if (res.success) {
-            setResetPassword(true);
-            resetTimer(60);
+        if (!email) {
+            setEmailError('Email is required');
+            console.log('Email is required!!!');
+            return;
+        } 
+        else if (!/\S+@\S+\.\S+/.test(email)) {
+            setEmailError('Email is invalid');
+            return;
+        } 
+        else {
+            setEmailError('');
+            e.preventDefault();
+            const res = await handleForgotPassword(email);
+            if (res.success) {
+                setResetPassword(true);
+                resetTimer(60);
+            }
         }
     };
     
     const handleChange = (e) => {
+        clearError();
         setEmail(e.target.value);
+        setEmailError(null);
     };
 
     const handleClose = () => {
@@ -42,6 +58,7 @@ const ForgotPasswordContainer = () => {
                     handleSubmit={handleSubmit}
                     error={error}
                     canResend={canResend}
+                    emailError={emailError}
                 >
                     {!canResend && (
                         <ResendTimer

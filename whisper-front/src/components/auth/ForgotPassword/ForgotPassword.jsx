@@ -4,7 +4,7 @@ import CustomInput from "../../common/CustomInput";
 import CustomButton from "../../common/CustomButton";
 import ErrorMessage from '@/components/common/ErrorMessage';
 
-const ForgotPassword = ({ email, loading, handleChange, handleSubmit, error, canResend, children }) => {
+const ForgotPassword = ({ email, loading, handleChange, handleSubmit, error, canResend, emailError }) => {
   return (
     <div className="flex flex-col justify-center items-center min-h-screen px-4">
       <div className="w-full max-w-md mx-auto flex flex-col items-center justify-between h-[300px] p-4 bg-white rounded-lg shadow-md">
@@ -29,14 +29,15 @@ const ForgotPassword = ({ email, loading, handleChange, handleSubmit, error, can
           disabled={loading || !canResend}
           className="w-4/5 bg-primary text-white py-2 rounded-lg hover:bg-dark transition duration-300"
           id="send-reset-btn"
+          type='submit'
+          testId="send-reset-btn"
         />
-
-        {children}
 
         <Link to="/login" className="text-primary underline mt-4" id="back-to-login">
           Back to login
         </Link>
         <ErrorMessage error={error} id="error-forgot-password" />
+        <ErrorMessage error={emailError} id="email-error" />
       </div>
     </div>
   );

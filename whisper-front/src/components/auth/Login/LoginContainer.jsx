@@ -13,7 +13,7 @@ const LoginContainer = () => {
 
     useEffect(() => {
         clearError(); 
-    }, []);
+    }, [clearError]);
 
     const onSubmit =async (values,actions) => {
         const res=await handleLogin(values);
