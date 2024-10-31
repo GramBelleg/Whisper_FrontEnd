@@ -2,6 +2,7 @@ import React from "react";
 import { render, screen, fireEvent } from "@testing-library/react";
 import ChatItem from "../../src/components/ChatItem/ChatItem";
 import { assert, vi } from "vitest";
+import { ChatContext } from "@/contexts/ChatContext";
 
 describe("This test is for the ChatItem component", () => {
     const mockStandaloneChat = {
@@ -27,8 +28,19 @@ describe("This test is for the ChatItem component", () => {
 
     const chooseChatMock = vi.fn();
 
+    const renderWithContext = (ui, { providerProps, ...renderOptions }) => {
+        return render(
+            <ChatContext.Provider value={providerProps}>
+                {ui}
+            </ChatContext.Provider>,
+            renderOptions
+        );
+    };
+
     it("renders the chat item with correct sender name and message time", () => {
-        render(<ChatItem index={0} standaloneChat={mockStandaloneChat} chooseChat={chooseChatMock} />);
+        renderWithContext(<ChatItem index={0} standaloneChat={mockStandaloneChat} />, {
+            providerProps: { selectChat: chooseChatMock }
+        });
 
         expect(screen.getByText("Alice")).toBeInTheDocument();
         expect(screen.getByText("10:10:2024")).toBeInTheDocument();
@@ -38,9 +50,10 @@ describe("This test is for the ChatItem component", () => {
         const yesterday = new Date();
         yesterday.setDate(yesterday.getDate() - 1);
         const messageTime = yesterday.toISOString().slice(0, 19).replace('T', ' ');
-        
-        // Pass this to `messageTime`
-        render(<ChatItem index={0} standaloneChat={{...mockStandaloneChat, messageTime}} chooseChat={chooseChatMock} />);
+
+        renderWithContext(<ChatItem index={0} standaloneChat={{...mockStandaloneChat, messageTime}} />, {
+            providerProps: { selectChat: chooseChatMock }
+        });
         expect(screen.getByText("Yesterday")).toBeInTheDocument();
     });
 
@@ -50,13 +63,13 @@ describe("This test is for the ChatItem component", () => {
         const minutes = String(today.getMinutes()).padStart(2, '0'); // Ensure two-digit minutes
         const expectedTime = `${hours}:${minutes}`;
 
-        // Pass today's time to messageTime
-        render(
+        renderWithContext(
             <ChatItem
                 index={0}
                 standaloneChat={{ ...mockStandaloneChat, messageTime: today.toISOString() }}
-                chooseChat={chooseChatMock}
-            />
+            />, {
+                providerProps: { selectChat: chooseChatMock }
+            }
         );
 
         // Check if the displayed time matches
@@ -64,50 +77,64 @@ describe("This test is for the ChatItem component", () => {
     });
 
     it("renders the chat item with muted to check icon", () => {
-        render(<ChatItem index={0} standaloneChat={{...mockStandaloneChat, muted:true}} chooseChat={chooseChatMock} />);
+        renderWithContext(<ChatItem index={0} standaloneChat={{...mockStandaloneChat, muted:true}} />, {
+            providerProps: { selectChat: chooseChatMock }
+        });
 
         const mutedDiv = document.querySelector(".muted-bell")
         expect(mutedDiv).toBeInTheDocument();
     });
 
     it("calls chooseChat with the correct ID when clicked outside Info", () => {
-        render(<ChatItem index={0} standaloneChat={mockStandaloneChat} chooseChat={chooseChatMock} />);
+        renderWithContext(<ChatItem index={0} standaloneChat={mockStandaloneChat} />, {
+            providerProps: { selectChat: chooseChatMock }
+        });
 
         const chatItem = screen.getByTestId("chat-item");
         fireEvent.click(chatItem);
 
-        expect(chooseChatMock).toHaveBeenCalledWith(mockStandaloneChat.id);
+        expect(chooseChatMock).toHaveBeenCalledWith(expect.objectContaining({ id: mockStandaloneChat.id }));
     });
 
     it("renders the correct tick icon based on messageState `sent`", () => {
-        render(<ChatItem index={0} standaloneChat={{ ...mockStandaloneChat, messageState: "sent" }} chooseChat={chooseChatMock} />);
+        renderWithContext(<ChatItem index={0} standaloneChat={{ ...mockStandaloneChat, messageState: "sent" }} />, {
+            providerProps: { selectChat: chooseChatMock }
+        });
         
         const readTicks = document.querySelector(".sent-ticks");
         expect(readTicks).toBeInTheDocument();
     });
 
     it("renders the correct tick icon based on messageState `delivered`", () => {
-        render(<ChatItem index={0} standaloneChat={{ ...mockStandaloneChat, messageState: "delivered" }} chooseChat={chooseChatMock} />);
+        renderWithContext(<ChatItem index={0} standaloneChat={{ ...mockStandaloneChat, messageState: "delivered" }} />, {
+            providerProps: { selectChat: chooseChatMock }
+        });
         
         const readTicks = document.querySelector(".delivered-ticks");
         expect(readTicks).toBeInTheDocument();
     });
 
     it("renders the correct tick icon based on messageState `read`", () => {
-        render(<ChatItem index={0} standaloneChat={{ ...mockStandaloneChat, messageState: "read" }} chooseChat={chooseChatMock} />);
+        renderWithContext(<ChatItem index={0} standaloneChat={{ ...mockStandaloneChat, messageState: "read" }} />, {
+            providerProps: { selectChat: chooseChatMock }
+        });
         
         const readTicks = document.querySelector(".read-ticks");
         expect(readTicks).toBeInTheDocument();
     });
 
     it("displays the overflow class when name length exceeds max length", () => {
-        render(<ChatItem index={0} standaloneChat={{ ...mockStandaloneChat, sender: "VeryLongSenderNameExceedingLimit" }} chooseChat={chooseChatMock} />);
+        renderWithContext(<ChatItem index={0} standaloneChat={{ ...mockStandaloneChat, sender: "VeryLongSenderNameExceedingLimit" }} />, {
+            providerProps: { selectChat: chooseChatMock }
+        });
 
-       expect(screen.getByText(/VeryLongSend.../i)).toBeInTheDocument();
+        expect(screen.getByText(/VeryLongSend.../i)).toBeInTheDocument();
     });
 
     it("renders the chat item with muted and long name", () => {
-        render(<ChatItem index={0} standaloneChat={{...mockStandaloneChat, muted:true, sender: "VeryLongSenderNameExceedingLimit"}} chooseChat={chooseChatMock} />);
+        renderWithContext(<ChatItem index={0} standaloneChat={{...mockStandaloneChat, muted:true, sender: "VeryLongSenderNameExceedingLimit"}} />, {
+            providerProps: { selectChat: chooseChatMock }
+        });
 
         const mutedDiv = document.querySelector(".muted-bell")
         expect(mutedDiv).toBeInTheDocument();
@@ -116,6 +143,5 @@ describe("This test is for the ChatItem component", () => {
         expect(parseInt(style._length)).toBeGreaterThan(5); // Ensure it is there
 
         expect(screen.getByText(/VeryLongSend.../i)).toBeInTheDocument();
-
     });
 });

@@ -3,7 +3,7 @@ import { socket } from '@/services/messagingservice/sockets/sockets'
 import { whoAmI } from '@/services/chatservice/whoAmI';
 import useFetch from '@/services/useFetch';
 
-const ChatContext = createContext();
+export const ChatContext = createContext();
 
 export const ChatProvider = ({ children }) => {
     const [currentChat, setcurrentChat] = useState(null);
