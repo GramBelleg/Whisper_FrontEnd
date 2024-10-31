@@ -1,6 +1,6 @@
 import React from 'react';
 
-const CustomButton = ({ icon: Icon, label, onClick, id, className = '', disabled = false, type = 'button' }) => {
+const CustomButton = ({ icon: Icon, label, onClick, id, className = '', disabled = false, type = 'button', testId='' }) => {
   return (
     <button
       onClick={onClick}
@@ -8,6 +8,7 @@ const CustomButton = ({ icon: Icon, label, onClick, id, className = '', disabled
       disabled={disabled}
       type={type}
       id={id}
+      data-testid={testId}
     >
       {Icon && <Icon className="mr-2" />} {/* Adds margin to the icon */}
       {label}
