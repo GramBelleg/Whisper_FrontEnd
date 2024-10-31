@@ -2,6 +2,7 @@ import React from 'react';
 import CustomInput from "../../common/CustomInput";
 import CustomButton from "../../common/CustomButton";
 import ResendTimer from '../../common/ResendTimer'; 
+import ErrorMessage from '@/components/common/ErrorMessage';
 
 const VerifyEmail = ({ code, loading, handleChange, handleSubmit, error, resendCode, backToSignUp, canResend, timer }) => {
   return (
@@ -15,6 +16,7 @@ const VerifyEmail = ({ code, loading, handleChange, handleSubmit, error, resendC
           <span
             className={`text-primary underline cursor-pointer ${!canResend || loading ? 'opacity-50 cursor-not-allowed' : ''}`}
             onClick={canResend ? resendCode : null} 
+            id="resend-verify-btn"
           >
             Resend verification code
           </span>
@@ -23,6 +25,7 @@ const VerifyEmail = ({ code, loading, handleChange, handleSubmit, error, resendC
         {!canResend && (
           <ResendTimer
             timer={timer}
+            id="resend-verify-timer"
           />
         )}
 
@@ -33,24 +36,23 @@ const VerifyEmail = ({ code, loading, handleChange, handleSubmit, error, resendC
           <CustomInput
             type="password"
             id="code"
-            placeholder="Enter 6-digit verification code"
+            placeholder="Enter verification code"
             value={code}
             onChange={handleChange}
           />
         </div>
-        {error && (
-          <span className="text-red-600 text-sm mt-1">
-            {error}
-          </span>
-        )}
+        <ErrorMessage error={error} id="error-verify" />
         <CustomButton
           label="Verify"
           onClick={handleSubmit}
           disabled={loading}
           className="w-4/5 bg-primary text-white py-2 rounded-lg hover:bg-dark transition duration-300"
+          id="verify-btn"
         />
         <div>
-          <p className='text-dark underline cursor-pointer' onClick={backToSignUp}>Back To Sign Up</p>
+          <p className='text-dark underline cursor-pointer' onClick={backToSignUp} id="back-to-signup">
+            Back To Sign Up
+            </p>
         </div>
       </div>
     </div>

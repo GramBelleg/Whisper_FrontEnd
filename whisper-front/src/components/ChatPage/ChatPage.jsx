@@ -47,8 +47,8 @@ const ChatPage = ({ chatList }) => {
             document.removeEventListener('mouseup', handleMouseUp);
         };
     }, []);
+    
     return ( 
-        // <div className="chat-page">
             <div
             className="sidebar"
             ref={sidebarRef}

@@ -8,14 +8,20 @@ const VerifyEmailContainer = () => {
     const { handleVerify, handleResendCode, handleBackToSignUp, loading, error } = useAuth();
     const { timer, canResend, resetTimer } = useResendTimer(0,"lastVerifyTime");
     useEffect(() => {
-        resetTimer(60);
+        const lastResetTime = sessionStorage.getItem("lastVerifyTime");
+        if (!lastResetTime) {
+            resetTimer(60);  
+        }
+        console.log('Timer initialized', timer);
     }
     , []);
 
     const handleSubmit = async () => {
-        await handleVerify(code);
+        const res=await handleVerify(code);
         setCode('');
-        resetTimer(60);
+        if(res.success){
+            sessionStorage.removeItem("lastVerifyTime");
+        }
     };
 
     const handleChange = (e) => {

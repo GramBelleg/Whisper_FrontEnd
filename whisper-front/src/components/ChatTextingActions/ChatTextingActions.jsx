@@ -4,7 +4,7 @@ import CustomEmojisPicker from '../CustomEmojisPicker/CustomEmojisPicker';
 import { useChat } from '@/contexts/ChatContext'; // Import the chat context
 import { messageTypes } from "@/services/sendTypeEnum";
 
-const ChatTextingActions = ({ textMessage, setTextMessage, updateTypingState }) => {
+const ChatTextingActions = ({ textMessage, setTextMessage }) => {
     const textareaRef = useRef(null);
     const { sendMessage } = useChat(); // Get sendMessage from context
 
@@ -28,7 +28,6 @@ const ChatTextingActions = ({ textMessage, setTextMessage, updateTypingState }) 
     };
 
     useEffect(() => {
-        updateTypingState(textMessage.length > 0);
         if (textMessage.length === 0) {
             textareaRef.current.style.height = 'auto';
         }

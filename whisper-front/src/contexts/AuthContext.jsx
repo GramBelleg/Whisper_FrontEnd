@@ -10,8 +10,10 @@ import {
   facebookSignUp,
   githubSignUp,
   resendCode,
+  logout,
 } from '../services/authService';
 import { loadAuthData } from '../services/tokenService';
+import { whoAmI } from '@/services/chatservice/whoAmI';
 
 const AuthContext = createContext();
 
@@ -86,6 +88,7 @@ export const AuthProvider = ({ children }) => {
     setError(null); 
     try {
       const data = await githubSignUp(userData);  
+      console.log(data);
       setUser(data.user);      
       setToken(data.userToken);                    
       setAuthData(data.user, data.userToken);  
@@ -101,9 +104,9 @@ export const AuthProvider = ({ children }) => {
     setError(null); 
     try {
       const data = await verify(code,user.email);    
-      setToken(data.userToken);
-      setUser(data);                          
-      setAuthData(data, data.userToken);  
+      setUser(data.data.user);      
+      setToken(data.data.userToken);                    
+      setAuthData(data.data.user, data.data.userToken);  
       return {data: data, success: true};
     } catch (err) {
       setError(err.message);
@@ -148,19 +151,24 @@ export const AuthProvider = ({ children }) => {
     setLoading(true);
     setError(null); 
     try {
+      console.log(credentials);
+      
       const data = await login(credentials);  
+
       setToken(data.userToken);
       setUser(data.user);                          
-      setAuthData(data.user, data.token);  
-      return {data: data, success: true};
+      setAuthData(data.user, data.userToken);
+      
+      return { data, success: true };
     } catch (err) {
-      console.log(err)
+      console.log(err);
       setError(err.message);
       return { error: err, success: false };
     } finally {
       setLoading(false);
     }
   };
+  
 
   const handleForgotPassword = async (email) => {
     setLoading(true);
@@ -177,11 +185,24 @@ export const AuthProvider = ({ children }) => {
     }
   };
 
-  const logout = () => {
-    setUser(null);
-    setToken(null);
-    localStorage.removeItem('token');
-    localStorage.removeItem('user');
+  const handleLogout = async () => {
+    setLoading(true);
+    setError(null); 
+    try {
+      await logout(token); 
+      setUser(null);
+      setToken(null);
+      localStorage.removeItem('token');
+      localStorage.removeItem('user');
+      Object.assign(whoAmI, {});
+      return { success: true };
+    } catch (err) {
+      console.log(err);
+      setError(err.message);
+      return { error: err, success: false };
+    } finally {
+      setLoading(false);
+    }
   };
 
   const clearError = () => {
@@ -193,6 +214,7 @@ export const AuthProvider = ({ children }) => {
     setToken(null);
     localStorage.removeItem('token');
     localStorage.removeItem('user');
+    Object.assign(whoAmI, {});
   }
 
   return (
@@ -210,7 +232,7 @@ export const AuthProvider = ({ children }) => {
       handleResendCode,
       handleVerify,
       handleReset,
-      logout,
+      handleLogout,
       clearError,
       handleBackToSignUp
     }}>

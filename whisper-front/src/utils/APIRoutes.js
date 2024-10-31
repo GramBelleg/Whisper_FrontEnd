@@ -8,8 +8,8 @@ const authRoutes = {
     googleAuth: '/api/auth/google',
     facebookAuth: '/api/auth/facebook',
     githubAuth: '/api/auth/github',
-    logOneOut: '/api/auth/logoutOne',
-    logAllOut: '/api/auth/logoutAll',
+    logOneOut: '/api/user/logoutOne',
+    logAllOut: '/api/user/logoutAll',
     sendConfirmCode: '/api/auth/sendConfirmCode',
   };
   

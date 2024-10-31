@@ -12,7 +12,6 @@ const SingleChatSection = () => {
     if (!currentChat) {
         return (<NoChatOpened />);
     }
-
     return (
         <div className='single-chat-container'>
             <div className='single-chat-header shadow-md'>
@@ -40,4 +39,4 @@ const SingleChatSection = () => {
     )
 }
 
-export default SingleChatSection
+export default SingleChatSection;

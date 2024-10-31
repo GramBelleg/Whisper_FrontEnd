@@ -10,6 +10,15 @@ export default defineConfig({
     globals: true,
     environment:"jsdom",
     setupFiles: './tests/setup.js',
+  }, 
+  server: {
+    proxy: {
+      '/api': {
+        target: 'https://whisperblob.blob.core.windows.net',
+        changeOrigin: true,
+        rewrite: (path) => path.replace(/^\/api/, ''),
+      },
+    },
   },
   resolve: {
     alias: {

@@ -10,6 +10,7 @@ export const ChatProvider = ({ children }) => {
     const [messagesURL, setMessagesURL] = useState(null);
     const {data: messages, setData: setMessages} = useFetch(messagesURL);
     const [parentMessage, setParentMessage] = useState(null);
+    const [sending, setSending] = useState(false);
 
 
     const selectChat = (chat) => {
@@ -23,29 +24,45 @@ export const ChatProvider = ({ children }) => {
         }
     }, [currentChat]);
 
-    const sendMessage = (type, content) => {
+    const sendMessage = (type, content, attachmentPayload = null) => {
+        setSending(true);
         const newMessage = {
-            id: 4,
-            chatId: currentChat,
-            senderId: whoAmI.id,
-            sender: {
-                id: whoAmI.id,
-                name: whoAmI.name,
-            },
+            chatId: currentChat.id,
             forwarded: false,
             selfDestruct: true,
             expiresAfter: 5,
             parentMessageId: null,
-            time: new Date().toLocaleTimeString(),
-            state: 'pending',
-            type: type,
-            content: content,
-            // TODO : recheck this field
-            othersId: null
+            pinned: false,
+            content:content,
+            type:type,
         }
 
-        socket.emit('send', newMessage)
-        setMessages((prevMessages) => [newMessage, ...prevMessages]);
+        if (attachmentPayload !== null) {
+            newMessage.file = attachmentPayload.file;
+            newMessage.fileType = attachmentPayload.type;
+            newMessage.blobName = attachmentPayload.blobName;
+        }
+
+
+        const newMessageForBackend = { ...newMessage };
+       
+        newMessage.senderId = whoAmI.id,
+        newMessage.deliveredAt = '';
+        newMessage.time = new Date().toLocaleTimeString(),
+        newMessage.readAt = '';
+        newMessage.deleted = false;
+        newMessage.sender = whoAmI.name;
+        newMessage.state = "pending";
+        newMessage.media = false;
+    
+        socket.emit('send', newMessageForBackend)
+        setSending(false);
+        setMessages((prevMessages) => {
+            if (prevMessages) {
+                return [newMessage, ...prevMessages];
+            }
+            return [newMessage];
+        });
     };
 
     const updateParentMessage = (message, relationship) => {
@@ -56,10 +73,30 @@ export const ChatProvider = ({ children }) => {
         setParentMessage(null);
     };
 
-    // const { data: messages, loading: messagesLoading, error: messagesError } = useFetch('/userMessages')
-    // const { data: sentMessageData, error: sendError, loading: sendLoading } = usePost('/userMessages', messageToSend)
-    // const { data: userDetailsFromBack, loading, error } = useFetch('/userDetails')
 
+    useEffect(() => {
+        const handleReceiveMessage = (messageData) => {
+            setMessages(prevMessages => {
+                const messageIndex = prevMessages.findIndex(
+                    (message) => messageData.content === message.content
+                );
+                
+                if (messageIndex !== -1) {
+                    const newMessages = [...prevMessages];
+                    newMessages[messageIndex] = {
+                        ...newMessages[messageIndex],
+                        id: messageData.id,
+                        state: 'sent'
+                    };
+                    return newMessages;
+                }
+                return prevMessages;
+            });
+        };
+        
+        socket.on("receive", handleReceiveMessage);
+        return () => socket.off("receive", handleReceiveMessage);
+    }, []);
 
     return (
         <ChatContext.Provider
@@ -70,7 +107,8 @@ export const ChatProvider = ({ children }) => {
                 sendMessage,
                 parentMessage,
                 updateParentMessage,
-                clearParentMessage
+                clearParentMessage,
+                sending
             }}
         >
             {children}

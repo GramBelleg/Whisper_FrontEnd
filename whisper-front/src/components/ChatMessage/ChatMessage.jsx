@@ -12,10 +12,12 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faReply, faShare, faTrash } from '@fortawesome/free-solid-svg-icons'
 import { useModal } from '@/contexts/ModalContext'
 import ForwardMessageModal from '../Modals/ForwardMessageModal/ForwardMessageModal'
+import MessageAttachmentRenderer from '../MessageAttachment/MessageAttachmentRenderer';
 
 const ChatMessage = ({ message, onDelete, onReply }) => {
     const [isMenuOpen, setIsMenuOpen] = useState(false) // Track menu state
     const [menuPosition, setMenuPosition] = useState({ x: 0, y: 0 })
+    const [objectLink, setObjectLink] = useState(null)
     const { openModal } = useModal()
     const menuOverlayGutter = 40
 
@@ -40,16 +42,21 @@ const ChatMessage = ({ message, onDelete, onReply }) => {
         setIsMenuOpen(false)
     }
 
+    const updateObjectLink = (objectLink) => {
+        setObjectLink(objectLink)
+      };
+
     const mappedMessageState = useMemo(() => mapMessageState(message.state), [message.state])
 
     const renderMessageContent = useMemo(() => {
         switch (message.type) {
             case messageTypes.TEXT:
                 return (
-                    <div className='message-text' style={{ whiteSpace: 'pre-wrap' }}>
-                        {message.content}
-                    </div>
-                )
+                    <div className="message-text" style={{ whiteSpace: 'pre-line' }}>
+                      {message.file && <MessageAttachmentRenderer myMessage={message}  />}
+                      {message.content}
+                  </div>  
+                  );
             case messageTypes.AUDIO:
                 return <AudioVoiceMessage audioUrl={message.content} />
             case messageTypes.IMAGE:

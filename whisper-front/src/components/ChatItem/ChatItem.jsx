@@ -1,12 +1,7 @@
-import React, { useMemo, useState, useEffect, useRef } from "react";
-
-// Import Utility Functions
+import { useState, useEffect, useRef } from "react";
 import { checkDisplayTime } from "../../services/chatservice/checkDisplayTime";
 import { handleNoUserImage } from "../../services/chatservice/addDefaultImage";
 import { mapMessageState } from "../../services/chatservice/mapMessageState";
-
-// Import Components
-import noUser from "../../assets/images/no-user.png";
 import NotificationBell from "../NotificationBell/NotificationBell";
 import ReadTicks from "../ReadTicks/ReadTicks";
 import SentTicks from "../SentTicks/SentTicks";
@@ -14,7 +9,6 @@ import DeliveredTicks from "../DeliveredTicks/DeliveredTicks";
 import LastMessage from "../LastMessage/LastMessage";
 import UnRead from "../UnRead/UnRead";
 import Info from "../Info/Info";
-
 import "./ChatItem.css";
 import { whoAmI } from "../../services/chatservice/whoAmI";
 import PendingSend from "../PendingSend/PendingSend";
@@ -29,8 +23,6 @@ const ChatItem = ({ index, standaloneChat }) => {
         (standaloneChat.sender === whoAmI.name) ? 30 : 15
     )
     
-    // Use memo helps validate the chat  on every render
-
     // Track overflow of text
     const [isOverflowing, setIsOverflowing] = useState(false); 
 
@@ -38,28 +30,31 @@ const ChatItem = ({ index, standaloneChat }) => {
     const userNameRef = useRef(null);
     
     const trimName = (name) => {
-        return name.length > maxLength ? `${name.slice(0, maxLength - 3)}...` : name;
+        if(name) 
+            return name.length > maxLength ? `${name.slice(0, maxLength - 3)}...` : name;
+        return ''
     }
 
     // The local obhect of the chat
     const [myChat, setMyChat] = useState({
         id: -1,
         senderId: -1,
-        sender:'',
         type: "",
         unreadMessageCount: 0,
         lastMessageId: -1,
         lastMessage:"",
-        name:"",
+        sender:"",
         lastSeen: "",
         muted: false,
+        media: false,
         messageState:"",
         messageTime:"",
         messageType:"",
         tagged: false,
         group: false,
         story: false,
-        picture:''
+        picture:'',
+        othersId: -1
     });
 
     const { selectChat } = useChat();
@@ -82,7 +77,7 @@ const ChatItem = ({ index, standaloneChat }) => {
             ...standaloneChat,
             messageState: mapMessageState(standaloneChat.messageState),
             messageTime: checkDisplayTime(standaloneChat.messageTime),
-            name: trimName(standaloneChat.name)
+            sender: trimName(standaloneChat.sender)
         }));
 
         // Check for overflow when the name changes
@@ -92,7 +87,6 @@ const ChatItem = ({ index, standaloneChat }) => {
                 setIsOverflowing(scrollWidth > clientWidth); // Update overflow state
             }
         };
-        console.log("chat ", myChat);
 
         checkOverflow(); // Initial check
         window.addEventListener("resize", checkOverflow); // Check on resize
@@ -100,17 +94,17 @@ const ChatItem = ({ index, standaloneChat }) => {
         return () => {
             window.removeEventListener("resize", checkOverflow); // Cleanup
         };
-    }, [standaloneChat, myChat.name]); // Dependencies
+    }, [standaloneChat]); // Dependencies
 
     return ( 
-        <div className="single-chat" onClick={handleClick}>
+        <div data-testid="chat-item" className="single-chat" onClick={handleClick}>
             {(
                 <div className="single-chat-content">
                     <div className={`profile-pic-wrapper ${myChat.story ? 'has-story' : ''}`}>
                         <img 
-                            src={myChat.picture || noUser}
-                            className={`profile-pic`} // Add the conditional class
-                            onError={(e) => handleNoUserImage(e)}
+                             src={myChat.profilePic}
+                             className={`profile-pic`} // Add the conditional class
+                             onError={(e) => handleNoUserImage(e)}
                         />
                     </div>
 
@@ -121,7 +115,7 @@ const ChatItem = ({ index, standaloneChat }) => {
                                     ref={userNameRef} // Attach the ref to the user name element
                                     className={`user-name ${myChat.muted ? 'muted' : ''} ${isOverflowing ? 'overflow' : ''} ${index ? 'hovered' : ''}`} // Add overflow class conditionally
                                 >
-                                    {myChat.name}
+                                    {myChat.sender}
                                 </p>
                                 {myChat.muted && (
                                     <div className="muted-bell">
@@ -132,23 +126,11 @@ const ChatItem = ({ index, standaloneChat }) => {
                             <div className="ticks-info">
                                 <div className="tick">
                                 {
-                                        myChat.messageState === 0  && (
-                                            <SentTicks/>
-                                        ) 
-                                        || 
-                                        myChat.messageState ==  1 && (
-                                            <DeliveredTicks/>
-                                        )
-                                        || 
-                                        myChat.messageState ==  2 && (
-                                            <ReadTicks/>
-                                        )
-                                        || 
-                                        myChat.messageState ==  4 && (
-                                            <PendingSend/>
-                                        )
-                                        
-                                    } 
+                                        myChat.messageState === 0  && <SentTicks data-testid="sent-tick"/> || 
+                                        myChat.messageState ==  1 && <DeliveredTicks data-testid="delivered-tick"/> || 
+                                        myChat.messageState ==  2 && <ReadTicks data-testid="read-tick"/> || 
+                                        myChat.messageState ==  4 && <PendingSend data-testid="pending-tick"/>  
+                                } 
                                 </div>
                                 <div className="message-time">
                                     <span className={myChat.unreadMessageCount ? 'unread-time' : ''}>
@@ -158,7 +140,7 @@ const ChatItem = ({ index, standaloneChat }) => {
                             </div>
                         </div>
                         <div className="messaging-info">
-                            <LastMessage sender={myChat.sender} messageType={myChat.messageType} message={myChat.lastMessage} index={index} messageState={myChat.messageState}/>
+                            <LastMessage sender={myChat.senderId} messageType={myChat.messageType} message={myChat.lastMessage} index={index} messageState={myChat.messageState}/>
                             { (myChat.unreadMessageCount || myChat.tagged) && <UnRead unReadMessages={myChat.unreadMessageCount} tag={myChat.tagged}/>}
                             <Info index={index} group={myChat.group}/>
                         </div>

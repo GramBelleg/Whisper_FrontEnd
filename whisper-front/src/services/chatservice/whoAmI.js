@@ -1,4 +1,1 @@
-export const whoAmI = {
-    "name" : "John",
-    id:  1,
-}
+export let whoAmI =  {};

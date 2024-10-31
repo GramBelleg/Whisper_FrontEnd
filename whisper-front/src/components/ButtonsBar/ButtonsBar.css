@@ -28,6 +28,10 @@
 }
 
 .settings-icon {
-    margin-top: auto; 
     margin-bottom: 30%;
+}
+
+.logout-icon {
+    margin-top: auto; 
+    margin-bottom: 20px; 
 }

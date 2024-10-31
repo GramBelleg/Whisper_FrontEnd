@@ -1,6 +1,5 @@
 import SampleHome from './components/SampleHome/SampleHome';
 import { BrowserRouter as Router, Routes, Route, Navigate } from "react-router-dom";
-import { initializeMock } from './services/mock/mock';
 import "./App.css";
 import LoginPage from "./pages/LoginPage";
 import ForgotPassword from "./pages/ForgotPassword";
@@ -9,6 +8,7 @@ import useAuth from "./hooks/useAuth";
 import EmailVerification from "./pages/EmailVerification";
 import GithubCallback from "./pages/GithubCallback";
 import FacebookCallback from "./pages/FacebookCallback";
+import { initializeMock } from './mocks/mock';
 
 function App() {
 
@@ -19,7 +19,7 @@ function App() {
       <Router>
       <Routes>
         {user ? (
-          token ? (
+          token && token !== 'undefined' ? (
             user.role !== "admin" ? (
               <>
                 <Route

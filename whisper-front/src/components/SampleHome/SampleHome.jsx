@@ -2,17 +2,33 @@
 import ChatPage from '../ChatPage/ChatPage'
 import '../SampleHome/SampleHome.css'
 import SingleChatSection from '../SingleChatSection/SingleChatSection'
-import '../SampleHome/SampleHome.css'
 import ButtonsBar from '../ButtonsBar/ButtonsBar'
-import useFetch from '../../services/useFetch'
+import { useEffect, useState } from 'react'
+import '../SampleHome/SampleHome.css'
 import { ModalProvider } from '@/contexts/ModalContext'
 import { ChatProvider } from '@/contexts/ChatContext';
+import { getChatsAPI, getChatsCleaned } from '@/services/chatservice/getChats'
+
 
 const SampleHome = () => {
-    const { data: chatList, error: errorChats, loading: loadingChats } = useFetch('/chats')
+
+    const [chatList, setChatList] = useState([]);
+    const [loadingChats, setLoadingChats] = useState(true);
 
 
-    return (
+    useEffect(() => {
+        loadChats();
+    }, []);
+
+    const loadChats = async () => {
+        let allChats = await getChatsCleaned();
+        setChatList(allChats);
+        setLoadingChats(false);
+        console.log(allChats)
+    }
+        
+
+    return ( 
         <ChatProvider>
             <ModalProvider>
                 <div className='sampleHome'>
