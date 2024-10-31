@@ -23,8 +23,9 @@ export const signupSchema = yup.object().shape({
   name: yup
   .string()
   .required("Name is required")
-  .min(8)
-  .matches(/^[a-zA-Z\s]+$/, "User name can only contain letters and spaces"),
+  .min(8, "Name must be at least 8 characters")
+  .matches(/^(?! )[a-zA-Z\p{L}\s]+(?<! )$/u, "Name can only contain letters and spaces, without starting or ending spaces")
+  .matches(/^(?!.*\s{2,})/, "Name cannot contain consecutive spaces"),
   userName: yup
     .string()
     .required("User name is required")

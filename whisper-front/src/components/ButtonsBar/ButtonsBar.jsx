@@ -16,20 +16,20 @@ const ButtonsBar = () => {
     return (
         <div className="icon-column">
             <div onClick={() => handleClick('Chat')} className="icon-container">
-                <Chat className="icon" />
+                <Chat data-testid="chat-icon" className="icon" />
             </div>
             <div onClick={() => handleClick('Bookmark')} className="icon-container">
-                <Bookmark className="icon" />
+                <Bookmark data-testid="bookmark-icon" className="icon" />
             </div>
             <div onClick={() => handleClick('Starred')} className="icon-container">
-                <Starred className="icon" />
+                <Starred data-testid="starred-icon" className="icon" />
             </div>
             <div onClick={() => handleClick('Stories')} className="icon-container">
-                <Stories className="icon" />
+                <Stories data-testid="stories-icon" className="icon" />
             </div>
             <LogoutButton />
             <div onClick={() => handleClick('Settings')} className="icon-container settings-icon">
-                <Settings className="icon" />
+                <Settings data-testid="settings-icon" className="icon" />
             </div>
         </div>
     );

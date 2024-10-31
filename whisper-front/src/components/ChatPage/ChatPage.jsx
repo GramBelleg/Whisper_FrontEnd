@@ -1,7 +1,5 @@
 // This page Contains Stories and the chats
 // It renders both stories page and chats page
-
-import useFetch from "../../services/useFetch";
 import ChatList from "../ChatList/ChatList";
 import "./ChatPage.css";
 import StoriesContainer from "../StoriesContainer/StoriesContainer";
@@ -50,26 +48,27 @@ const ChatPage = ({ chatList, chooseChat }) => {
             document.removeEventListener('mouseup', handleMouseUp);
         };
     }, []);
+    /*⭐*/
     return ( 
             <div
-            className="sidebar"
-            ref={sidebarRef}
-            style={{ width: `${sidebarWidth}%` }}
-        >
-            <div>
-                <SearchBar />
-            </div>
-            <div className="sidebar__stories">
-                <StoriesContainer />
-            </div>
-            <div className="sidebar__other-content">
-                {chatList &&  <ChatList chatList={chatList} chooseChat={chooseChat}/>}
-                <AddNewButton onClick={handleAddNewClick} />
-            </div>
-            <div
-                className="sidebar__resizer"
-                onMouseDown={startResizing}
-            />
+                className="sidebar"
+                ref={sidebarRef}
+                style={{ width: `${sidebarWidth}%` }}
+            >
+                <div>
+                    <SearchBar />
+                </div>
+                <div className="sidebar__stories">
+                    <StoriesContainer />
+                </div>
+                <div className="sidebar__other-content">
+                    {chatList &&  <ChatList chatList={chatList} chooseChat={chooseChat}/>}
+                    <AddNewButton onClick={handleAddNewClick} />
+                </div>
+                <div
+                    className="sidebar__resizer"
+                    onMouseDown={startResizing}
+                />
         </div>
     )
 }

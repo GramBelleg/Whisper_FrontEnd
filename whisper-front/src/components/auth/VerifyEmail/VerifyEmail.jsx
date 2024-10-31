@@ -4,7 +4,7 @@ import CustomButton from "../../common/CustomButton";
 import ResendTimer from '../../common/ResendTimer'; 
 import ErrorMessage from '@/components/common/ErrorMessage';
 
-const VerifyEmail = ({ code, loading, handleChange, handleSubmit, error, resendCode, backToSignUp, canResend, timer }) => {
+const VerifyEmail = ({ code, loading, handleChange, handleSubmit, error, codeError, resendCode, backToSignUp, canResend, timer }) => {
   return (
     <div className="flex flex-col justify-center items-center min-h-screen p-4">
       <div className="w-full max-w-md mx-auto flex flex-col items-center justify-between h-[300px] p-4 bg-white rounded-lg shadow-md">
@@ -39,6 +39,7 @@ const VerifyEmail = ({ code, loading, handleChange, handleSubmit, error, resendC
             placeholder="Enter verification code"
             value={code}
             onChange={handleChange}
+            error={codeError}
           />
         </div>
         <ErrorMessage error={error} id="error-verify" />
@@ -52,7 +53,7 @@ const VerifyEmail = ({ code, loading, handleChange, handleSubmit, error, resendC
         <div>
           <p className='text-dark underline cursor-pointer' onClick={backToSignUp} id="back-to-signup">
             Back To Sign Up
-            </p>
+          </p>
         </div>
       </div>
     </div>

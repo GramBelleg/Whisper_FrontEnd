@@ -11,8 +11,8 @@ const LogoutButton = () => {
 
   return (  
     <>
-      <div onClick={() => setIsOpen(true)} className="icon-container logout-icon" id="logout-btn">
-        <LogOut className="icon" />
+      <div onClick={() => setIsOpen(true)} className="icon-container logout-icon">
+        <LogOut data-testid="logout-icon" className="icon" />
       </div>
       {isOpen && <LogoutModal handleCancel={handleCancel} />}
     </>

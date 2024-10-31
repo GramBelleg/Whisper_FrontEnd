@@ -1,11 +1,7 @@
-import React, { useMemo, useState, useEffect, useRef } from "react";
-
-// Import Utility Functions
+import React, { useState, useEffect, useRef } from "react";
 import { checkDisplayTime } from "../../services/chatservice/checkDisplayTime";
 import { handleNoUserImage } from "../../services/chatservice/addDefaultImage";
 import { mapMessageState } from "../../services/chatservice/mapMessageState";
-
-// Import Components
 import NotificationBell from "../NotificationBell/NotificationBell";
 import ReadTicks from "../ReadTicks/ReadTicks";
 import SentTicks from "../SentTicks/SentTicks";
@@ -13,7 +9,6 @@ import DeliveredTicks from "../DeliveredTicks/DeliveredTicks";
 import LastMessage from "../LastMessage/LastMessage";
 import UnRead from "../UnRead/UnRead";
 import Info from "../Info/Info";
-
 import "./ChatItem.css";
 import { whoAmI } from "../../services/chatservice/whoAmI";
 import PendingSend from "../PendingSend/PendingSend";
@@ -33,7 +28,9 @@ const ChatItem = ({ index, standaloneChat, chooseChat }) => {
     const userNameRef = useRef(null);
     
     const trimName = (name) => {
-        return name.length > maxLength ? `${name.slice(0, maxLength - 3)}...` : name;
+        if(name) 
+            return name.length > maxLength ? `${name.slice(0, maxLength - 3)}...` : name;
+        return ''
     }
 
     // The local obhect of the chat
@@ -95,7 +92,7 @@ const ChatItem = ({ index, standaloneChat, chooseChat }) => {
     }, [standaloneChat]); // Dependencies
 
     return ( 
-        <div className="single-chat" onClick={handleClick}>
+        <div data-testid="chat-item" className="single-chat" onClick={handleClick}>
             {(
                 <div className="single-chat-content">
                     <div className={`profile-pic-wrapper ${myChat.story ? 'has-story' : ''}`}>
@@ -124,23 +121,11 @@ const ChatItem = ({ index, standaloneChat, chooseChat }) => {
                             <div className="ticks-info">
                                 <div className="tick">
                                 {
-                                        myChat.messageState === 0  && (
-                                            <SentTicks/>
-                                        ) 
-                                        || 
-                                        myChat.messageState ==  1 && (
-                                            <DeliveredTicks/>
-                                        )
-                                        || 
-                                        myChat.messageState ==  2 && (
-                                            <ReadTicks/>
-                                        )
-                                        || 
-                                        myChat.messageState ==  4 && (
-                                            <PendingSend/>
-                                        )
-                                        
-                                    } 
+                                        myChat.messageState === 0  && <SentTicks data-testid="sent-tick"/> || 
+                                        myChat.messageState ==  1 && <DeliveredTicks data-testid="delivered-tick"/> || 
+                                        myChat.messageState ==  2 && <ReadTicks data-testid="read-tick"/> || 
+                                        myChat.messageState ==  4 && <PendingSend data-testid="pending-tick"/>  
+                                } 
                                 </div>
                                 <div className="message-time">
                                     <span className={myChat.unreadMessageCount ? 'unread-time' : ''}>
