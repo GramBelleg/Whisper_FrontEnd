@@ -1,11 +1,9 @@
-import React from 'react';
-import CustomButton from "../../common/CustomButton";
 import CustomInput from "../../common/CustomInput";
-import { FaGithub, FaGoogle, FaFacebookF } from "react-icons/fa";
 import { Link } from "react-router-dom";
 import GoogleButton from '../../common/GoogleButton';
 import GithubButton from '../../common/GithubButton';
 import FacebookButton from '../../common/FacebookButton';
+import ErrorMessage from '@/components/common/ErrorMessage';
 
 const LoginForm = ({
   handleChange,
@@ -40,21 +38,25 @@ const LoginForm = ({
           />
         ))}
         <button
+          data-testid="login-btn"
           type="submit"
           onClick={handleSubmit}
           className={`w-full py-2 mt-4 bg-primary text-white font-bold rounded-lg hover:bg-dark transition duration-300 ${isSubmitting || loading ? 'opacity-50 cursor-not-allowed' : ''}`}
           disabled={isSubmitting || loading}
+          id="login-btn"
         >
           Login
         </button>
-        {error && <p className="text-red-500 text-sm mt-2">{error}</p>}
+        <ErrorMessage error={error} id="error-login" />
         <div className="flex items-center justify-between mt-4">
           <span className="text-sm">Don't have an account?</span>
-          <Link to="/signup" className="text-primary text-sm hover:underline">
+          <Link to="/signup" className="text-primary text-sm hover:underline" id="sign-up-link">
             Sign up
           </Link>
         </div>
-        <Link to="/forgot-password" className="text-primary text-sm hover:underline mt-2 block text-center">
+        <Link to="/forgot-password" 
+        className="text-primary text-sm hover:underline mt-2 block text-center"
+        id="forgot-password-link" >
           Forgot Password?
         </Link>
       </form>

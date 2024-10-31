@@ -8,8 +8,8 @@ const SearchBar = () => {
   
     return (
       <div className="search-bar">
-        <Search className="search-icon" onClick={handleSearchClick}/>
-        <input type="text" placeholder="Search" className="search-input" />
+        <Search data-testid="search-bar-test" className="search-icon" onClick={handleSearchClick}/>
+        <input type="text" placeholder="Search" data-testid="search-input-test" className="search-input" />
       </div>
     );
   };

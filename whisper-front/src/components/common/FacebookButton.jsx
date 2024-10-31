@@ -21,6 +21,7 @@ const FacebookButton = ({ classStyle }) => {
       label="Sign In With Facebook"
       onClick={handleFacebookAuth}
       className={`${classStyle} flex flex-row w-full`}
+      id="facebookBtn"
     />
   );
 };

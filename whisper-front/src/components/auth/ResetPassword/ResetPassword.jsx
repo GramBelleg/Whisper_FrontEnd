@@ -1,5 +1,5 @@
-import React from "react";
 import CustomInput from "../../common/CustomInput";
+import ErrorMessage from '@/components/common/ErrorMessage';
 
 const ResetPassword = ({
   handleChange,
@@ -30,6 +30,7 @@ const ResetPassword = ({
         <button
               onClick={handleClose}
               className="text-xl text-gray-500 hover:text-gray-700 focus:outline-none"
+              id="close-reset-btn"
         >
               &times; 
         </button>
@@ -40,6 +41,7 @@ const ResetPassword = ({
         <form onSubmit={handleSubmit} className="space-y-4">
           {inputFields.map((field) => (
             <CustomInput
+              data-testid={field.id}
               key={field.id}
               type={field.type}
               id={field.id}
@@ -51,15 +53,13 @@ const ResetPassword = ({
               className="w-full p-3 text-light bg-gray-700 border border-light rounded-md focus:border-primary focus:outline-none"
             />
           ))}
-          {error && (
-          <span className="text-red-600 text-sm mt-1">
-            {error}
-          </span>
-          )}
+          <ErrorMessage error={error} id="error-reset" />
           <button
             onClick={handleSubmit}
             className={`w-full py-2 mt-4 bg-primary text-white font-bold rounded-lg hover:bg-dark transition duration-300 ${isSubmitting || loading ? 'opacity-50 cursor-not-allowed' : ''}`}
             type="submit"
+            id="reset-password-btn"
+            data-testid="reset-password-btn"
           >
             Reset Password
           </button>

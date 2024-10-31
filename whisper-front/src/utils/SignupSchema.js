@@ -9,7 +9,7 @@ export const signupSchema = yup.object().shape({
     .string()
     .min(8)
     .matches(passwordRules, {
-      message: "Please create a stronger password, at least 1 upper case",
+      message: "Password must include both uppercase and lowercase letters.",
     })
     .required("Password is required"),
   confirmPassword: yup
@@ -20,7 +20,12 @@ export const signupSchema = yup.object().shape({
     .min(10, "Phone number can't be shorter than 10 characters")
     .max(15, "Phone number can't be longer than 15 characters"),
   captcha: yup.string().required('CAPTCHA is required'),
-  name: yup.string().required("Name is required").min(8),
+  name: yup
+  .string()
+  .required("Name is required")
+  .min(8, "Name must be at least 8 characters")
+  .matches(/^(?! )[a-zA-Z\p{L}\s]+(?<! )$/u, "Name can only contain letters and spaces, without starting or ending spaces")
+  .matches(/^(?!.*\s{2,})/, "Name cannot contain consecutive spaces"),
   userName: yup
     .string()
     .required("User name is required")

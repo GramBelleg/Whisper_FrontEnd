@@ -19,7 +19,7 @@ export const googleSignUp = async (codeResponse) => {
     const res = await axios.post("http://localhost:5000/api/auth/google", {
       code: codeResponse.code, 
     },{
-      withCredentials: true, // Ensure credentials are included
+      withCredentials: true,
     });
     return res.data;
   } catch (error) {
@@ -42,7 +42,7 @@ export const facebookSignUp = async (codeResponse) => {
 
 export const githubSignUp = async (codeResponse) => {
   try {
-    const res = await axiosInstance.post("http://localhost:5000/api/auth/github", {
+    const res = await axios.post("http://localhost:5000/api/auth/github", {
       code: codeResponse,
     },{
       withCredentials: true, // Ensure credentials are included
@@ -55,13 +55,14 @@ export const githubSignUp = async (codeResponse) => {
 
 export const verify = async (code,email) => {
   try {
-    const response = await axiosInstance.post(authRoutes.confirmEmail, {
+    const response = await axios.post("http://localhost:5000/api/auth/confirmEmail", {
       email: email, 
       code: code,   
   });
     console.log(response.data);
-    return response.data;
+    return {data: response.data, success: true};
   } catch (error) {
+    console.log("verify error", error);
     throw new Error(error.response?.data?.message || "An error occurred");
   }
 };
@@ -74,6 +75,7 @@ export const resendCode = async (email) => {
     console.log(response.data);
     return response.data;
   } catch (error) {
+    console.log("resend code error", error);
     throw new Error(error.response?.data?.message || "An error occurred");
   }
 }
@@ -110,6 +112,7 @@ export const resetPassword = async (userData) => {
     console.log(response.data);
     return response.data;
   } catch (error) {
+    console.log("reset password error", error);
     throw new Error(error.response?.data?.message || "An error occurred");
   }
 };
@@ -124,4 +127,20 @@ export const clearAuthData = () => {
   localStorage.removeItem('user');
   localStorage.removeItem('token');
   Object.assign(whoAmI, {});
+};
+
+export const logout = async (token) => {
+  try {
+    const response = await axios.get("http://localhost:5000/api/user/logoutOne",{
+      headers: {
+        'Authorization': `Bearer ${token}`,
+      },
+      withCredentials: true,
+    });
+    console.log(response.data);
+    return response.data;
+  } catch (error) {
+    console.log("logout error", error);
+    throw new Error(error.response?.data?.message || "An error occurred");
+  }
 };
