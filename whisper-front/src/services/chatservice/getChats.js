@@ -29,7 +29,7 @@ export const getChatsCleaned = async () => {
             const flattenedChat = {
                 id: chat.id,
                 lastMessage: chat.lastMessage.content, // Renamed to lastMessage
-                messageTime: chat.lastMessage.createdAt?.slice(0, 19).replace("T", " "), // Renamed to messageTime
+                messageTime: chat.lastMessage.createdAt.slice(0, 19).replace("T", " "), // Renamed to messageTime
                 expiresAfter: chat.lastMessage.expiresAfter,
                 forwarded: chat.lastMessage.forwarded !== null ? chat.lastMessage.forwarded: false,
                 parentMessageId: chat.lastMessage.parentMessageId,

@@ -41,6 +41,7 @@ const ResetPassword = ({
         <form onSubmit={handleSubmit} className="space-y-4">
           {inputFields.map((field) => (
             <CustomInput
+              data-testid={field.id}
               key={field.id}
               type={field.type}
               id={field.id}
@@ -58,6 +59,7 @@ const ResetPassword = ({
             className={`w-full py-2 mt-4 bg-primary text-white font-bold rounded-lg hover:bg-dark transition duration-300 ${isSubmitting || loading ? 'opacity-50 cursor-not-allowed' : ''}`}
             type="submit"
             id="reset-password-btn"
+            data-testid="reset-password-btn"
           >
             Reset Password
           </button>

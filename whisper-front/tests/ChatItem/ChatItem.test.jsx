@@ -1,7 +1,7 @@
 import React from "react";
 import { render, screen, fireEvent } from "@testing-library/react";
 import ChatItem from "../../src/components/ChatItem/ChatItem";
-import { vi } from "vitest";
+import { assert, vi } from "vitest";
 
 describe("This test is for the ChatItem component", () => {
     const mockStandaloneChat = {
@@ -35,15 +35,32 @@ describe("This test is for the ChatItem component", () => {
     });
 
     it("renders the chat item with yesterday if that was the time", () => {
-        render(<ChatItem index={0} standaloneChat={{...mockStandaloneChat, messageTime:"2024-10-29 10:00:12"}} chooseChat={chooseChatMock} />);
-
+        const yesterday = new Date();
+        yesterday.setDate(yesterday.getDate() - 1);
+        const messageTime = yesterday.toISOString().slice(0, 19).replace('T', ' ');
+        
+        // Pass this to `messageTime`
+        render(<ChatItem index={0} standaloneChat={{...mockStandaloneChat, messageTime}} chooseChat={chooseChatMock} />);
         expect(screen.getByText("Yesterday")).toBeInTheDocument();
     });
 
     it("renders the chat item with hour if the time was today", () => {
-        render(<ChatItem index={0} standaloneChat={{...mockStandaloneChat, messageTime:"2024-10-30 10:00:12"}} chooseChat={chooseChatMock} />);
+        const today = new Date();
+        const hours = String(today.getHours()).padStart(2, '0'); // Ensure two-digit hour
+        const minutes = String(today.getMinutes()).padStart(2, '0'); // Ensure two-digit minutes
+        const expectedTime = `${hours}:${minutes}`;
 
-        expect(screen.getByText("10:00")).toBeInTheDocument();
+        // Pass today's time to messageTime
+        render(
+            <ChatItem
+                index={0}
+                standaloneChat={{ ...mockStandaloneChat, messageTime: today.toISOString() }}
+                chooseChat={chooseChatMock}
+            />
+        );
+
+        // Check if the displayed time matches
+        expect(screen.getByText(expectedTime)).toBeInTheDocument();
     });
 
     it("renders the chat item with muted to check icon", () => {

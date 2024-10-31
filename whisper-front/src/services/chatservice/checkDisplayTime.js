@@ -1,40 +1,19 @@
-// This function adjusts the time of the last message
-// If it is today it displays hour
-// If it is yesterday it displays yesterday
-// If it is older than yesterday it displays the date
-
 export const checkDisplayTime = (lastMessageTime) => {
-    // Get today's date
     const today = new Date();
-
-    // Get yesterday's date
     const yesterday = new Date(today.getTime() - 86400000);
-
-    // Extract the last message time
     const lastMessageDate = new Date(lastMessageTime);
+    const timeDiffInDays = Math.floor((today - lastMessageDate) / 86400000);
 
-    // Get the difference to compare
-    const timeDiff = Math.abs(today.getTime() - lastMessageDate.getTime());
-
-    // Scale to get the days
-    const timeDiffInDays = Math.floor(timeDiff / 86400000);
-
-    // If the time is today
     if (timeDiffInDays === 0) {
-        const hours = lastMessageDate.getHours(); // get hours
-        const minutes = lastMessageDate.getMinutes(); // get minutes
-        
-        // Format minutes to always show two digits
-        const formattedMinutes = minutes === 0 ? '00' : String(minutes).padStart(2, '0');
-        
-        return `${hours}:${formattedMinutes}`; // return hour:minutes
+        const hours = String(lastMessageDate.getHours()).padStart(2, '0'); // Two-digit hours
+        const minutes = String(lastMessageDate.getMinutes()).padStart(2, '0'); // Two-digit minutes
+        return `${hours}:${minutes}`;
     } else if (timeDiffInDays === 1) {
         return 'Yesterday';
     } else {
-        // Return the date in the format "DD MM YYYY"
-        const day = String(lastMessageDate.getDate()).padStart(2, '0'); // Ensure two digits for the day
-        const month = String(lastMessageDate.getMonth() + 1).padStart(2, '0'); // Ensure two digits for the month
-        const year = lastMessageDate.getFullYear(); // Get the full year
-        return `${day}:${month}:${year}`; // Return formatted date
+        const day = String(lastMessageDate.getDate()).padStart(2, '0');
+        const month = String(lastMessageDate.getMonth() + 1).padStart(2, '0');
+        const year = lastMessageDate.getFullYear();
+        return `${day}:${month}:${year}`;
     }
-}
+};

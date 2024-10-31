@@ -53,8 +53,8 @@ const ChatItem = ({ index, standaloneChat }) => {
         tagged: false,
         group: false,
         story: false,
-        picture:'',
-        othersId: -1
+        othersId: -1,
+        profilePic: '',
     });
 
     const { selectChat } = useChat();
@@ -102,9 +102,9 @@ const ChatItem = ({ index, standaloneChat }) => {
                 <div className="single-chat-content">
                     <div className={`profile-pic-wrapper ${myChat.story ? 'has-story' : ''}`}>
                         <img 
-                             src={myChat.profilePic}
-                             className={`profile-pic`} // Add the conditional class
-                             onError={(e) => handleNoUserImage(e)}
+                            src={myChat.profilePic}
+                            className={`profile-pic`} // Add the conditional class
+                            onError={(e) => handleNoUserImage(e)}
                         />
                     </div>
 

@@ -38,6 +38,7 @@ const LoginForm = ({
           />
         ))}
         <button
+          data-testid="login-btn"
           type="submit"
           onClick={handleSubmit}
           className={`w-full py-2 mt-4 bg-primary text-white font-bold rounded-lg hover:bg-dark transition duration-300 ${isSubmitting || loading ? 'opacity-50 cursor-not-allowed' : ''}`}
