@@ -4,22 +4,14 @@ import CustomEmojisPicker from '../CustomEmojisPicker/CustomEmojisPicker';
 import { useChat } from '@/contexts/ChatContext'; // Import the chat context
 import { messageTypes } from "@/services/sendTypeEnum";
 
-const ChatTextingActions = ({ textMessage, setTextMessage }) => {
+const ChatTextingActions = ({ textMessage, setTextMessage, triggerSendMessage }) => {
     const textareaRef = useRef(null);
-    const { sendMessage } = useChat(); // Get sendMessage from context
+    
 
     const handleKeyPress = (e) => {
         if (e.key === 'Enter' && !e.shiftKey) {
             e.preventDefault(); // Prevents new line from being added
             triggerSendMessage();
-        }
-    };
-
-    const triggerSendMessage = () => {
-        const message = textMessage;
-        if (message.trim()) {
-            sendMessage(messageTypes.TEXT, message);
-            setTextMessage(''); // Clear the text message
         }
     };
 
