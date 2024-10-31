@@ -55,7 +55,7 @@ export const githubSignUp = async (codeResponse) => {
 
 export const verify = async (code,email) => {
   try {
-    const response = await axiosInstance.post(authRoutes.confirmEmail, {
+    const response = await axios.post("http://localhost:5000/api/auth/confirmEmail", {
       email: email, 
       code: code,   
   });
@@ -131,7 +131,7 @@ export const clearAuthData = () => {
 
 export const logout = async (token) => {
   try {
-    const response = await axiosInstance.get(authRoutes.logOneOut,{
+    const response = await axios.get("http://localhost:5000/api/user/logoutOne",{
       headers: {
         'Authorization': `Bearer ${token}`,
       },
