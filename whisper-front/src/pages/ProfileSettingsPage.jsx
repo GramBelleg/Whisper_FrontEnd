@@ -1,7 +1,9 @@
+import ProfileContainer from "@/components/ProfileSettings/ProfileContainer";
+
 const ProfileSettingsPage = () => {
     return ( 
-        <div>
-            <h1>Profile Settings</h1>
+        <div className="p-4">
+        <ProfileContainer />
         </div>
      );
 }
