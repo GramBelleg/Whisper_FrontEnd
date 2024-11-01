@@ -71,6 +71,7 @@ const SingleChatMessaging = ({ updateIconSend, sendMessage }) => {
                 className='message-input'
                 placeholder='Message Here'
                 rows={1} 
+                data-testid="message-input"
             />
         </>
     );
