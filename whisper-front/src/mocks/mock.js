@@ -9,6 +9,29 @@ export const initializeMock = () => {
     mock.onGet('/stories').reply(200, storiesData);
     mock.onGet('/uploadAttachment').reply(200,uploadLink);
     mock.onGet('/downloadAttachment').reply(200,downloadLink);
+
+    mock.onPut('/updateUsername').reply(400, {
+        status: "failed",
+        message: "Username must be unique.",
+    });
+    mock.onPut('/updateName').reply(200, {
+        status: "success",
+    });
+    mock.onPut('/updateBio').reply(200, {
+        status: "success",
+    });
+    mock.onPut('/updatePhone').reply(400, {
+        status: "failed",
+        message: "Phone format is wrong.",
+    });
+    mock.onPut('/sendUpdateCode').reply(200, {
+        status: "failed",
+        message: "Email is already used",
+    });
+    mock.onPut('/updateEmail').reply(400, {
+        status: "failed",
+        message: "Invalid Code",
+    });
 };
 
 

@@ -1,65 +1,84 @@
-import { useState } from 'react';
-import Edit from '@/assets/images/edit.svg?react';
-import Tick from '@/assets/images/tick.svg?react';
+import { useState, useRef } from 'react'
+import Edit from '@/assets/images/edit.svg?react'
+import Tick from '@/assets/images/tick.svg?react'
+import ErrorMessage from '@/components/common/ErrorMessage'
 
-const EditableField = ({ initialText, onSave, fieldName }) => {
-    const [isEditing, setIsEditing] = useState(false);
-    const [text, setText] = useState(initialText);
+const EditableField = ({ initialText, onSave, id, fieldName, error, clearError}) => {
+    const [isEditing, setIsEditing] = useState(false)
+    const [text, setText] = useState(initialText)
+    const tickButtonRef = useRef(null)
 
     const handleEditClick = () => {
-        setIsEditing(true);
-    };
+        setIsEditing(true)
+    }
 
     const handleInputChange = (e) => {
-        setText(e.target.value);
-    };
+        setText(e.target.value)
+    }
 
-    const handleBlur = () => {
-        setIsEditing(false);
-    };
-
-    const handleKeyPress = (e) => {
-        if (e.key === 'Enter') {
-            setIsEditing(false);
-            onSave(text); 
+    const handleBlur = (e) => {
+        if (tickButtonRef.current && !tickButtonRef.current.contains(e.relatedTarget)) {
+            setIsEditing(false)
+            clearError(id);
         }
-    };
+    }
 
-    const handleTickClick = () => {
-        setIsEditing(false);
-        onSave(text);
-    };
+    const handleKeyPress = async (e) => {
+        if (e.key === 'Enter') {
+            await handleSave()
+        }
+    }
+
+    const handleTickClick = async () => {
+        await handleSave()
+    }
+
+    const handleSave = async () => {
+        try {
+            if (text !== initialText) {
+                await onSave(text)
+            }
+            else
+            {
+                clearError(id);
+            }
+            setIsEditing(false)
+        } catch (e) {
+            console.log('Error saving:', e)
+            setText(initialText)
+        }
+    }
 
     return (
-        <div className="flex flex-col mb-4 text-left m-4">
-            <label className="text-primary mb-1">{fieldName}</label>
+        <div className='flex flex-col mb-4 text-left m-4'>
+            <label className='text-primary mb-1'>{fieldName}</label>
             {isEditing ? (
-                <div className="flex items-center">
+                <div className='flex items-center'>
                     <input
-                        type="text"
+                        type='text'
                         value={text}
                         onChange={handleInputChange}
                         onBlur={handleBlur}
                         onKeyPress={handleKeyPress}
-                        className="border-b border-gray-300 bg-transparent text-light w-full focus:outline-none focus:border-primary"
+                        id={`profile-${id}`}
+                        className='border-b border-gray-300 bg-transparent text-light w-full focus:outline-none focus:border-primary'
                         autoFocus
                     />
-                    <button onClick={handleTickClick} className="ml-2">
+                    <button onClick={handleTickClick} className='ml-2' ref={tickButtonRef}>
                         <Tick />
                     </button>
                 </div>
             ) : (
-                <div className="flex items-center">
-                    <span className="text-lg text-light mr-2 w-full">
-                        {text}
-                    </span>
-                    <button onClick={handleEditClick} className="text-gray-500 hover:text-gray-700 focus:outline-none">
+                <div className='flex items-center'>
+                    <span className='text-lg text-light mr-2 w-full'>{text}</span>
+                    <button onClick={handleEditClick} className='text-gray-500 hover:text-gray-700 focus:outline-none'>
                         <Edit />
                     </button>
                 </div>
             )}
+            <ErrorMessage error={error} id={`error-profile-${id}`} />
         </div>
-    );
-};
+    )
+}
 
-export default EditableField;
+export default EditableField

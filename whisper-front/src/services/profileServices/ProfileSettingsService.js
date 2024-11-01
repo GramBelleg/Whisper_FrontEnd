@@ -32,3 +32,63 @@ export const getProfilePic = async () => {
     }
 
 };
+
+export const updateBio = async (bio) => {
+    try {
+      const response = await axiosInstance.put('/updateBio', { bio });
+      return response.data;
+    } catch (error) {
+      console.error('Error updating bio:', error);
+      throw error;
+    }
+  };
+
+  export const updateName = async (name) => {
+    try {
+      const response = await axiosInstance.put('/updateName', { name });
+      return response.data;
+    } catch (error) {
+      console.error('Error updating name:', error);
+      throw error;
+    }
+  };
+
+  export const updateUserName = async (userName) => {
+    try {
+      const response = await axiosInstance.put('/updateUsername', { userName });
+      return response.data;
+    } catch (error) {
+      console.error('Error updating username:', error);
+      throw error;
+    }
+  };
+
+  export const updatePhone = async (phone) => {
+    try {
+      const response = await axiosInstance.put('/updatePhone', { phone });
+      return response.data;
+    } catch (error) {
+      console.error('Error updating phone:', error);
+      throw error;
+    }
+  };
+
+  export const updateEmail = async (email,code) => {
+    try {
+      const response = await axiosInstance.put('/updateEmail', { email,code });
+      return response.data;
+    } catch (error) {
+      console.error('Error updating email:', error);
+      throw error;
+    }
+  };
+
+  export const sendUpdateCode = async (email) => {
+    try {
+      const response = await axiosInstance.put('/sendUpdateCode', { email });
+      return response.data;
+    } catch (error) {
+      console.error('Error updating email:', error);
+      throw error;
+    }
+  };

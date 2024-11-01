@@ -1,38 +1,69 @@
-import EditableField from "./EditFields/EditableField";
-import EditProfilePic from "./ProfilePicture/EditProfilePic";
-const ProfileContainer = () => {
-    //TODOS !!
-    const handleProfilePicEdit = () => {
-        console.log('Edit profile picture clicked');
-    };
-    const handleBioEdit = () => {
-        console.log('Edit bio clicked');
-    }
-    const handleNameEdit = () => {
-        console.log('Edit name clicked');
-    }
-    const handleEmailEdit = () => {
-        console.log('Edit email clicked');
-    }
-    const handlePasswordEdit = () => {
-        console.log('Edit password clicked');
-    }
-    const handlePhoneEdit = () => {
-        console.log('Edit phone clicked');
-    }
-    const handleUsernameEdit = () => {
-        console.log('Edit username clicked');
-    }
+import useAuth from '@/hooks/useAuth';
+import EditableField from './EditFields/EditableField';
+import EditProfilePic from './ProfilePicture/EditProfilePic';
+import { useProfileSettings } from '@/hooks/useProfileSettings';
+import { useModal } from '@/contexts/ModalContext';
+import ModalVerify from './ModalVerify';
 
-    return ( 
+const ProfileContainer = () => {
+    const { user } = useAuth();
+    const { handleBioUpdate, handleNameUpdate, handleUserNameUpdate, handlePhoneUpdate, handleEmailUpdate, handleSendUpdateCode, errors, clearError } = useProfileSettings();
+    const { openModal, closeModal } = useModal();
+
+    const handleEmailChange = async (pendingEmail) => {
+        const response = await handleSendUpdateCode(pendingEmail);
+        if (response) {
+            openModal(() => (
+                <ModalVerify 
+                    email={pendingEmail} 
+                    closeModal={() => {
+                        closeModal();
+                        handleEmailUpdate(pendingEmail);  // Update email only after verification succeeds
+                    }}
+                />
+            ));
+        }
+    }; 
+
+    return (
         <div>
-            <h1 className="text-xl text-light mb-6 text-left">Profile Settings</h1>
-            <EditProfilePic onEdit={handleProfilePicEdit} />
-            <EditableField initialText="test-bio" fieldName="Bio" />
-            <EditableField initialText="test-name" fieldName="Name" />
-            {/* Rest of the components go here (bio,name,...) */}
+            <h1 className='text-xl text-light mb-6 text-left'>Profile Settings</h1>
+            <EditProfilePic onEdit={() => handleEdit('profilePic')} />
+            <EditableField initialText={user.bio} fieldName='Bio' id='bio' onSave={(value) => handleBioUpdate(value)} error={errors.bio} />
+            <EditableField
+                initialText={user.name}
+                fieldName='Name'
+                id='name'
+                onSave={(value) => handleNameUpdate(value)}
+                error={errors.name}
+                clearError={clearError}
+            />
+            <EditableField
+                initialText={user.userName}
+                fieldName='User Name'
+                id='userName'
+                onSave={(value) => handleUserNameUpdate(value)}
+                error={errors.userName}
+                clearError={clearError}
+            />
+            <EditableField
+                initialText={user.email}
+                fieldName='Email'
+                id='email'
+                onSave={handleEmailChange}
+                error={errors.email}
+                clearError={clearError}
+            />
+            <EditableField
+                initialText={user.phoneNumber}
+                fieldName='Phone Number'
+                id='phoneNumber'
+                onSave={(value) => handlePhoneUpdate(value)}
+                error={errors.phoneNumber}
+                clearError={clearError}
+            />
         </div>
-     );
-}
- 
+    );
+};
+
 export default ProfileContainer;
