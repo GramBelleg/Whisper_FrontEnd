@@ -1,5 +1,6 @@
 import axios from "axios"
 import noUser from "../../assets/images/no-user.png";
+import axiosInstance from "../axiosInstance";
 
 let myChats = [];
 let myUsers = [];
@@ -7,7 +8,7 @@ let myUsers = [];
 export const getChatsAPI = async () => {
 
     try {
-        const chats = await axios.get("http://localhost:5000/api/chats", {
+        const chats = await axiosInstance.get("/chats", {
             withCredentials: true, // Ensure credentials are included
         });
 
@@ -19,33 +20,56 @@ export const getChatsAPI = async () => {
     }
 }
 
-export const getChatsCleaned = async () => {
+// Function to map message_state values
+const mapMessageState = ( read, delivered ) => {
+    if(!read && !delivered) {
+        return 0;
+    }
+    else if(delivered && !read) {
+        return 1;
+    }
+    else {
+        return 2;
+    }
+};
+  
+
+  export const getChatsCleaned = async () => {
     try {
         const chats = await getChatsAPI();
 
         myChats = []
+
+        // TODO: "picture": "string"
+
+        // const downloadedData = await getDownloadData();
+        // const blob = await downloadAttachment(downloadedData);
+
+        // const finalBlob = new Blob([blob]);
+        // const newObjectUrl = URL.createObjectURL(finalBlob);
+
         
         chats.map((chat) => {
             const flattenedChat = {
-                id: chat.id,
-                lastMessage: chat.lastMessage.content, // Renamed to lastMessage
-                messageTime: chat.lastMessage.createdAt?.slice(0, 19).replace("T", " "), // Renamed to messageTime
-                expiresAfter: chat.lastMessage.expiresAfter,
-                forwarded: chat.lastMessage.forwarded !== null ? chat.lastMessage.forwarded: false,
-                parentMessageId: chat.lastMessage.parentMessageId,
-                pinned: chat.lastMessage.pinned,
-                selfDestruct: chat.lastMessage.selfDestruct,
-                senderId: chat.lastMessage.senderId,
-                messageType: chat.lastMessage.type, // Renamed to messageType
-                lastMessageId: chat.lastMessage.id, // Keep this as is
-                type: chat.type,
-                othersId: chat.othersId,
-                media: chat.lastMessage.media !== null ?  chat.media : false,
-                story: chat.story !== null ?  chat.story: false,
-                muted: chat.muted !== null ?  chat.muted: false,
-                profilePic: chat.profilePic !== null ? chat.profilePic : noUser,
-                unreadMessageCount: 0, // Assuming a value for unreadMessageCount
-                sender : chat.userName
+                id: chat.id, 
+                lastMessage: chat.lastMessage.content, 
+                messageTime: chat.lastMessage.sentAt?.slice(0, 19).replace("T", " "), 
+                forwarded: false, // TODO: to be removed
+                senderId: chat.lastMessage.sender.id, 
+                messageType: chat.lastMessage.type, 
+                messageState: mapMessageState(chat.lastMessage.read, chat.lastMessage.delivered),
+                lastMessageId: chat.lastMessage.id, 
+                type: chat.type, 
+                othersId: chat.othersId, // TODO: handle with back
+                media: chat.lastMessage.media !== null ?  chat.lastMessage.media : false,// TODO: to be removed
+                story: chat.hasStory !== null ?  chat.hasStory: false, 
+                muted: chat.isMuted !== null ?  chat.isMuted: false, 
+                profilePic: noUser,
+                unreadMessageCount: chat.unreadMessageCount, 
+                sender : chat.name,
+                lastSeen: chat.lastSeen?.slice(0, 19).replace("T", " ")
+                // TODO:
+                // Add status
             };
             myChats.push(flattenedChat);
         });
@@ -71,7 +95,7 @@ const setUsers = () => {
             correspondingChatId:  chat.id,
             name: chat.sender,
             profilePic: chat.profilePic,
-            lastSeen: "2024-11-11 17:05:32"
+            lastSeen: chat.lastSeen
         };
         myUsers.push(user);
     })
