@@ -10,10 +10,10 @@ const ProfilePic = ({handleClick}) => {
                 <img
                     src={profilePic}
                     alt="profile picture"
-                    className="w-16 h-16 rounded-full object-cover border-2 border-gray-300 m-2" // Changed to w-16 h-16 for smaller size
+                    className="w-12 h-12 rounded-full object-cover border-2 border-gray-300 m-2" // Changed to w-16 h-16 for smaller size
                 />
             ) : (
-                <NoProfile className="w-16 h-16 rounded-full object-cover border-2 border-gray-300 m-2" />
+                <NoProfile className="w-12 h-12 rounded-full object-cover border-2 border-gray-300 m-2" />
             )}
             </button>
         </div>

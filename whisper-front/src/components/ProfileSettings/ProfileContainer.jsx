@@ -1,3 +1,4 @@
+import EditableField from "./EditFields/EditableField";
 import EditProfilePic from "./ProfilePicture/EditProfilePic";
 const ProfileContainer = () => {
     //TODOS !!
@@ -25,8 +26,10 @@ const ProfileContainer = () => {
 
     return ( 
         <div>
-            <h1 className="text-xl font-bold text-light mb-6 text-left">Profile Settings</h1>
+            <h1 className="text-xl text-light mb-6 text-left">Profile Settings</h1>
             <EditProfilePic onEdit={handleProfilePicEdit} />
+            <EditableField initialText="test-bio" fieldName="Bio" />
+            <EditableField initialText="test-name" fieldName="Name" />
             {/* Rest of the components go here (bio,name,...) */}
         </div>
      );
