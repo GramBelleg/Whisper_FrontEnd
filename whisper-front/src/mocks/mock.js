@@ -1,6 +1,6 @@
 import axiosInstance from '../services/axiosInstance';
 import MockAdapter from 'axios-mock-adapter';
-import { storiesData, uploadLink, downloadLink } from './mockData'; // Import mock data
+import { storiesData, uploadLink, downloadLink, chatList, messages } from './mockData'; // Import mock data
 
 
 export const initializeMock = () => {
@@ -9,11 +9,13 @@ export const initializeMock = () => {
     mock.onGet('/stories').reply(200, storiesData);
     mock.onGet('/uploadAttachment').reply(200,uploadLink);
     mock.onGet('/downloadAttachment').reply(200,downloadLink);
+    mock.onGet('/chats').reply(200, chatList);
+    mock.onGet('/chatMessages').reply(200, messages);
+
 };
 
 
 /*
-    const mock = new MockAdapter(axiosInstance);
     mock.onPost('/login').reply(200, loginResponse);
     mock.onPost('/signup').reply(201, signupResponse);
     mock.onGet('/stories').reply(200, storiesData);
