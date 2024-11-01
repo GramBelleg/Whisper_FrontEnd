@@ -2,7 +2,6 @@ import './ChatMessage.css'
 import SentTicks from '../SentTicks/SentTicks'
 import DeliveredTicks from '../DeliveredTicks/DeliveredTicks'
 import ReadTicks from '../ReadTicks/ReadTicks'
-import { mapMessageState } from '../../services/chatservice/mapMessageState'
 import PendingSend from '../PendingSend/PendingSend'
 import { whoAmI } from '../../services/chatservice/whoAmI'
 import AudioVoiceMessage from '../AudioVoiceMessage/AudioVoiceMessage'
@@ -46,7 +45,6 @@ const ChatMessage = ({ message, onDelete, onReply }) => {
         setObjectLink(objectLink)
       };
 
-    const mappedMessageState = useMemo(() => mapMessageState(message.state), [message.state])
 
     const renderMessageContent = useMemo(() => {
         switch (message.type) {
@@ -77,10 +75,10 @@ const ChatMessage = ({ message, onDelete, onReply }) => {
                 <span className='time'>{message.time}</span>
                 {message.senderId === whoAmI.id && (
                     <span className='message-status'>
-                        {mappedMessageState === 0 && <SentTicks width='12px' />}
-                        {mappedMessageState === 1 && <DeliveredTicks width='12px' />}
-                        {mappedMessageState === 2 && <ReadTicks width='12px' />}
-                        {mappedMessageState === 4 && <PendingSend width='12px' />}
+                        {message.state === 0 && <SentTicks width='12px' />}
+                        {message.state === 1 && <DeliveredTicks width='12px' />}
+                        {message.state === 2 && <ReadTicks width='12px' />}
+                        {message.state === 4 && <PendingSend width='12px' />}
                     </span>
                 )}
             </div>

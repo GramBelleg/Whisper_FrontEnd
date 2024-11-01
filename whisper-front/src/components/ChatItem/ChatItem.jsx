@@ -1,7 +1,6 @@
 import { useState, useEffect, useRef } from "react";
 import { checkDisplayTime } from "../../services/chatservice/checkDisplayTime";
 import { handleNoUserImage } from "../../services/chatservice/addDefaultImage";
-import { mapMessageState } from "../../services/chatservice/mapMessageState";
 import NotificationBell from "../NotificationBell/NotificationBell";
 import ReadTicks from "../ReadTicks/ReadTicks";
 import SentTicks from "../SentTicks/SentTicks";
@@ -47,7 +46,7 @@ const ChatItem = ({ index, standaloneChat }) => {
         lastSeen: "",
         muted: false,
         media: false,
-        messageState:"",
+        messageState:-1,
         messageTime:"",
         messageType:"",
         tagged: false,
@@ -75,7 +74,6 @@ const ChatItem = ({ index, standaloneChat }) => {
         setMyChat((prevChat) => ({
             ...prevChat,
             ...standaloneChat,
-            messageState: mapMessageState(standaloneChat.messageState),
             messageTime: checkDisplayTime(standaloneChat.messageTime),
             sender: trimName(standaloneChat.sender)
         }));

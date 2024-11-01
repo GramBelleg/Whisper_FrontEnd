@@ -2,13 +2,13 @@ import { createContext, useContext, useEffect, useState } from 'react';
 import { socket } from '@/services/messagingservice/sockets/sockets'
 import { whoAmI } from '@/services/chatservice/whoAmI';
 import useFetch from '@/services/useFetch';
+import { getMessagesForChatCleaned } from '@/services/chatservice/getMessagesForChat';
 
 export const ChatContext = createContext();
 
 export const ChatProvider = ({ children }) => {
     const [currentChat, setcurrentChat] = useState(null);
-    const [messagesURL, setMessagesURL] = useState(null);
-    const {data: messages, setData: setMessages} = useFetch(messagesURL);
+    const [messages, setMessages] = useState([]);// TODO: handle from back
     const [parentMessage, setParentMessage] = useState(null);
     const [sending, setSending] = useState(false);
 
@@ -18,9 +18,15 @@ export const ChatProvider = ({ children }) => {
         setParentMessage(null);
     };
 
+    const loadMessages = async (id) => {
+        const myMessages = await getMessagesForChatCleaned(id);
+        setMessages(myMessages);
+    }
+
     useEffect(() => {
         if (currentChat) {
-            setMessagesURL(`/chats/getMessages/${currentChat.id}`);
+            // TODO: handle with back
+            loadMessages(currentChat.id);
         }
     }, [currentChat]);
 
@@ -52,7 +58,7 @@ export const ChatProvider = ({ children }) => {
         newMessage.readAt = '';
         newMessage.deleted = false;
         newMessage.sender = whoAmI.name;
-        newMessage.state = "pending";
+        newMessage.state = 4;
         newMessage.media = false;
     
         socket.emit('send', newMessageForBackend)

@@ -5,7 +5,6 @@ import "./SingleChatMessagesList.css";
 
 const SingleChatMessagesList = () => {
     const { messages, updateParentMessage } = useChat();
-
     return (
         <div className="single-chat-messages-list">
             {
