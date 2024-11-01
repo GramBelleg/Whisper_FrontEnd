@@ -1,17 +1,17 @@
 import { useSidebar } from "@/contexts/SidebarContext";
 import ChatPage from "../ChatPage/ChatPage";
+import ProfileSettingsPage from "@/pages/ProfileSettingsPage";
 import { useEffect, useRef, useState } from "react";
 import './Sidebar.css'
 
 
-const pages = [
-    {
-      id: 'chat',
-      Component: ChatPage,
-    },
-]
-
-const Sidebar = () => {
+const Sidebar = ({showSettings}) => {
+    const pages = [
+        {
+          id: 'chat',
+          Component: showSettings? ProfileSettingsPage : ChatPage,
+        },
+    ]
 
     const { activePage } = useSidebar();
     const [sidebarWidth, setSidebarWidth] = useState(30); 

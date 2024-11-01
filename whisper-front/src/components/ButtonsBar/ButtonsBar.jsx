@@ -6,8 +6,9 @@ import Settings from '../../assets/images/settings.svg?react';
 import Starred from '../../assets/images/starred.svg?react';
 import Stories from '../../assets/images/stories.svg?react';
 import LogoutButton from "../auth/Logout/LogoutButton";
+import ProfilePic from "../ProfileSettings/ProfilePicture/ProfilePic";
 
-const ButtonsBar = () => {
+const ButtonsBar = ({toggleProfileSettings}) => {
     const handleClick = (iconName) => {
         console.log(`${iconName} clicked`);
     };
@@ -28,6 +29,9 @@ const ButtonsBar = () => {
                 <Stories data-testid="stories-icon" className="icon" />
             </div>
             <LogoutButton />
+            <div className="profile-pic-container">
+                <ProfilePic handleClick={toggleProfileSettings} />
+            </div>
             <div onClick={() => handleClick('Settings')} className="icon-container settings-icon">
                 <Settings data-testid="settings-icon" className="icon" />
             </div>
