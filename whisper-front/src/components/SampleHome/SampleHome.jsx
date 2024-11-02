@@ -7,15 +7,8 @@ import { ModalProvider } from '@/contexts/ModalContext'
 import { ChatProvider } from '@/contexts/ChatContext'
 import { SidebarProvider } from '@/contexts/SidebarContext'
 import Sidebar from '../Sidebar/Sidebar'
-import { useState } from 'react'
 
 const SampleHome = () => {
-    const [showSettings, setShowSettings] = useState(false);
-
-    const toggleProfileSettings = () => {
-        console.log('toggleProfileSettings');
-        setShowSettings((prev) => !prev); 
-    };
 
     return (
         <ChatProvider>
@@ -23,9 +16,9 @@ const SampleHome = () => {
                 <div className='sampleHome'>
                     <SidebarProvider>
                         <div className='buttons-bar-container'>
-                            <ButtonsBar toggleProfileSettings={toggleProfileSettings} />
+                            <ButtonsBar />
                         </div>
-                        <Sidebar showSettings={showSettings} />
+                        <Sidebar />
                     </SidebarProvider>
                     <div className='chatting'>
                         <SingleChatSection />

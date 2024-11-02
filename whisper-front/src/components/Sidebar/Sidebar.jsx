@@ -9,7 +9,11 @@ const Sidebar = ({showSettings}) => {
     const pages = [
         {
           id: 'chat',
-          Component: showSettings? ProfileSettingsPage : ChatPage,
+          Component: ChatPage,
+        },
+        {
+          id: 'profileSettings',
+          Component: ProfileSettingsPage,
         },
     ]
 

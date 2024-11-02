@@ -7,10 +7,16 @@ import Starred from '../../assets/images/starred.svg?react';
 import Stories from '../../assets/images/stories.svg?react';
 import LogoutButton from "../auth/Logout/LogoutButton";
 import ProfilePic from "../ProfileSettings/ProfilePicture/ProfilePic";
+import { useSidebar } from "@/contexts/SidebarContext";
 
-const ButtonsBar = ({toggleProfileSettings}) => {
+const ButtonsBar = () => {
     const handleClick = (iconName) => {
         console.log(`${iconName} clicked`);
+    };
+    const { setActivePage }= useSidebar();
+    const toggleProfileSettings = () => {
+        console.log('toggleProfileSettings');
+        setActivePage('profileSettings');
     };
 
 
