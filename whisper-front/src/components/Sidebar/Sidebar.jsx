@@ -2,6 +2,7 @@ import { useSidebar } from "@/contexts/SidebarContext";
 import ChatPage from "../ChatPage/ChatPage";
 import { useEffect, useRef, useState } from "react";
 import './Sidebar.css'
+import VisibilitySettings from "../VisibiltySettings/VisibilitySettings";
 
 
 const pages = [
@@ -9,6 +10,10 @@ const pages = [
       id: 'chat',
       Component: ChatPage,
     },
+    {
+        id: 'visibility',
+        Component: VisibilitySettings,
+    }
 ]
 
 const Sidebar = () => {
