@@ -26,3 +26,4 @@ services:
 
 networks:
     whisperNet:
+        external: true
