@@ -54,7 +54,7 @@ export const ChatProvider = ({ children }) => {
        
         newMessage.senderId = whoAmI.id,
         newMessage.deliveredAt = '';
-        newMessage.time = new Date().toLocaleTimeString(),
+        newMessage.time = new Date(),
         newMessage.readAt = '';
         newMessage.deleted = false;
         newMessage.sender = whoAmI.name;
