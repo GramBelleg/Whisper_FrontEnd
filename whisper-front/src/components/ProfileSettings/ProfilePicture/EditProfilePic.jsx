@@ -1,17 +1,67 @@
 import { useProfileSettings } from "@/hooks/useProfileSettings";
 import NoProfile from "@/assets/images/no-profile.svg?react";
 import Camera from "@/assets/images/camera.svg?react";
-import { useState } from 'react';
+import { useState, useRef, useEffect } from 'react';
+import { useModal } from "@/contexts/ModalContext";
+import PhotoOptionsModal from "./PhotoOptionsModal";
 
-const EditProfilePic = ({ onEdit, onAdd }) => {
-    const { profilePic } = useProfileSettings();
-    //const profilePic = "https://images.unsplash.com/photo-1506748686214-e9df14d4d9d0"
-
-
+const EditProfilePic = ({ onEdit, onAdd, onRemove }) => {
+    const { profilePic, setProfilePic, errors } = useProfileSettings();
+    const { openModal, closeModal } = useModal(); 
     const [isHovered, setIsHovered] = useState(false); 
+    const fileInputRef = useRef(null);
+    const photoRef = useRef(null); 
+
+    useEffect(() => {
+        console.log("Updated profilePic:", profilePic);
+    }, [profilePic]);
 
     const handleClick = () => {
-        profilePic ? onEdit() : onAdd();
+        if(!profilePic)
+        {
+            handleChangePhoto();
+            return;
+        }
+        const { top, left, width } = photoRef.current.getBoundingClientRect(); 
+        const modalPosition = {
+            top: top + window.scrollY + 50, 
+            left: left + window.scrollX + (width / 2), 
+        };
+
+        openModal(
+            <PhotoOptionsModal
+                onChangePhoto={handleChangePhoto}
+                onRemovePhoto={handleRemovePhoto}
+                onClose={closeModal}
+                position={modalPosition} 
+            />
+        ); 
+    };
+
+    const handleChangePhoto = () => {
+        fileInputRef.current.click();
+    };
+
+    const handleFileChange = (event) => {
+        const file = event.target.files[0];
+        if (file) {
+            const reader = new FileReader();
+            reader.onloadend = () => {
+                setProfilePic(reader.result); 
+                console.log("profilePic", profilePic);
+            };
+            reader.onerror = (error) => {
+                console.error("Error reading file:", error); 
+            };
+            reader.readAsDataURL(file);
+        }
+        closeModal();
+    };
+
+    const handleRemovePhoto = () => {
+        setProfilePic(null); 
+        //onRemove(); 
+        closeModal();
     };
 
     return (
@@ -20,6 +70,7 @@ const EditProfilePic = ({ onEdit, onAdd }) => {
             onMouseEnter={() => setIsHovered(true)} 
             onMouseLeave={() => setIsHovered(false)} 
             onClick={handleClick} 
+            ref={photoRef} 
         >
             {profilePic ? (
                 <img src={profilePic} alt="Profile" className="w-40 h-40 rounded-full object-cover" />
@@ -30,8 +81,15 @@ const EditProfilePic = ({ onEdit, onAdd }) => {
                 <Camera className="mb-1" /> 
                 <span className="text-white text-sm text-center max-w-[50%]">
                     {profilePic ? 'Change Profile Photo' : 'Add Profile Photo'}
-                    </span> 
+                </span> 
             </div>
+            <input 
+                type="file" 
+                accept="image/*" 
+                ref={fileInputRef} 
+                onChange={handleFileChange} 
+                className="hidden" 
+            />
         </div>
     );
 }

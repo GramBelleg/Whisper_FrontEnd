@@ -5,7 +5,7 @@ import useAuth from './useAuth';
 
 export const useProfileSettings = () => {
     const { profilePic, setProfilePic } = useProfileContext();
-    const [errors, setErrors] = useState({ bio: null, name: null, userName: null });
+    const [errors, setErrors] = useState({ bio: null, name: null, userName: null, profilePic: null });
     const { handleUpdateUser } = useAuth();
 
     useEffect(() => {
@@ -88,6 +88,7 @@ export const useProfileSettings = () => {
 
     const handlePhoneUpdate = async (newPhoneNumber) => {
       try {
+          console.log(newPhoneNumber)
           setErrors(prevErrors => ({ ...prevErrors, phoneNumber: null }));
           const response = await updatePhone(newPhoneNumber);
           handleUpdateUser('phoneNumber', newPhoneNumber);
@@ -147,5 +148,5 @@ const clearError = (id) =>{
 
 
 
-    return { profilePic, errors, handleBioUpdate, handleNameUpdate, handleUserNameUpdate, handlePhoneUpdate, handleEmailUpdate, handleSendUpdateCode, clearError };
+    return { profilePic, setProfilePic, errors, handleBioUpdate, handleNameUpdate, handleUserNameUpdate, handlePhoneUpdate, handleEmailUpdate, handleSendUpdateCode, clearError };
 };
