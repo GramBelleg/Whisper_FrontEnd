@@ -13,7 +13,7 @@ const ModalVerify = ({ email, closeModal, resendCode }) => {
     const handleSubmit = async () => {
         try {
             await handleEmailUpdate(email, verificationCode)
-            closeModal()
+            closeModal(true)
         } catch (error) {
             setErrorMessage(error.response?.data?.message || 'An error occurred')
         }
@@ -33,7 +33,7 @@ const ModalVerify = ({ email, closeModal, resendCode }) => {
     return (
         <div className='p-6 bg-light flex flex-col relative'>
             <button
-                onClick={closeModal}
+                onClick={() => closeModal(false)}
                 className='absolute top-2 right-2 text-lg font-bold text-gray-500 hover:text-gray-800'
                 aria-label='Close'
                 id='button-close'

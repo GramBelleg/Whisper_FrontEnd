@@ -39,7 +39,8 @@ const EditablePhoneField = ({ initialPhone, onSave, id, fieldName, error, clearE
     const handleSave = async () => {
         try {
             if (phone !== initialPhone) {
-                const formattedPhone = `+${phone}`; 
+                const formattedPhone = `+${phone}`;
+                setPhone(formattedPhone); 
                 await onSave(formattedPhone);
             } else {
                 clearError(id);
