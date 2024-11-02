@@ -5,10 +5,11 @@ import EditProfilePic from './ProfilePicture/EditProfilePic';
 import { useProfileSettings } from '@/hooks/useProfileSettings';
 import { useModal } from '@/contexts/ModalContext';
 import ModalVerify from './ModalVerify';
+import VerifyEmail from '../auth/VerifyEmail/VerifyEmail';
 
 const ProfileContainer = () => {
     const { user } = useAuth();
-    const { handleBioUpdate, handleNameUpdate, handleUserNameUpdate, handlePhoneUpdate, handleEmailUpdate, handleSendUpdateCode, errors, clearError } = useProfileSettings();
+    const { handleBioUpdate, handleNameUpdate, handleUserNameUpdate, handlePhoneUpdate, handleSendUpdateCode, handleResendUpdateCode, errors, clearError } = useProfileSettings();
     const { openModal, closeModal } = useModal();
 
     const handleEmailChange = async (pendingEmail) => {
@@ -17,10 +18,8 @@ const ProfileContainer = () => {
             openModal(() => (
                 <ModalVerify 
                     email={pendingEmail} 
-                    closeModal={() => {
-                        closeModal();
-                        handleEmailUpdate(pendingEmail);  // Update email only after verification succeeds
-                    }}
+                    closeModal={closeModal}
+                    resendCode = {handleResendUpdateCode}
                 />
             ));
         }
@@ -62,7 +61,7 @@ const ProfileContainer = () => {
                 clearError={clearError}
             />
             <EditablePhoneField
-                initialText={user.phoneNumber}
+                initialPhone={user.phoneNumber}
                 fieldName='Phone Number'
                 id='phoneNumber'
                 onSave={(value) => handlePhoneUpdate(value)}

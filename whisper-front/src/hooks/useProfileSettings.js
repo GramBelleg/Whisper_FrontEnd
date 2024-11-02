@@ -126,6 +126,20 @@ export const useProfileSettings = () => {
     }
 };
 
+const handleResendUpdateCode = async (newEmail) => {
+    try {
+        const response = await sendUpdateCode(newEmail);
+        return response;
+    } catch (err) {
+        if (err.response && err.response.data) {
+            setErrors(prevErrors => ({ ...prevErrors, email: err.response.data.message || 'An error occurred' }));
+        } else {
+            setErrors(prevErrors => ({ ...prevErrors, email: 'An unexpected error occurred' }));
+        }
+        throw err;
+    }
+};
+
 const handleEmailUpdate = async (newEmail,code) => {
   try {
       setErrors(prevErrors => ({ ...prevErrors, verifyCode: null }));
@@ -148,5 +162,5 @@ const clearError = (id) =>{
 
 
 
-    return { profilePic, setProfilePic, errors, handleBioUpdate, handleNameUpdate, handleUserNameUpdate, handlePhoneUpdate, handleEmailUpdate, handleSendUpdateCode, clearError };
+    return { profilePic, setProfilePic, errors, handleBioUpdate, handleNameUpdate, handleUserNameUpdate, handlePhoneUpdate, handleEmailUpdate, handleSendUpdateCode, handleResendUpdateCode, clearError };
 };

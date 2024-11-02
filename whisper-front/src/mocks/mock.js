@@ -20,7 +20,7 @@ export const initializeMock = () => {
     mock.onPut('/updateBio').reply(200, {
         status: "success",
     });
-    mock.onPut('/updatePhone').reply(400, {
+    mock.onPut('/updatePhone').reply(200, {
         status: "failed",
         message: "Phone format is wrong.",
     });
@@ -28,7 +28,7 @@ export const initializeMock = () => {
         status: "failed",
         message: "Email is already used",
     });
-    mock.onPut('/updateEmail').reply(400, {
+    mock.onPut('/updateEmail').reply(200, {
         status: "failed",
         message: "Invalid Code",
     });

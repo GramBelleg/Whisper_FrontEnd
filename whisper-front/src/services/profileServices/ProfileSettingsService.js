@@ -85,6 +85,7 @@ export const updateBio = async (bio) => {
 
   export const sendUpdateCode = async (email) => {
     try {
+      console.log("code sent to email");
       const response = await axiosInstance.put('/sendUpdateCode', { email });
       return response.data;
     } catch (error) {
