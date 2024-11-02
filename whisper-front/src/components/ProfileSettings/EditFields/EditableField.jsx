@@ -61,7 +61,7 @@ const EditableField = ({ initialText, onSave, id, fieldName, error, clearError})
                         onBlur={handleBlur}
                         onKeyPress={handleKeyPress}
                         id={`profile-${id}`}
-                        className='border-b border-gray-300 bg-transparent text-light w-full focus:outline-none focus:border-primary'
+                        className='border-b border-gray-300 bg-transparent break-words text-light w-full focus:outline-none focus:border-primary'
                         autoFocus
                     />
                     <button onClick={handleTickClick} className='ml-2' ref={tickButtonRef}>
@@ -69,8 +69,11 @@ const EditableField = ({ initialText, onSave, id, fieldName, error, clearError})
                     </button>
                 </div>
             ) : (
-                <div className='flex items-center'>
-                    <span className='text-lg text-light mr-2 w-full'>{text}</span>
+                <div className='flex items-center items-start'>
+                    <span className='text-lg text-light mr-2 w-full break-words w-full' 
+                    style={{ maxWidth: 'calc(100% - 2rem)' }} >
+                        {text}
+                    </span>
                     <button onClick={handleEditClick} className='text-gray-500 hover:text-gray-700 focus:outline-none'>
                         <Edit />
                     </button>

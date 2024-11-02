@@ -1,5 +1,6 @@
 import useAuth from '@/hooks/useAuth';
 import EditableField from './EditFields/EditableField';
+import EditablePhoneField from './EditFields/EditablePhoneField'
 import EditProfilePic from './ProfilePicture/EditProfilePic';
 import { useProfileSettings } from '@/hooks/useProfileSettings';
 import { useModal } from '@/contexts/ModalContext';
@@ -29,7 +30,13 @@ const ProfileContainer = () => {
         <div>
             <h1 className='text-xl text-light mb-6 text-left'>Profile Settings</h1>
             <EditProfilePic onEdit={() => handleEdit('profilePic')} />
-            <EditableField initialText={user.bio} fieldName='Bio' id='bio' onSave={(value) => handleBioUpdate(value)} error={errors.bio} />
+            <EditableField 
+                initialText={user.bio}
+                fieldName='Bio'
+                id='bio' 
+                onSave={(value) => handleBioUpdate(value)} error={errors.bio}
+                clearError={clearError}
+            />
             <EditableField
                 initialText={user.name}
                 fieldName='Name'
@@ -54,7 +61,7 @@ const ProfileContainer = () => {
                 error={errors.email}
                 clearError={clearError}
             />
-            <EditableField
+            <EditablePhoneField
                 initialText={user.phoneNumber}
                 fieldName='Phone Number'
                 id='phoneNumber'
