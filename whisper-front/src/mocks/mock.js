@@ -1,7 +1,8 @@
 import axiosInstance from '../services/axiosInstance';
 import MockAdapter from 'axios-mock-adapter';
 import { storiesData, uploadLink, downloadLink } from './mockData'; // Import mock data
-
+import { blockedUsersAPI } from '@/services/blockedUsersService';
+import { blockedUsers } from './BlockedUsersData';
 
 export const initializeMock = () => {
     const mock = new MockAdapter(axiosInstance);
@@ -9,6 +10,8 @@ export const initializeMock = () => {
     mock.onGet('/stories').reply(200, storiesData);
     mock.onGet('/uploadAttachment').reply(200,uploadLink);
     mock.onGet('/downloadAttachment').reply(200,downloadLink);
+    mock.onGet(blockedUsersAPI.index).reply(200,blockedUsers);
+
 };
 
 
