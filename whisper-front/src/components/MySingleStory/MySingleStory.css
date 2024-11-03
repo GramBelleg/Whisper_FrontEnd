@@ -1,0 +1,13 @@
+
+.story-content-text {
+    width: 100%;
+    position: absolute;
+    bottom: 50px; /* Adjust as needed */
+    left: 50%;
+    transform: translateX(-50%);
+    color: white; /* Adjust text color for better readability */
+    padding: 5px 10px;
+    border-radius: 5px;
+    font-size: 14px; /* Adjust font size as needed */
+    text-align: center;
+}
