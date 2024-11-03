@@ -21,7 +21,7 @@
     padding-top: 5%;
 }
 
-.story-content {
+.story-data {
     position: static; /* or use 'position: relative' if you want */
     margin-top: 10px;
     display: flex;
@@ -50,7 +50,7 @@
 
 
 
-.emojis-container{
+.stories-emojis-container{
     color: var(--accent-color);
     font-size: 24px;
 }
