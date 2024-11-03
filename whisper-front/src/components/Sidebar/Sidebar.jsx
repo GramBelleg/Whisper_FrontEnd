@@ -2,12 +2,17 @@ import { useSidebar } from "@/contexts/SidebarContext";
 import ChatPage from "../ChatPage/ChatPage";
 import { useEffect, useRef, useState } from "react";
 import './Sidebar.css'
+import BlockedUsers from "../BlockedUsers/BlockedUsers";
 
 
 const pages = [
     {
       id: 'chat',
       Component: ChatPage,
+    },
+    {
+        id: 'blocked_users',
+        Component: BlockedUsers,
     },
 ]
 
