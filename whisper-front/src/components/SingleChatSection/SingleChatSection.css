@@ -56,7 +56,15 @@
 .header-icons .icon {
     cursor: pointer;
     color: var(--accent-color);
+
 }
+
+.icon {
+    font-size: 20px; /* or whatever size you prefer */
+    width: 20px;
+    height: 20px;
+}
+
 
 .messages {
     display: flex;
