@@ -1,0 +1,29 @@
+version: '3'
+services:
+    front:
+        build: .
+        image : grambell003/whisperfrontend:v1
+        container_name: whisperFront
+        env_file:
+            - .env
+        ports:
+            - "80:80"
+            - "443:443"
+        volumes:
+            - './certbot/data:/usr/share/nginx/html/letsencrypt'
+            - './certbot/conf:/etc/nginx/ssl'
+        networks:
+            - whisperNet
+    
+    certbot:
+        image: certbot/certbot:latest
+        container_name: frontCertbot 
+        command: certonly --webroot --webroot-path=/usr/share/nginx/html/letsencrypt --email grambell.whisper@gmail.com --agree-tos --no-eff-email -d Whisper.webredirect.org
+        volumes:
+            - './certbot/conf:/etc/letsencrypt'
+            - './certbot/data:/usr/share/nginx/html/letsencrypt'
+
+
+networks:
+    whisperNet:
+        external: true
