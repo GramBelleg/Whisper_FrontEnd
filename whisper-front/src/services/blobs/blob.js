@@ -5,7 +5,7 @@ const getDownloadData =  async () => {
     let data = null;
 
     try {
-        const response = await axiosInstance.get("/downloadAttachment");
+        const response = await axiosInstance.get("/downloadBlob");
         data = response.data;
         error = null;
         
@@ -16,7 +16,7 @@ const getDownloadData =  async () => {
     return { data , error };
 }
 
-const downloadAttachment = async (downloadData) => {
+export const downloadBlob = async (downloadData) => {
 
     let error = '';
     let blob = '';
@@ -45,7 +45,7 @@ const downloadAttachment = async (downloadData) => {
     return { blob, error};
 };
 
-const uploadFile = async (file, data) => {
+export const uploadBlob = async (file, data) => {
     let presignedUrl = data.presignedUrl;
     let blobName = data.blobName;
     let blob = new Blob([file]);

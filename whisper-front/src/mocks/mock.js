@@ -1,16 +1,24 @@
 import axiosInstance from '../services/axiosInstance';
 import MockAdapter from 'axios-mock-adapter';
-import { storiesData, uploadLink, downloadLink, chatList, messages } from './mockData'; // Import mock data
+import { storiesData, uploadLink, downloadLink, chatList, messages, myStories } from './mockData'; // Import mock data
 
 
 export const initializeMock = () => {
     const mock = new MockAdapter(axiosInstance);
-    console.log("7mbola");
     mock.onGet('/stories').reply(200, storiesData);
     mock.onGet('/uploadAttachment').reply(200,uploadLink);
     mock.onGet('/downloadAttachment').reply(200,downloadLink);
     mock.onGet('/chats').reply(200, chatList);
     mock.onGet('/chatMessages').reply(200, messages);
+    mock.onGet('/myStories').reply(200, myStories);
+
+    mock.onPut('/myStories').reply(config => {
+        const newStory = JSON.parse(config.data); // Parse the new story data from the request body
+        myStories.stories.push(newStory);         // Add it to the mock data
+
+        console.log(myStories)
+        return [200, newStory];                   // Respond with the new story data
+    });
 
 };
 
