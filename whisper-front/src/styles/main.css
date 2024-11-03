@@ -81,7 +81,7 @@ html {
     min-width: 300px;
     max-width: 90%;
     max-height: 90vh;
-    overflow-y: auto;
+    /*overflow-y: auto;*/
     color: #213547;
     animation: slideUp 0.3s ease-out;
   }
