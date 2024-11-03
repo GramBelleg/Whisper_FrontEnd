@@ -1,4 +1,3 @@
-import React from "react";
 import './ButtonsBar.css';
 import Bookmark from '../../assets/images/bookmark.svg?react';
 import Chat from '../../assets/images/chat.svg?react';
@@ -6,9 +5,9 @@ import Settings from '../../assets/images/settings.svg?react';
 import Starred from '../../assets/images/starred.svg?react';
 import Stories from '../../assets/images/stories.svg?react';
 import LogoutButton from "../auth/Logout/LogoutButton";
-import { SidebarProvider, useSidebar } from "@/contexts/SidebarContext";
-import { faArrowLeft } from  '@fortawesome/free-solid-svg-icons';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { useSidebar } from "@/contexts/SidebarContext";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faBan, faArrowLeft } from "@fortawesome/free-solid-svg-icons";
 
 const ButtonsBar = () => {
     const handleClick = (iconName) => {
@@ -18,7 +17,7 @@ const ButtonsBar = () => {
 
     return (
         <div className="icon-column">
-            <div onClick={() => handleClick('Chat')} className="icon-container">
+            <div onClick={() => setActivePage('chat')} className="icon-container">
                 <Chat data-testid="chat-icon" className="icon" />
             </div>
             <div onClick={() => handleClick('Bookmark')} className="icon-container">
@@ -29,6 +28,10 @@ const ButtonsBar = () => {
             </div>
             <div onClick={() => handleClick('Stories')} className="icon-container">
                 <Stories data-testid="stories-icon" className="icon" />
+            </div>
+
+            <div onClick={() => setActivePage('blocked_users')} className="icon-container justify-self-end">
+                <FontAwesomeIcon height={24} icon={faBan} className="icon" />
             </div>
             <div onClick ={() => setActivePage('visibility')} className="icon-container">
                 <FontAwesomeIcon  icon={faArrowLeft} />
