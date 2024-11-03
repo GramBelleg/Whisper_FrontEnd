@@ -16,7 +16,7 @@ const SingleChatSection = () => {
         <div className='single-chat-container'>
             <div className='single-chat-header shadow-md'>
                 <div className='header-avatar'>
-                    <img src={currentChat.picture} alt={currentChat.name} />
+                    <img src={currentChat.profilePic} alt={currentChat.name} />
                 </div>
                 <div className='header-details'>
                     <span className='header-title'>{currentChat.name}</span>

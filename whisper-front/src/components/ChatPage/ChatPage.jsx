@@ -18,7 +18,7 @@ const ChatPage = () => {
 
 
     const loadChats = async () => {
-        let allChats = await getChatsCleaned()
+        let allChats = await getChatsCleaned();
         setChatList(allChats)
         console.log(allChats)
     }

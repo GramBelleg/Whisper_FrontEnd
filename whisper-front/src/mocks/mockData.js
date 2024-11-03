@@ -10,11 +10,10 @@ export const signupResponse = {
 };
 
 export const uploadLink = {
-    //"presignedUrl": "https://whisperblob.blob.core.windows.net/container1/1729533525359.webm?sv=2024-11-04&se=2024-10-31T17%3A58%3A45Z&sr=b&sp=cw&sig=O7i3HqNUk%2FKbUNguPPZ9yje4%2FeAXdFjE8z%2BQ%2FEwI2AE%3D",
-    "presignedUrl": "/api/container1/1729533525359.webm?sv=2024-11-04&se=2024-10-31T17%3A58%3A45Z&sr=b&sp=cw&sig=O7i3HqNUk%2FKbUNguPPZ9yje4%2FeAXdFjE8z%2BQ%2FEwI2AE%3D",
+    "presignedUrl": "/api/container1/61730487929490.string?sv=2024-11-04&se=2024-11-11T19%3A05%3A29Z&sr=b&sp=cw&sig=Ew1isHt6Xcn%2BU8FMUM9tOUMAodW%2FQW3vOPmkefOBTAQ%3D",
+    "blobName": "61730487929490.string"
+}
 
-    "blobName": "1729533525359.webm"
-  }
 export const downloadLink = {
     //"presignedUrl": "https://whisperblob.blob.core.windows.net/container1/1729533525359.webm?sv=2024-11-04&se=2024-10-31T17%3A59%3A36Z&sr=b&sp=r&sig=ClsWyg9wRIBLvHqoIB7RsEEjR7%2BbpH7gcw8hwhxktKU%3D"
     "presignedUrl": "/api/container1/1729533525359.webm?sv=2024-11-04&se=2024-10-31T17%3A59%3A36Z&sr=b&sp=r&sig=ClsWyg9wRIBLvHqoIB7RsEEjR7%2BbpH7gcw8hwhxktKU%3D"
@@ -32,3 +31,132 @@ export const storiesData = [
     {userId: 9, user:"fatma", profilePicture: profilePicture, seen: false, date: "1/2/2022", content: "hello from fatma"},
     {userId: 10, user:"hana", profilePicture: profilePicture, seen: true, date: "1/2/2022", content: "hello from hana"},
 ]; 
+
+
+export const chatList = [
+    {
+        "id": 1,
+        "name": "Alice",
+        "picture": "https://example.com/pictures/alice.jpg",
+        "hasStory": true,
+        "isMuted": false,
+        "status": "Online",
+        "lastSeen": "2024-11-01T18:00:00.012Z",
+        "type": "DM",
+        "unreadMessageCount": 2,
+        "othersId": 101,
+        "lastMessage": {
+          "id": 1,
+          "content": "Hey, are you free to chat?",
+          "type": "text",
+          "sentAt": "2024-11-01T18:24:00.012Z",
+          "read": false,
+          "delivered": true,
+          "sender": {
+            "id": 1,
+            "userName": "Alice"
+          }
+        }
+    },
+    {
+        "id": 2,
+        "name": "Bob",
+        "picture": "https://example.com/pictures/bob.jpg",
+        "hasStory": false,
+        "isMuted": true,
+        "status": "Away",
+        "lastSeen": "2024-11-01T17:30:00.012Z",
+        "type": "DM",
+        "unreadMessageCount": 0,
+        "othersId": 102,
+        "lastMessage": {
+            "id": 2,
+            "content": "I'll be back later.",
+            "type": "text",
+            "sentAt": "2024-11-01T17:15:00.012Z",
+            "read": true,
+            "delivered": true,
+            "sender": {
+            "id": 102,
+            "userName": "Bob"
+            }
+        }
+    },
+    {
+        "id": 3,
+        "name": "Charlie",
+        "picture": "https://example.com/pictures/charlie.jpg",
+        "hasStory": true,
+        "isMuted": false,
+        "status": "At work",
+        "lastSeen": "2024-11-01T16:45:00.012Z",
+        "type": "DM",
+        "unreadMessageCount": 5,
+        "othersId": 104,
+        "lastMessage": {
+            "id": 3,
+            "content": "Meeting starts in 10 mins.",
+            "type": "text",
+            "sentAt": "2024-11-01T16:35:00.012Z",
+            "read": false,
+            "delivered": true,
+            "sender": {
+            "id": 3,
+            "userName": "Charlie"
+            }
+        }
+    },
+    {
+        "id": 4,
+        "name": "Dana",
+        "picture": "https://example.com/pictures/dana.jpg",
+        "hasStory": false,
+        "isMuted": true,
+        "status": "Do not disturb",
+        "lastSeen": "2024-11-01T15:55:00.012Z",
+        "type": "DM",
+        "unreadMessageCount": 3,
+        "othersId": 104,
+        "lastMessage": {
+            "id": 4,
+            "content": "Call me when you're free.",
+            "type": "text",
+            "sentAt": "2024-11-01T15:30:00.012Z",
+            "read": false,
+            "delivered": false,
+            "sender": {
+            "id": 104,
+            "userName": "Dana"
+            }
+        }
+    },
+]
+
+
+export const messages = [
+    {
+        "id": 1,
+        "chatId": 1,
+        "sender": {
+            "id": 1,
+            "userName": "Alice",
+            "profilePic": "https://example.com/pictures/alice.jpg"
+        },
+        "mentions": [],
+        "content": "Hey, are you free to chat?",
+        "media": "",
+        "extension": "",
+        "createdAt": "2024-11-01T18:24:00.012Z",
+        "sentAt": "2024-11-01T18:24:00.012Z",
+        "read": false,
+        "delivered": true,
+        "forwarded": false,
+        "pinned": false,
+        "selfDestruct": false,
+        "isAnnouncement": false,
+        "expiresAfter": 0,
+        "type": "text",
+        "parentMessage": null,
+        "comments": []
+    }
+]

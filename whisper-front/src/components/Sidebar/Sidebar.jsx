@@ -3,6 +3,7 @@ import ChatPage from "../ChatPage/ChatPage";
 import { useEffect, useRef, useState } from "react";
 import './Sidebar.css'
 import BlockedUsers from "../BlockedUsers/BlockedUsers";
+import VisibilitySettings from "../VisibiltySettings/VisibilitySettings";
 
 
 const pages = [
@@ -14,6 +15,10 @@ const pages = [
         id: 'blocked_users',
         Component: BlockedUsers,
     },
+    {
+        id: 'visibility',
+        Component: VisibilitySettings,
+    }
 ]
 
 const Sidebar = () => {

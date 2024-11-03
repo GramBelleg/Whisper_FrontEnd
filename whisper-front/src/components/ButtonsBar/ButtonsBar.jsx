@@ -1,4 +1,3 @@
-import React from "react";
 import './ButtonsBar.css';
 import Bookmark from '../../assets/images/bookmark.svg?react';
 import Chat from '../../assets/images/chat.svg?react';
@@ -8,15 +7,13 @@ import Stories from '../../assets/images/stories.svg?react';
 import LogoutButton from "../auth/Logout/LogoutButton";
 import { useSidebar } from "@/contexts/SidebarContext";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faBan } from "@fortawesome/free-solid-svg-icons";
+import { faBan, faArrowLeft } from "@fortawesome/free-solid-svg-icons";
 
 const ButtonsBar = () => {
     const handleClick = (iconName) => {
         console.log(`${iconName} clicked`);
     };
-
-    const { setActivePage } = useSidebar();
-
+    const { setActivePage } =  useSidebar();
 
     return (
         <div className="icon-column">
@@ -36,11 +33,15 @@ const ButtonsBar = () => {
             <div onClick={() => setActivePage('blocked_users')} className="icon-container justify-self-end">
                 <FontAwesomeIcon height={24} icon={faBan} className="icon" />
             </div>
+            <div onClick ={() => setActivePage('visibility')} className="icon-container">
+                <FontAwesomeIcon  icon={faArrowLeft} />
+            </div>
             <LogoutButton />
             <div onClick={() => handleClick('Settings')} className="icon-container settings-icon">
                 <Settings data-testid="settings-icon" className="icon" />
             </div>
         </div>
+
     );
 };
 
