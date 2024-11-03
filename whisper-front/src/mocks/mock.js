@@ -9,6 +9,17 @@ export const initializeMock = () => {
     mock.onGet('/stories').reply(200, storiesData);
     mock.onGet('/uploadAttachment').reply(200,uploadLink);
     mock.onGet('/downloadAttachment').reply(200,downloadLink);
+    mock.onGet('/api/user/logoutAll').reply(200, { message: 'Logged out of all devices' });
+    mock.onGet('/api/user/logoutOne').reply(200, { message: 'Logged out of this device' });
+    mock.onPost('/api/auth/resetPassword').reply(200, 
+        { message: 'Reset password sent successfully',
+            user: {
+                email: 'fake@fakedomain.com',
+                id: 'fakeId',
+            },
+            token:"fakeToken"
+        });
+    mock.onPost('/api/auth/sendResetCode').reply(200, { message: 'sent reset code successfully' });
 };
 
 

@@ -1,3 +1,4 @@
+import { logout } from "@/services/authService";
 import CustomInput from "../../common/CustomInput";
 import ErrorMessage from '@/components/common/ErrorMessage';
 
@@ -53,6 +54,21 @@ const ResetPassword = ({
               className="w-full p-3 text-light bg-gray-700 border border-light rounded-md focus:border-primary focus:outline-none"
             />
           ))}
+           <div className="flex">
+            <label className="mr-4" >Logout from all devices after reset ? </label>
+           <CustomInput
+              data-testid="logoutCheck"
+              key="logoutCheck"
+              type="checkbox"
+              id="logoutCheck"
+              value={values["logoutCheck"]}
+              onChange={handleChange}
+              error={errors["logoutCheck"]}
+              touched={touched["logoutCheck"]}
+              className="w-full p-3 text-light bg-gray-700 border border-light rounded-md focus:border-primary focus:outline-none"
+            />
+            </div>
+
           <ErrorMessage error={error} id="error-reset" />
           <button
             onClick={handleSubmit}

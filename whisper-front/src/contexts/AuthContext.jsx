@@ -11,6 +11,7 @@ import {
   githubSignUp,
   resendCode,
   logout,
+  logoutAll
 } from '../services/authService';
 import { loadAuthData } from '../services/tokenService';
 import { whoAmI } from '@/services/chatservice/whoAmI';
@@ -132,12 +133,16 @@ export const AuthProvider = ({ children }) => {
   const handleReset=async (userData)=>{
     setLoading(true);
     setError(null);
+    console.log("handle reset called with",userData);
     try{
       const data=await resetPassword(userData);
       console.log(data);
-      setToken(data.userToken);
+      setToken(data.token);
       setUser(data.user);                          
-      setAuthData(data.user, data.token);  
+      setAuthData(data.user, data.token); 
+      if(userData.logoutCheck){
+        await handleLogoutAll();
+      }
       return {data: data, success: true};
     }catch(err){
       setError(err.message);
@@ -190,6 +195,25 @@ export const AuthProvider = ({ children }) => {
     setError(null); 
     try {
       await logout(token); 
+      setUser(null);
+      setToken(null);
+      localStorage.removeItem('token');
+      localStorage.removeItem('user');
+      Object.assign(whoAmI, {});
+      return { success: true };
+    } catch (err) {
+      console.log(err);
+      setError(err.message);
+      return { error: err, success: false };
+    } finally {
+      setLoading(false);
+    }
+  };
+  const handleLogoutAll = async () => {
+    setLoading(true);
+    setError(null); 
+    try {
+      await logoutAll(token); 
       setUser(null);
       setToken(null);
       localStorage.removeItem('token');

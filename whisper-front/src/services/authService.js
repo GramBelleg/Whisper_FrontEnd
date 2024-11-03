@@ -131,7 +131,22 @@ export const clearAuthData = () => {
 
 export const logout = async (token) => {
   try {
-    const response = await axios.get("http://localhost:5000/api/user/logoutOne",{
+    const response = await axiosInstance.get("/api/user/logoutOne",{
+      headers: {
+        'Authorization': `Bearer ${token}`,
+      },
+      withCredentials: true,
+    });
+    console.log(response.data);
+    return response.data;
+  } catch (error) {
+    console.log("logout error", error);
+    throw new Error(error.response?.data?.message || "An error occurred");
+  }
+};
+export const logoutAll = async (token) => {
+  try {
+    const response = await axiosInstance.get("/api/user/logoutAll",{
       headers: {
         'Authorization': `Bearer ${token}`,
       },
