@@ -86,6 +86,7 @@
 .dropdown-menu {
     position: absolute;
     color: white;
+    width: 250px;
     top: 100%;
     right: 0;
     background-color: var(--secondary-color);
@@ -112,4 +113,45 @@
 
 .dropdown-item.delete:hover {
     background-color: red;
+}
+
+.edit-visibility-within-story {
+    padding-left: 20px;
+    display: flex;
+    align-items: center;
+}
+
+.edit-visibility-within-story:hover {
+    background-color: var(--accent-color-darker);
+}
+
+.within-story-visibility {
+    position: absolute; 
+    top: 50px; 
+    right: 0;
+    width: 250px;
+    height: 120px;
+    background-color: var(--secondary-color);
+    border-radius: 4px;
+    box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.1);
+    z-index: 11; 
+}
+
+.within-story-visibility label {
+    display: flex;
+    align-items: center;
+    padding: 4px 0;
+    cursor: pointer;
+    color: white;
+    padding-left: 10px;
+    padding-bottom: 10px;
+}
+
+.within-story-visibility label:hover {
+    background-color: var(--accent-color-darker);
+    border-radius: 3px;
+}
+
+.within-story-visibility input[type="radio"] {
+    margin-right: 20px; /* Adjust the space between the radio button and the text */
 }

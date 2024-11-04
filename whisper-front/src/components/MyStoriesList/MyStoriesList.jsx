@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { faArrowLeft, faArrowRight, faEllipsisV } from "@fortawesome/free-solid-svg-icons";
+import { faArrowLeft, faArrowRight, faEllipsisV, faEye } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import MySingleStory from '../MySingleStory/MySingleStory';
 import './MyStoriesList.css';
@@ -7,6 +7,7 @@ import './MyStoriesList.css';
 const MyStoriesList = ({ incomingStories, onClose, handleAddStory }) => {
     const [currentIndex, setCurrentIndex] = useState(0);
     const [dropdownVisible, setDropdownVisible] = useState(false);
+    const [visibilityDropDownVisibile, setVisibilityDropDownVisibile] = useState(false);
     const intervalRef = useRef(null);
     const dropdownRef = useRef(null);
     const startTimeRef = useRef(Date.now());
@@ -14,6 +15,8 @@ const MyStoriesList = ({ incomingStories, onClose, handleAddStory }) => {
     const [remainingTime, setRemainingTime] = useState(timeOut); // Initial time of 20 seconds
     const [stories, setStories] = useState(incomingStories);
     const fileInputRef = useRef(null);
+    const [storyVisibility, setStoryVisibility] = useState("everybody");
+
 
     const handleDeleteStory = () => {
         const storyId = stories[currentIndex].id;
@@ -81,11 +84,17 @@ const MyStoriesList = ({ incomingStories, onClose, handleAddStory }) => {
     };
 
     const handleClickOutside = (event) => {
-        if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
+        if (
+            dropdownRef.current &&
+            !dropdownRef.current.contains(event.target) &&
+            !event.target.closest(".within-story-visibility")
+        ) {
             setDropdownVisible(false);
+            setVisibilityDropDownVisibile(false);
             startInterval(); // Resume interval when clicking outside
         }
     };
+    
 
     useEffect(() => {
 
@@ -107,9 +116,6 @@ const MyStoriesList = ({ incomingStories, onClose, handleAddStory }) => {
             const filePreview = URL.createObjectURL(file);
             // Add the new story to the myStories mock -> TODO: call API
             handleAddStory(file, filePreview);
-  
-            // Optionally trigger a re-render or state update if necessary
-            // initializeMock(); // Refresh mock data if required
         }
     };
 
@@ -120,6 +126,11 @@ const MyStoriesList = ({ incomingStories, onClose, handleAddStory }) => {
             handlePrevious();
         }
     };
+
+    const handleEditVisibility = () => {
+        setDropdownVisible(false);
+        setVisibilityDropDownVisibile(true);
+    }
 
     if (!stories?.length) {
         return <div className="text-center p-4">No stories to display</div>;
@@ -175,9 +186,44 @@ const MyStoriesList = ({ incomingStories, onClose, handleAddStory }) => {
                         <div className="dropdown-menu">
                             <button onClick={() => handleAddNewStoryClick()} className="dropdown-item add">Add</button>
                             <button onClick={() => handleDeleteStory()} className="dropdown-item delete">Delete</button>
+                            <div className="edit-visibility-within-story">
+                                <FontAwesomeIcon icon={faEye}/>
+                                <button onClick={() => handleEditVisibility()} className="dropdown-item visibility">Who Can see My story?</button>
+                            </div>
                         </div>
                     )}
                 </div>
+                    {visibilityDropDownVisibile && (
+                        <div className="within-story-visibility">
+                            <label>
+                                <input 
+                                    type="radio" 
+                                    value="everybody" 
+                                    checked={storyVisibility === "everybody"} 
+                                    onChange={() => setStoryVisibility("everybody")} 
+                                />
+                                Everybody
+                            </label>
+                            <label>
+                                <input 
+                                    type="radio" 
+                                    value="contacts" 
+                                    checked={storyVisibility === "contacts"} 
+                                    onChange={() => setStoryVisibility("contacts")} 
+                                />
+                                My Contacts
+                            </label>
+                            <label>
+                                <input 
+                                    type="radio" 
+                                    value="no-one" 
+                                    checked={storyVisibility === "no-one"} 
+                                    onChange={() => setStoryVisibility("no-one")} 
+                                />
+                                No One
+                            </label>
+                    </div>
+                    )}
             </div>
             <input
                 type="file"
