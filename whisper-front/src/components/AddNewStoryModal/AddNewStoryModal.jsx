@@ -6,6 +6,8 @@ import { faTimes } from "@fortawesome/free-solid-svg-icons";
 import { uploadBlob } from "@/services/blobs/blob";
 import { downloadLink, uploadLink } from "@/mocks/mockData";
 import { addNewStory } from "@/services/storiesservice/addNewStory";
+import ErrorMesssage from "../ErrorMessage/ErrorMessage";
+import { useModal } from "@/contexts/ModalContext";
 
 const AddNewStoryModal = ({ file, filePreview, onClose, onStoryAdded }) => {
 
@@ -14,6 +16,10 @@ const AddNewStoryModal = ({ file, filePreview, onClose, onStoryAdded }) => {
     const [storyText, setStoryText] = useState('');
     const [fileType, setFileType] = useState('');
     const [storyId, setStoryId] = useState(0); // TODO
+    const [loading, setLoading] = useState(false);
+    const [error, setError] = useState(null);
+
+    const { openModal , closeModalError } = useModal();
     
     const updateNewMessage = (event) => {
         textareaRef.current.style.height = 'auto';
@@ -30,28 +36,38 @@ const AddNewStoryModal = ({ file, filePreview, onClose, onStoryAdded }) => {
         if (e.key === 'Enter' && !e.shiftKey) {
             e.preventDefault(); // Prevents new line from being added
             // TODO: upload story
-            console.log("ahhahha")
-            console.log(file)
-            const blobName = await uploadBlob(file, uploadLink);
-            console.log(blobName);
-            console.log(fileType)
-            if(blobName) {
-                const newStory = {
-                        "id": storyId, // TODO
-                        "content": storyText,
-                        "media": downloadLink.presignedUrl,
-                        "type": fileType,
-                        "likes": 0,
-                        "date": new Date(),
-                        "viewed": true
-                }
 
-                const addResult = await addNewStory(newStory);
-                console.log("Add result" , addResult)
-                onStoryAdded();
-                setStoryId((prev) => prev + 1);
-            }
-            onClose();
+            setLoading(true);
+            try {
+                const blobName = await uploadBlob(file, uploadLink);
+                if(blobName) {
+                    const newStory = {
+                            "id": storyId, // TODO
+                            "content": storyText,
+                            "media": downloadLink.presignedUrl,
+                            "type": fileType,
+                            "likes": 0,
+                            "date": new Date(),
+                            "viewed": true
+                    }
+
+                    const addResult = await addNewStory(newStory);
+                    console.log("Add result" , addResult)
+                    onStoryAdded();
+                    setStoryId((prev) => prev + 1);
+                }
+            } catch (error) {
+                setLoading(false);
+                openModal(
+                    <ErrorMesssage 
+                        errorMessage={error.message} 
+                        onClose={closeModalError}
+                        appearFor={3000}
+                    />)
+                setTimeout(() => {
+                    onClose()
+                }, 3000);
+            } 
         }
     };
 
@@ -79,6 +95,13 @@ const AddNewStoryModal = ({ file, filePreview, onClose, onStoryAdded }) => {
         }
     }, [storyText]);
 
+    const showLoading = () => {
+        return (
+            <div className="flex items-center justify-center w-full h-full">
+                <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-white" />
+            </div>
+        );
+    }
 
     return (
         
@@ -109,6 +132,7 @@ const AddNewStoryModal = ({ file, filePreview, onClose, onStoryAdded }) => {
                         />
                         {storyText.length !== 0 && <FontAwesomeIcon className="cancel-type" icon={faTimes} color='grey' onClick={handleCancelText} />}
                     </div>
+                    {loading && showLoading()}
                 </div>
             )
         )     
