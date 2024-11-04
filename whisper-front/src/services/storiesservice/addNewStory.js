@@ -14,6 +14,7 @@ export const addNewStory = async (newStory) => {
     } catch (err) {
         console.error('Error adding new story:', err);
         error = err;
+        throw new Error(err.message);
     }
 
     return { correct, error };

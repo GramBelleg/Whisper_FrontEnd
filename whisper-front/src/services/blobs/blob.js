@@ -49,20 +49,19 @@ export const uploadBlob = async (file, data) => {
     let presignedUrl = data.presignedUrl;
     let blobName = data.blobName;
     let blob = new Blob([file]);
-    const uploadResponse = await fetch(presignedUrl, {
-        method: "PUT",
-        body: blob,
-        headers: {
-            "x-ms-blob-type": "BlockBlob", 
-        },
-    });
-
-    if (!uploadResponse.ok) {
-        console.log("Error uploading file");
-        return null;
-    }
-    else {
+    try {
+        const uploadResponse = await fetch(presignedUrl, {
+            method: "PUT",
+            body: blob,
+            headers: {
+                "x-ms-blob-type": "BlockBlob", 
+            },
+        });
         console.log("file uploaded successfully")
         return { blobName };
+    } catch (err) {
+        console.error("Upload error:", err);
+        throw err;
     }
+
 }
