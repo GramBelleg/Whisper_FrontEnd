@@ -2,12 +2,13 @@ import "./AddNewStoryModal.css";
 import CustomEmojisPicker from '../CustomEmojisPicker/CustomEmojisPicker';
 import { useEffect, useRef, useState } from "react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faTimes } from "@fortawesome/free-solid-svg-icons";
+import { faTimes, faPaperPlane } from "@fortawesome/free-solid-svg-icons";
 import { uploadBlob } from "@/services/blobs/blob";
 import { downloadLink, uploadLink } from "@/mocks/mockData";
 import { addNewStory } from "@/services/storiesservice/addNewStory";
 import ErrorMesssage from "../ErrorMessage/ErrorMessage";
 import { useModal } from "@/contexts/ModalContext";
+import { whoAmI } from "@/services/chatservice/whoAmI";
 
 const AddNewStoryModal = ({ file, filePreview, onClose, onStoryAdded }) => {
 
@@ -17,7 +18,6 @@ const AddNewStoryModal = ({ file, filePreview, onClose, onStoryAdded }) => {
     const [fileType, setFileType] = useState('');
     const [storyId, setStoryId] = useState(0); // TODO
     const [loading, setLoading] = useState(false);
-    const [error, setError] = useState(null);
 
     const { openModal , closeModalError } = useModal();
     
@@ -29,45 +29,50 @@ const AddNewStoryModal = ({ file, filePreview, onClose, onStoryAdded }) => {
             const value = event.target.value;
             setStoryText(value);
         }
+
     };
+
+    const sendStory = async () => {
+        setLoading(true);
+        try {
+            const blobName = await uploadBlob(file, uploadLink);
+            if(blobName) {
+                const newStory = {
+                        "id": storyId, // TODO
+                        "content": storyText,
+                        "media": downloadLink.presignedUrl,
+                        "type": fileType,
+                        "likes": 0,
+                        "date": new Date(),
+                        "viewed": true
+                }
+
+                const addResult = await addNewStory(newStory);
+                console.log("Add result" , addResult)
+                onStoryAdded();
+                setStoryId((prev) => prev + 1);
+                setLoading(false);
+                onClose();
+            }
+        } catch (error) {
+            setLoading(false);
+            openModal(
+                <ErrorMesssage 
+                    errorMessage={error.message} 
+                    onClose={closeModalError}
+                    appearFor={3000}
+                />)
+            setTimeout(() => {
+                onClose()
+            }, 3000);
+        } 
+    }
 
     const handleKeyPress = async(e) => {
         
         if (e.key === 'Enter' && !e.shiftKey) {
-            e.preventDefault(); // Prevents new line from being added
-            // TODO: upload story
-
-            setLoading(true);
-            try {
-                const blobName = await uploadBlob(file, uploadLink);
-                if(blobName) {
-                    const newStory = {
-                            "id": storyId, // TODO
-                            "content": storyText,
-                            "media": downloadLink.presignedUrl,
-                            "type": fileType,
-                            "likes": 0,
-                            "date": new Date(),
-                            "viewed": true
-                    }
-
-                    const addResult = await addNewStory(newStory);
-                    console.log("Add result" , addResult)
-                    onStoryAdded();
-                    setStoryId((prev) => prev + 1);
-                }
-            } catch (error) {
-                setLoading(false);
-                openModal(
-                    <ErrorMesssage 
-                        errorMessage={error.message} 
-                        onClose={closeModalError}
-                        appearFor={3000}
-                    />)
-                setTimeout(() => {
-                    onClose()
-                }, 3000);
-            } 
+            e.preventDefault(); 
+            sendStory();
         }
     };
 
@@ -131,7 +136,9 @@ const AddNewStoryModal = ({ file, filePreview, onClose, onStoryAdded }) => {
                             rows={1}
                         />
                         {storyText.length !== 0 && <FontAwesomeIcon className="cancel-type" icon={faTimes} color='grey' onClick={handleCancelText} />}
+                        <FontAwesomeIcon className="send-story-icon" icon={faPaperPlane} onClick={sendStory}/>
                     </div>
+
                     {loading && showLoading()}
                 </div>
             )
@@ -139,6 +146,5 @@ const AddNewStoryModal = ({ file, filePreview, onClose, onStoryAdded }) => {
        
     );
 };
-
  
 export default AddNewStoryModal;

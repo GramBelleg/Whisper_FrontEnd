@@ -31,6 +31,7 @@
     background-color: var(--primary-color);
     border-radius: 5px;
     padding-left: 10px;
+    align-items: center;
 }
 
 .message-input {
@@ -58,4 +59,11 @@
 .cancel-type {
     padding-right: 5px;
     color: var(--accent-color)
+}
+
+.send-story-icon {
+    width: 24px;
+    height: 24px;
+    margin-right: 10px;
+    color: var(--accent-color);
 }
