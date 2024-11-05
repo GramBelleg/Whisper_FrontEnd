@@ -75,7 +75,7 @@ const EditProfilePic = ({ onEdit, onAdd, onRemove }) => {
             {profilePic ? (
                 <img src={profilePic} alt="Profile" className="w-40 h-40 rounded-full object-cover" />
             ) : (
-                <NoProfile className="w-40 h-40 rounded-full object-cover" />
+                <NoProfile className="w-40 h-40 rounded-full object-cover" data-testid="NoProfile"/>
             )}
             <div className={`absolute inset-0 flex flex-col items-center justify-center rounded-full transition-opacity duration-300 ${profilePic ? (isHovered ? 'bg-black bg-opacity-50' : 'opacity-0') : 'bg-black bg-opacity-50'}`}>
                 <Camera className="mb-1" /> 

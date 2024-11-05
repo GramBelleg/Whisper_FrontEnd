@@ -35,13 +35,11 @@ const EditableField = ({ initialText, onSave, id, fieldName, error, clearError})
 
     const handleSave = async () => {
         try {
-            if (text !== initialText) {
+            if(initialText!==text)
+            {
                 await onSave(text)
             }
-            else
-            {
-                clearError(id);
-            }
+            clearError(id);
             setIsEditing(false)
         } catch (e) {
             console.log('Error saving:', e)
@@ -61,20 +59,22 @@ const EditableField = ({ initialText, onSave, id, fieldName, error, clearError})
                         onBlur={handleBlur}
                         onKeyPress={handleKeyPress}
                         id={`profile-${id}`}
+                        data-testid={id}
                         className='border-b border-gray-300 bg-transparent break-words text-light w-full focus:outline-none focus:border-primary'
                         autoFocus
                     />
-                    <button onClick={handleTickClick} className='ml-2' ref={tickButtonRef}>
+                    <button onClick={handleTickClick} className='ml-2' ref={tickButtonRef} id="button-save-edit" data-testid="button-save-edit">
                         <Tick />
                     </button>
                 </div>
             ) : (
                 <div className='flex items-center items-start'>
                     <span className='text-lg text-light mr-2 w-full break-words w-full' 
-                    style={{ maxWidth: 'calc(100% - 2rem)' }} >
+                        data-testid={id}
+                        style={{ maxWidth: 'calc(100% - 2rem)' }} >
                         {text}
                     </span>
-                    <button onClick={handleEditClick} className='text-gray-500 hover:text-gray-700 focus:outline-none'>
+                    <button onClick={handleEditClick} className='text-gray-500 hover:text-gray-700 focus:outline-none' data-testid={`button-edit-${id}`} id={`button-edit-${id}`}>
                         <Edit />
                     </button>
                 </div>
