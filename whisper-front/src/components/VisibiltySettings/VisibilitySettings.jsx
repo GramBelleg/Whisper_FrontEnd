@@ -5,7 +5,9 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { useState } from 'react';
 import { useSidebar } from '@/contexts/SidebarContext';
 import { whoAmI } from '@/services/chatservice/whoAmI';
-import axiosInstance from '@/services/axiosInstance';
+import { putReadReceiptsSetting } from "@/services/privacy/privacy";
+import { useModal } from "@/contexts/ModalContext";
+import ErrorMesssage from "../ErrorMessage/ErrorMessage";
 
 const VisibilitySettings = () => {
     const [profilePictureVisibility, setProfilePictureVisibility] = useState("everybody");
@@ -13,6 +15,7 @@ const VisibilitySettings = () => {
     const [lastSeenVisibility, setLastSeenVisibility] = useState("everybody");
 
     const { setActivePage } = useSidebar();  
+    const { openModal, closeModal } = useModal();
     
     const handleGoBack = () => {
         setActivePage('chat') // TODO:  Change this to the actual page you want to go back to
@@ -20,18 +23,14 @@ const VisibilitySettings = () => {
     const [readReceiptsEnabled, setReadReceiptsEnabled] = useState(whoAmI.readReceipts);
     const updateReadReceiptsSetting = async (enabled) => {
         try {
-            const response = await axiosInstance.post('http://localhost:5001/api/user/readReceipts', { readReceipts: enabled });
-            console.log('Response:', response.data);
-            if (!response.ok) {
-                console.error("Failed to update read receipts setting");
-            }
-            else
-            {
-                setReadReceiptsEnabled(!readReceiptsEnabled);
-            }
+            const data = await putReadReceiptsSetting(enabled);
+            setReadReceiptsEnabled(!readReceiptsEnabled);
         } catch (error) {
-            console.error("Error updating read receipts setting:", error);
+            openModal(
+                <ErrorMesssage errorMessage={error.message} onClose={closeModal} appearFor={2000}/>
+            );
         }
+        
     };
     const toggleReadReceipts = () => {
         updateReadReceiptsSetting(!readReceiptsEnabled);
