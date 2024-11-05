@@ -34,7 +34,7 @@ export const storiesData = [
 
 
 export let myStories = {
-    "stories" : [ /*
+    "stories" : [ 
         {
             "id": 0,
             "content": "ahmed",
@@ -42,7 +42,8 @@ export let myStories = {
             "type": "video/mp4",
             "likes": 12,
             "date": new Date(),
-            "viewed": true
+            "viewed": true,
+            "privacy": "everyone"
         },
         
         {
@@ -52,11 +53,14 @@ export let myStories = {
             "type": "image/png",
             "likes": 12,
             "date": new Date(),
-            "viewed": true
+            "viewed": true,
+            "privacy": "everyone"
         }
-        */
+         
     ]
 }
+
+
 
 
 export const chatList = [

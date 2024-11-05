@@ -31,6 +31,7 @@ export const getMyStories = async () => {
                 type: story.type,
                 likes: story.likes,
                 date: story.date.slice(0, 19).replace("T", " "),
+                privacy: story.privacy,
             };
 
             myStories.push(flattenedStory);
