@@ -15,7 +15,6 @@ const StoriesTab = ({
     showRightArrow,
     scrollLeft,
     scrollRight,
-    handleStoryClick,
     handleMyStoryClick,
     myStoriesLength,
 }) => {
@@ -85,7 +84,6 @@ const StoriesTab = ({
                       <li
                         key={story.userId}
                         className="story-item"
-                        onClick={() => handleStoryClick(story.user)}
                       >
                         <div className={`profile-picture ${story.seen ? '' : 'unseen'}`}>
                           <img

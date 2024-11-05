@@ -56,9 +56,6 @@ export default function StoriesContainer() {
         }
     };
 
-    const handleStoryClick = (user) => {
-        console.log(`${user}'s story`);
-    };
 
     const handleAddStory = (file, filePreview) => {
         if(file) {
@@ -97,7 +94,6 @@ export default function StoriesContainer() {
                 scrollContainerRef={scrollContainerRef}
                 scrollLeft={scrollLeft}
                 scrollRight={scrollRight}
-                handleStoryClick={handleStoryClick}
                 handleMyStoryClick={handleMyStoryClick}
                 myStoriesLength={stories?.length}
             />
