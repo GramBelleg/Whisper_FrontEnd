@@ -14,7 +14,9 @@ const ButtonsBar = () => {
     const handleClick = (iconName) => {
         console.log(`${iconName} clicked`);
     };
+
     const { setActivePage }= useSidebar();
+    
     const toggleProfileSettings = () => {
         console.log('toggleProfileSettings');
         setActivePage('profileSettings');

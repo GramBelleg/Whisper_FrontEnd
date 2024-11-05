@@ -19,6 +19,10 @@ const pages = [
     {
         id: 'visibility',
         Component: VisibilitySettings,
+    },
+    {
+        id: 'profileSettings',
+        Component: ProfileSettingsPage,
     }
 ]
 
