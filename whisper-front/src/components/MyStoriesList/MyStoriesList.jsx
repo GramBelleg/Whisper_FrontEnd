@@ -1,4 +1,4 @@
-import React, { useState, useRef } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import { faArrowLeft, faArrowRight } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import MySingleStory from '../MySingleStory/MySingleStory';
@@ -11,20 +11,23 @@ const MyStoriesList = ({ incomingStories, onClose, handleAddStory }) => {
 
     const handleNextStory = () => {
         if (currentIndex < stories.length - 1) {
-        setCurrentIndex((prev) => prev + 1);
+            setCurrentIndex((prev) => prev + 1);
         } else {
-        onClose();
+            onClose();
         }
     };
 
-    const handleDeleteStory = () => {
+    const handleDeleteStory = (intervalRef) => {
         const storyId = stories[currentIndex].id;
         const newStories = stories.filter(story => story.id !== storyId);
         setStories(newStories);
-        if (newStories.length === 0) {
+        if (currentIndex <= newStories.length - 1) { 
+            setCurrentIndex((prev) => (prev < newStories.length - 1 ? prev + 1 : 0));
+            setRemainingTime(timeOut); // Reset to 20 seconds
+        }
+        else {
+            clearTimeout(intervalRef.current);
             onClose();
-        } else if (currentIndex >= newStories.length) {
-            setCurrentIndex(newStories.length - 1);
         }
     };
 
@@ -41,7 +44,6 @@ const MyStoriesList = ({ incomingStories, onClose, handleAddStory }) => {
             handleAddStory(file, filePreview);
         }
     };
-
 
   return (
     <div className="my-stories-container">

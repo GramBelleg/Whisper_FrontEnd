@@ -36,7 +36,14 @@ const MySingleStory = ({ story, onNextStory, onDeleteStory, fileInputRef }) => {
         
         setUrl(null);
         setLoading(true);
+        setDropdownVisible(false);
+        setVisibilityDropDownVisible(false);
         setError('');
+        dropdownRef.current = null;
+        videoRef.current = null;
+        intervalRef.current = null;
+        startTimeRef.current = Date.now();
+        
         // Fetch and set the story URL
         const fetchUrl = async () => {
             try {
@@ -64,13 +71,17 @@ const MySingleStory = ({ story, onNextStory, onDeleteStory, fileInputRef }) => {
             clearTimeout(intervalRef.current);
             document.removeEventListener("mousedown", handleClickOutside);
         };
-    }, [story]);
+    }, [story.id]);
 
     const handleAddNewStoryClick = () => {
         if (fileInputRef.current) {
             fileInputRef.current.click();
         }
     };
+
+    const handleDeleteStory = () => {
+        onDeleteStory(intervalRef);
+    }
 
     const startInterval = () => {
         intervalRef.current = setTimeout(() => {
@@ -158,7 +169,7 @@ const MySingleStory = ({ story, onNextStory, onDeleteStory, fileInputRef }) => {
             {dropdownVisible && (
                 <div className="dropdown-menu">
                     <button onClick={handleAddNewStoryClick} className="dropdown-item add">Add</button>
-                    <button onClick={onDeleteStory} className="dropdown-item delete">Delete</button>
+                    <button onClick={handleDeleteStory} className="dropdown-item delete">Delete</button>
                     <div className="edit-visibility-within-story">
                         <FontAwesomeIcon icon={faEye} />
                     <button onClick={handleEditVisibility} className="dropdown-item visibility">
