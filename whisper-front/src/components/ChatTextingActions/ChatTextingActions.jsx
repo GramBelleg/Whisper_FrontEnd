@@ -1,8 +1,6 @@
 import { useEffect, useRef } from "react";
 import "./ChatTextingActions.css";
 import CustomEmojisPicker from '../CustomEmojisPicker/CustomEmojisPicker';
-import { useChat } from '@/contexts/ChatContext'; // Import the chat context
-import { messageTypes } from "@/services/sendTypeEnum";
 
 const ChatTextingActions = ({ textMessage, setTextMessage, triggerSendMessage }) => {
     const textareaRef = useRef(null);
