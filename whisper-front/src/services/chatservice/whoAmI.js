@@ -1,5 +1,6 @@
 import noUser from '../../assets/images/no-user.png'
 
 export let whoAmI =  {
-    profilePic : noUser
+    profilePic : noUser,
+    readReceipts: true
 };

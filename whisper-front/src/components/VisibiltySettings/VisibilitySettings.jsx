@@ -2,12 +2,31 @@ import { faArrowLeft } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { useState } from 'react';
 import "./VisibilitySettings.css";
-
+import { whoAmI } from '@/services/chatservice/whoAmI';
+import axiosInstance from '@/services/axiosInstance';
 const VisibilitySettings = () => {
     const [profilePictureVisibility, setProfilePictureVisibility] = useState("everybody");
     const [storyVisibility, setStoryVisibility] = useState("everybody");
     const [lastSeenVisibility, setLastSeenVisibility] = useState("everybody");
-
+    const [readReceiptsEnabled, setReadReceiptsEnabled] = useState(whoAmI.readReceipts);
+    const updateReadReceiptsSetting = async (enabled) => {
+        try {
+            const response = await axiosInstance.post('http://localhost:5001/api/user/readReceipts', { readReceipts: enabled });
+            console.log('Response:', response.data);
+            if (!response.ok) {
+                console.error("Failed to update read receipts setting");
+            }
+            else
+            {
+                setReadReceiptsEnabled(!readReceiptsEnabled);
+            }
+        } catch (error) {
+            console.error("Error updating read receipts setting:", error);
+        }
+    };
+    const toggleReadReceipts = () => {
+        updateReadReceiptsSetting(!readReceiptsEnabled);
+    };
     return ( 
         <div className="visibility-settings" data-testid="test-visibility-page">
             <div className='flex gap-4 items-center header'>
@@ -109,6 +128,18 @@ const VisibilitySettings = () => {
                             />
                             No One
                         </label>
+                    </div>
+                </div>
+                <div className="who-can-item toggle-container">
+                    <h2>Read Receipts</h2>
+                    <div className="toggle-switch">
+                        <input 
+                            type="checkbox" 
+                            id="readReceipts" 
+                            checked={readReceiptsEnabled} 
+                            onChange={() => toggleReadReceipts()}
+                        />
+                        <label htmlFor="readReceipts" className="toggle-label"></label>
                     </div>
                 </div>
             </div>
