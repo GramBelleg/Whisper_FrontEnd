@@ -2,6 +2,7 @@ pipeline {
     agent any
     environment {
         JOB_PATH = "/home/azureuser/Whisper_Devops/jenkins/jenkins_home/workspace/whisperFrontend_${BRANCH_NAME}"
+        DOCKER_PASS = credentials('dockerPassword') 
     }
 
     stages {
@@ -36,6 +37,9 @@ pipeline {
             }
             steps {
                 sh 'echo "******* pushing image ********"'
+                sh 'echo $DOCKER_PASS | docker login -u grambell003 --password-stdin'
+                sh 'docker-compose build front'
+                sh 'docker-compose push front'
             }
         }
 
