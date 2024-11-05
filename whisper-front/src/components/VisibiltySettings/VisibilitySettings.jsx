@@ -2,16 +2,22 @@ import { faArrowLeft } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { useState } from 'react';
 import "./VisibilitySettings.css";
+import { useSidebar } from '@/contexts/SidebarContext';
 
 const VisibilitySettings = () => {
     const [profilePictureVisibility, setProfilePictureVisibility] = useState("everybody");
     const [storyVisibility, setStoryVisibility] = useState("everybody");
     const [lastSeenVisibility, setLastSeenVisibility] = useState("everybody");
 
+    const { setActivePage } = useSidebar();  
+    
+    const handleGoBack = () => {
+        setActivePage('chat') // TODO:  Change this to the actual page you want to go back to
+    }
     return ( 
         <div className="visibility-settings" data-testid="test-visibility-page">
             <div className='flex gap-4 items-center header'>
-                <FontAwesomeIcon className='back-icon' icon={faArrowLeft} />
+                <FontAwesomeIcon className='back-icon' icon={faArrowLeft} onClick={handleGoBack}/>
                 <h1>Visibility Settings</h1>
             </div>
             <div className="who-can">
