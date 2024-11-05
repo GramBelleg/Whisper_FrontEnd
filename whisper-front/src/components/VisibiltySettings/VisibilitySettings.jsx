@@ -2,7 +2,7 @@ import "./VisibilitySettings.css";
 
 import { faArrowLeft } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useSidebar } from '@/contexts/SidebarContext';
 import { whoAmI } from '@/services/chatservice/whoAmI';
 import { putReadReceiptsSetting } from "@/services/privacy/privacy";
@@ -13,6 +13,7 @@ const VisibilitySettings = () => {
     const [profilePictureVisibility, setProfilePictureVisibility] = useState("everybody");
     const [storyVisibility, setStoryVisibility] = useState("everybody");
     const [lastSeenVisibility, setLastSeenVisibility] = useState("everybody");
+    const [readReceiptsEnabled, setReadReceiptsEnabled] = useState(whoAmI.readReceipts);
 
     const { setActivePage } = useSidebar();  
     const { openModal, closeModal } = useModal();
@@ -20,7 +21,8 @@ const VisibilitySettings = () => {
     const handleGoBack = () => {
         setActivePage('chat') // TODO:  Change this to the actual page you want to go back to
     }
-    const [readReceiptsEnabled, setReadReceiptsEnabled] = useState(whoAmI.readReceipts);
+
+    
     const updateReadReceiptsSetting = async (enabled) => {
         try {
             const data = await putReadReceiptsSetting(enabled);
@@ -35,6 +37,12 @@ const VisibilitySettings = () => {
     const toggleReadReceipts = () => {
         updateReadReceiptsSetting(!readReceiptsEnabled);
     };
+
+    useEffect(() => {
+        setStoryVisibility(whoAmI.storySettings);
+        setProfilePictureVisibility(whoAmI.profileVisibility);
+        setLastSeenVisibility(whoAmI.lastSeenVisibility);
+    },[])
     return ( 
         <div className="visibility-settings" data-testid="test-visibility-page">
             <div className='flex gap-4 items-center header'>
