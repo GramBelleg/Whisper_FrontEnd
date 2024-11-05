@@ -24,6 +24,29 @@ export const initializeMock = () => {
         return [200, newStory];                   // Respond with the new story data
     });
 
+
+    mock.onPut('/updateUsername').reply(400, {
+        status: "failed",
+        message: "Username must be unique.",
+    });
+    mock.onPut('/updateName').reply(200, {
+        status: "success",
+    });
+    mock.onPut('/updateBio').reply(200, {
+        status: "success",
+    });
+    mock.onPut('/updatePhone').reply(200, {
+        status: "failed",
+        message: "Phone format is wrong.",
+    });
+    mock.onPut('/sendUpdateCode').reply(200, {
+        status: "failed",
+        message: "Email is already used",
+    });
+    mock.onPut('/updateEmail').reply(200, {
+        status: "failed",
+        message: "Invalid Code",
+    });
 };
 
 

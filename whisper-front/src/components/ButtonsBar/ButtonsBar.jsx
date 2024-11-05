@@ -8,12 +8,18 @@ import LogoutButton from "../auth/Logout/LogoutButton";
 import { useSidebar } from "@/contexts/SidebarContext";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faBan, faArrowLeft } from "@fortawesome/free-solid-svg-icons";
+import ProfilePic from "../ProfileSettings/ProfilePicture/ProfilePic";
 
 const ButtonsBar = () => {
     const handleClick = (iconName) => {
         console.log(`${iconName} clicked`);
     };
-    const { setActivePage } =  useSidebar();
+    const { setActivePage }= useSidebar();
+    const toggleProfileSettings = () => {
+        console.log('toggleProfileSettings');
+        setActivePage('profileSettings');
+    };
+
 
     return (
         <div className="icon-column">
@@ -37,6 +43,9 @@ const ButtonsBar = () => {
                 <FontAwesomeIcon  icon={faArrowLeft} />
             </div>
             <LogoutButton />
+            <div className="profile-pic-container">
+                <ProfilePic handleClick={toggleProfileSettings} />
+            </div>
             <div onClick={() => handleClick('Settings')} className="icon-container settings-icon">
                 <Settings data-testid="settings-icon" className="icon" />
             </div>

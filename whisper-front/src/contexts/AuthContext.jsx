@@ -217,6 +217,18 @@ export const AuthProvider = ({ children }) => {
     Object.assign(whoAmI, {});
   }
 
+  const handleUpdateUser = (field, value) => {
+    setUser((prevUser) => {
+        const updatedUser = {
+            ...prevUser,
+            [field]: value,
+        };
+        localStorage.setItem('user', JSON.stringify(updatedUser));
+        return updatedUser;
+    });
+};
+
+
   return (
     <AuthContext.Provider value={{
       user,
@@ -229,6 +241,7 @@ export const AuthProvider = ({ children }) => {
       handleGithubSignUp,
       handleLogin,
       handleForgotPassword,
+      handleUpdateUser,
       handleResendCode,
       handleVerify,
       handleReset,
