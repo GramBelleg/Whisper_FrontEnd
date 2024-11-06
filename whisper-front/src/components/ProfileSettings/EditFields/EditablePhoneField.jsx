@@ -38,13 +38,13 @@ const EditablePhoneField = ({ initialPhone, onSave, id, fieldName, error, clearE
 
     const handleSave = async () => {
         try {
-            if (phone !== initialPhone) {
+            if(initialPhone!==phone)
+            {
                 const formattedPhone = `+${phone}`;
                 setPhone(formattedPhone); 
                 await onSave(formattedPhone);
-            } else {
-                clearError(id);
             }
+            clearError(id);
             setIsEditing(false);
         } catch (e) {
             console.log('Error saving:', e);
@@ -67,7 +67,8 @@ const EditablePhoneField = ({ initialPhone, onSave, id, fieldName, error, clearE
                             name: `phone-${id}`,
                             id: `phone-${id}`,
                             autoFocus: true,
-                            className: 'border-b border-gray-300 bg-transparent text-light w-full focus:outline-none focus:border-primary'
+                            className: 'border-b border-gray-300 bg-transparent text-light w-full focus:outline-none focus:border-primary',
+                            'data-testid':`phone-${id}`
                         }}
                         buttonStyle={{
                             border: 'none',
@@ -89,16 +90,16 @@ const EditablePhoneField = ({ initialPhone, onSave, id, fieldName, error, clearE
                             borderRadius: '4px'
                         }}
                     />
-                    <button onClick={handleTickClick} className='ml-2' ref={tickButtonRef}>
+                    <button onClick={handleTickClick} className='ml-2' ref={tickButtonRef} id="button-save-edit" data-testid="button-save-edit">
                         <Tick />
                     </button>
                 </div>
             ) : (
                 <div className='flex items-center'>
-                    <span className='text-lg text-light mr-2 w-full break-words' style={{ maxWidth: 'calc(100% - 2rem)' }}>
+                    <span className='text-lg text-light mr-2 w-full break-words' style={{ maxWidth: 'calc(100% - 2rem)' }} data-testid={id}>
                         {phone}
                     </span>
-                    <button onClick={handleEditClick} className='text-gray-500 hover:text-gray-700 focus:outline-none'>
+                    <button onClick={handleEditClick} className='text-gray-500 hover:text-gray-700 focus:outline-none' id={`button-edit-${id}`} data-testid={`button-edit-${id}`}>
                         <Edit />
                     </button>
                 </div>

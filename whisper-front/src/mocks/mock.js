@@ -35,7 +35,7 @@ export const initializeMock = () => {
     mock.onPut('/updateBio').reply(200, {
         status: "success",
     });
-    mock.onPut('/updatePhone').reply(200, {
+    mock.onPut('/updatePhone').reply(400, {
         status: "failed",
         message: "Phone format is wrong.",
     });
