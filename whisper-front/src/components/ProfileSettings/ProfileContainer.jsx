@@ -18,6 +18,7 @@ const ProfileContainer = ({popPage}) => {
         handlePhoneUpdate,
         handleSendUpdateCode,
         handleResendUpdateCode,
+        handleProfilePicUpdate,
         errors,
         clearError
     } = useProfileSettings()
@@ -63,7 +64,9 @@ const ProfileContainer = ({popPage}) => {
                 <h1 className='text-xl text-light text-left'>Profile Settings</h1>
             </div>
             
-            <EditProfilePic onEdit={() => handleEdit('profilePic')} />
+            <EditProfilePic 
+             onEdit={handleProfilePicUpdate}
+              />
             <EditableField
                 initialText={user.bio}
                 fieldName='Bio'

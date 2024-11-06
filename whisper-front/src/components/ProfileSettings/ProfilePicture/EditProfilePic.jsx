@@ -47,6 +47,7 @@ const EditProfilePic = ({ onEdit, onAdd, onRemove }) => {
         if (file) {
             const reader = new FileReader();
             reader.onloadend = () => {
+                onEdit(reader.result);
                 setProfilePic(reader.result); 
                 console.log("profilePic", profilePic);
             };
@@ -60,13 +61,14 @@ const EditProfilePic = ({ onEdit, onAdd, onRemove }) => {
 
     const handleRemovePhoto = () => {
         setProfilePic(null); 
-        //onRemove(); 
+        onEdit(null);
         closeModal();
     };
 
     return (
         <div
             className="relative inline-block cursor-pointer" 
+            data-testid="EditProfilePic"
             onMouseEnter={() => setIsHovered(true)} 
             onMouseLeave={() => setIsHovered(false)} 
             onClick={handleClick} 
@@ -89,6 +91,7 @@ const EditProfilePic = ({ onEdit, onAdd, onRemove }) => {
                 ref={fileInputRef} 
                 onChange={handleFileChange} 
                 className="hidden" 
+                data-testid="file-input"
             />
         </div>
     );

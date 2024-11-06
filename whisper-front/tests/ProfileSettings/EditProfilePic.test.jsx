@@ -6,11 +6,12 @@ import { describe, it, expect, vi, beforeEach } from 'vitest';
 vi.mock('@/hooks/useProfileSettings', () => ({
     useProfileSettings: vi.fn(),
 }));
-
+const openModal = vi.fn();
+const closeModal = vi.fn();
 vi.mock('@/contexts/ModalContext', () => ({
     useModal: () => ({
-        openModal: vi.fn(),
-        closeModal: vi.fn(),
+        openModal,
+        closeModal
     }),
 }));
 
@@ -62,7 +63,17 @@ describe('EditProfilePic', () => {
 
         const profileImage = screen.getByAltText('Profile');
         fireEvent.click(profileImage);
-
-        expect(screen.getByText('Change Profile Photo')).toBeInTheDocument();
+        expect(openModal).toHaveBeenCalled();
     });
+
+    it('clicking the component triggers on edit', () => {
+        useProfileSettings.mockReturnValue({ profilePic: null });
+        render(<EditProfilePic onEdit={mockOnEdit} onAdd={mockOnAdd} />);
+    
+        const profilePic = screen.getByText('Add Profile Photo');
+    
+        fireEvent.click(profilePic);
+        expect(mockOnEdit).not.toHaveBeenCalled(); 
+      });
+
 });
