@@ -93,3 +93,6 @@ export const updateBio = async (bio) => {
       throw error;
     }
   };
+  export const updateProfilePic = async (file) => {
+    return;
+  };

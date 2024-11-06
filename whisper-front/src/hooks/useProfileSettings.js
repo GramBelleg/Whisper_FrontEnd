@@ -155,6 +155,22 @@ const handleEmailUpdate = async (newEmail,code) => {
       throw err;
   }
 };
+const handleProfilePicUpdate = async (newProfilePic) => {
+    try {
+        setErrors(prevErrors => ({ ...prevErrors, profilePic: null }));
+        const response = await updateProfilePic(newProfilePic);
+        setProfilePic(newProfilePic);
+        return response;
+    } catch (err) {
+        if (err.response && err.response.data) {
+            setErrors(prevErrors => ({ ...prevErrors, profilePic: err.response.data.message || 'An error occurred' }));
+        } else {
+            setErrors(prevErrors => ({ ...prevErrors, profilePic: 'An unexpected error occurred' }));
+        }
+        throw err;
+    }
+};
+
 
 const clearError = (id) =>{
   setErrors(prevErrors => ({ ...prevErrors, [id]: null}));
@@ -162,5 +178,9 @@ const clearError = (id) =>{
 
 
 
-    return { profilePic, setProfilePic, errors, handleBioUpdate, handleNameUpdate, handleUserNameUpdate, handlePhoneUpdate, handleEmailUpdate, handleSendUpdateCode, handleResendUpdateCode, clearError };
+    return { profilePic, setProfilePic, errors,
+         handleBioUpdate, handleNameUpdate, handleUserNameUpdate,
+          handlePhoneUpdate, handleEmailUpdate, handleSendUpdateCode,
+           handleResendUpdateCode, clearError, handleProfilePicUpdate
+         };
 };
