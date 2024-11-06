@@ -1,11 +1,16 @@
 import axios from "axios"
 import axiosInstance from "../axiosInstance";
+import { whoAmI } from "../chatservice/whoAmI";
 
 let myStories = [];
 
 export const getMyStoriesAPI = async () => {
     try {
-        const response = await axiosInstance.get("/myStories");
+        
+        const response = await axios.get(`http://localhost:5000/api/user/story/${whoAmI.id}`,{
+            withCredentials: true
+        });
+            
         return response.data;
     } catch (error) {
         console.error(error);
@@ -14,9 +19,10 @@ export const getMyStoriesAPI = async () => {
 
 export const getMyStories = async () => {
     try {
-
+        
         const response = await getMyStoriesAPI();
 
+        console.log(response)
         const tempStories =  response.stories;  
 
         

@@ -3,7 +3,7 @@ import axiosInstance from '@/services/axiosInstance';
 
 export const putReadReceiptsSetting = async (enabled) => {
     try {
-        const response = await axiosInstance.post('http://localhost:5001/api/user/readReceipts', 
+        const response = await axiosInstance.post('http://localhost:5000/api/user/readReceipts', 
             { readReceipts: enabled }
         );
 
