@@ -5,6 +5,7 @@ import ProfileSettingsPage from "@/pages/ProfileSettingsPage";
 import { useEffect, useRef, useState } from "react";
 import BlockedUsers from "../BlockedUsers/BlockedUsers";
 import VisibilitySettings from "../VisibiltySettings/VisibilitySettings";
+import SettingsPage from "@/pages/SettingsPage";
 
 
 const pages = [
@@ -23,7 +24,11 @@ const pages = [
     {
         id: 'profileSettings',
         Component: ProfileSettingsPage,
-    }
+    },
+    {
+        id: 'settings',
+        Component: SettingsPage,
+    },
 ]
 
 const Sidebar = () => {

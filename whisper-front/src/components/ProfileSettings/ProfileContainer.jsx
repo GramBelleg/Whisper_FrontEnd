@@ -6,8 +6,10 @@ import { useProfileSettings } from '@/hooks/useProfileSettings'
 import { useModal } from '@/contexts/ModalContext'
 import ModalVerify from './ModalVerify'
 import VerifyEmail from '../auth/VerifyEmail/VerifyEmail'
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
+import { faArrowLeft } from '@fortawesome/free-solid-svg-icons'
 
-const ProfileContainer = () => {
+const ProfileContainer = ({popPage}) => {
     const { user } = useAuth()
     const {
         handleBioUpdate,
@@ -22,31 +24,45 @@ const ProfileContainer = () => {
     const { openModal, closeModal } = useModal()
 
     const handleEmailChange = async (pendingEmail) => {
-        const response = await handleSendUpdateCode(pendingEmail)
-        if (response) {
+        try {
+            const response = await handleSendUpdateCode(pendingEmail);
+            
+            if (!response) {
+                throw new Error('Failed to send update code');
+            }
+    
             return new Promise((resolve, reject) => {
+                const closeCallback = (shouldClose) => {
+                    if (shouldClose) {
+                        closeModal();
+                        resolve();
+                    } else {
+                        closeModal();
+                        reject(new Error('Modal was closed without successful verification'));
+                    }
+                };
+    
                 openModal(() => (
                     <ModalVerify
                         email={pendingEmail}
-                        closeModal={(shouldClose) => {
-                            if (shouldClose) {
-                                resolve()
-                                closeModal()
-                            } else {
-                                reject(new Error('Modal was closed without successful verification'))
-                                closeModal()
-                            }
-                        }}
+                        closeModal={closeCallback}
                         resendCode={handleResendUpdateCode}
                     />
-                ))
-            })
+                ));
+            });
+        } catch (error) {
+            throw error;
         }
-    }
+    };
+    
 
     return (
         <div>
-            <h1 className='text-xl text-light mb-6 text-left'>Profile Settings</h1>
+            <div className='p-2 mb-6 flex gap-4 items-center'>
+                {typeof popPage == 'function' && <FontAwesomeIcon icon={faArrowLeft} className='cursor-pointer text-white text-xl' onClick={()=> {popPage()}} />}
+                <h1 className='text-xl text-light text-left'>Profile Settings</h1>
+            </div>
+            
             <EditProfilePic onEdit={() => handleEdit('profilePic')} />
             <EditableField
                 initialText={user.bio}

@@ -23,9 +23,9 @@ const SingleChatSection = () => {
                     <span className='header-subtitle'>Last seen at {currentChat.lastSeen}</span>
                 </div>
                 <div className='header-icons'>
-                    <FontAwesomeIcon height={24} className='icon' icon={faSearch} fixedWidth />
-                    <FontAwesomeIcon height={24} className='icon' icon={faPhone} fixedWidth />
-                    <FontAwesomeIcon height={24} className='icon' icon={faEllipsisV} fixedWidth />
+                    <FontAwesomeIcon height={24} className='icon' icon={faSearch} fixedHeight />
+                    <FontAwesomeIcon height={24} className='icon' icon={faPhone} fixedHeight />
+                    <FontAwesomeIcon height={24} className='icon' icon={faEllipsisV} fixedHeight />
                 </div>
             </div>
             <div className='messages'>
