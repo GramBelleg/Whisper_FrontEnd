@@ -5,11 +5,13 @@ import useFetch from '@/services/useFetch';
 import { handleNoUserImage } from '@/services/chatservice/addDefaultImage';
 import { useModal } from '@/contexts/ModalContext';
 import BlockUserModal from '../Modals/BlockUserModal/BlockUserModal';
+import { useStackedNavigation } from '@/contexts/StackedNavigationContext/StackedNavigationContext';
 
 const BlockedUsers = () => {
     const { data: blockedUsers, error, loading } = useFetch('/api/user/blocked');
 
     const {openModal, openConfirmationModal} = useModal();
+    const { pop } = useStackedNavigation();
 
     const blockUser = () => {
         openModal(<BlockUserModal  blockUser={()=> {console.log('testing')}} />);
@@ -21,7 +23,7 @@ const BlockedUsers = () => {
     return (
         <div id='blocked-users'>
             <div className='flex gap-4 items-center header'>
-                <FontAwesomeIcon className='back-icon' icon={faArrowLeft} />
+                <FontAwesomeIcon onClick={() => {pop()}}  className='back-icon' icon={faArrowLeft} />
                 <h1>Blocked Users</h1>
                 
             </div>

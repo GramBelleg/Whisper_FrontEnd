@@ -1,9 +1,9 @@
 import ProfileContainer from "@/components/ProfileSettings/ProfileContainer";
 
-const ProfileSettingsPage = () => {
+const ProfileSettingsPage = ({popPage}) => {
     return ( 
         <div className="p-4">
-        <ProfileContainer />
+        <ProfileContainer popPage={popPage} />
         </div>
      );
 }

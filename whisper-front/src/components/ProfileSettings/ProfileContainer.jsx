@@ -6,8 +6,12 @@ import { useProfileSettings } from '@/hooks/useProfileSettings'
 import { useModal } from '@/contexts/ModalContext'
 import ModalVerify from './ModalVerify'
 import VerifyEmail from '../auth/VerifyEmail/VerifyEmail'
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
+import { faArrowLeft } from '@fortawesome/free-solid-svg-icons'
+import { useEffect } from 'react'
+import { useStackedNavigation } from '@/contexts/StackedNavigationContext/StackedNavigationContext'
 
-const ProfileContainer = () => {
+const ProfileContainer = ({popPage}) => {
     const { user } = useAuth()
     const {
         handleBioUpdate,
@@ -46,7 +50,11 @@ const ProfileContainer = () => {
 
     return (
         <div>
-            <h1 className='text-xl text-light mb-6 text-left'>Profile Settings</h1>
+            <div className='p-2 mb-6 flex gap-4 items-center'>
+                {typeof popPage == 'function' && <FontAwesomeIcon icon={faArrowLeft} className='cursor-pointer text-white text-xl' onClick={()=> {popPage()}} />}
+                <h1 className='text-xl text-light text-left'>Profile Settings</h1>
+            </div>
+            
             <EditProfilePic onEdit={() => handleEdit('profilePic')} />
             <EditableField
                 initialText={user.bio}
