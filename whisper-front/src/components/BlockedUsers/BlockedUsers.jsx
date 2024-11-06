@@ -1,24 +1,36 @@
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import './BlockedUsers.css';
 import { faArrowLeft, faPlus, faTimes } from '@fortawesome/free-solid-svg-icons';
-import useFetch from '@/services/useFetch';
-import { handleNoUserImage } from '@/services/chatservice/addDefaultImage';
 import { useModal } from '@/contexts/ModalContext';
 import BlockUserModal from '../Modals/BlockUserModal/BlockUserModal';
 import { useStackedNavigation } from '@/contexts/StackedNavigationContext/StackedNavigationContext';
+import { blockedUsersAPI, setBlockedStateForUser } from '@/services/blockedUsersService';
+import useFetch from '@/services/useFetch';
+import noUser from '../../assets/images/no-user.png'
 
 const BlockedUsers = () => {
-    const { data: blockedUsers, error, loading } = useFetch('/api/user/blocked');
+
+    const {data: blockedUsers, loading, error, refresh} = useFetch(blockedUsersAPI.index);
 
     const {openModal, openConfirmationModal} = useModal();
     const { pop } = useStackedNavigation();
 
-    const blockUser = () => {
-        openModal(<BlockUserModal  blockUser={()=> {console.log('testing')}} />);
+    const blockUser = async (chat) => {
+        await setBlockedStateForUser(chat.othersId ? chat.othersId : chat.other.id, true);
+        refresh();
+    }
+
+    const unblockUser = async (userId) => {
+        await setBlockedStateForUser(userId, false);
+        refresh();
+    }
+
+    const addBlockedUser = () => {
+        openModal(<BlockUserModal  blockUser={(chat)=> {blockUser(chat)}} />);
     };
 
-    const cancelBlockUser = () => {
-        openConfirmationModal("Are you sure you want to unblock this user?", () => {console.log('unblock user')});
+    const cancelBlockUser = (user) => {
+        openConfirmationModal("Are you sure you want to unblock this user?", () => {unblockUser(user.userId)});
     }
     return (
         <div id='blocked-users'>
@@ -36,12 +48,11 @@ const BlockedUsers = () => {
                     <div className="no-results">No Users found</div>
                 ) : (
                     blockedUsers.map((user, index) => (
-                        <div key={index} className="user-item" onClick={cancelBlockUser}>
+                        <div key={index} className="user-item" data-testid="user-item" onClick={() => {cancelBlockUser(user)}}>
                             <div className="user-avatar">
                                 <img
-                                    src={user.profilePic}
+                                    src={user.profilePic ? user.profilePic : noUser}
                                     alt={user.userName}
-                                    onError={handleNoUserImage}
                                 />
                             </div>
                             <div className="user-info">
@@ -52,7 +63,7 @@ const BlockedUsers = () => {
                     ))
                 )}
             </div>
-            <button className="add-new-button" onClick={blockUser}>
+            <button className="add-new-button" data-testid="add-blocked-user-button" onClick={addBlockedUser}>
                 <FontAwesomeIcon icon={faPlus} />
             </button>
         </div>

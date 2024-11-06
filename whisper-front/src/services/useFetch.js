@@ -6,25 +6,25 @@ const useFetch = (url) => {
     const [error, setError] = useState(null)
     const [loading, setLoading] = useState(true)
     
+    const fetchData = async () => {
+        setLoading(true)
+        try {
+            const response = await axiosInstance.get(url) // temporarily till real axios.get
+            setData(response.data)  
+        } catch (error) {
+            setError(error)
+        } finally {
+            setLoading(false)
+        }
+    }
 
     useEffect(() => {
-        const fetchData = async () => {
-            setLoading(true)
-            try {
-                const response = await axiosInstance.get(url) // temporarily till real axios.get
-                setData(response.data)  
-            } catch (error) {
-                setError(error)
-            } finally {
-                setLoading(false)
-            }
-        }
         if (url) {
             fetchData();
         }
     }, [url])
 
-    return { data, error, loading, setData }
+    return { data, error, loading, setData, refresh: fetchData }
 }
 
 export default useFetch
