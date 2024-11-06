@@ -3,15 +3,17 @@ import { faArrowLeft, faArrowRight } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import MySingleStory from '../MySingleStory/MySingleStory';
 import './MyStoriesList.css';
-import { deleteStory } from '@/services/storiesservice/deleteStory';
 import ErrorMesssage from '../ErrorMessage/ErrorMessage';
 import { useModal } from '@/contexts/ModalContext';
+import StorySocket from '@/services/sockets/StorySocket';
 
-const MyStoriesList = ({ incomingStories, onClose, handleAddStory }) => {
+const MyStoriesList = ({ incomingStories, onClose, handleAddStory, handleDeleteStory }) => {
     const [currentIndex, setCurrentIndex] = useState(0);
     const [stories, setStories] = useState(incomingStories);
     const fileInputRef = useRef(null);
     const { openModal, closeModal }  = useModal();
+    const myStorySocket =  new StorySocket();
+    
 
     const handleNextStory = () => {
         if (currentIndex < stories.length - 1) {
@@ -21,11 +23,11 @@ const MyStoriesList = ({ incomingStories, onClose, handleAddStory }) => {
         }
     };
 
-    const handleDeleteStory = async (intervalRef) => {
+    const myHandleDeleteStory = async (intervalRef) => {
         try {
             
             const storyId = stories[currentIndex].id;
-            // const repsonse = await deleteStory(storyId); TODO: sockets
+            myStorySocket.deleteData(storyId);
             const newStories = stories.filter(story => story.id !== storyId);
             setStories(newStories);
             if (currentIndex <= newStories.length - 1) { 
@@ -35,6 +37,8 @@ const MyStoriesList = ({ incomingStories, onClose, handleAddStory }) => {
                 clearTimeout(intervalRef.current);
                 onClose();
             }
+            handleDeleteStory();
+
         } catch (error) {
             openModal(<ErrorMesssage errorMessage={error.message} onClose={closeModal} appearFor={5000}/>)
         }
@@ -61,7 +65,7 @@ const MyStoriesList = ({ incomingStories, onClose, handleAddStory }) => {
             <MySingleStory
                 story={stories[currentIndex]}
                 onNextStory={handleNextStory}
-                onDeleteStory={handleDeleteStory}
+                onDeleteStory={myHandleDeleteStory}
                 fileInputRef={fileInputRef}
             />
             <div className="absolute inset-0 flex items-center justify-between p-4">

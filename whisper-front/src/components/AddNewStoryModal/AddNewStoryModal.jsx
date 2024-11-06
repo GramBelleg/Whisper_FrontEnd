@@ -5,9 +5,9 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faTimes, faPaperPlane } from "@fortawesome/free-solid-svg-icons";
 import { uploadBlob } from "@/services/blobs/blob";
 import { downloadLink, uploadLink } from "@/mocks/mockData";
-import { addNewStory } from "@/services/storiesservice/addNewStory";
 import ErrorMesssage from "../ErrorMessage/ErrorMessage";
 import { useModal } from "@/contexts/ModalContext";
+import StorySocket from "@/services/sockets/StorySocket";
 
 const AddNewStoryModal = ({ file, filePreview, onClose, onStoryAdded }) => {
 
@@ -15,10 +15,10 @@ const AddNewStoryModal = ({ file, filePreview, onClose, onStoryAdded }) => {
 
     const [storyText, setStoryText] = useState('');
     const [fileType, setFileType] = useState('');
-    const [storyId, setStoryId] = useState(0); // TODO
     const [loading, setLoading] = useState(false);
 
     const { openModal , closeModalError } = useModal();
+    const myStorySocket =  new StorySocket();
     
     const updateNewMessage = (event) => {
         textareaRef.current.style.height = 'auto';
@@ -37,19 +37,14 @@ const AddNewStoryModal = ({ file, filePreview, onClose, onStoryAdded }) => {
             const blobName = await uploadBlob(file, uploadLink);
             if(blobName) {
                 const newStory = {
-                        "id": storyId, // TODO
                         "content": storyText,
                         "media": downloadLink.presignedUrl,
                         "type": fileType,
-                        "likes": 0,
-                        "date": new Date(),
-                        "viewed": true
                 }
 
-                const addResult = await addNewStory(newStory);
-                console.log("Add result" , addResult)
+                myStorySocket.sendData(newStory);
+
                 onStoryAdded();
-                setStoryId((prev) => prev + 1);
                 setLoading(false);
                 onClose();
             }

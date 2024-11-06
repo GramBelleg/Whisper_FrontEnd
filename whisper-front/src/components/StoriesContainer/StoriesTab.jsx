@@ -19,8 +19,7 @@ const StoriesTab = ({
     myStoriesLength,
 }) => {
     useEffect(() => {
-      console.log("hello")
-      console.log(myStoriesLength)
+      console.log("hello from Stories tab")
     }, [myStoriesLength])
     // Reference to the hidden file input element
     const fileInputRef = useRef(null);
@@ -47,9 +46,6 @@ const StoriesTab = ({
           const filePreview = URL.createObjectURL(file);
           // Add the new story to the myStories mock -> TODO: call API
           handleMyStoryClick(file, filePreview);
-
-          // Optionally trigger a re-render or state update if necessary
-          // initializeMock(); // Refresh mock data if required
       }
   };
 

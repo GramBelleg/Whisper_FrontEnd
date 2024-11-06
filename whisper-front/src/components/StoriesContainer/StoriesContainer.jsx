@@ -36,6 +36,7 @@ export default function StoriesContainer() {
         fetchMyStories();
     }, []);
 
+
     useEffect(() => {
         const scrollContainer = scrollContainerRef.current;
         if (scrollContainer) {
@@ -56,7 +57,6 @@ export default function StoriesContainer() {
         }
     };
 
-
     const handleAddStory = (file, filePreview) => {
         if(file) {
             openModal(
@@ -74,6 +74,7 @@ export default function StoriesContainer() {
                         incomingStories={stories} 
                         onClose={closeModal} 
                         handleAddStory={handleAddStory}
+                        handleDeleteStory={fetchMyStories}
                     />);
         } else {   
             handleAddStory(file, filePreview);
