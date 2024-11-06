@@ -12,6 +12,10 @@ export const setStoryPrivacySettings = async (storyId, privacy) => {
                 "storyId": storyId,
                 "privacy": privacy
             }
+            ,
+            {
+                withCredentials: true
+            }
         );
 
         console.log("Changed Visibility")
