@@ -18,6 +18,7 @@ const VisibilitySettings = () => {
     const { setActivePage } = useSidebar();  
     const { openModal, closeModal } = useModal();
     
+    
     const handleGoBack = () => {
         setActivePage('chat') // TODO:  Change this to the actual page you want to go back to
     }
@@ -55,6 +56,7 @@ const VisibilitySettings = () => {
                     <div className="radio-group">
                         <label>
                             <input 
+                                data-testid="profile-pic-visibiity-everybody"
                                 type="radio" 
                                 value="everybody" 
                                 checked={profilePictureVisibility === "everybody"} 
@@ -64,6 +66,7 @@ const VisibilitySettings = () => {
                         </label>
                         <label>
                             <input 
+                                data-testid="profile-pic-visibiity-contacts"
                                 type="radio" 
                                 value="contacts" 
                                 checked={profilePictureVisibility === "contacts"} 
@@ -73,6 +76,7 @@ const VisibilitySettings = () => {
                         </label>
                         <label>
                             <input 
+                                data-testid="profile-pic-visibiity-noone"
                                 type="radio" 
                                 value="no-one" 
                                 checked={profilePictureVisibility === "no-one"} 
@@ -87,6 +91,7 @@ const VisibilitySettings = () => {
                     <div className="radio-group">
                         <label>
                             <input 
+                                data-testid="story-visibility-everybody"
                                 type="radio" 
                                 value="everybody" 
                                 checked={storyVisibility === "everybody"} 
@@ -96,6 +101,7 @@ const VisibilitySettings = () => {
                         </label>
                         <label>
                             <input 
+                                data-testid="story-visibility-contacts"
                                 type="radio" 
                                 value="contacts" 
                                 checked={storyVisibility === "contacts"} 
@@ -105,6 +111,7 @@ const VisibilitySettings = () => {
                         </label>
                         <label>
                             <input 
+                                data-testid="story-visibility-noone"
                                 type="radio" 
                                 value="no-one" 
                                 checked={storyVisibility === "no-one"} 
@@ -119,6 +126,7 @@ const VisibilitySettings = () => {
                     <div className="radio-group">
                         <label>
                             <input 
+                                data-testid="last-seen-everybody"
                                 type="radio" 
                                 value="everybody" 
                                 checked={lastSeenVisibility === "everybody"} 
@@ -128,6 +136,7 @@ const VisibilitySettings = () => {
                         </label>
                         <label>
                             <input 
+                                data-testid="last-seen-contacts"
                                 type="radio" 
                                 value="contacts" 
                                 checked={lastSeenVisibility === "contacts"} 
@@ -137,6 +146,7 @@ const VisibilitySettings = () => {
                         </label>
                         <label>
                             <input 
+                                data-testid="last-seen-nooone"
                                 type="radio" 
                                 value="no-one" 
                                 checked={lastSeenVisibility === "no-one"} 
@@ -150,6 +160,7 @@ const VisibilitySettings = () => {
                     <h2>Read Receipts</h2>
                     <div className="toggle-switch">
                         <input 
+                            data-testid="toggle-switch-test"
                             type="checkbox" 
                             id="readReceipts" 
                             checked={readReceiptsEnabled} 

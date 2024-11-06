@@ -3,11 +3,15 @@ import { faArrowLeft, faArrowRight } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import MySingleStory from '../MySingleStory/MySingleStory';
 import './MyStoriesList.css';
+import { deleteStory } from '@/services/storiesservice/deleteStory';
+import ErrorMesssage from '../ErrorMessage/ErrorMessage';
+import { useModal } from '@/contexts/ModalContext';
 
 const MyStoriesList = ({ incomingStories, onClose, handleAddStory }) => {
     const [currentIndex, setCurrentIndex] = useState(0);
     const [stories, setStories] = useState(incomingStories);
     const fileInputRef = useRef(null);
+    const { openModal, closeModal }  = useModal();
 
     const handleNextStory = () => {
         if (currentIndex < stories.length - 1) {
@@ -17,18 +21,24 @@ const MyStoriesList = ({ incomingStories, onClose, handleAddStory }) => {
         }
     };
 
-    const handleDeleteStory = (intervalRef) => {
-        const storyId = stories[currentIndex].id;
-        const newStories = stories.filter(story => story.id !== storyId);
-        setStories(newStories);
-        if (currentIndex <= newStories.length - 1) { 
-            setCurrentIndex((prev) => (prev < newStories.length - 1 ? prev + 1 : 0));
-            setRemainingTime(timeOut); // Reset to 20 seconds
+    const handleDeleteStory = async (intervalRef) => {
+        try {
+            
+            const storyId = stories[currentIndex].id;
+            // const repsonse = await deleteStory(storyId); TODO: sockets
+            const newStories = stories.filter(story => story.id !== storyId);
+            setStories(newStories);
+            if (currentIndex <= newStories.length - 1) { 
+                setCurrentIndex((prev) => (prev < newStories.length - 1 ? prev + 1 : 0));
+            }
+            else {
+                clearTimeout(intervalRef.current);
+                onClose();
+            }
+        } catch (error) {
+            openModal(<ErrorMesssage errorMessage={error.message} onClose={closeModal} appearFor={5000}/>)
         }
-        else {
-            clearTimeout(intervalRef.current);
-            onClose();
-        }
+        
     };
 
     if (!stories.length) {

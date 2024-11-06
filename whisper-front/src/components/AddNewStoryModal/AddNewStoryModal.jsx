@@ -8,7 +8,6 @@ import { downloadLink, uploadLink } from "@/mocks/mockData";
 import { addNewStory } from "@/services/storiesservice/addNewStory";
 import ErrorMesssage from "../ErrorMessage/ErrorMessage";
 import { useModal } from "@/contexts/ModalContext";
-import { whoAmI } from "@/services/chatservice/whoAmI";
 
 const AddNewStoryModal = ({ file, filePreview, onClose, onStoryAdded }) => {
 

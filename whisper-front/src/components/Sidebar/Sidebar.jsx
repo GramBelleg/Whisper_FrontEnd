@@ -1,8 +1,8 @@
+import './Sidebar.css'
 import { useSidebar } from "@/contexts/SidebarContext";
 import ChatPage from "../ChatPage/ChatPage";
 import ProfileSettingsPage from "@/pages/ProfileSettingsPage";
 import { useEffect, useRef, useState } from "react";
-import './Sidebar.css'
 import BlockedUsers from "../BlockedUsers/BlockedUsers";
 import VisibilitySettings from "../VisibiltySettings/VisibilitySettings";
 
