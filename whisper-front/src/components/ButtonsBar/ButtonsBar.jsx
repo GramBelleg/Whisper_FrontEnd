@@ -37,18 +37,11 @@ const ButtonsBar = () => {
             <div onClick={() => handleClick('Stories')} className="icon-container">
                 <Stories data-testid="stories-icon" className="icon" />
             </div>
-
-            <div onClick={() => setActivePage('blocked_users')} className="icon-container justify-self-end">
-                <FontAwesomeIcon height={24} icon={faBan} className="icon" />
-            </div>
-            <div onClick ={() => setActivePage('visibility')} className="icon-container">
-                <FontAwesomeIcon  icon={faArrowLeft} />
-            </div>
             <LogoutButton />
             <div className="profile-pic-container">
                 <ProfilePic handleClick={toggleProfileSettings} />
             </div>
-            <div onClick={() => handleClick('Settings')} className="icon-container settings-icon">
+            <div onClick={() => setActivePage('settings')} className="icon-container settings-icon">
                 <Settings data-testid="settings-icon" className="icon" />
             </div>
         </div>
