@@ -14,7 +14,7 @@ const MySingleStory = ({ story, onNextStory, onDeleteStory, fileInputRef }) => {
     const [dropdownVisible, setDropdownVisible] = useState(false);
     const [visibilityDropDownVisible, setVisibilityDropDownVisible] = useState(false);
     const [remainingTime, setRemainingTime] = useState(20000); // 20 seconds
-    const [storyVisibility, setStoryVisibility] = useState("everybody");
+    const [storyVisibility, setStoryVisibility] = useState("Everyone");
 
 
     const storyVisibilityChangedRef = useRef(false);
@@ -214,15 +214,15 @@ const MySingleStory = ({ story, onNextStory, onDeleteStory, fileInputRef }) => {
         {visibilityDropDownVisible && (
             <div className="within-story-visibility" ref={dropdownRef}>
                 <label>
-                    <input type="radio" value="everybody" checked={storyVisibility === "everybody"} onChange={() => {handleVisibilityChange("everybody")}} />
-                    Everybody
+                    <input type="radio" value="Everyone" checked={storyVisibility === "Everyone"} onChange={() => {handleVisibilityChange("Everyone")}} />
+                    Everyone
                 </label>
                 <label>
-                    <input type="radio" value="contacts" checked={storyVisibility === "contacts"} onChange={() => {handleVisibilityChange("contacts")}} />
+                    <input type="radio" value="Contacts" checked={storyVisibility === "Contacts"} onChange={() => {handleVisibilityChange("Contacts")}} />
                     My Contacts
                 </label>
                 <label>
-                    <input type="radio" value="no-one" checked={storyVisibility === "no-one"} onChange={() => {handleVisibilityChange("no-one")}} />
+                    <input type="radio" value="Nobody" checked={storyVisibility === "Nobody"} onChange={() => {handleVisibilityChange("Nobody")}} />
                     No One
                 </label>
             </div>

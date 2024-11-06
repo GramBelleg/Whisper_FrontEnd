@@ -1,22 +1,19 @@
 import "./VisibilitySettings.css";
-
 import { faArrowLeft } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { useEffect, useState } from 'react';
-import { useSidebar } from '@/contexts/SidebarContext';
 import { whoAmI } from '@/services/chatservice/whoAmI';
-import { putReadReceiptsSetting } from "@/services/privacy/privacy";
+import { putLastSeenVisibilitySettings, putProfilePicVisibilitySettings, putReadReceiptsSetting } from "@/services/privacy/privacy";
 import { useModal } from "@/contexts/ModalContext";
 import ErrorMesssage from "../ErrorMessage/ErrorMessage";
 import { useStackedNavigation } from "@/contexts/StackedNavigationContext/StackedNavigationContext";
 
 const VisibilitySettings = () => {
-    const [profilePictureVisibility, setProfilePictureVisibility] = useState("everybody");
-    const [storyVisibility, setStoryVisibility] = useState("everybody");
-    const [lastSeenVisibility, setLastSeenVisibility] = useState("everybody");
+    const [profilePictureVisibility, setProfilePictureVisibility] = useState("Everyone");
+    const [storyVisibility, setStoryVisibility] = useState("Everyone");
+    const [lastSeenVisibility, setLastSeenVisibility] = useState("Everyone");
     const [readReceiptsEnabled, setReadReceiptsEnabled] = useState(whoAmI.readReceipts);
 
-    const { setActivePage } = useSidebar();  
     const { openModal, closeModal } = useModal();
     const { pop } = useStackedNavigation();
     
@@ -25,6 +22,34 @@ const VisibilitySettings = () => {
         pop();
     }
 
+    const updateLastSeenVisibilitySettings = async (setting) =>{
+        setLastSeenVisibility(setting);
+        whoAmI.lastSeenVisibility = setting;
+
+        try {
+            await putLastSeenVisibilitySettings(setting);
+        } catch (error) {
+            openModal(
+                <ErrorMesssage errorMessage={error.message} onClose={closeModal} appearFor={3000}/>
+            );
+        }
+    }
+
+    const updateProfilePicVisibiitySettings = async (setting) => {
+        setProfilePictureVisibility(setting);
+        whoAmI.profilePicprofileVisibility = setting;
+
+        try {
+            await putProfilePicVisibilitySettings(setting);
+        } catch (error) {
+            openModal(
+                <ErrorMesssage errorMessage={error.message} onClose={closeModal} appearFor={3000}/>
+            );
+        }
+    }
+    const updateStoryVisibilitySettings = () => {
+
+    }
     
     const updateReadReceiptsSetting = async (enabled) => {
         try {
@@ -32,7 +57,7 @@ const VisibilitySettings = () => {
             setReadReceiptsEnabled(!readReceiptsEnabled);
         } catch (error) {
             openModal(
-                <ErrorMesssage errorMessage={error.message} onClose={closeModal} appearFor={2000}/>
+                <ErrorMesssage errorMessage={error.message} onClose={closeModal} appearFor={3000}/>
             );
         }
         
@@ -58,21 +83,21 @@ const VisibilitySettings = () => {
                     <div className="radio-group">
                         <label>
                             <input 
-                                data-testid="profile-pic-visibiity-everybody"
+                                data-testid="profile-pic-visibiity-Everyone"
                                 type="radio" 
-                                value="everybody" 
-                                checked={profilePictureVisibility === "everybody"} 
-                                onChange={() => setProfilePictureVisibility("everybody")} 
+                                value="Everyone" 
+                                checked={profilePictureVisibility === "Everyone"} 
+                                onChange={() => updateProfilePicVisibiitySettings("Everyone")} 
                             />
-                            Everybody
+                            Everyone
                         </label>
                         <label>
                             <input 
-                                data-testid="profile-pic-visibiity-contacts"
+                                data-testid="profile-pic-visibiity-Contacts"
                                 type="radio" 
-                                value="contacts" 
-                                checked={profilePictureVisibility === "contacts"} 
-                                onChange={() => setProfilePictureVisibility("contacts")} 
+                                value="Contacts" 
+                                checked={profilePictureVisibility === "Contacts"} 
+                                onChange={() => updateProfilePicVisibiitySettings("Contacts")} 
                             />
                             My Contacts
                         </label>
@@ -80,9 +105,9 @@ const VisibilitySettings = () => {
                             <input 
                                 data-testid="profile-pic-visibiity-noone"
                                 type="radio" 
-                                value="no-one" 
-                                checked={profilePictureVisibility === "no-one"} 
-                                onChange={() => setProfilePictureVisibility("no-one")} 
+                                value="Nobody" 
+                                checked={profilePictureVisibility === "Nobody"} 
+                                onChange={() => updateProfilePicVisibiitySettings("Nobody")} 
                             />
                             No One
                         </label>
@@ -93,21 +118,21 @@ const VisibilitySettings = () => {
                     <div className="radio-group">
                         <label>
                             <input 
-                                data-testid="story-visibility-everybody"
+                                data-testid="story-visibility-Everyone"
                                 type="radio" 
-                                value="everybody" 
-                                checked={storyVisibility === "everybody"} 
-                                onChange={() => setStoryVisibility("everybody")} 
+                                value="Everyone" 
+                                checked={storyVisibility === "Everyone"} 
+                                onChange={() => setStoryVisibility("Everyone")} 
                             />
-                            Everybody
+                            Everyone
                         </label>
                         <label>
                             <input 
-                                data-testid="story-visibility-contacts"
+                                data-testid="story-visibility-Contacts"
                                 type="radio" 
-                                value="contacts" 
-                                checked={storyVisibility === "contacts"} 
-                                onChange={() => setStoryVisibility("contacts")} 
+                                value="Contacts" 
+                                checked={storyVisibility === "Contacts"} 
+                                onChange={() => setStoryVisibility("Contacts")} 
                             />
                             My Contacts
                         </label>
@@ -115,9 +140,9 @@ const VisibilitySettings = () => {
                             <input 
                                 data-testid="story-visibility-noone"
                                 type="radio" 
-                                value="no-one" 
-                                checked={storyVisibility === "no-one"} 
-                                onChange={() => setStoryVisibility("no-one")} 
+                                value="Nobody" 
+                                checked={storyVisibility === "Nobody"} 
+                                onChange={() => setStoryVisibility("Nobody")} 
                             />
                             No One
                         </label>
@@ -128,21 +153,21 @@ const VisibilitySettings = () => {
                     <div className="radio-group">
                         <label>
                             <input 
-                                data-testid="last-seen-everybody"
+                                data-testid="last-seen-Everyone"
                                 type="radio" 
-                                value="everybody" 
-                                checked={lastSeenVisibility === "everybody"} 
-                                onChange={() => setLastSeenVisibility("everybody")} 
+                                value="Everyone" 
+                                checked={lastSeenVisibility === "Everyone"} 
+                                onChange={() => updateLastSeenVisibilitySettings("Everyone")} 
                             />
-                            Everybody
+                            Everyone
                         </label>
                         <label>
                             <input 
-                                data-testid="last-seen-contacts"
+                                data-testid="last-seen-Contacts"
                                 type="radio" 
-                                value="contacts" 
-                                checked={lastSeenVisibility === "contacts"} 
-                                onChange={() => setLastSeenVisibility("contacts")} 
+                                value="Contacts" 
+                                checked={lastSeenVisibility === "Contacts"} 
+                                onChange={() => updateLastSeenVisibilitySettings("Contacts")} 
                             />
                             My Contacts
                         </label>
@@ -150,9 +175,9 @@ const VisibilitySettings = () => {
                             <input 
                                 data-testid="last-seen-nooone"
                                 type="radio" 
-                                value="no-one" 
-                                checked={lastSeenVisibility === "no-one"} 
-                                onChange={() => setLastSeenVisibility("no-one")} 
+                                value="Nobody" 
+                                checked={lastSeenVisibility === "Nobody"} 
+                                onChange={() => updateLastSeenVisibilitySettings("Nobody")} 
                             />
                             No One
                         </label>
