@@ -6,7 +6,7 @@ export GITHUB_CRED_PSW=$(sed -n '3p' /tmp/.auth)
 
 cd /home/azureuser/Whisper_FrontEnd
 
-git pull https://$GITHUB_CRED_PSW@github.com/$GITHUB_CRED_USR/Whisper_FrontEnd.git production
+git pull https://$GITHUB_CRED_USR:$GITHUB_CRED_PSW@github.com/GramBelleg/Whisper_FrontEnd.git production
 
 docker login -u grambell003 -p $DOCKER_PASS
 
