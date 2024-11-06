@@ -3,6 +3,7 @@ pipeline {
     environment {
         JOB_PATH = "/home/azureuser/Whisper_Devops/jenkins/jenkins_home/workspace/whisperFrontend_${BRANCH_NAME}"
         DOCKER_PASS = credentials('dockerPassword') 
+        GITHUB_CRED = credentials('githubCredential')
     }
 
     stages {
@@ -51,6 +52,8 @@ pipeline {
                 sh """
                  echo "******* deploying ********"
                 """
+                sh 'chmod +x /scripts/deploy.sh'
+                sh '/scripts/deploy.sh'
             }
         }
 
