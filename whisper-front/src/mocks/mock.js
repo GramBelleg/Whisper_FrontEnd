@@ -24,6 +24,34 @@ export const initializeMock = () => {
         return [200, newStory];                   // Respond with the new story data
     });
 
+    mock.onDelete('/myStories').reply(config => {
+        // Extract the story ID from the request URL
+        const url = new URL(config.url, 'http://localhost');
+        const storyId = url.searchParams.get('id'); // Assuming the ID is passed as a query parameter
+    
+        if (!storyId) {
+            return [400, { status: "failed", message: "Story ID is required." }];
+        }
+    
+        // Convert the storyId to a number, since IDs in `myStories` are numbers
+        const storyIdNumber = Number(storyId);
+    
+        // Find the index of the story with the matching ID
+        const storyIndex = myStories.stories.findIndex(story => story.id === storyIdNumber);
+    
+        if (storyIndex === -1) {
+            return [404, { status: "failed", message: "Story not found." }];
+        }
+    
+        // Remove the story from the list
+        myStories.stories.splice(storyIndex, 1);
+    
+        console.log(myStories); // Log the updated list of stories
+    
+        return [200, { status: "success", message: "Story deleted successfully." }];
+    });
+    
+    
 
     mock.onPut('/updateUsername').reply(400, {
         status: "failed",
