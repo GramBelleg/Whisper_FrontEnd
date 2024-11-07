@@ -154,6 +154,7 @@ const VisibilitySettings = () => {
                             id="readReceipts" 
                             checked={readReceiptsEnabled} 
                             onChange={() => toggleReadReceipts()}
+                            data-testid = "toggleReadReceipts"
                         />
                         <label htmlFor="readReceipts" className="toggle-label"></label>
                     </div>
