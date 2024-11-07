@@ -17,6 +17,7 @@ const getDownloadData =  async () => {
 }
 
 export const downloadBlob = async (downloadData) => {
+    console.log("Downloading blob:", downloadData);
 
     let error = '';
     let blob = '';

@@ -1,26 +1,38 @@
 import { useEffect, useState } from 'react';
 import { useProfileContext } from '@/contexts/ProfileSettingsContext';
-import { getProfilePic, sendUpdateCode, updateBio, updateEmail, updateName, updatePhone, updateUserName } from '@/services/profileServices/ProfileSettingsService';
+import { getProfilePic, sendUpdateCode, updateBio,
+     updateProfilePic,
+     updateEmail, updateName, updatePhone, updateUserName } from '@/services/profileServices/ProfileSettingsService';
 import useAuth from './useAuth';
 
 export const useProfileSettings = () => {
     const { profilePic, setProfilePic } = useProfileContext();
     const [errors, setErrors] = useState({ bio: null, name: null, userName: null, profilePic: null });
     const { handleUpdateUser } = useAuth();
+    const [loading, setLoading] = useState(false);
 
     useEffect(() => {
+        setLoading(false);
         const fetchProfilePic = async () => {
             try {
                 setErrors(prevErrors => ({ ...prevErrors, profilePic: null })); 
+                console.log("will call getProfilePic from service")
+                setLoading(true);
                 const profilePicUrl = await getProfilePic();
                 setProfilePic(profilePicUrl);
             } catch (err) {
                 setErrors(prevErrors => ({ ...prevErrors, profilePic: 'Error fetching profile picture.' }));
                 console.error('Error fetching profile picture:', err);
             }
+            finally{
+                setLoading(false);
+            }
         };
-
+        if (!profilePic)
+        {
         fetchProfilePic();
+        console.log("fetching profile pic")
+        }
     }, [setProfilePic]);
 
     const handleBioUpdate = async (newBio) => {
@@ -158,8 +170,11 @@ const handleEmailUpdate = async (newEmail,code) => {
 const handleProfilePicUpdate = async (newProfilePic) => {
     try {
         setErrors(prevErrors => ({ ...prevErrors, profilePic: null }));
+        console.log("will call updateProfilePic from service")
+        setLoading(true);
         const response = await updateProfilePic(newProfilePic);
-        setProfilePic(newProfilePic);
+        const updatedProfilePic = await getProfilePic(); 
+        setProfilePic(updatedProfilePic);
         return response;
     } catch (err) {
         if (err.response && err.response.data) {
@@ -168,6 +183,9 @@ const handleProfilePicUpdate = async (newProfilePic) => {
             setErrors(prevErrors => ({ ...prevErrors, profilePic: 'An unexpected error occurred' }));
         }
         throw err;
+    }
+    finally{
+        setLoading(false);
     }
 };
 
@@ -178,9 +196,9 @@ const clearError = (id) =>{
 
 
 
-    return { profilePic, setProfilePic, errors,
+    return { profilePic, setProfilePic, errors, loading,
          handleBioUpdate, handleNameUpdate, handleUserNameUpdate,
           handlePhoneUpdate, handleEmailUpdate, handleSendUpdateCode,
-           handleResendUpdateCode, clearError, handleProfilePicUpdate
+           handleResendUpdateCode, clearError, handleProfilePicUpdate,
          };
 };

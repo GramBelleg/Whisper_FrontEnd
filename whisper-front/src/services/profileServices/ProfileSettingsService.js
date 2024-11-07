@@ -1,44 +1,8 @@
 import axiosInstance from "../axiosInstance";
 import axios from "axios";
 import { whoAmI } from "../chatservice/whoAmI";
-
-export const getProfilePic = async () => {
-    try
-    {
-        const token = localStorage.getItem("token");
-        const user = localStorage.getItem("user");
-        const userId= user.userId;
-        const blobResponse = await axios.get(`http://localhost:5000/getPic/${whoAmI.id}`, {
-          headers: {
-            'Authorization': `Bearer ${token}`,
-          },
-        },{
-          withCredentials: true
-        }); //returns the blob name [should be a socket]
-        const { blobName } = blobResponse.data.blobName;
-        const urlResponse= await axios.get(`http://localhost:5000/getPicUrl/${blobName}`, {
-          headers: {
-              'Authorization': `Bearer ${token}`,
-          },
-        },
-        {
-          withCredentials: true 
-        }
-      ); //returns the preassigned url 
-        const { preAssignedUrl } = blobResponse.data.blobName;
-        const response = await axios.get(preAssignedUrl);
-        const blob = await response.blob();
-        const url = URL.createObjectURL(blob);
-        return url;
-
-    }
-    catch (error)
-    {
-        console.log(error);
-        throw new Error(error.response?.data?.message || "An error occurred");
-    }
-
-};
+import { socket } from "../messagingservice/sockets/sockets";
+import { downloadBlob, uploadBlob } from "@/services/blobs/blob";
 
 export const updateBio = async (bio) => {
     try {
@@ -101,5 +65,86 @@ export const updateBio = async (bio) => {
     }
   };
   export const updateProfilePic = async (file) => {
-    return;
+    try {
+        console.log("updateProfilePic called");
+        const token = localStorage.getItem("token");
+        console.log("file",file.name)
+        const blobResponse = await axiosInstance.post(
+            'api/media/write',
+            { fileName: file.name, fileType: file.type , fileExtension: file.name.split('.').pop() },
+            {
+                headers: {
+                    'Authorization': `Bearer ${token}`,
+                },
+                withCredentials: true,
+            }
+        );
+        console.log("blobResponse",blobResponse)
+        if (!blobResponse || !blobResponse.data || !blobResponse.data.presignedUrl || !blobResponse.data.blobName) {
+          throw new Error("Invalid response structure from API.");
+      }
+
+        const { presignedUrl, blobName } = blobResponse.data;
+        console.log("presignedUrl",presignedUrl)
+        await uploadBlob(file, blobResponse.data);
+        console.log("file uploaded successfully")
+        socket.emit("setPfp", { profilePic: blobName });
+
+        console.log("Profile picture updated successfully");
+    } catch (error) {
+        console.error("Error updating profile picture:", error);
+        throw new Error(error.response?.data?.message || "An error occurred while updating the profile picture");
+    }
   };
+  export const getProfilePic = async () => {
+    try
+    {
+       console.log("getProfilePic called");
+        const token = localStorage.getItem("token");
+        const userId= whoAmI.id;
+        
+       //TODO: get blob name from getPfp event of socket
+      //  const blobName = await new Promise((resolve, reject) => {
+      //   socket.emit("getPfp", { userId });
+
+      //   socket.on("setPfp", (data) => {
+      //         if (data && data.profilePic) {
+      //             resolve(data.profilePic);
+      //         } else {
+      //             reject("No profile picture found.");
+      //         }
+      //     });
+      //   setTimeout(() => reject("Timeout waiting for profile picture"), 10000);
+      //   }
+      // );
+
+        const blobName = "61730487929490.string"
+        console.log("blob",blobName)
+        if (!blobName) {
+          return null;
+        }
+        
+        
+        const blobResponse = await axiosInstance.post('api/media/read', {
+          blobName: blobName,
+        }, {
+          headers: {
+            'Authorization': `Bearer ${token}`,
+          },
+        },{
+          withCredentials: true
+        }); 
+        console.log("blobResponse",blobResponse)
+        const { blob } = await downloadBlob(blobResponse.data);
+        const newBlob = new Blob([blob]);
+        const objectUrl = URL.createObjectURL(newBlob);
+        return objectUrl;
+
+    }
+    catch (error)
+    {
+        console.log(error);
+        throw new Error(error.response?.data?.message || "An error occurred");
+    }
+
+};

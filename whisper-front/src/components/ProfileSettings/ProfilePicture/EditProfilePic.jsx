@@ -6,7 +6,7 @@ import { useModal } from "@/contexts/ModalContext";
 import PhotoOptionsModal from "./PhotoOptionsModal";
 
 const EditProfilePic = ({ onEdit, onAdd, onRemove }) => {
-    const { profilePic, setProfilePic, errors } = useProfileSettings();
+    const { profilePic, setProfilePic, errors, loading } = useProfileSettings();
     const { openModal, closeModal } = useModal(); 
     const [isHovered, setIsHovered] = useState(false); 
     const fileInputRef = useRef(null);
@@ -47,7 +47,7 @@ const EditProfilePic = ({ onEdit, onAdd, onRemove }) => {
         if (file) {
             const reader = new FileReader();
             reader.onloadend = () => {
-                onEdit(reader.result);
+                onEdit(file);
                 setProfilePic(reader.result); 
                 console.log("profilePic", profilePic);
             };
@@ -93,6 +93,13 @@ const EditProfilePic = ({ onEdit, onAdd, onRemove }) => {
                 className="hidden" 
                 data-testid="file-input"
             />
+            {
+                loading && (
+                    <div className="absolute inset-0 flex items-center justify-center">
+                        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-white" />
+                    </div>
+                )
+            }
         </div>
     );
 }
