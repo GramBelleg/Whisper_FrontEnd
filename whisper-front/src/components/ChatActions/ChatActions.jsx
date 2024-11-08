@@ -9,6 +9,7 @@ import { messageTypes } from '@/services/sendTypeEnum'
 import ParentMessage from '../ParentMessage/ParentMessage'
 import { useChat } from '@/contexts/ChatContext'
 import useFetch from '@/services/useFetch'
+import CustomGifPicker from '../CustomGifPicker/CustomGifPicker'
 
 const ChatActions = () => {
     const [textMessage, setTextMessage] = useState('')
@@ -50,6 +51,23 @@ const ChatActions = () => {
         imageInputRef.current.click();
         setAttachmentType(1)
         setShowAttachMenu(false);
+    }
+    const handleGifAttach = async (gifObject) => {
+        // sendMessage(messageTypes.IMAGE, url)
+
+        try {
+            const response = await fetch(gifObject.url);
+            const blob = await response.blob();
+            
+            const file = new File([blob], `${gifObject.id}.gif`, { type: 'image/gif' });
+            console.log("gif" ,file)
+            setAttachedFile(file);
+            setAttachmentType(1);
+            return file;
+          } catch (error) {
+            console.error("Error converting GIF to File:", error);
+            return null;
+          }
     }
 
     const formatFileName = (fileName, length) => {
@@ -159,6 +177,7 @@ const ChatActions = () => {
                             id="image-input" 
                             ref={imageInputRef}
                         />
+                        <CustomGifPicker onGifSelect={handleGifAttach}/>
                     </div>
 
                     {isRecording ? (
