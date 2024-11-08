@@ -79,6 +79,32 @@ export const ChatProvider = ({ children }) => {
         setParentMessage(null);
     };
 
+    const pinMessage = (message, duration) => {
+        const messageId = message.id;
+        setMessages((prevMessages) => {
+            return prevMessages.map((message) =>
+                message.id === messageId
+                    ? { ...message, pinned: true } 
+                    : message
+            );
+        }
+        );
+        //emit socket event
+    };
+    const unPinMessage = (message) => {
+        const messageId = message.id;
+        setMessages((prevMessages) => {
+            return prevMessages.map((message) =>
+                message.id === messageId
+                    ? { ...message, pinned: false } 
+                    : message
+            );
+        }
+        );
+        //emit socket event
+    }
+
+
 
     useEffect(() => {
         const handleReceiveMessage = (messageData) => {
@@ -114,6 +140,8 @@ export const ChatProvider = ({ children }) => {
                 parentMessage,
                 updateParentMessage,
                 clearParentMessage,
+                pinMessage,
+                unPinMessage,
                 sending
             }}
         >

@@ -8,12 +8,13 @@ import AudioVoiceMessage from '../AudioVoiceMessage/AudioVoiceMessage'
 import { messageTypes } from '@/services/sendTypeEnum'
 import { useMemo, useState } from 'react'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import { faReply, faShare, faTrash } from '@fortawesome/free-solid-svg-icons'
+import { faReply, faShare, faTrash, faThumbtack } from '@fortawesome/free-solid-svg-icons'
 import { useModal } from '@/contexts/ModalContext'
 import ForwardMessageModal from '../Modals/ForwardMessageModal/ForwardMessageModal'
 import MessageAttachmentRenderer from '../MessageAttachment/MessageAttachmentRenderer';
+import PinDurationModal from '../Modals/PinDurationModal/PinDurationModal'
 
-const ChatMessage = ({ message, onDelete, onReply }) => {
+const ChatMessage = ({ message, onDelete, onReply, onPin }) => {
     const [isMenuOpen, setIsMenuOpen] = useState(false) // Track menu state
     const [menuPosition, setMenuPosition] = useState({ x: 0, y: 0 })
     const [objectLink, setObjectLink] = useState(null)
@@ -24,6 +25,10 @@ const ChatMessage = ({ message, onDelete, onReply }) => {
         e.preventDefault() // Prevent default behavior (for long-press or right-click)
         setMenuPosition({ x: e.clientX, y: e.clientY }) // Set the position of the menu
         setIsMenuOpen(!isMenuOpen) // Toggle menu visibility
+    }
+    const handlePin = () => {
+        openModal(<PinDurationModal message={message} onPin={onPin} />)
+        setIsMenuOpen(false)
     }
 
     const handleDelete = () => {
@@ -112,6 +117,10 @@ const ChatMessage = ({ message, onDelete, onReply }) => {
                         <button onClick={handleForward}>
                             <FontAwesomeIcon height={18} icon={faShare} />
                             <span>Forward</span>
+                        </button>
+                        <button onClick={handlePin}>
+                            <FontAwesomeIcon height={18} icon={faThumbtack} />
+                            <span>Pin</span>
                         </button>
                         <button className='danger' onClick={handleDelete}>
                             <FontAwesomeIcon height={18} icon={faTrash} />

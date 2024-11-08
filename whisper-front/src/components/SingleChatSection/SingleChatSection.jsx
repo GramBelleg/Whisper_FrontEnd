@@ -5,6 +5,7 @@ import SingleChatMessagesList from '../SingleChatMessagesList/SingleChatMessages
 import ChatActions from '../ChatActions/ChatActions'
 import { useChat } from '@/contexts/ChatContext'
 import NoChatOpened from '../NoChatOpened/NoChatOpened'
+import PinnedMessages from '../PinnedMessages/PinnedMessages'
 
 const SingleChatSection = () => {
     const {currentChat} = useChat();
@@ -28,6 +29,7 @@ const SingleChatSection = () => {
                     <FontAwesomeIcon height={24} className='icon' icon={faEllipsisV} fixedHeight />
                 </div>
             </div>
+            <PinnedMessages />
             <div className='messages'>
                 <SingleChatMessagesList/>
             </div>
