@@ -61,7 +61,7 @@ const EditProfilePic = ({ onEdit, onAdd, onRemove }) => {
 
     const handleRemovePhoto = () => {
         setProfilePic(null); 
-        onEdit(null);
+        onRemove();
         closeModal();
     };
 

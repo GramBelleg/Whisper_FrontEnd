@@ -8,14 +8,15 @@ import {
     updateEmail, 
     sendUpdateCode, 
     updateProfilePic, 
-    getProfilePic 
+    getProfilePic, 
+    deleteProfilePic
   } from '@/services/profileServices/ProfileSettingsService';
 import useAuth from './useAuth';
 
 export const useProfileSettings = () => {
     const { profilePic, setProfilePic } = useProfileContext();
     const [errors, setErrors] = useState({ bio: null, name: null, userName: null, profilePic: null });
-    const { handleUpdateUser } = useAuth();
+    const { handleUpdateUser,user } = useAuth();
     const [loading, setLoading] = useState(false);
 
     useEffect(() => {
@@ -31,7 +32,10 @@ export const useProfileSettings = () => {
             clearError('profilePic');
             console.log("will call getProfilePic from service")
             setLoading(true);
-            const profilePicUrl = await getProfilePic();
+            console.log(user.profilePic)
+            console.log(user.id)
+
+            const profilePicUrl = await getProfilePic(user.id,user.profilePic);
             setProfilePic(profilePicUrl);
         } catch (err) {
             setErrors(prevErrors => ({ ...prevErrors, profilePic: 'Error fetching profile picture.' }));
@@ -196,6 +200,28 @@ const handleProfilePicUpdate = async (newProfilePic) => {
     }
 };
 
+const handleProfilePicDelete = async () => {
+    try {
+        setErrors(prevErrors => ({ ...prevErrors, profilePic: null }));
+        console.log("will call delteProfilePic from service")
+        setLoading(true);
+        const response = await deleteProfilePic();
+        // const updatedProfilePic = await getProfilePic(); 
+        setProfilePic(null);
+        return response;
+    } catch (err) {
+        if (err.response && err.response.data) {
+            setErrors(prevErrors => ({ ...prevErrors, profilePic: err.response.data.message || 'An error occurred' }));
+        } else {
+            setErrors(prevErrors => ({ ...prevErrors, profilePic: 'An unexpected error occurred' }));
+        }
+        throw err;
+    }
+    finally{
+        setLoading(false);
+    }
+};
+
 
 const clearError = (id) =>{
   setErrors(prevErrors => ({ ...prevErrors, [id]: null}));
@@ -207,5 +233,6 @@ const clearError = (id) =>{
          handleBioUpdate, handleNameUpdate, handleUserNameUpdate,
           handlePhoneUpdate, handleEmailUpdate, handleSendUpdateCode,
            handleResendUpdateCode, clearError, handleProfilePicUpdate,
+           handleProfilePicDelete
          };
 };

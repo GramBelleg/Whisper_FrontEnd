@@ -1,3 +1,4 @@
+import axios from 'axios';
 import Socket from './Socket.js';
 class UserSocket extends Socket {
   static instance;
@@ -20,24 +21,45 @@ class UserSocket extends Socket {
     }
   }
 
-  setProfilePic(blobName) {
-    this.socket.emit("pfp", { profilePic: blobName });
-    console.log("Sent profile pic set event with blobName:", blobName);
-  }
-  //currently not working
-  getProfilePic(userId) {
-    return new Promise((resolve, reject) => {
-        this.socket.emit("getPfp", { userId });
-        this.socket.on("getPfp", (data) => {
-            if (data && data.profilePic) {
-                console.log("Received profile picture:", data.profilePic);
-                resolve(data.profilePic);
-            } else {
-                reject("No profile picture found for the user");
+  async setProfilePic(blobName) {
+    try {
+        const response = await axios.put("http://localhost:5000/api/user/profilepic", 
+            { blobName },
+            {
+                headers: {
+                    'Authorization': `Bearer ${localStorage.getItem('token')}`,
+                    'Content-Type': 'application/json',
+                },
             }
-        });
-    });
+        );
+
+        if (response.status === 200) {
+            this.socket.emit("pfp", { profilePic: blobName });
+            console.log("Sent profile pic set event with blobName:", blobName);
+        } else {
+            console.error("Failed to set profile picture:", response.statusText);
+        }
+    } catch (error) {
+        console.error("Error updating profile picture:", error);
+    }
 }
+
+getProfilePic(callback) {
+    const onProfilePic = (data) => {
+        if (data && data.profilePic) {
+            console.log("Received profile picture:", data.profilePic);
+            callback(null, data.profilePic);
+        } else {
+            console.error("No profile picture data received");
+            callback("No profile picture found for the user", null);
+        }
+
+        this.socket.off("pfp", onProfilePic);
+    };
+
+    this.socket.on("pfp", onProfilePic);
+}
+
   handleSetPfp(data) {
     if (data && data.profilePic) {
       console.log("Profile picture updated to:", data.profilePic);

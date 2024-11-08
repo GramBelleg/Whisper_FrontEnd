@@ -19,6 +19,7 @@ const ProfileContainer = ({popPage}) => {
         handleSendUpdateCode,
         handleResendUpdateCode,
         handleProfilePicUpdate,
+        handleProfilePicDelete,
         errors,
         clearError
     } = useProfileSettings()
@@ -66,6 +67,7 @@ const ProfileContainer = ({popPage}) => {
             
             <EditProfilePic 
              onEdit={handleProfilePicUpdate}
+             onRemove={handleProfilePicDelete}
               />
             <EditableField
                 initialText={user.bio}

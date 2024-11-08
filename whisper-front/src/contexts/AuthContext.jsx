@@ -14,6 +14,7 @@ import {
 } from '../services/authService';
 import { loadAuthData } from '../services/tokenService';
 import { whoAmI } from '@/services/chatservice/whoAmI';
+import axios from 'axios';
 
 const AuthContext = createContext();
 
@@ -23,15 +24,34 @@ export const AuthProvider = ({ children }) => {
   const [loading, setLoading] = useState(false); 
   const [error, setError] = useState(null);    
 
+
   useEffect(() => {
+    const fetchUser = async () => {
+        try {
+          const tokenFromCookies = localStorage.getItem("token"); 
 
-    const { token: storedToken, user: storedUser } = loadAuthData();
+            if (tokenFromCookies) {
+                const response = await axios.get("http://localhost:5000/api/user/", {
+                    headers: {
+                        'Authorization': `Bearer ${tokenFromCookies}`, 
+                    },
+                });
 
-    if (storedToken && storedUser) {
-      setToken(storedToken);
-      setUser(storedUser); 
-    }
-  }, []);
+                console.log("Fetched user");
+                console.log(response.data);
+                setUser(response.data);
+                setToken(tokenFromCookies); 
+            } else {
+                setError("No token found in cookies.");
+            }
+        } catch (error) {
+            setError("Failed to fetch user data.");
+            console.error("Error fetching user data:", error);
+        }
+    };
+
+    fetchUser();
+}, []);
 
   const handleSignUp = async (userData) => {
     console.log(userData,"handle sign up")
