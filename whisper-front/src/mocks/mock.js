@@ -11,6 +11,10 @@ export const initializeMock = () => {
     mock.onGet('/stories').reply(200, storiesData);
     mock.onGet('/uploadAttachment').reply(200,uploadLink);
     mock.onGet('/downloadAttachment').reply(200,downloadLink);
+
+    mock.onPost('/api/media/write').reply(200, uploadLink);
+    mock.onPost('/api/media/read').reply(200, downloadLink);
+
     mock.onGet(blockedUsersAPI.index).reply(200,blockedUsers);
     mock.onPut(blockedUsersAPI.update).reply(config => {
         const { users, blocked } = JSON.parse(config.data);
@@ -91,6 +95,10 @@ export const initializeMock = () => {
         status: "failed",
         message: "Invalid Code",
     });
+    mock.onGet("/api/user/logoutOne").reply(200, {
+        status: "success",
+    });
+    
 };
 
 
