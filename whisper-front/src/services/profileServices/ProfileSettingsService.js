@@ -10,7 +10,9 @@ const userId = whoAmI.id;
 
 export const updateBio = async (bio) => {
     try {
-        const response = await axiosInstance.put('/updateBio', { bio });
+        const response = await axios.put('http://localhost:5000/api/user/bio', { bio },{
+          withCredentials: true,
+        });
         return response.data;
     } catch (error) {
         console.error('Error updating bio:', error);
@@ -20,7 +22,9 @@ export const updateBio = async (bio) => {
 
 export const updateName = async (name) => {
     try {
-        const response = await axiosInstance.put('/updateName', { name });
+        const response = await axios.put('http://localhost:5000/api/user/name', { name },{
+          withCredentials: true,
+        });
         return response.data;
     } catch (error) {
         console.error('Error updating name:', error);
@@ -30,7 +34,9 @@ export const updateName = async (name) => {
 
 export const updateUserName = async (userName) => {
     try {
-        const response = await axiosInstance.put('/updateUsername', { userName });
+        const response = await axios.put('http://localhost:5000/api/user/userName', { userName },{
+          withCredentials: true,
+        });
         return response.data;
     } catch (error) {
         console.error('Error updating username:', error);
@@ -40,7 +46,9 @@ export const updateUserName = async (userName) => {
 
 export const updatePhone = async (phone) => {
     try {
-        const response = await axiosInstance.put('/updatePhone', { phone });
+        const response = await axios.put('http://localhost:5000/api/user/phoneNumber', { phoneNumber:phone },{
+          withCredentials: true,
+        });
         return response.data;
     } catch (error) {
         console.error('Error updating phone:', error);
@@ -50,7 +58,9 @@ export const updatePhone = async (phone) => {
 
 export const updateEmail = async (email,code) => {
     try {
-        const response = await axiosInstance.put('/updateEmail', { email,code });
+        const response = await axios.put('http://localhost:5000/api/user/email', { email,code },{
+          withCredentials: true,
+        });
         return response.data;
     } catch (error) {
         console.error('Error updating email:', error);
@@ -60,8 +70,9 @@ export const updateEmail = async (email,code) => {
 
 export const sendUpdateCode = async (email) => {
     try {
-        console.log("code sent to email");
-        const response = await axiosInstance.put('/sendUpdateCode', { email });
+        const response = await axios.post('http://localhost:5000/api/user/emailcode', { email },{
+          withCredentials: true,
+        });
         return response.data;
     } catch (error) {
         console.error('Error updating email:', error);
@@ -124,7 +135,7 @@ export const sendUpdateCode = async (email) => {
                 timeoutReached = true;
                 console.log("Socket response timed out, using fallback blob name");
                 resolve(blobName);
-            }, 2000);
+            }, 5000);
 
             userSocket.getProfilePic(userID,(error, socketBlobName) => {
                 if (!timeoutReached) {
