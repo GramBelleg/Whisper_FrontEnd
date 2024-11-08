@@ -69,7 +69,7 @@ export const updateBio = async (bio) => {
     }
   };
   
-  export const updateProfilePic = async (file) => {
+  export const updateProfilePic = async (userID,file) => {
     try {
       console.log("updateProfilePic called");
       const token = localStorage.getItem("token");
@@ -101,7 +101,7 @@ export const updateBio = async (bio) => {
       await uploadBlob(file, { presignedUrl: newUrl, blobName });
       console.log("File uploaded successfully");
   
-      userSocket.setProfilePic(blobName);
+      userSocket.setProfilePic(userID,blobName);
 
       console.log("Profile picture updated successfully");
       
@@ -126,7 +126,7 @@ export const updateBio = async (bio) => {
                 resolve(blobName);
             }, 2000);
 
-            userSocket.getProfilePic((error, socketBlobName) => {
+            userSocket.getProfilePic(userID,(error, socketBlobName) => {
                 if (!timeoutReached) {
                     clearTimeout(timeout);
                     if (error || !socketBlobName) {

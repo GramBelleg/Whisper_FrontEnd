@@ -183,8 +183,8 @@ const handleProfilePicUpdate = async (newProfilePic) => {
         setErrors(prevErrors => ({ ...prevErrors, profilePic: null }));
         console.log("will call updateProfilePic from service")
         setLoading(true);
-        const response = await updateProfilePic(newProfilePic);
-        const updatedProfilePic = await getProfilePic(); 
+        const response = await updateProfilePic(user.id,newProfilePic);
+        const updatedProfilePic = await getProfilePic(user.id,user.profilePic); 
         setProfilePic(updatedProfilePic);
         return response;
     } catch (err) {

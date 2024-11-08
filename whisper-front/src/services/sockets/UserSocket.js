@@ -21,10 +21,10 @@ class UserSocket extends Socket {
     }
   }
 
-  async setProfilePic(blobName) {
+  async setProfilePic(userId,blobName) {
     try {
         const response = await axios.put("http://localhost:5000/api/user/profilepic", 
-            { blobName },
+            { blobName:blobName,useId:userId  },
             {
                 headers: {
                     'Authorization': `Bearer ${localStorage.getItem('token')}`,
@@ -34,7 +34,7 @@ class UserSocket extends Socket {
         );
 
         if (response.status === 200) {
-            this.socket.emit("pfp", { profilePic: blobName });
+            this.socket.emit("pfp", { profilePic: blobName,useId:userId });
             console.log("Sent profile pic set event with blobName:", blobName);
         } else {
             console.error("Failed to set profile picture:", response.statusText);
@@ -44,21 +44,24 @@ class UserSocket extends Socket {
     }
 }
 
-getProfilePic(callback) {
-    const onProfilePic = (data) => {
-        if (data && data.profilePic) {
-            console.log("Received profile picture:", data.profilePic);
-            callback(null, data.profilePic);
-        } else {
-            console.error("No profile picture data received");
-            callback("No profile picture found for the user", null);
-        }
+getProfilePic(userID, callback) {
+  const onProfilePic = (data) => {
+    console.log("socket",data,userID)
+      if (data && data.userId === userID && data.profilePic) {
+          console.log("Received profile picture for user:", data.userId, userID, data.profilePic);
+          callback(null, data.profilePic);
+      } else if (data && data.userID !== userID) {
+          console.log("Received profile picture, but for a different user. Ignoring...");
+      } else {
+          console.error("No profile picture data received for the specified user");
+          callback("No profile picture found for the user", null);
+      }
+      this.socket.off("pfp", onProfilePic);
+  };
 
-        this.socket.off("pfp", onProfilePic);
-    };
-
-    this.socket.on("pfp", onProfilePic);
+  this.socket.on("pfp", onProfilePic);
 }
+
 
   handleSetPfp(data) {
     if (data && data.profilePic) {
