@@ -68,7 +68,7 @@ const VisibilitySettings = () => {
     const updateReadReceiptsSetting = async () => {
         setReadReceiptsEnabled(!readReceiptsEnabled);
         try {
-            const data = await putReadReceiptsSetting(!readReceiptsEnabled);
+            await putReadReceiptsSetting(!readReceiptsEnabled);
         } catch (error) {
             openModal(
                 <ErrorMesssage errorMessage={error.message} onClose={closeModal} appearFor={3000}/>
@@ -87,7 +87,7 @@ const VisibilitySettings = () => {
     return ( 
         <div className="visibility-settings" data-testid="test-visibility-page">
             <div className='flex gap-4 items-center header'>
-                <FontAwesomeIcon className='back-icon' icon={faArrowLeft} onClick={handleGoBack}/>
+                <FontAwesomeIcon data-testid="back-icon" className='back-icon' icon={faArrowLeft} onClick={handleGoBack}/>
                 <h1>Visibility Settings</h1>
             </div>
             <div className="who-can">

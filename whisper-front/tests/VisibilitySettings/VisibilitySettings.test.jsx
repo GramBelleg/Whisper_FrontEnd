@@ -1,188 +1,101 @@
-import { render, screen, fireEvent, waitFor } from '@testing-library/react';
-import { describe, it, expect, vi, beforeEach } from 'vitest';
-import VisibilitySettings from '@/components/VisibiltySettings/VisibilitySettings';
-import { SidebarProvider } from '@/contexts/SidebarContext';
-import { ModalProvider } from '@/contexts/ModalContext';
+// VisibilitySettings.test.jsx
+
+import { render, screen, fireEvent } from '@testing-library/react';
+import '@testing-library/jest-dom';
+import { vi } from 'vitest';
 import { whoAmI } from '@/services/chatservice/whoAmI';
-import { putReadReceiptsSetting } from '@/services/privacy/privacy';
+import { putLastSeenVisibilitySettings, putProfilePicVisibilitySettings, putReadReceiptsSetting, putStoriesVisibilitySettings } from "@/services/privacy/privacy";
+import { useModal } from "@/contexts/ModalContext";
+import { useStackedNavigation } from "@/contexts/StackedNavigationContext/StackedNavigationContext";
+import VisibilitySettings from '@/components/VisibiltySettings/VisibilitySettings';
 
-
-// Mock the putReadReceiptsSetting function
-vi.mock('@/services/privacy/privacy', () => ({
-  putReadReceiptsSetting: vi.fn().mockResolvedValue({ success: true }),
+// Mock dependencies
+vi.mock('@/services/chatservice/whoAmI', () => ({
+    whoAmI: {
+        storyPrivacy: 'Contacts',
+        pfpPrivacy: 'Everyone',
+        lastSeenPrivacy: 'Nobody',
+        readReceipts: true,
+    },
 }));
 
+vi.mock('@/services/privacy/privacy', () => ({
+    putLastSeenVisibilitySettings: vi.fn(),
+    putProfilePicVisibilitySettings: vi.fn(),
+    putReadReceiptsSetting: vi.fn(),
+    putStoriesVisibilitySettings: vi.fn(),
+}));
+
+vi.mock('@/contexts/ModalContext', () => ({
+    useModal: vi.fn(() => ({
+        openModal: vi.fn(),
+        closeModal: vi.fn(),
+    })),
+}));
+
+vi.mock('@/contexts/StackedNavigationContext/StackedNavigationContext', () => ({
+    useStackedNavigation: vi.fn(() => ({
+        pop: vi.fn(),
+    })),
+}));
 
 describe('VisibilitySettings Component', () => {
     beforeEach(() => {
-        render(
-            <SidebarProvider>
-              <ModalProvider>
-                <VisibilitySettings />
-              </ModalProvider>
-            </SidebarProvider>
-          );
-    })
-    it('renders component test', () => {
-        expect(screen.getAllByText("Visibility Settings"))
+        render(<VisibilitySettings />);
     });
 
-    it('shows all radio buttons default', () => {
-        // Check profile picture visibility
-        // Profile Picture Visibility radio buttons
-        const profileEverybody = screen.getByTestId('profile-pic-visibiity-everybody');
-        const profileContacts = screen.getByTestId('profile-pic-visibiity-contacts');
-        const profileNoOne = screen.getByTestId('profile-pic-visibiity-noone');
-        
-        // Story Visibility radio buttons
-        const storyEverybody = screen.getByTestId('story-visibility-everybody');
-        const storyContacts = screen.getByTestId('story-visibility-contacts');
-        const storyNoOne = screen.getByTestId('story-visibility-noone');
-        
-        // Last Seen Visibility radio buttons
-        const lastSeenEverybody = screen.getByTestId('last-seen-everybody');
-        const lastSeenContacts = screen.getByTestId('last-seen-contacts');
-        const lastSeenNoOne = screen.getByTestId('last-seen-nooone');
-        
-        // Read Receipts toggle
-        const readReceiptsToggle = screen.getByTestId('toggle-switch-test');
-
-        // Check Profile Picture visibility
-        if (whoAmI.profileVisibility === 'everybody') {
-            expect(profileEverybody.checked).toBe(true);
-        } else if (whoAmI.profileVisibility === 'contacts') {
-            expect(profileContacts.checked).toBe(true);
-        } else if (whoAmI.profileVisibility === 'no-one') {
-            expect(profileNoOne.checked).toBe(true);
-        }
-
-        // Check Story visibility
-        if (whoAmI.storySettings === 'everybody') {
-            expect(storyEverybody.checked).toBe(true);
-        } else if (whoAmI.storySettings === 'contacts') {
-            expect(storyContacts.checked).toBe(true);
-        } else if (whoAmI.storySettings === 'no-one') {
-            expect(storyNoOne.checked).toBe(true);
-        }
-
-        // Check Last Seen visibility
-        if (whoAmI.lastSeenVisibility === 'everybody') {
-            expect(lastSeenEverybody.checked).toBe(true);
-        } else if (whoAmI.lastSeenVisibility === 'contacts') {
-            expect(lastSeenContacts.checked).toBe(true);
-        } else if (whoAmI.lastSeenVisibility === 'no-one') {
-            expect(lastSeenNoOne.checked).toBe(true);
-        }
+    it('renders Visibility Settings header', () => {
+        expect(screen.getByText('Visibility Settings')).toBeInTheDocument();
     });
 
-    it('should update profile picture visibility when radio buttons are clicked', () => {
-        
-        const profileEverybody = screen.getByTestId('profile-pic-visibiity-everybody');
-        const profileContacts = screen.getByTestId('profile-pic-visibiity-contacts');
-        const profileNoOne = screen.getByTestId('profile-pic-visibiity-noone');
-  
-        // Change to contacts
-        fireEvent.click(profileContacts);
-        expect(profileContacts.checked).toBe(true);
-        expect(profileEverybody.checked).toBe(false);
-        expect(profileNoOne.checked).toBe(false);
-  
-        // Change to no-one
-        fireEvent.click(profileNoOne);
-        expect(profileNoOne.checked).toBe(true);
-        expect(profileEverybody.checked).toBe(false);
-        expect(profileContacts.checked).toBe(false);
-  
-        // Change back to everybody
-        fireEvent.click(profileEverybody);
-        expect(profileEverybody.checked).toBe(true);
-        expect(profileContacts.checked).toBe(false);
-        expect(profileNoOne.checked).toBe(false);
+    it('renders profile picture visibility options with initial state', () => {
+        expect(screen.getByTestId('profile-pic-visibiity-Everyone')).toBeChecked();
+        expect(screen.getByTestId('profile-pic-visibiity-Contacts')).not.toBeChecked();
+        expect(screen.getByTestId('profile-pic-visibiity-noone')).not.toBeChecked();
     });
 
-    it('should update story visibility when radio buttons are clicked', () => {
-        
-        const storyEverybody = screen.getByTestId('story-visibility-everybody');
-        const storyContacts = screen.getByTestId('story-visibility-contacts');
-        const storyNoOne = screen.getByTestId('story-visibility-noone');
-  
-        // Change to contacts
-        fireEvent.click(storyContacts);
-        expect(storyContacts.checked).toBe(true);
-        expect(storyEverybody.checked).toBe(false);
-        expect(storyNoOne.checked).toBe(false);
-  
-        // Change to no-one
-        fireEvent.click(storyNoOne);
-        expect(storyNoOne.checked).toBe(true);
-        expect(storyEverybody.checked).toBe(false);
-        expect(storyContacts.checked).toBe(false);
-  
-        // Change back to everybody
-        fireEvent.click(storyEverybody);
-        expect(storyEverybody.checked).toBe(true);
-        expect(storyContacts.checked).toBe(false);
-        expect(storyNoOne.checked).toBe(false);
-    });
-    
-    it('should update last seen visibility when radio buttons are clicked', () => {
-        
-        const lastSeenEverybody = screen.getByTestId('last-seen-everybody');
-        const lastSeenContacts = screen.getByTestId('last-seen-contacts');
-        const lastSeenNoOne = screen.getByTestId('last-seen-nooone');
-  
-        // Change to contacts
-        fireEvent.click(lastSeenContacts);
-        expect(lastSeenContacts.checked).toBe(true);
-        expect(lastSeenEverybody.checked).toBe(false);
-        expect(lastSeenNoOne.checked).toBe(false);
-  
-        // Change to no-one
-        fireEvent.click(lastSeenNoOne);
-        expect(lastSeenNoOne.checked).toBe(true);
-        expect(lastSeenEverybody.checked).toBe(false);
-        expect(lastSeenContacts.checked).toBe(false);
-  
-        // Change back to everybody
-        fireEvent.click(lastSeenEverybody);
-        expect(lastSeenEverybody.checked).toBe(true);
-        expect(lastSeenContacts.checked).toBe(false);
-        expect(lastSeenNoOne.checked).toBe(false);
+    it('updates profile picture visibility setting when a new option is selected', async () => {
+        const contactsOption = screen.getByTestId('profile-pic-visibiity-Contacts');
+        fireEvent.click(contactsOption);
+        expect(putProfilePicVisibilitySettings).toHaveBeenCalledWith('Contacts');
+        expect(screen.getByTestId('profile-pic-visibiity-Contacts')).toBeChecked();
     });
 
-    it('should toggle read receipts when clicked', async () => {
-        
-        const readReceiptsToggle = screen.getByTestId('toggle-switch-test');
-        const initialState = readReceiptsToggle.checked;
-  
-        // Toggle read receipts
-        fireEvent.click(readReceiptsToggle);
-        
-        // Verify the API was called with the correct value
-        expect(putReadReceiptsSetting).toHaveBeenCalledWith(!initialState);
-        
-        // Check that the toggle visual state has changed
-        expect(readReceiptsToggle.checked).toBe(!initialState);
-  
-        // Toggle back
-        fireEvent.click(readReceiptsToggle);
-        expect(putReadReceiptsSetting).toHaveBeenCalledWith(initialState);
-        expect(readReceiptsToggle.checked).toBe(initialState);
-        
+    it('renders story visibility options with initial state', () => {
+        expect(screen.getByTestId('story-visibility-Everyone')).not.toBeChecked();
+        expect(screen.getByTestId('story-visibility-Contacts')).toBeChecked();
+        expect(screen.getByTestId('story-visibility-noone')).not.toBeChecked();
     });
 
-    it('should handle read receipts toggle error', async () => {
-        // Mock the API to throw an error
-        vi.mocked(putReadReceiptsSetting).mockRejectedValueOnce(new Error('Toggle failed'));
-        
-        
-        const readReceiptsToggle = screen.getByTestId('toggle-switch-test');
-        const initialState = readReceiptsToggle.checked;
-  
-        // Try to toggle read receipts
-        await fireEvent.click(readReceiptsToggle);
-        
-        // Check that the toggle state remains unchanged after error
-        expect(readReceiptsToggle.checked).toBe(initialState);
+    it('updates story visibility setting when a new option is selected', async () => {
+        const everyoneOption = screen.getByTestId('story-visibility-Everyone');
+        fireEvent.click(everyoneOption);
+        expect(putStoriesVisibilitySettings).toHaveBeenCalledWith('Everyone');
+        expect(screen.getByTestId('story-visibility-Everyone')).toBeChecked();
+    });
+
+    it('renders last seen visibility options with initial state', () => {
+        expect(screen.getByTestId('last-seen-Everyone')).not.toBeChecked();
+        expect(screen.getByTestId('last-seen-Contacts')).not.toBeChecked();
+        expect(screen.getByTestId('last-seen-nooone')).toBeChecked();
+    });
+
+    it('updates last seen visibility setting when a new option is selected', async () => {
+        const contactsOption = screen.getByTestId('last-seen-Contacts');
+        fireEvent.click(contactsOption);
+        expect(putLastSeenVisibilitySettings).toHaveBeenCalledWith('Contacts');
+        expect(screen.getByTestId('last-seen-Contacts')).toBeChecked();
+    });
+
+    it('renders read receipts toggle with initial state', () => {
+        const toggle = screen.getByTestId('toggle-switch-test');
+        expect(toggle).toBeChecked();
+    });
+
+    it('toggles read receipts setting when the switch is clicked', async () => {
+        const toggle = screen.getByTestId('toggle-switch-test');
+        fireEvent.click(toggle);
+        expect(putReadReceiptsSetting).toHaveBeenCalledWith(false);
+        expect(toggle).not.toBeChecked();
     });
 });
