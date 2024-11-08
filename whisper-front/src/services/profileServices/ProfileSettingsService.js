@@ -1,8 +1,11 @@
 import axiosInstance from "../axiosInstance";
 import axios from "axios";
 import { whoAmI } from "../chatservice/whoAmI";
-import { socket } from "../messagingservice/sockets/sockets";
+import UserSocket from "../sockets/UserSocket";
 import { downloadBlob, uploadBlob } from "@/services/blobs/blob";
+
+const userSocket = new UserSocket();
+const userId = whoAmI.id;
 
 export const updateBio = async (bio) => {
     try {
@@ -64,87 +67,80 @@ export const updateBio = async (bio) => {
       throw error;
     }
   };
+  
   export const updateProfilePic = async (file) => {
     try {
-        console.log("updateProfilePic called");
-        const token = localStorage.getItem("token");
-        console.log("file",file.name)
-        const blobResponse = await axiosInstance.post(
-            'api/media/write',
-            { fileName: file.name, fileType: file.type , fileExtension: file.name.split('.').pop() },
-            {
-                headers: {
-                    'Authorization': `Bearer ${token}`,
-                },
-                withCredentials: true,
-            }
-        );
-        console.log("blobResponse",blobResponse)
-        if (!blobResponse || !blobResponse.data || !blobResponse.data.presignedUrl || !blobResponse.data.blobName) {
-          throw new Error("Invalid response structure from API.");
-      }
-
-        const { presignedUrl, blobName } = blobResponse.data;
-        console.log("presignedUrl",presignedUrl)
-        await uploadBlob(file, blobResponse.data);
-        console.log("file uploaded successfully")
-        socket.emit("setPfp", { profilePic: blobName });
-
-        console.log("Profile picture updated successfully");
-    } catch (error) {
-        console.error("Error updating profile picture:", error);
-        throw new Error(error.response?.data?.message || "An error occurred while updating the profile picture");
-    }
-  };
-  export const getProfilePic = async () => {
-    try
-    {
-       console.log("getProfilePic called");
-        const token = localStorage.getItem("token");
-        const userId= whoAmI.id;
-        
-       //TODO: get blob name from getPfp event of socket
-      //  const blobName = await new Promise((resolve, reject) => {
-      //   socket.emit("getPfp", { userId });
-
-      //   socket.on("setPfp", (data) => {
-      //         if (data && data.profilePic) {
-      //             resolve(data.profilePic);
-      //         } else {
-      //             reject("No profile picture found.");
-      //         }
-      //     });
-      //   setTimeout(() => reject("Timeout waiting for profile picture"), 10000);
-      //   }
-      // );
-
-        const blobName = "61730487929490.string"
-        console.log("blob",blobName)
-        if (!blobName) {
-          return null;
-        }
-        
-        
-        const blobResponse = await axiosInstance.post('api/media/read', {
-          blobName: blobName,
-        }, {
+      console.log("updateProfilePic called");
+      const token = localStorage.getItem("token");
+  
+      // Request to get a presigned URL for uploading
+      const blobResponse = await axiosInstance.post(
+        'api/media/write',
+        {
+          fileName: file.name,
+          fileType: file.type,
+          fileExtension: file.name.split('.').pop()
+        },
+        {
           headers: {
             'Authorization': `Bearer ${token}`,
           },
-        },{
-          withCredentials: true
-        }); 
-        console.log("blobResponse",blobResponse)
-        const { blob } = await downloadBlob(blobResponse.data);
-        const newBlob = new Blob([blob]);
-        const objectUrl = URL.createObjectURL(newBlob);
-        return objectUrl;
+          withCredentials: true,
+        }
+      );
+  
+      if (!blobResponse || !blobResponse.data || !blobResponse.data.presignedUrl || !blobResponse.data.blobName) {
+        throw new Error("Invalid response structure from API.");
+      }
+  
+      const { presignedUrl, blobName } = blobResponse.data;
+      const newUrl = presignedUrl.replace("https://whisperblob.blob.core.windows.net", "api");
+  
+      // Upload the file to the blob storage using the presigned URL
+      await uploadBlob(file, { presignedUrl: newUrl, blobName });
+      console.log("File uploaded successfully");
+  
+      userSocket.setProfilePic(blobName);
 
+      console.log("Profile picture updated successfully");
+      
+    } catch (error) {
+      console.error("Error updating profile picture:", error);
+      throw new Error(error.response?.data?.message || "An error occurred while updating the profile picture");
     }
-    catch (error)
-    {
-        console.log(error);
-        throw new Error(error.response?.data?.message || "An error occurred");
+  };
+  
+  export const getProfilePic = async () => {
+    try {
+      console.log("getProfilePic called");
+      const token = localStorage.getItem("token");
+  
+      const profilePicBlobName = await userSocket.getProfilePic(userId);
+      console.log('Profile picture blob name:', profilePicBlobName);
+  
+      if (!profilePicBlobName) {
+        return null; 
+      }
+  
+      const blobResponse = await axiosInstance.post(
+        'api/media/read',
+        { blobName: profilePicBlobName },
+        {
+          headers: {
+            'Authorization': `Bearer ${token}`,
+          },
+          withCredentials: true,
+        }
+      );
+  
+      console.log("Blob response:", blobResponse);
+      const { blob } = await downloadBlob(blobResponse.data);
+      const newBlob = new Blob([blob]);
+      const objectUrl = URL.createObjectURL(newBlob);
+      return objectUrl;
+  
+    } catch (error) {
+      console.error("Error fetching profile picture:", error);
+      throw new Error(error.response?.data?.message || "An error occurred while fetching the profile picture");
     }
-
-};
+  };

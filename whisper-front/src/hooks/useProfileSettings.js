@@ -1,8 +1,15 @@
 import { useEffect, useState } from 'react';
 import { useProfileContext } from '@/contexts/ProfileSettingsContext';
-import { getProfilePic, sendUpdateCode, updateBio,
-     updateProfilePic,
-     updateEmail, updateName, updatePhone, updateUserName } from '@/services/profileServices/ProfileSettingsService';
+import { 
+    updateBio, 
+    updateName, 
+    updateUserName, 
+    updatePhone, 
+    updateEmail, 
+    sendUpdateCode, 
+    updateProfilePic, 
+    getProfilePic 
+  } from '@/services/profileServices/ProfileSettingsService';
 import useAuth from './useAuth';
 
 export const useProfileSettings = () => {
@@ -12,28 +19,28 @@ export const useProfileSettings = () => {
     const [loading, setLoading] = useState(false);
 
     useEffect(() => {
-        setLoading(false);
-        const fetchProfilePic = async () => {
-            try {
-                setErrors(prevErrors => ({ ...prevErrors, profilePic: null })); 
-                console.log("will call getProfilePic from service")
-                setLoading(true);
-                const profilePicUrl = await getProfilePic();
-                setProfilePic(profilePicUrl);
-            } catch (err) {
-                setErrors(prevErrors => ({ ...prevErrors, profilePic: 'Error fetching profile picture.' }));
-                console.error('Error fetching profile picture:', err);
-            }
-            finally{
-                setLoading(false);
-            }
-        };
         if (!profilePic)
         {
         fetchProfilePic();
         console.log("fetching profile pic")
         }
-    }, [setProfilePic]);
+    }, []);
+
+    const fetchProfilePic = async () => {
+        try {
+            clearError('profilePic');
+            console.log("will call getProfilePic from service")
+            setLoading(true);
+            const profilePicUrl = await getProfilePic();
+            setProfilePic(profilePicUrl);
+        } catch (err) {
+            setErrors(prevErrors => ({ ...prevErrors, profilePic: 'Error fetching profile picture.' }));
+            console.error('Error fetching profile picture:', err);
+        }
+        finally{
+            setLoading(false);
+        }
+    };
 
     const handleBioUpdate = async (newBio) => {
         try {
