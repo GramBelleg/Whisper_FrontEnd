@@ -1,27 +1,50 @@
 import { useEffect, useState } from 'react';
 import { useProfileContext } from '@/contexts/ProfileSettingsContext';
-import { getProfilePic, sendUpdateCode, updateBio, updateEmail, updateName, updatePhone, updateUserName } from '@/services/profileServices/ProfileSettingsService';
+import { 
+    updateBio, 
+    updateName, 
+    updateUserName, 
+    updatePhone, 
+    updateEmail, 
+    sendUpdateCode, 
+    updateProfilePic, 
+    getProfilePic, 
+    deleteProfilePic
+  } from '@/services/profileServices/ProfileSettingsService';
 import useAuth from './useAuth';
 
 export const useProfileSettings = () => {
     const { profilePic, setProfilePic } = useProfileContext();
     const [errors, setErrors] = useState({ bio: null, name: null, userName: null, profilePic: null });
-    const { handleUpdateUser } = useAuth();
+    const { handleUpdateUser,user } = useAuth();
+    const [loading, setLoading] = useState(false);
 
     useEffect(() => {
-        const fetchProfilePic = async () => {
-            try {
-                setErrors(prevErrors => ({ ...prevErrors, profilePic: null })); 
-                const profilePicUrl = await getProfilePic();
-                setProfilePic(profilePicUrl);
-            } catch (err) {
-                setErrors(prevErrors => ({ ...prevErrors, profilePic: 'Error fetching profile picture.' }));
-                console.error('Error fetching profile picture:', err);
-            }
-        };
-
+        if (!profilePic)
+        {
         fetchProfilePic();
-    }, [setProfilePic]);
+        console.log("fetching profile pic")
+        }
+    }, []);
+
+    const fetchProfilePic = async () => {
+        try {
+            clearError('profilePic');
+            console.log("will call getProfilePic from service")
+            setLoading(true);
+            console.log(user.profilePic)
+            console.log(user.id)
+
+            const profilePicUrl = await getProfilePic(user.id,user.profilePic);
+            setProfilePic(profilePicUrl);
+        } catch (err) {
+            setErrors(prevErrors => ({ ...prevErrors, profilePic: 'Error fetching profile picture.' }));
+            console.error('Error fetching profile picture:', err);
+        }
+        finally{
+            setLoading(false);
+        }
+    };
 
     const handleBioUpdate = async (newBio) => {
         try {
@@ -158,8 +181,11 @@ const handleEmailUpdate = async (newEmail,code) => {
 const handleProfilePicUpdate = async (newProfilePic) => {
     try {
         setErrors(prevErrors => ({ ...prevErrors, profilePic: null }));
-        const response = await updateProfilePic(newProfilePic);
-        setProfilePic(newProfilePic);
+        console.log("will call updateProfilePic from service")
+        setLoading(true);
+        const response = await updateProfilePic(user.id,newProfilePic);
+        const updatedProfilePic = await getProfilePic(user.id,user.profilePic); 
+        setProfilePic(updatedProfilePic);
         return response;
     } catch (err) {
         if (err.response && err.response.data) {
@@ -168,6 +194,31 @@ const handleProfilePicUpdate = async (newProfilePic) => {
             setErrors(prevErrors => ({ ...prevErrors, profilePic: 'An unexpected error occurred' }));
         }
         throw err;
+    }
+    finally{
+        setLoading(false);
+    }
+};
+
+const handleProfilePicDelete = async () => {
+    try {
+        setErrors(prevErrors => ({ ...prevErrors, profilePic: null }));
+        console.log("will call delteProfilePic from service")
+        setLoading(true);
+        const response = await deleteProfilePic();
+        // const updatedProfilePic = await getProfilePic(); 
+        setProfilePic(null);
+        return response;
+    } catch (err) {
+        if (err.response && err.response.data) {
+            setErrors(prevErrors => ({ ...prevErrors, profilePic: err.response.data.message || 'An error occurred' }));
+        } else {
+            setErrors(prevErrors => ({ ...prevErrors, profilePic: 'An unexpected error occurred' }));
+        }
+        throw err;
+    }
+    finally{
+        setLoading(false);
     }
 };
 
@@ -178,9 +229,10 @@ const clearError = (id) =>{
 
 
 
-    return { profilePic, setProfilePic, errors,
+    return { profilePic, setProfilePic, errors, loading,
          handleBioUpdate, handleNameUpdate, handleUserNameUpdate,
           handlePhoneUpdate, handleEmailUpdate, handleSendUpdateCode,
-           handleResendUpdateCode, clearError, handleProfilePicUpdate
+           handleResendUpdateCode, clearError, handleProfilePicUpdate,
+           handleProfilePicDelete
          };
 };

@@ -11,7 +11,27 @@ export const initializeMock = () => {
     mock.onGet('/stories').reply(200, storiesData);
     mock.onGet('/uploadAttachment').reply(200,uploadLink);
     mock.onGet('/downloadAttachment').reply(200,downloadLink);
+
+    mock.onPost('/api/media/write').reply(200, uploadLink);
+    mock.onPost('/api/media/read').reply(200, downloadLink);
+
     mock.onGet(blockedUsersAPI.index).reply(200,blockedUsers);
+    mock.onPut(blockedUsersAPI.update).reply(config => {
+        const { users, blocked } = JSON.parse(config.data);
+        if(blocked) {
+            blockedUsers.push({
+                "userId":users[0],
+                "profilePic":"https://ui-avatars.com/api/?name=John+Doe",
+                "userName":"User "+users[0]
+            });
+        } else {
+            const index = blockedUsers.findIndex(user => user.id === users[0]);
+            blockedUsers.splice(index, 1);
+        }
+        return [200,  {
+            status: "success",
+        }];
+    });
     mock.onGet('/chats').reply(200, chatList);
     mock.onGet('/chatMessages').reply(200, messages);
     mock.onGet('/myStories').reply(200, myStories);
@@ -75,6 +95,10 @@ export const initializeMock = () => {
         status: "failed",
         message: "Invalid Code",
     });
+    mock.onGet("/api/user/logoutOne").reply(200, {
+        status: "success",
+    });
+    
 };
 
 

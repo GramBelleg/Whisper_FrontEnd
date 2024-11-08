@@ -13,7 +13,7 @@ const BlockUserModal = ({ blockUser }) => {
   };
 
   return (
-    <div className="block-user-modal">
+    <div className="block-user-modal" data-testid="block-user-modal">
       <ChatSelector
         onChatSelect={triggerBlockUser}
         searchPlaceholder="Block user..."

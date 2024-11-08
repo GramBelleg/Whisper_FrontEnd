@@ -102,15 +102,14 @@ export function ModalProvider({ children }) {
                         <div className='mt-4 flex justify-center space-x-3'>
                             <button
                                 onClick={confirmAction}
+                                data-testid='confirm-action-btn'
                                 className='px-4 py-2 rounded-lg text-white font-semibold bg-red-500 hover:bg-red-600'
-                                id='logout-ok-btn'
                             >
                                 Confirm
                             </button>
                             <button
                                 onClick={closeConfirmationModal}
                                 className='px-4 py-2 rounded-lg bg-gray-300 text-gray-700 font-semibold hover:bg-gray-400'
-                                id='cancel-logout-btn'
                             >
                                 Cancel
                             </button>

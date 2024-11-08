@@ -13,7 +13,9 @@ import { initializeMock } from './mocks/mock';
 function App() {
 
   const { user, token } = useAuth();
-  initializeMock();
+  if(import.meta.env.VITE_APP_USE_MOCKS === 'true') {
+    initializeMock();
+  }
   return (
     <div className="App">
       <Router>
