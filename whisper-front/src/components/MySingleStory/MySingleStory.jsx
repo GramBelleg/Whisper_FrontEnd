@@ -7,7 +7,7 @@ import { useModal } from "@/contexts/ModalContext";
 import ErrorMesssage from "../ErrorMessage/ErrorMessage";
 import { setStoryPrivacySettings } from "@/services/storiesservice/setStoryVisibility";
 
-const MySingleStory = ({ story, onNextStory, onDeleteStory, fileInputRef }) => {
+const MySingleStory = ({ story, onNextStory, onDeleteStory, handleAddNewStoryClick, onClose }) => {
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState('');
     const [url, setUrl] = useState(null);
@@ -36,7 +36,7 @@ const MySingleStory = ({ story, onNextStory, onDeleteStory, fileInputRef }) => {
             startInterval(); // Resume interval when clicking outside
             if(storyVisibilityChangedRef.current === true) {
                 try {
-                    setStoryPrivacySettings(story.id, storyVisibility);
+                    setStoryPrivacySettings(story?.id, storyVisibility);
                 } catch (error) {
                     openModal(
                         <ErrorMesssage
@@ -70,12 +70,26 @@ const MySingleStory = ({ story, onNextStory, onDeleteStory, fileInputRef }) => {
         // Fetch and set the story URL
         const fetchUrl = async () => {
             try {
-                const { blob } = await downloadBlob({ "presignedUrl": story.media });
-                const newBlob = new Blob([blob], { type: story.type });
-                const objectUrl = URL.createObjectURL(newBlob);
-                setUrl(objectUrl);
+                if(story) {
+                    const { blob } = await downloadBlob({ "presignedUrl": story.media });
+                    const newBlob = new Blob([blob], { type: story.type });
+                    const objectUrl = URL.createObjectURL(newBlob);
+                    setUrl(objectUrl);
+                }
+                else {
+                    throw new Error("Story is not loaded");
+                }
             } catch (error) {
-                setError(error.message);
+                openModal(
+                    <ErrorMesssage
+                        errorMessage={error.message}
+                        onClose={closeModal}
+                        appearFor={3000}
+                    />
+                )
+                setTimeout(() => {
+                    onClose();
+                }, 3000)
             } finally {
                 setLoading(false);
             }
@@ -97,13 +111,8 @@ const MySingleStory = ({ story, onNextStory, onDeleteStory, fileInputRef }) => {
             document.removeEventListener("mousedown", handleClickOutside);
 
         };
-    }, [story.id]);
+    }, [story?.id]);
     
-    const handleAddNewStoryClick = () => {
-        if (fileInputRef.current) {
-            fileInputRef.current.click();
-        }
-    };
 
     const handleDeleteStory = () => {
         onDeleteStory(intervalRef);
@@ -164,7 +173,7 @@ const MySingleStory = ({ story, onNextStory, onDeleteStory, fileInputRef }) => {
             return null;
         }
 
-        if (story?.type.startsWith("image/")) {
+        if (story && story?.type.startsWith("image/")) {
             return (
                 <img
                 src={url}
@@ -174,7 +183,7 @@ const MySingleStory = ({ story, onNextStory, onDeleteStory, fileInputRef }) => {
                 />
             );
         }
-        if (story?.type.startsWith("video/")) {
+        if (story && story?.type.startsWith("video/")) {
             return (
                 <video
                     ref={videoRef}

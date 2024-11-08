@@ -23,6 +23,12 @@ const MyStoriesList = ({ incomingStories, onClose, handleAddStory, handleDeleteS
         }
     };
 
+    const handleAddNewStoryClick = () => {
+        if (fileInputRef && fileInputRef.current) {
+            fileInputRef.current.click();
+        }
+    }
+
     const myHandleDeleteStory = async (intervalRef) => {
         try {
             
@@ -66,7 +72,8 @@ const MyStoriesList = ({ incomingStories, onClose, handleAddStory, handleDeleteS
                 story={stories[currentIndex]}
                 onNextStory={handleNextStory}
                 onDeleteStory={myHandleDeleteStory}
-                fileInputRef={fileInputRef}
+                handleAddNewStoryClick={handleAddNewStoryClick}
+                onClose={onClose}
             />
             <div className="absolute inset-0 flex items-center justify-between p-4">
                 <button
