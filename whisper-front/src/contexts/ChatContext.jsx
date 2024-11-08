@@ -1,5 +1,6 @@
 import { createContext, useContext, useEffect, useState } from 'react';
 import { socket } from '@/services/messagingservice/sockets/sockets'
+import MessagingSocket from '@/services/sockets/MessagingSocket';
 import { whoAmI } from '@/services/chatservice/whoAmI';
 import useFetch from '@/services/useFetch';
 import { getMessagesForChatCleaned } from '@/services/chatservice/getMessagesForChat';
@@ -11,6 +12,7 @@ export const ChatProvider = ({ children }) => {
     const [messages, setMessages] = useState([]);// TODO: handle from back
     const [parentMessage, setParentMessage] = useState(null);
     const [sending, setSending] = useState(false);
+    const messagingSocket = new MessagingSocket();
         
     const selectChat = (chat) => {
         setcurrentChat(chat);
@@ -79,6 +81,7 @@ export const ChatProvider = ({ children }) => {
     };
 
     const pinMessage = (message, duration) => {
+        messagingSocket.pinMessage(message.id, currentChat.id,duration);
         const messageTime = message.time;
         setMessages((prevMessages) => {
             return prevMessages.map((msg) =>
@@ -94,6 +97,7 @@ export const ChatProvider = ({ children }) => {
         //emit socket event
     };
     const unPinMessage = (message) => {
+        messagingSocket.unpinMessage(message.id, currentChat.id);
         const messageTime = message.time;
         setMessages((prevMessages) => {
             return prevMessages.map((message) =>
@@ -133,9 +137,32 @@ export const ChatProvider = ({ children }) => {
                 return prevMessages;
             });
         };
+        const handlePinMessage = (data) => {
+            const { pinnedMessage } = data;
+            setMessages((prevMessages) =>
+                prevMessages.map((msg) =>
+                    msg.id === pinnedMessage.id ? { ...msg, pinned: true } : msg
+                )
+            );
+        };
+
+        const handleUnpinMessage = (data) => {
+            const { unpinnedMessage } = data;
+            setMessages((prevMessages) =>
+                prevMessages.map((msg) =>
+                    msg.id === unpinnedMessage.id ? { ...msg, pinned: false } : msg
+                )
+            );
+        };
         
         socket.on("receive", handleReceiveMessage);
-        return () => socket.off("receive", handleReceiveMessage);
+        messagingSocket.listenForPinEvents(handlePinMessage, handleUnpinMessage);
+
+        return () => 
+            {
+                socket.off("receive", handleReceiveMessage);
+                messagingSocket.removePinEventListeners();
+            };
     }, []);
 
     return (
