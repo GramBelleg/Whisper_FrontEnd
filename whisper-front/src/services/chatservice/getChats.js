@@ -67,7 +67,8 @@ const mapMessageState = ( read, delivered ) => {
                 profilePic: noUser,
                 unreadMessageCount: chat.unreadMessageCount, 
                 sender : chat.name,
-                lastSeen: chat.lastSeen?.slice(0, 19).replace("T", " ")
+                lastSeen: chat.lastSeen?.slice(0, 19).replace("T", " "),
+                pinnedMessages: chat.pinnedMessages,
                 // TODO:
                 // Add status
             };

@@ -4,7 +4,7 @@ import { useChat } from '@/contexts/ChatContext';
 import "./SingleChatMessagesList.css";
 
 const SingleChatMessagesList = () => {
-    const { messages, updateParentMessage } = useChat();
+    const { messages, updateParentMessage, pinMessage, unPinMessage } = useChat();
     return (
         <div className="single-chat-messages-list">
             {
@@ -12,6 +12,8 @@ const SingleChatMessagesList = () => {
                     <ChatMessage
                         key={index}
                         onReply={() => { updateParentMessage(message, parentRelationshipTypes.REPLY); }}
+                        onPin={pinMessage}
+                        onUnpin={unPinMessage}
                         message={message}
                     />
                 ))

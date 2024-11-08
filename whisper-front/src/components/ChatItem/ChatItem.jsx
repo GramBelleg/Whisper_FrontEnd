@@ -12,6 +12,7 @@ import "./ChatItem.css";
 import { whoAmI } from "../../services/chatservice/whoAmI";
 import PendingSend from "../PendingSend/PendingSend";
 import { useChat } from "@/contexts/ChatContext";
+import PinnedMessages from "../PinnedMessages/PinnedMessages";
 
 
 const ChatItem = ({ index, standaloneChat }) => {
@@ -54,6 +55,7 @@ const ChatItem = ({ index, standaloneChat }) => {
         story: false,
         othersId: -1,
         profilePic: '',
+        PinnedMessages: [],
     });
 
     const { selectChat } = useChat();

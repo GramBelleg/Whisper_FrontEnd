@@ -11,8 +11,7 @@ export const ChatProvider = ({ children }) => {
     const [messages, setMessages] = useState([]);// TODO: handle from back
     const [parentMessage, setParentMessage] = useState(null);
     const [sending, setSending] = useState(false);
-
-
+        
     const selectChat = (chat) => {
         setcurrentChat(chat);
         setParentMessage(null);
@@ -80,10 +79,10 @@ export const ChatProvider = ({ children }) => {
     };
 
     const pinMessage = (message, duration) => {
-        const messageId = message.id;
+        const messageTime = message.time;
         setMessages((prevMessages) => {
             return prevMessages.map((message) =>
-                message.id === messageId
+                message.time === messageTime
                     ? { ...message, pinned: true } 
                     : message
             );
@@ -92,10 +91,10 @@ export const ChatProvider = ({ children }) => {
         //emit socket event
     };
     const unPinMessage = (message) => {
-        const messageId = message.id;
+        const messageTime = message.time;
         setMessages((prevMessages) => {
             return prevMessages.map((message) =>
-                message.id === messageId
+                message.time === messageTime
                     ? { ...message, pinned: false } 
                     : message
             );

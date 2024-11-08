@@ -9,6 +9,7 @@ import PinnedMessages from '../PinnedMessages/PinnedMessages'
 
 const SingleChatSection = () => {
     const {currentChat} = useChat();
+    console.log(currentChat);
 
     if (!currentChat) {
         return (<NoChatOpened />);
@@ -23,13 +24,13 @@ const SingleChatSection = () => {
                     <span className='header-title'>{currentChat.name}</span>
                     <span className='header-subtitle'>Last seen at {currentChat.lastSeen}</span>
                 </div>
+                <PinnedMessages pinnedMessages={currentChat.pinnedMessages}/>
                 <div className='header-icons'>
                     <FontAwesomeIcon height={24} className='icon' icon={faSearch} fixedHeight />
                     <FontAwesomeIcon height={24} className='icon' icon={faPhone} fixedHeight />
                     <FontAwesomeIcon height={24} className='icon' icon={faEllipsisV} fixedHeight />
                 </div>
             </div>
-            <PinnedMessages />
             <div className='messages'>
                 <SingleChatMessagesList/>
             </div>

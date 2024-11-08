@@ -86,7 +86,29 @@ export const chatList = [
             "id": 1,
             "userName": "Alice"
           }
-        }
+        },
+        "pinnedMessages": [
+            {
+                "id": 401,
+                "content": "Important: Contract renewal discussion.",
+                "type": "text",
+                "sentAt": "2024-10-26T11:45:00.012Z",
+                "sender": {
+                    "id": 104,
+                    "userName": "Dana"
+                }
+            },
+            {
+                "id": 402,
+                "content": "Let's reschedule the meeting.",
+                "type": "text",
+                "sentAt": "2024-10-25T17:00:00.012Z",
+                "sender": {
+                    "id": 104,
+                    "userName": "Dana"
+                }
+            }
+        ]
     },
     {
         "id": 2,
@@ -110,7 +132,29 @@ export const chatList = [
             "id": 102,
             "userName": "Bob"
             }
-        }
+        },
+        "pinnedMessages": [
+            {
+                "id": 401,
+                "content": "Important: Contract renewal discussion.",
+                "type": "text",
+                "sentAt": "2024-10-26T11:45:00.012Z",
+                "sender": {
+                    "id": 104,
+                    "userName": "Dana"
+                }
+            },
+            {
+                "id": 402,
+                "content": "Let's reschedule the meeting.",
+                "type": "text",
+                "sentAt": "2024-10-25T17:00:00.012Z",
+                "sender": {
+                    "id": 104,
+                    "userName": "Dana"
+                }
+            }
+        ]
     },
     {
         "id": 3,

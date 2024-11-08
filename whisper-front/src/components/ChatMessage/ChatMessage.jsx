@@ -14,7 +14,7 @@ import ForwardMessageModal from '../Modals/ForwardMessageModal/ForwardMessageMod
 import MessageAttachmentRenderer from '../MessageAttachment/MessageAttachmentRenderer';
 import PinDurationModal from '../Modals/PinDurationModal/PinDurationModal'
 
-const ChatMessage = ({ message, onDelete, onReply, onPin }) => {
+const ChatMessage = ({ message, onDelete, onReply, onPin, onUnpin }) => {
     const [isMenuOpen, setIsMenuOpen] = useState(false) // Track menu state
     const [menuPosition, setMenuPosition] = useState({ x: 0, y: 0 })
     const [objectLink, setObjectLink] = useState(null)
@@ -26,8 +26,11 @@ const ChatMessage = ({ message, onDelete, onReply, onPin }) => {
         setMenuPosition({ x: e.clientX, y: e.clientY }) // Set the position of the menu
         setIsMenuOpen(!isMenuOpen) // Toggle menu visibility
     }
-    const handlePin = () => {
+    const handleTogglePin = () => {
+        if(!message.pinned)
         openModal(<PinDurationModal message={message} onPin={onPin} />)
+        else
+        onUnpin(message)
         setIsMenuOpen(false)
     }
 
@@ -102,6 +105,13 @@ const ChatMessage = ({ message, onDelete, onReply, onPin }) => {
                         {message.state === 4 && <PendingSend width='12px' />}
                     </span>
                 )}
+                {
+                    message.pinned && (
+                        <span className='message-status'>
+                            <FontAwesomeIcon height={18} icon={faThumbtack} />
+                        </span>
+                    )
+                }
             </div>
 
             {isMenuOpen && (
@@ -118,9 +128,9 @@ const ChatMessage = ({ message, onDelete, onReply, onPin }) => {
                             <FontAwesomeIcon height={18} icon={faShare} />
                             <span>Forward</span>
                         </button>
-                        <button onClick={handlePin}>
+                        <button onClick={handleTogglePin}>
                             <FontAwesomeIcon height={18} icon={faThumbtack} />
-                            <span>Pin</span>
+                            <span>{message.pinned ? 'Unpin' : 'Pin'}</span>
                         </button>
                         <button className='danger' onClick={handleDelete}>
                             <FontAwesomeIcon height={18} icon={faTrash} />

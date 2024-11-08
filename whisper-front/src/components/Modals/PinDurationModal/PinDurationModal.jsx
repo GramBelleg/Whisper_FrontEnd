@@ -7,7 +7,7 @@ const PinDurationModal = ({ message, onPin }) => {
     const { closeModal } = useModal();
 
     const handlePin = () => {
-        //onPin(message, duration);
+        onPin(message, duration);
         closeModal();  
     };
 
