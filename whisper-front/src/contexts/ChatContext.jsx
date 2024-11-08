@@ -81,13 +81,16 @@ export const ChatProvider = ({ children }) => {
     const pinMessage = (message, duration) => {
         const messageTime = message.time;
         setMessages((prevMessages) => {
-            return prevMessages.map((message) =>
-                message.time === messageTime
-                    ? { ...message, pinned: true } 
-                    : message
+            return prevMessages.map((msg) =>
+                msg.time === messageTime
+                    ? { ...msg, pinned: true } 
+                    : msg
             );
-        }
-        );
+        });
+        setcurrentChat((prevChat) => ({
+            ...prevChat,
+            pinnedMessages: [message, ...(prevChat.pinnedMessages || [])]
+        }));
         //emit socket event
     };
     const unPinMessage = (message) => {
@@ -100,6 +103,12 @@ export const ChatProvider = ({ children }) => {
             );
         }
         );
+        setcurrentChat((prevChat) => ({
+            ...prevChat,
+            pinnedMessages: (prevChat.pinnedMessages || []).filter(
+                (pinnedMsg) => pinnedMsg.time !== messageTime
+            )
+        }));
         //emit socket event
     }
 

@@ -1,8 +1,11 @@
 import { FaThumbtack } from "react-icons/fa";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 
 const PinnedMessages = ({ pinnedMessages }) => {
     const [currentIndex, setCurrentIndex] = useState(0);
+    useEffect(() => {
+            setCurrentIndex(0);
+    }, [pinnedMessages]);
 
     const handleNextMessage = () => {
         setCurrentIndex((prevIndex) => (prevIndex + 1) % pinnedMessages.length);

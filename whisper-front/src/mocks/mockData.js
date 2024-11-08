@@ -146,7 +146,7 @@ export const chatList = [
             },
             {
                 "id": 402,
-                "content": "Let's reschedule the meeting.",
+                "content": "eb2y kalmeny daroryy!",
                 "type": "text",
                 "sentAt": "2024-10-25T17:00:00.012Z",
                 "sender": {
