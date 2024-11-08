@@ -3,7 +3,7 @@ import { faArrowLeft } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { useEffect, useState } from 'react';
 import { whoAmI } from '@/services/chatservice/whoAmI';
-import { putLastSeenVisibilitySettings, putProfilePicVisibilitySettings, putReadReceiptsSetting } from "@/services/privacy/privacy";
+import { putLastSeenVisibilitySettings, putProfilePicVisibilitySettings, putReadReceiptsSetting, putStoriesVisibilitySettings } from "@/services/privacy/privacy";
 import { useModal } from "@/contexts/ModalContext";
 import ErrorMesssage from "../ErrorMessage/ErrorMessage";
 import { useStackedNavigation } from "@/contexts/StackedNavigationContext/StackedNavigationContext";
@@ -23,8 +23,9 @@ const VisibilitySettings = () => {
     }
 
     const updateLastSeenVisibilitySettings = async (setting) =>{
+        const prev = lastSeenVisibility;
         setLastSeenVisibility(setting);
-        whoAmI.lastSeenVisibility = setting;
+        whoAmI.lastSeenPrivacy = setting;
 
         try {
             await putLastSeenVisibilitySettings(setting);
@@ -32,12 +33,14 @@ const VisibilitySettings = () => {
             openModal(
                 <ErrorMesssage errorMessage={error.message} onClose={closeModal} appearFor={3000}/>
             );
+            setLastSeenVisibility(prev);
         }
     }
 
     const updateProfilePicVisibiitySettings = async (setting) => {
+        const prev = profilePictureVisibility;
         setProfilePictureVisibility(setting);
-        whoAmI.profilePicprofileVisibility = setting;
+        whoAmI.pfpPrivacy = setting;
 
         try {
             await putProfilePicVisibilitySettings(setting);
@@ -45,31 +48,41 @@ const VisibilitySettings = () => {
             openModal(
                 <ErrorMesssage errorMessage={error.message} onClose={closeModal} appearFor={3000}/>
             );
+            setProfilePictureVisibility(prev)
         }
     }
-    const updateStoryVisibilitySettings = () => {
-
-    }
-    
-    const updateReadReceiptsSetting = async (enabled) => {
+    const updateStoryVisibilitySettings = async (setting) => {
+        const prev = storyVisibility;
+        setStoryVisibility(setting);
+        whoAmI.storyPrivacy = setting;
         try {
-            const data = await putReadReceiptsSetting(enabled);
-            setReadReceiptsEnabled(!readReceiptsEnabled);
+            await putStoriesVisibilitySettings(setting);
         } catch (error) {
             openModal(
                 <ErrorMesssage errorMessage={error.message} onClose={closeModal} appearFor={3000}/>
             );
+            setStoryVisibility(prev)
+        }
+    };
+    
+    const updateReadReceiptsSetting = async () => {
+        setReadReceiptsEnabled(!readReceiptsEnabled);
+        try {
+            const data = await putReadReceiptsSetting(!readReceiptsEnabled);
+        } catch (error) {
+            openModal(
+                <ErrorMesssage errorMessage={error.message} onClose={closeModal} appearFor={3000}/>
+            );
+            setReadReceiptsEnabled(!readReceiptsEnabled);
         }
         
     };
-    const toggleReadReceipts = () => {
-        updateReadReceiptsSetting(!readReceiptsEnabled);
-    };
+    
 
     useEffect(() => {
-        setStoryVisibility(whoAmI.storySettings);
-        setProfilePictureVisibility(whoAmI.profileVisibility);
-        setLastSeenVisibility(whoAmI.lastSeenVisibility);
+        setStoryVisibility(whoAmI.storyPrivacy);
+        setProfilePictureVisibility(whoAmI.pfpPrivacy);
+        setLastSeenVisibility(whoAmI.lastSeenPrivacy);
     },[])
     return ( 
         <div className="visibility-settings" data-testid="test-visibility-page">
@@ -122,7 +135,7 @@ const VisibilitySettings = () => {
                                 type="radio" 
                                 value="Everyone" 
                                 checked={storyVisibility === "Everyone"} 
-                                onChange={() => setStoryVisibility("Everyone")} 
+                                onChange={() => updateStoryVisibilitySettings("Everyone")} 
                             />
                             Everyone
                         </label>
@@ -132,7 +145,7 @@ const VisibilitySettings = () => {
                                 type="radio" 
                                 value="Contacts" 
                                 checked={storyVisibility === "Contacts"} 
-                                onChange={() => setStoryVisibility("Contacts")} 
+                                onChange={() => updateStoryVisibilitySettings("Contacts")} 
                             />
                             My Contacts
                         </label>
@@ -142,7 +155,7 @@ const VisibilitySettings = () => {
                                 type="radio" 
                                 value="Nobody" 
                                 checked={storyVisibility === "Nobody"} 
-                                onChange={() => setStoryVisibility("Nobody")} 
+                                onChange={() => updateStoryVisibilitySettings("Nobody")} 
                             />
                             No One
                         </label>
@@ -191,7 +204,7 @@ const VisibilitySettings = () => {
                             type="checkbox" 
                             id="readReceipts" 
                             checked={readReceiptsEnabled} 
-                            onChange={() => toggleReadReceipts()}
+                            onChange={() => updateReadReceiptsSetting()}
                         />
                         <label htmlFor="readReceipts" className="toggle-label"></label>
                     </div>
