@@ -29,6 +29,7 @@ const ChattingTextMessage = ({ key, message }) => {
         }));
         if (message) {
             message.objectLink = objectLink;
+            message.autoDownload = true;
         }
         console.log(message);
       };

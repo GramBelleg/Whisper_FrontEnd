@@ -1,9 +1,10 @@
 import React, { useState, useEffect, useRef } from 'react';
 import axiosInstance from '../../services/axiosInstance';
 import useFetch from '../../services/useFetch';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import { faCircleNotch, faPlay, faPause, faVolumeUp } from '@fortawesome/free-solid-svg-icons';
-
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faCircleNotch, faPlay, faPause, faVolumeUp, faCircleArrowDown } from '@fortawesome/free-solid-svg-icons';
+import { downloadAttachment } from './fileServices';
+import { whoAmI } from '../../services/chatservice/whoAmI';
 
 const MessageAttachmentRenderer = ({ myMessage, onUpdateLink }) => {
   const [objectUrl, setObjectUrl] = useState(null);
@@ -15,64 +16,57 @@ const MessageAttachmentRenderer = ({ myMessage, onUpdateLink }) => {
   const [duration, setDuration] = useState(0);
   const [currentTime, setCurrentTime] = useState(0);
   const { data: downloadData, error: errorDownload, loading: loadingDownload } = useFetch('/downloadAttachment');
-
+  const [autoDownload, setAutoDownload] = useState(false);
   useEffect(() => {
     console.log('Message changed:', myMessage);
+    setAutoDownload(false);
     setObjectUrl(null);
     setIsLoading(true);
     setError(null);
   }, [myMessage.time]);
 
   useEffect(() => {
-    const downloadAttachment = async () => {
-      console.log('Starting download for message:', myMessage.time);
-      
-      if (myMessage.objectLink) {
-        console.log('Using existing objectLink:', myMessage.objectLink);
-        setObjectUrl(myMessage.objectLink);
-        setIsLoading(false);
-        return;
-      }
-
-      if (loadingDownload) {
-        console.log("Loading getting URL...");
-        return;
-      }
-
-      if (downloadData) {
-        try {
-          const presignedUrl = downloadData.presignedUrl;
-          console.log('Got presigned URL for message:', myMessage.id);
-          const response = await fetch(presignedUrl);
-
-          if (!response.ok) {
-            throw new Error("Error downloading file");
+    const fetchData = async () => {
+      try {
+        if (myMessage.objectLink) {
+          console.log('Using existing objectLink:', myMessage.objectLink);
+          setObjectUrl(myMessage.objectLink);
+          setAutoDownload(true);
+          setIsLoading(false);
+          return;
+        }
+        // If file type is not 0, handle size check and download
+        if (myMessage.fileType !== 0 && !autoDownload) {
+          console.log(myMessage.size);
+          const fileSize = myMessage.size;
+          if (fileSize < whoAmI.autoDownloadSize) {
+            const newObjectUrl = await downloadAttachment(downloadData, myMessage);
+            setObjectUrl(newObjectUrl);
+            onUpdateLink(newObjectUrl);
+            setIsLoading(false);
+            setAutoDownload(true);
+          } else {
+            setAutoDownload(false);
+            setIsLoading(false);
           }
-
-          const blob = await response.blob();
-          const finalBlob = new Blob([blob], { type: myMessage.file.type });
-          const newObjectUrl = URL.createObjectURL(finalBlob);
-          
-          console.log("Created new object URL for message:", myMessage.id, newObjectUrl);
+        } else {
+          const newObjectUrl = await downloadAttachment(downloadData, myMessage);
+          setAutoDownload(true);
           setObjectUrl(newObjectUrl);
           onUpdateLink(newObjectUrl);
           setIsLoading(false);
-        } catch (error) {
-          console.error("Download error:", error);
-          setError(error.message);
-          setIsLoading(false);
         }
-      } else if (errorDownload) {
-        console.error("Download data error:", errorDownload);
-        setError(errorDownload.message);
+      } catch (error) {
+        setError("Error fetching attachment data.");
         setIsLoading(false);
       }
     };
-
-    if (!objectUrl) {
-      downloadAttachment();
+  
+    if (myMessage && isLoading) {
+      fetchData();
     }
-  }, [myMessage, downloadData, loadingDownload, objectUrl]);
+    
+  }, [myMessage.time, autoDownload, isLoading]);
 
   const formatTime = (timeInSeconds) => {
     const minutes = Math.floor(timeInSeconds / 60);
@@ -131,9 +125,21 @@ const MessageAttachmentRenderer = ({ myMessage, onUpdateLink }) => {
         </div>
       );
     }
-    if (!objectUrl) return <p>Error loading attachment</p>;
 
-    // audio 
+    if (!autoDownload)
+      return <FontAwesomeIcon 
+        icon={faCircleArrowDown} 
+        size="2x" 
+        style={{ cursor: 'pointer' }} 
+        onClick={() => {
+          setIsLoading(true);
+          setAutoDownload(true);
+        }}
+      />
+    
+    if (!objectUrl) return <p>no url found attachment</p>;
+
+    // Audio
     if (myMessage.fileType === 2) {
       return (
         <div className="audio-player bg-gray-100 p-4 rounded-lg w-full max-w-sm">
@@ -144,14 +150,12 @@ const MessageAttachmentRenderer = ({ myMessage, onUpdateLink }) => {
             onLoadedMetadata={handleLoadedMetadata}
             onEnded={handleAudioEnded}
             data-testid="audio-viewer"
-
           />
           <div className="flex items-center gap-3 mb-2">
             <button 
               onClick={handleAudioPlay}
               className="w-10 h-10 flex items-center justify-center rounded-full bg-blue-500 text-white hover:bg-blue-600"
               data-testid="audio-play-button"
-
             >
               <FontAwesomeIcon icon={isPlaying ? faPause : faPlay} />
             </button>
@@ -195,7 +199,6 @@ const MessageAttachmentRenderer = ({ myMessage, onUpdateLink }) => {
           className="message-image"
           onError={() => setError("Failed to load image")}
           data-testid="image-viewer"
-
         />
       );
     }
@@ -209,7 +212,7 @@ const MessageAttachmentRenderer = ({ myMessage, onUpdateLink }) => {
           className="message-video"
           onError={handleVideoError}
           data-testid="video-viewer"
-          >
+        >
           <source 
             src={objectUrl} 
             type={fileType}
@@ -245,15 +248,13 @@ const MessageAttachmentRenderer = ({ myMessage, onUpdateLink }) => {
 
   if (error) {
     return (
-      <div className="attachment-container">
-        <p className="error-message">{error}</p>
-        <a href={objectUrl} download={myMessage.file.name} className="file-attachment">
-          {myMessage.file.name}
-        </a>
+      <div>
+        <p>Error loading attachment: {error}</p>
+        {renderAttachment()}
       </div>
     );
   }
-
+  
   return (
     <div className="attachment-container">
       {renderAttachment()}

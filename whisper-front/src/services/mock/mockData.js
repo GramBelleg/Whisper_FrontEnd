@@ -51,17 +51,23 @@ export const Chats = [
         
     }
 ]
-export const uploadLink = {
-    //"presignedUrl": "https://whisperblob.blob.core.windows.net/container1/1729533525359.webm?sv=2024-11-04&se=2024-10-31T17%3A58%3A45Z&sr=b&sp=cw&sig=O7i3HqNUk%2FKbUNguPPZ9yje4%2FeAXdFjE8z%2BQ%2FEwI2AE%3D",
-    "presignedUrl": "/api/container1/1729533525359.webm?sv=2024-11-04&se=2024-10-31T17%3A58%3A45Z&sr=b&sp=cw&sig=O7i3HqNUk%2FKbUNguPPZ9yje4%2FeAXdFjE8z%2BQ%2FEwI2AE%3D",
-
-    "blobName": "1729533525359.webm"
-  }
+// export const uploadLink = {
+//     "presignedUrl": "/api/container1/61730487929490.string?sv=2024-11-04&se=2024-11-11T19%3A05%3A29Z&sr=b&sp=cw&sig=Ew1isHt6Xcn%2BU8FMUM9tOUMAodW%2FQW3vOPmkefOBTAQ%3D",
+//     "blobName": "61730487929490.string",
+  
+//   }
+// export const downloadLink = {
+//     "presignedUrl": "/api/container1/61730487929490.string?sv=2024-11-04&se=2024-11-11T19%3A08%3A57Z&sr=b&sp=r&sig=%2BZkrxeMtJOPMyFJibsqTWKrPfdoNkVslDVmweZ%2F0qBw%3D"
+// }
 export const downloadLink = {
-    //"presignedUrl": "https://whisperblob.blob.core.windows.net/container1/1729533525359.webm?sv=2024-11-04&se=2024-10-31T17%3A59%3A36Z&sr=b&sp=r&sig=ClsWyg9wRIBLvHqoIB7RsEEjR7%2BbpH7gcw8hwhxktKU%3D"
-    "presignedUrl": "/api/container1/1729533525359.webm?sv=2024-11-04&se=2024-10-31T17%3A59%3A36Z&sr=b&sp=r&sig=ClsWyg9wRIBLvHqoIB7RsEEjR7%2BbpH7gcw8hwhxktKU%3D"
-}
+    //vid
+    "presignedUrl": "/api/container1/61730546732593.string?sv=2024-11-04&se=2024-11-12T18%3A08%3A47Z&sr=b&sp=r&sig=McIinnmuVtRCb4Z1fPR3xqoKMT7kgwf%2FJrj5B81cE2I%3D"
 
+}
+export const uploadLink ={
+    "presignedUrl": "/api/container1/61730546732593.string?sv=2024-11-04&se=2024-11-12T11%3A25%3A32Z&sr=b&sp=cw&sig=JVfu%2F6fTbncbvJqkcCfHqlu24OZfWw%2Fg3oSu9iqZ3Vw%3D",
+    "blobName": "61730546732593.string"
+  }
 export const storiesData = [
     {userId: 1, user:"amr", profilePicture: profilePicture, seen: true, date: "1/2/2022", content: "hello from amr"},
     {userId: 2, user:"zeyad", profilePicture: profilePicture, seen: false, date: "1/2/2022", content: "hello from zeyad"},
@@ -120,5 +126,9 @@ export const messagesForChat  = [
         time:'12:52',
         state:"sent",
         othersId: 2,
+        // size:200,
+        // fileType:1,
+        // file: {type: "image/png", name: "image.png"},
+        // blobname: 'x',
     },
 ]
