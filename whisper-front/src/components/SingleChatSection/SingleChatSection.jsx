@@ -9,7 +9,8 @@ import SingleChatMessagesList from '../SingleChatMessagesList/SingleChatMessages
 import usePost from '../../services/usePost';
 import { whoAmI } from '../../services/chatservice/whoAmI'
 import { useRef } from 'react'
-
+import { useModal } from '../../contexts/ModalContext';
+import ErrorMesssage from "../ErrorMessage/ErrorMessage";
 const SingleChatSection = ({ selectedUser }) => {
     const [isTyping, setIsTyping] = useState(false);
     const [messageToSend, setMessageToSend] = useState(null);
@@ -25,6 +26,7 @@ const SingleChatSection = ({ selectedUser }) => {
     const [attachmentType, setAttachmentType] = useState(-1);
     const { data: uploadData, error:errorUpload, loading: loadingUpload } = useFetch('/uploadAttachment');
     const [sending, setSending] = useState(false);
+    const { openModal, closeModal } = useModal();
 
     const sendMessage = async (type, message) => {
         setSending(true);
@@ -46,9 +48,12 @@ const SingleChatSection = ({ selectedUser }) => {
                 blobName: null,
                 objectLink: "",
                 fileType: attachmentType,
+                size: null,
+                autoDownload: null,
             }
             if (attachedFile !== null) {
                 tempMessageObject.file=attachedFile;
+                tempMessageObject.size = attachedFile.size;
                 removeAttachment();
                 if (uploadData) {
                     let blob = await uploadFile(tempMessageObject,uploadData);
@@ -101,10 +106,21 @@ const SingleChatSection = ({ selectedUser }) => {
         }
         return fileName; 
     };
+    const validFile = (file) => {
+        if (file.size > 50 * 1024 * 1024) {
+            return false;
+        }
+        return true;
+    }
     
     const handleFileChange = (e) => {
         if (e.target.files[0]) {
-            setAttachedFile(e.target.files[0]);
+            if(validFile(e.target.files[0]))
+                setAttachedFile(e.target.files[0]);
+            else
+            openModal(
+                <ErrorMesssage errorMessage={"Maximum upload size is 50 mb"} onClose={closeModal} appearFor={2000}/>
+            );
         }
     }
 
