@@ -3,15 +3,32 @@ import SingleChatSection from '../SingleChatSection/SingleChatSection';
 import { messageTypes } from '../../services/sendTypeEnum'; 
 import { uploadLink, downloadLink } from '../../services/mock/mockData';
 import { waitFor } from '@testing-library/dom';
-
+import { useModal } from '../../contexts/ModalContext';
+vi.mock('../../contexts/ModalContext', () => ({
+  useModal: vi.fn(),
+}));
 describe('SingleChatSection', () => {
+    let openModal, closeModal;
+
+    beforeEach(() => {
+        openModal = vi.fn();
+        closeModal = vi.fn();
+
+        useModal.mockReturnValue({
+            openModal,
+            closeModal,
+        });
+
+    });
+
+  
     const selectedUser = {
         userId: 'user123',
         name: 'Test User',
         profilePic: 'test-profile-pic.png',
         lastSeen: 'now',
     };
-    const attachmentPreview = async (name,uploadType) =>
+    const uploadAttachment = async (name,uploadType,specificBlob = null) =>
     {
       const attachIcon = screen.getByTestId('attach-icon');
       fireEvent.click(attachIcon);
@@ -21,8 +38,20 @@ describe('SingleChatSection', () => {
       fireEvent.click(attachFileButton);
 
       const fileInput = screen.getByTestId(`input-${uploadType}`); 
-      const testFile = new File(['dummy content'], name);
+      var testFile;
+      if(specificBlob === null)
+      {
+        testFile = new File(['dummy content'], name);
+      }
+      else
+      {
+        testFile = new File([specificBlob], name);
+      }
       fireEvent.change(fileInput, { target: { files: [testFile] } });
+    }
+    const attachmentPreview = async (name,uploadType, specificBlob = null) =>
+    {
+      await uploadAttachment(name,uploadType)
       const attachmentPreview = await screen.getByTestId('attachment-preview');
       return attachmentPreview;
     }
@@ -79,4 +108,14 @@ describe('SingleChatSection', () => {
       const removeButton = screen.getByTestId('remove-attachment-button');
       expect(removeButton).toBeInTheDocument();
   });
+  test('big attachment upload', async () => {
+    render(<SingleChatSection selectedUser={selectedUser} />);
+    const sizeInMB = 100;
+    const sizeInBytes = sizeInMB * 1024 * 1024; 
+    const largeBlob = new Blob([new ArrayBuffer(sizeInBytes)]);  
+    await uploadAttachment('testfile.txt','file',largeBlob);
+    await waitFor(() => {
+      expect(openModal).toHaveBeenCalled();
+  });
+});
 });
