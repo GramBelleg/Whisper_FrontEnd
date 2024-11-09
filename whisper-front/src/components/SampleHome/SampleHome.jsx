@@ -1,4 +1,3 @@
-// This is just for testing
 import { useState } from 'react'
 import ChatPage from '../ChatPage/ChatPage'
 import '../SampleHome/SampleHome.css'
@@ -7,6 +6,7 @@ import "../SampleHome/SampleHome.css"
 import ButtonsBar from "../ButtonsBar/ButtonsBar";
 import useFetch from "../../services/useFetch";
 import NoChatOpened from '../NoChatOpened/NoChatOpened'
+import { ModalProvider } from '../../contexts/ModalContext'
 
 
 const SampleHome = () => {
@@ -47,6 +47,7 @@ const SampleHome = () => {
 
 
     return ( 
+        <ModalProvider>
         <div className="sampleHome">
             <div className="buttons-bar-container">
                 <ButtonsBar />
@@ -62,6 +63,7 @@ const SampleHome = () => {
                 }
             </div>
         </div>
+        </ModalProvider>
     )
 }
 
