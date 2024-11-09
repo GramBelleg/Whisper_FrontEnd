@@ -4,7 +4,9 @@ import './StoriesTab.css';
 import { whoAmI } from '@/services/chatservice/whoAmI';
 import { faPlus } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { useEffect, useRef } from 'react';
+import { useEffect, useRef, useState } from 'react';
+import ErrorMesssage from '../ErrorMessage/ErrorMessage';
+import { useModal } from '@/contexts/ModalContext';
 
 const StoriesTab = ({
     loading,
@@ -18,6 +20,10 @@ const StoriesTab = ({
     handleMyStoryClick,
     myStoriesLength,
 }) => {
+
+    const { openModal, closeModal } = useModal();
+    const [firstError, setFirstError] = useState(true);
+    
     useEffect(() => {
       console.log("hello from Stories tab")
     }, [myStoriesLength])
@@ -25,10 +31,31 @@ const StoriesTab = ({
     const fileInputRef = useRef(null);
 
     if (loading) {
+        
         return <div>Loading...</div>;
     }
+    
     if (error) {
-        return <div>Error: {error.message}</div>;
+        if(firstError) {
+            openModal(
+                <ErrorMesssage
+                  errorMessage={error.message}
+                  onClose={closeModal}
+                  appearFor={3000}
+                  />
+            );
+
+            setTimeout(() => {
+
+            }, 3000)
+            setFirstError(false);
+        }
+        else {
+          return (
+              <>
+              </>
+          )
+        }
     }
 
     // Function to trigger the file input click
@@ -76,7 +103,7 @@ const StoriesTab = ({
                       <span className="story-user">{whoAmI.name}</span>
                     </li>
 
-                    {data.map((story) => (
+                    {data?.map((story) => (
                       <li
                         key={story.userId}
                         className="story-item"
