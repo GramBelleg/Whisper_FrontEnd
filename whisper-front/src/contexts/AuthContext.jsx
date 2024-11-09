@@ -25,33 +25,34 @@ export const AuthProvider = ({ children }) => {
   const [error, setError] = useState(null);    
 
 
-  useEffect(() => {
-    const fetchUser = async () => {
-        try {
-          const tokenFromCookies = localStorage.getItem("token"); 
+    useEffect(() => {
+        const fetchUser = async () => {
+            try {
+                const tokenFromCookies = localStorage.getItem("token"); 
 
-            if (tokenFromCookies) {
-                const response = await axios.get("http://localhost:5000/api/user/", {
-                    headers: {
-                        'Authorization': `Bearer ${tokenFromCookies}`, 
-                    },
-                });
+                  if (tokenFromCookies) {
+                      const response = await axios.get("http://localhost:5000/api/user/", {
+                          headers: {
+                              'Authorization': `Bearer ${tokenFromCookies}`, 
+                          },
+                      });
 
-                console.log("Fetched user");
-                console.log(response.data);
-                setUser(response.data);
-                setToken(tokenFromCookies); 
-            } else {
-                setError("No token found in cookies.");
-            }
-        } catch (error) {
-            setError("Failed to fetch user data.");
-            console.error("Error fetching user data:", error);
-        }
-    };
+                      console.log("Fetched user");
+                      console.log(response.data);
+                      Object.assign(whoAmI, response.data ? response.data : {});
+                      setUser(response.data);
+                      setToken(tokenFromCookies);                       
+                  } else {
+                      setError("No token found in cookies.");
+                  }
+            } catch (error) {
+                  setError("Failed to fetch user data.");
+                  console.error("Error fetching user data:", error);
+            } 
+        };
 
-    fetchUser();
-}, []);
+      fetchUser();
+  }, []);
 
   const handleSignUp = async (userData) => {
     console.log(userData,"handle sign up")
@@ -73,20 +74,20 @@ export const AuthProvider = ({ children }) => {
     }
   };
 
-  const handleGoogleSignUp = async (userData) => {
-    setLoading(true);
-    setError(null); 
-    try {
-      const data = await googleSignUp(userData);  
-      setUser(data.user);      
-      setToken(data.userToken);                    
-      setAuthData(data.user, data.userToken);  
-    } catch (err) {
-      setError(err.message);
-    } finally {
-      setLoading(false);
-    }
-  };
+    const handleGoogleSignUp = async (userData) => {
+        setLoading(true);
+        setError(null); 
+        try {
+            const data = await googleSignUp(userData);  
+            setUser(data.user);      
+            setToken(data.userToken);                    
+            setAuthData(data.user, data.userToken);  
+        } catch (err) {
+            setError(err.message);
+        } finally {
+            setLoading(false);
+        }
+    };
 
   const handleFacebookSignUp = async (userData) => {
     setLoading(true);
