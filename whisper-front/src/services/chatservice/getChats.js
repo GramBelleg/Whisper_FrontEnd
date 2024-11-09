@@ -8,7 +8,7 @@ let myUsers = [];
 export const getChatsAPI = async () => {
 
     try {
-        const chats = await axiosInstance.get("/chats", {
+        const chats = await axios.get("http://localhost:5000/api/chats", {
             withCredentials: true, // Ensure credentials are included
         });
 
@@ -55,7 +55,7 @@ const mapMessageState = ( read, delivered ) => {
                 lastMessage: chat.lastMessage.content, 
                 messageTime: chat.lastMessage.sentAt?.slice(0, 19).replace("T", " "), 
                 forwarded: false, // TODO: to be removed
-                senderId: chat.lastMessage.sender.id, 
+                senderId: chat.other.id,  // TODO: shpuld be sender id
                 messageType: chat.lastMessage.type, 
                 messageState: mapMessageState(chat.lastMessage.read, chat.lastMessage.delivered),
                 lastMessageId: chat.lastMessage.id, 
@@ -66,7 +66,7 @@ const mapMessageState = ( read, delivered ) => {
                 muted: chat.isMuted !== null ?  chat.isMuted: false, 
                 profilePic: noUser,
                 unreadMessageCount: chat.unreadMessageCount, 
-                sender : chat.name,
+                sender : chat.other.userName,
                 lastSeen: chat.lastSeen?.slice(0, 19).replace("T", " ")
                 // TODO:
                 // Add status

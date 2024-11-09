@@ -13,7 +13,7 @@ const ChatSelector = ({
   className = ""
 }) => {
   const [filters, setFilters] = useState({ keyword: '' });
-  const { data: chatList, error: errorChats, loading: loadingChats } = useFetch('/chats', filters);
+  const { data: chatList, error: errorChats, loading: loadingChats } = useFetch('/api/chats', filters);
   const { closeModal } = useModal();
 
   const handleSearch = (e) => {
