@@ -37,7 +37,6 @@ const MessageAttachmentRenderer = ({ myMessage, onUpdateLink }) => {
         }
         // If file type is not 0, handle size check and download
         if (myMessage.fileType !== 0 && !autoDownload) {
-          console.log(myMessage.size);
           const fileSize = myMessage.size;
           if (fileSize < whoAmI.autoDownloadSize) {
             const newObjectUrl = await downloadAttachment(downloadData, myMessage);
@@ -45,6 +44,7 @@ const MessageAttachmentRenderer = ({ myMessage, onUpdateLink }) => {
             onUpdateLink(newObjectUrl);
             setIsLoading(false);
             setAutoDownload(true);
+            setIsLoading(false);
           } else {
             setAutoDownload(false);
             setIsLoading(false);
@@ -62,11 +62,11 @@ const MessageAttachmentRenderer = ({ myMessage, onUpdateLink }) => {
       }
     };
   
-    if (myMessage && isLoading) {
+    if (myMessage && isLoading && downloadData) {
       fetchData();
     }
     
-  }, [myMessage.time, autoDownload, isLoading]);
+  }, [myMessage, autoDownload, isLoading, downloadData, loadingDownload]);
 
   const formatTime = (timeInSeconds) => {
     const minutes = Math.floor(timeInSeconds / 60);
@@ -118,7 +118,7 @@ const MessageAttachmentRenderer = ({ myMessage, onUpdateLink }) => {
     const fileType = myMessage.file.type;
 
     if (!myMessage.file) return <p>No attachment available</p>;
-    if (isLoading) {
+    if (isLoading || !downloadData) {
       return (
         <div>
           <FontAwesomeIcon icon={faCircleNotch} spin size="2x" />
