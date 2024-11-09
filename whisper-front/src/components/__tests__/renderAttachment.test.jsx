@@ -29,6 +29,7 @@ describe('MessageAttachmentRenderer', () => {
       type: 'video/mp4',
     },
     fileType: 1,
+    size:1
   };
   const myDownloadFileMessage = {
     id: '1',
@@ -39,6 +40,7 @@ describe('MessageAttachmentRenderer', () => {
       type: 'video/mp4',
     },
     fileType: 0,
+    size:1
   };
   const myPhotoMessage = {
     id: '1',
@@ -49,6 +51,7 @@ describe('MessageAttachmentRenderer', () => {
       type: 'image/png',
     },
     fileType: 1,
+    size:1
   };
   const wrongTypeImage = {
     id: '1',
@@ -59,6 +62,7 @@ describe('MessageAttachmentRenderer', () => {
       type: 'wrong/png',
     },
     fileType: 1,
+    size:1
   };
   const myAudioMessage = {
     id: '1',
@@ -69,15 +73,27 @@ describe('MessageAttachmentRenderer', () => {
       type: 'audio/mp3',
     },
     fileType: 2,
+    size:1
   };
   const setAudioDuration = (element, duration) => {
     Object.defineProperty(element, 'duration', {
       writable: true,
       configurable: true,
       value: duration,
+          size:1
     });
   };
-  
+  const myBigPhotoMessage = {
+    id: '1',
+    time: Date.now(),
+    objectLink: null,
+    file: {
+      name: 'test-photo.mp3',
+      type: 'image/png',
+    },
+    fileType: 1,
+    size:10000000000000000
+  };
   afterEach(() => {
     vi.clearAllMocks();
   });
@@ -183,5 +199,26 @@ test('audio ending behavior', async () => {
     fireEvent(audioElement, new Event('ended'));
     expect(audioElement.currentTime).toBe(0);
     expect(screen.getByText('0:00 / 2:00')).toBeInTheDocument();
+});
+test('renders download button for big photo attachment correctly', async () => {
+  render(<MessageAttachmentRenderer myMessage={myBigPhotoMessage} onUpdateLink={vi.fn()} />);
+
+  await waitFor(() => {
+      const renderButton = screen.getByTestId('render-button');
+      expect(renderButton).toBeInTheDocument();
+  });
+});
+test('download button for big photo attachment downloads it', async () => {
+  render(<MessageAttachmentRenderer myMessage={myBigPhotoMessage} onUpdateLink={vi.fn()} />);
+
+  await waitFor(() => {
+      const renderButton = screen.getByTestId('render-button');
+      expect(renderButton).toBeInTheDocument();
+      fireEvent.click(renderButton);
+  });
+  await waitFor(() => {
+    const photoElement = screen.getByTestId('image-viewer');
+    expect(photoElement).toBeInTheDocument();
+});
 });
 });

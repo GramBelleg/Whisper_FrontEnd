@@ -135,6 +135,7 @@ const MessageAttachmentRenderer = ({ myMessage, onUpdateLink }) => {
           setIsLoading(true);
           setAutoDownload(true);
         }}
+        data-testid="render-button"
       />
     
     if (!objectUrl) return <p>no url found attachment</p>;
