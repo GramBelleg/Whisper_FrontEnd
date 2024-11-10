@@ -1,0 +1,23 @@
+/* TODO add another color scheme for light mode */
+:root {
+    --primary-color: #0a122f;
+    --dots-color: #0a122f;
+    --secondary-color: #0a254a;
+    --accent-color: #8d6aee;
+    --accent-color-rgb: 141, 106, 238;
+    --chat-background-color: #0a254a;
+    --text-color: #fff;
+    --text-color-rgb: 255, 255, 255;
+    --ticks-color: #4cb9cf;
+    --accent-color-darker: #6c52b6;
+    --danger-color: #ff4d4f;
+    --light-danger-color: rgba(255, 89, 90, 0.08);
+}
+
+.dark {
+    --primary-color: #0a122f;
+    --dots-color: #0a122f;
+    --secondary-color: #0a254a;
+    --chat-background-color: #0a254a;
+    --text-color: #fff;
+}

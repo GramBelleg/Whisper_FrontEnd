@@ -1,0 +1,152 @@
+:root {
+    --primary-color: #0A122F; /* Define the color as a CSS variable */
+    --dots-color: #0A122F;
+    --secondary-color: #0A254A;
+    --third-color:#8D6AEE;
+
+}
+
+.single-chat {
+    border: 1px solid var(--secondary-color);
+    height: 100%;
+    width: 100%;
+    box-sizing: border-box; /* This prevents border from exceeding required */
+}
+
+.single-chat:hover {
+    background-color: var(--secondary-color);
+}
+
+.single-chat-content {
+    color: white;
+    height: 100%;
+    width: 100%;
+    display: flex;
+    align-items: center;
+}
+
+
+.profile-pic-wrapper {
+    display: flex; /* Use flexbox to center the inner circle */
+    justify-content: center; /* Horizontally center the profile image */
+    align-items: center; /* Vertically center the profile image */
+    border-radius: 50%; /* Make it circular */
+    width: 70px;
+    height: 70px;
+    flex-shrink: 0;
+    margin-left: 1%;
+    border: none; /* Default: no border */
+}
+.profile-pic-wrapper.has-story {
+    border: 1px solid var(--third-color); /* Apply third color if story is true */
+}
+
+.profile-pic {
+    border-radius: 50%; /* Make it circular */
+    width: 65px;
+    height: 65px;
+    border: none; /* Default: no border */
+}
+
+
+.content {
+    display: flex;
+    flex-direction: column;
+    width: 85%;
+    height: 100%;
+    margin-left: 3%;
+    box-sizing: border-box; /* This prevents border from exceeding required */
+}
+
+.user-info {
+    display: flex;
+    height: 50%;
+    width: 100%;
+    align-items: center;
+    justify-content: space-between; /* Ensure the ticks stay at the right */
+}
+
+.name-container {
+    width: 75%;     /* Limit the width to 75% of its parent */
+    height: 100%;
+    display: flex;
+    flex-grow: 1;
+    flex-shrink: 1; /* Allow shrinking */
+    justify-content: flex-start; /* Align items to the start (optional) */
+    align-items: center;
+    margin-top: 2%;
+}
+
+
+.ticks-info {
+    min-width: 25%; /* Maintain a fixed size for tick info */
+    width: 25%;
+    height: 100%;
+    display: flex;
+    flex-shrink: 0;  /* Prevent shrinking of ticks */
+    justify-content: center;
+    align-items: center;
+    margin-top: 5%;
+}
+
+.tick {
+    width: 30%;
+    height: 100%;
+}
+
+.message-time {
+    width: 70%;
+    height: 100%;
+    margin: 0;
+}
+
+.unread-time {
+    color: var(--third-color); /* Use the third color for unread messages */
+    margin: 0;
+}
+
+.user-name {
+    text-overflow: ellipsis; /* Adds ... at the end of overflowing text */
+    font-size: clamp(15px, 5vw, 20px); /* Responsive font size */
+    color: white;
+    height: 100%;
+    display: flex;
+    white-space: nowrap; /* Prevent wrapping */
+    overflow: hidden; /* Hide overflow text */
+    position: relative; /* Position relative for the pseudo-element */
+}
+
+.user-name::after {
+    content: '...'; /* Show dots as a pseudo-element */
+    position: absolute; /* Position it absolutely */
+    right: 0; /* Align to the right */
+    background: var(--primary-color); /* Match the background color */
+    visibility: hidden; /* Hide by default */
+}
+
+.user-name.hovered::after {
+    content: '...'; /* Show dots as a pseudo-element */
+    position: absolute; /* Position it absolutely */
+    right: 0; /* Aign to the right */
+    background: var(--secondary-color); /* Match the background color */
+    visibility: hidden; /* Hide by default */
+}
+
+.user-name.overflow::after {
+    visibility: visible; /* Show dots when overflow occurs */
+}
+
+.muted-bell {
+    width: 20%;
+    height: 100%;
+    margin-top: 3%;
+}
+
+.messaging-info {
+    display: flex;
+    height: 50%;
+    align-items: center;
+    width: 100%;
+    position: relative; /* Enables absolute positioning for the .info div */
+}
+

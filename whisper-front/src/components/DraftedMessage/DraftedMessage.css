@@ -1,0 +1,30 @@
+:root {
+    --primary-color: #0A122F;
+    --dots-color: #0A122F;
+    --secondary-color: #0A254A;
+    --third-color: #8D6AEE;
+}
+
+.drafted-message {
+    width: 100%;
+    height: 100%;
+    display: flex;
+    margin-top: 5%;
+    
+}
+
+.draft {
+    color: var(--third-color);
+    font-size: 20px;
+}
+
+/* Add ellipsis when the message is too long */
+.message-draft {
+    color: var(--primary-color);
+    white-space: nowrap; 
+    
+    max-width: 100%; /* Adjust the width according to your design */
+    font-size: 18px;
+    margin-top: 2px;
+    color: grey;
+}
