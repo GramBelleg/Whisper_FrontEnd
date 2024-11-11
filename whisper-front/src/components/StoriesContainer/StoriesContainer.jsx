@@ -83,13 +83,13 @@ export default function StoriesContainer() {
     };
 
    
-    const { data, error, loading } = useFetch('/stories');
+    // const { data, error, loading } = useFetch('/stories'); TODO: handle others stories
 
     return (
             <StoriesTab
-                error={error}
-                loading={loading}
-                data={data}
+                error={new Error("")}
+                loading={false}
+                data={null}
                 showLeftArrow={showLeftArrow}
                 showRightArrow={showRightArrow}
                 scrollContainerRef={scrollContainerRef}
