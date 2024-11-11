@@ -39,7 +39,7 @@ const StoriesTab = ({
         if(firstError) {
             openModal(
                 <ErrorMesssage
-                  errorMessage={error.message}
+                  errorMessage={"Failed to fetch stories"}
                   onClose={closeModal}
                   appearFor={3000}
                   />
@@ -50,13 +50,7 @@ const StoriesTab = ({
             }, 3000)
             setFirstError(false);
         }
-        else {
-          return (
-              <>
-              </>
-          )
-        }
-    }
+      }
 
     // Function to trigger the file input click
     const handlePlusIconClick = () => {
