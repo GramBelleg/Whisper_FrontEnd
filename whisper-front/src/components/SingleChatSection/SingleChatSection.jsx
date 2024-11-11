@@ -16,10 +16,10 @@ const SingleChatSection = () => {
         <div className='single-chat-container'>
             <div className='single-chat-header shadow-md'>
                 <div className='header-avatar'>
-                    <img src={currentChat.profilePic} alt={currentChat.name} />
+                    <img src={currentChat.profilePic} alt={currentChat.sender} />
                 </div>
                 <div className='header-details'>
-                    <span className='header-title'>{currentChat.name}</span>
+                    <span className='header-title'>{currentChat.sender}</span>
                     <span className='header-subtitle'>Last seen at {currentChat.lastSeen}</span>
                 </div>
                 <div className='header-icons'>
