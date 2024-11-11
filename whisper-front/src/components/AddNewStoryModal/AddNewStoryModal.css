@@ -19,6 +19,9 @@
 
 .story-preview {
     padding-top: 5%;
+    max-width: 100%; /* Limit width to container */
+    max-height: 70%; /* Limit height to half the viewport */
+    object-fit: contain;
 }
 
 .story-data {
