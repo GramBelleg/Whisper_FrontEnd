@@ -33,7 +33,16 @@ export const initializeMock = () => {
         }];
     });
     mock.onGet('/chats').reply(200, chatList);
-    mock.onGet('/chatMessages').reply(200, messages);
+    //mock.onGet('/chatMessages').reply(200, messages);
+    mock.onGet(new RegExp(`/chatMessages/\\d+`)).reply(config => {
+        const id = parseInt(config.url.split('/').pop()); // Extract the chatId from the URL
+        const filteredMessages = messages.filter(msg => msg.messages[0].chatId === id);
+        if (filteredMessages.length > 0) {
+            return [200, filteredMessages[0]];
+        } else {
+            return [404, { message: "Chat ID not found" }];
+        }
+    });
     mock.onGet('/myStories').reply(200, myStories);
 
     mock.onPut('/myStories').reply(config => {

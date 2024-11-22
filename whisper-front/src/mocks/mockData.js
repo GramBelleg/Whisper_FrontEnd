@@ -77,6 +77,7 @@ export const chatList = [
         "othersId": 101,
         "lastMessage": {
           "id": 1,
+          "media": null,
           "content": "Hey, are you free to chat?",
           "type": "text",
           "sentAt": "2024-11-01T18:24:00.012Z",
@@ -165,28 +166,77 @@ export const chatList = [
 
 export const messages = [
     {
-        "id": 1,
-        "chatId": 1,
-        "sender": {
-            "id": 1,
-            "userName": "Alice",
-            "profilePic": "https://example.com/pictures/alice.jpg"
-        },
-        "mentions": [],
-        "content": "Hey, are you free to chat?",
-        "media": "",
-        "extension": "",
-        "createdAt": "2024-11-01T18:24:00.012Z",
-        "sentAt": "2024-11-01T18:24:00.012Z",
-        "read": false,
-        "delivered": true,
-        "forwarded": false,
-        "pinned": false,
-        "selfDestruct": false,
-        "isAnnouncement": false,
-        "expiresAfter": 0,
-        "type": "text",
-        "parentMessage": null,
-        "comments": []
+        "pinnedMessages": [
+            {
+                "id":1,
+                "content": "Hey, are you free to chat?",
+            }
+        ],
+        "messages" : [
+            {
+                "id": 1,
+                "chatId": 1,
+                "sender": {
+                    "id": 1,
+                    "userName": "Alice",
+                    "profilePic": "https://example.com/pictures/alice.jpg"
+                },
+                "mentions": [],
+                "content": "Hey, are you free to chat?",
+                "media": "",
+                "extension": "",
+                "time": "2024-11-01T18:24:00.012Z",
+                "sentAt": "2024-11-01T18:24:00.012Z",
+                "read": false,
+                "delivered": true,
+                "forwarded": false,
+                "pinned": true,
+                "edited": false,
+                "isSecret": false,
+                "selfDestruct": false,
+                "isAnnouncement": false,
+                "expiresAfter": 0,
+                "type": "text",
+                "parentMessage": null,
+                "comments": []
+                /*
+                "parentMessage": {
+                            "id": 0,
+                            "senderId": 0,
+                            "senderName": "string",
+                            "senderProfilePic": "string",
+                            "content": "string",
+                            "media": "string"
+                        },
+                */
+            }
+        ]
     }
 ]
+
+/* TODO:
+            {
+                "messages": [
+                    {
+                        "forwardedFrom": {
+                            "id": 0,
+                            "userName": "string",
+                            "profilePic": "string"
+                        },
+                        
+                        "comments": [
+                            {
+                                "id": 0,
+                                "sender": {
+                                    "id": 0,
+                                    "userName": "string",
+                                    "profilePic": "string"
+                                },
+                                "content": "string",
+                                "time": "2024-11-22T13:57:47.089Z"
+                            }
+                        ]
+                    }
+                ]
+            }
+        */
