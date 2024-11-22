@@ -19,6 +19,15 @@ class MessagingSocket extends Socket {
         this.socket.emit('message', data);
     }
 
+    pinMessage(data) {
+        this.socket.emit('pinMessage', data);
+    }
+
+    unPinMessage(data) {
+        this.socket.emit('unpinMessage', data);
+    }
+
+    
     deleteData(data) {
         //this.socket.emit("deleteStory",{storyId:data.id})
     }
