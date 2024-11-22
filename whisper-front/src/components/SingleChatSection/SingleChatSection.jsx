@@ -5,13 +5,20 @@ import SingleChatMessagesList from '../SingleChatMessagesList/SingleChatMessages
 import ChatActions from '../ChatActions/ChatActions'
 import { useChat } from '@/contexts/ChatContext'
 import NoChatOpened from '../NoChatOpened/NoChatOpened'
+import PinnedMessages from '../PinnedMessages/PinnedMessages'
+import { useEffect, useState } from 'react'
 
 const SingleChatSection = () => {
-    const {currentChat} = useChat();
+    const { currentChat, pinnedMessages } = useChat();
 
     if (!currentChat) {
         return (<NoChatOpened />);
     }
+    const [myPinnedMessages, setMyPinnedMessages] = useState(pinnedMessages);
+
+    useEffect(() => {
+        setMyPinnedMessages(pinnedMessages);
+    }, [pinnedMessages]);
     return (
         <div className='single-chat-container'>
             <div className='single-chat-header shadow-md'>
@@ -30,13 +37,23 @@ const SingleChatSection = () => {
             </div>
             <div className='messages'>
                 <SingleChatMessagesList/>
+                {
+                    myPinnedMessages.length > 0 && (
+                        <div>
+                            <PinnedMessages
+                                pinnedMessages={myPinnedMessages}
+                                onGoToMessage={(message) => console.log("Go to message", message)}
+                            />
+                        </div>
+                    )
+                }
             </div>
 
             <div className='w-full flex items-center justify-center'>
                 <ChatActions/>
             </div>
         </div>
-    )
+    )   
 }
 
 export default SingleChatSection;
