@@ -1,21 +1,15 @@
 import axios from "axios"
 import axiosInstance from "../axiosInstance";
-
+import noUser from "../../assets/images/no-user.png";
 
 
 export const getMessagesForChatFromAPI = async (id) => {
     try {
-        if (id == 1) {
-            console.log("Hello");
-            const  response = await axiosInstance.get("/chatMessages");
-            // { withCredentials: true, }
-            return response.data;
-        }
-        else {
-            throw new  Error("Chat id is not valid");
-        }
+        const  response = await axiosInstance.get(`/chatMessages/${id}`);
+        // { withCredentials: true, }
+        return response.data;
     } catch (error) {
-        console.log(error.message);
+        throw error;
     }
 }
 
@@ -38,57 +32,38 @@ export const getMessagesForChatCleaned = async (id) => {
 
         const messages = await getMessagesForChatFromAPI(id);
         const myMessages = []
-        /*
-            {
-                // TODO: no need
-                "sender": { 
-                    "userName": "string", // TODO: no need
-                    "profilePic": "string" // TODO: no need
-                },
-                "comments": [
-                    {
-                        "id": 0,
-                        "sender": {
-                        "id": 0,
-                        "userName": "string",
-                        "profilePic": "string"
-                        },
-                        "content": "string",
-                        "time": "2024-11-01T19:41:37.286Z"
-                    }
-                ]
-            }
-        */
+        console.log(messages.messages)
 
-        messages.map((message) => {
+        messages?.messages?.map((message) => {
             const tempMessage = {
-                id:  message.id, // okay
-                chatId:  message.chatId, // okay
-                mentions: message.mentions, // TODO: handle mentions
-                content:  message.content, // okay
-                media:   message.media, // TODO: handle this
-                extension:  message.extension, // TODO: handle this
-                senderId:  message.sender.id, // okay
-                time: message.createdAt.slice(0, 19).replace("T", " "), // okay
-                sentAt: message.sentAt.slice(0, 19).replace("T", " "), // TODO: handle this
-                // deliveredAt: message.delivered.slice(0, 19).replace("T", " "),
-                // readAt: message.read.slice(0, 19).replace("T", " "),
-                forwarded : message.forwarded, // okay
-                expiresAfter: message.expiresAfter, // okay
-
-                parentMessageId: message.parentMessage? message.parentMessage.id : null, // okay
-                parentMessageSenderId: message.parentMessage? message.parentMessage.senderId: null, // okay
-                parentMessageContent: message.parentMessage? message.parentMessage.content: null, // okay
-                parentMessageMedia: message.parentMessage?  message.parentMessage.media: null, // okay
-                parentMessageSenderName: message.parentMessage?  message.parentMessage.senderName: null, // okay
-                parentMessageSenderProfilePic: message.parentMessage? message.parentMessage.senderProfilePic : null, // okay
-
-                selfDestruct: message.selfDestruct, // okay
-                type: message.type, // okay
-                pinned : message.pinned, // okay
-                sender: message.userName,
-                isAnnouncement:  message.isAnnouncement, // TODO: handle this
-                state: mapMessageState(message.read, message.delivered), // TODO: handle pending
+                id:  message.id, 
+                chatId:  message.chatId, 
+                mentions: message.mentions,  // TODO: handle mentions
+                content:  message.content, 
+                media:   message.media,  // TODO: handle this
+                extension:  message.extension,  // TODO: handle this
+                time: message.time.slice(0, 19).replace("T", " "),  
+                sentAt: message.sentAt.slice(0, 19).replace("T", " "),  // TODO: handle this
+                state: mapMessageState(message.read, message.delivered),  // TODO: handle pending
+                forwarded : message.forwarded, 
+                expiresAfter: message.expiresAfter, 
+                pinned : message.pinned, 
+                selfDestruct: message.selfDestruct, 
+                type: message.type, 
+                edited: message.edited, 
+                isSecret : message.isSecret, 
+                isAnnouncement: message.isAnnouncement, 
+                parentMessageId: message.parentMessage? message.parentMessage.id : null,  
+                parentMessageSenderId: message.parentMessage? message.parentMessage.senderId: null,  
+                parentMessageContent: message.parentMessage? message.parentMessage.content: null,  
+                parentMessageMedia: message.parentMessage?  message.parentMessage.media: null,  
+                parentMessageSenderName: message.parentMessage?  message.parentMessage.senderName: null,  
+                parentMessageSenderProfilePic: message.parentMessage? message.parentMessage.senderProfilePic : null,  
+                
+                sender: message.sender.userName,
+                senderId: message.sender.id, 
+                profilePic: noUser, 
+                
                 // TODO: See comments
             }
             myMessages.push(tempMessage);
@@ -97,6 +72,26 @@ export const getMessagesForChatCleaned = async (id) => {
         return myMessages;
 
     } catch (error) {
-        console.log("Error " ,error.message);
+        throw error;
+    }
+}
+
+
+export const getPinnedMessagesForChat = async (id) => {
+
+    try {
+        const messages = await getMessagesForChatFromAPI(id); // TODO: handle with IndexedDB
+        let pinnedMessages = []
+       
+        if (messages && messages.pinnedMessages.length > 0) {
+            pinnedMessages = [...messages.pinnedMessages];
+        } else {
+            throw new Error("No pinned messages found");
+        }
+        console.log(pinnedMessages)
+
+        return pinnedMessages;
+    } catch (error) {
+        throw error;
     }
 }

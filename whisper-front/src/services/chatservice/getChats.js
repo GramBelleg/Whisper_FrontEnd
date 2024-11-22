@@ -8,9 +8,11 @@ let myUsers = [];
 export const getChatsAPI = async () => {
 
     try {
-        const chats = await axios.get("http://localhost:5000/api/chats", {
+        /*const chats = await axios.get("http://localhost:5000/api/chats", {
             withCredentials: true, // Ensure credentials are included
-        });
+        });*/
+
+        const chats = await axiosInstance.get('/chats');
 
         console.log(chats.data);
 
@@ -40,37 +42,35 @@ const mapMessageState = ( read, delivered ) => {
 
         myChats = []
 
-        // TODO: "picture": "string"
-
+        // TODO: "picture": "string", chat.picture
         // const downloadedData = await getDownloadData();
         // const blob = await downloadAttachment(downloadedData);
-
         // const finalBlob = new Blob([blob]);
         // const newObjectUrl = URL.createObjectURL(finalBlob);
-
         
         chats.map((chat) => {
             const flattenedChat = {
-                id: chat.id, 
-                lastMessage: chat.lastMessage.content, 
-                messageTime: chat.lastMessage.sentAt?.slice(0, 19).replace("T", " "), 
-                forwarded: false, // TODO: to be removed
-                senderId: chat.other.id,  // TODO: shpuld be sender id
-                messageType: chat.lastMessage.type, 
-                messageState: mapMessageState(chat.lastMessage.read, chat.lastMessage.delivered),
-                lastMessageId: chat.lastMessage.id, 
+                id: chat.id,  
+                othersId: chat.othersId, // TODO: handle with back 
+                name: chat.name, 
                 type: chat.type, 
-                othersId: chat.othersId, // TODO: handle with back
-                media: chat.lastMessage.media !== null ?  chat.lastMessage.media : false,// TODO: to be removed
+                lastMessage: chat.lastMessage.content, 
+                messageTime: chat.lastMessage.sentAt?.slice(0, 19).replace("T", " "),  
+                // forwarded: false, // TODO: to be removed
+                senderId: chat.lastMessage.sender.id,  
+                messageType: chat.lastMessage.type, 
+                messageState: mapMessageState(chat.lastMessage.read, chat.lastMessage.delivered), 
+                lastMessageId: chat.lastMessage.id,  // WHY?
+                media: chat.lastMessage.media !== null ?  chat.lastMessage.media : '',  // TODO: to be removed
                 story: chat.hasStory !== null ?  chat.hasStory: false, 
                 muted: chat.isMuted !== null ?  chat.isMuted: false, 
-                profilePic: noUser,
+                profilePic: noUser, // TODO
                 unreadMessageCount: chat.unreadMessageCount, 
-                sender : chat.other.userName,
-                lastSeen: chat.lastSeen?.slice(0, 19).replace("T", " ")
-                // TODO:
-                // Add status
+                sender : chat.lastMessage.sender.userName, 
+                lastSeen: chat.lastSeen?.slice(0, 19).replace("T", " "), 
+                status: chat.status, 
             };
+
             myChats.push(flattenedChat);
         });
 
