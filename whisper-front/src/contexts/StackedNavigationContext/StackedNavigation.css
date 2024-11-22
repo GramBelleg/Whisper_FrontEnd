@@ -1,0 +1,32 @@
+.stacked-navigation-container {
+    position: relative;
+    width: 100%;
+    height: 100%;
+    overflow: hidden;
+}
+
+.stacked-component {
+    width: 100%;
+    height: 100%;
+    position: absolute;
+    top: 0;
+    left: 0;
+    background-color: var(--primary-color);
+}
+
+
+.stacked-component-enter {
+    transform: translateX(100%);
+}
+.stacked-component-enter-active {
+    transform: translateX(0);
+    transition: transform 300ms ease-in-out;
+}
+
+.stacked-component-exit {
+    transform: translateX(0);
+}
+.stacked-component-exit-active {
+    transform: translateX(100%);
+    transition: transform 300ms ease-in-out;
+}

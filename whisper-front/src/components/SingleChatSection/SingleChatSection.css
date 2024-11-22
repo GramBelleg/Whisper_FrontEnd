@@ -32,6 +32,7 @@
 .header-details {
     flex-grow: 1;
     display: flex;
+    align-items: flex-start;
     flex-direction: column;
     margin-left: 10px;
 }
@@ -55,7 +56,15 @@
 .header-icons .icon {
     cursor: pointer;
     color: var(--accent-color);
+
 }
+
+.icon {
+    font-size: 20px; /* or whatever size you prefer */
+    width: 20px;
+    height: 20px;
+}
+
 
 .messages {
     display: flex;
