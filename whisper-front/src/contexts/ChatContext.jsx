@@ -1,17 +1,18 @@
 import { createContext, useContext, useEffect, useState } from 'react';
 import { socket } from '@/services/messagingservice/sockets/sockets'
 import { whoAmI } from '@/services/chatservice/whoAmI';
-import useFetch from '@/services/useFetch';
-import { getMessagesForChatCleaned } from '@/services/chatservice/getMessagesForChat';
+import { getMessagesForChatCleaned, getPinnedMessagesForChat } from '@/services/chatservice/getMessagesForChat';
+import MessagingSocket from '@/services/sockets/MessagingSocket';
 
 export const ChatContext = createContext();
 
 export const ChatProvider = ({ children }) => {
     const [currentChat, setcurrentChat] = useState(null);
     const [messages, setMessages] = useState([]);// TODO: handle from back
+    const [pinnedMessages, setPinnedMessages] = useState([]);
     const [parentMessage, setParentMessage] = useState(null);
     const [sending, setSending] = useState(false);
-
+    const messagesSocket = new MessagingSocket(socket);
 
     const selectChat = (chat) => {
         setcurrentChat(chat);
@@ -19,14 +20,30 @@ export const ChatProvider = ({ children }) => {
     };
 
     const loadMessages = async (id) => {
-        const myMessages = await getMessagesForChatCleaned(id);
-        setMessages(myMessages);
+        try {
+            const myMessages = await getMessagesForChatCleaned(id);
+            setMessages(myMessages);
+        } catch (error) {
+            setMessages([]);
+            console.log(error);
+        }
+    }
+
+    const loadPinnedMessages = async (id) => {
+        try {
+            const myPinnedMessages = await getPinnedMessagesForChat(id);
+            setPinnedMessages(myPinnedMessages);
+        } catch (error) {
+            setPinnedMessages([]);
+            console.log(error);
+        }
     }
 
     useEffect(() => {
         if (currentChat) {
             // TODO: handle with back
             loadMessages(currentChat.id);
+            loadPinnedMessages(currentChat.id);
         }
     }, [currentChat]);
 
@@ -34,19 +51,26 @@ export const ChatProvider = ({ children }) => {
         setSending(true);
         const newMessage = {
             chatId: currentChat.id,
+            content:content,
             forwarded: false,
             selfDestruct: true,
-            expiresAfter: 5,
-            parentMessageId: null,
-            pinned: false,
-            content:content,
+            expiresAfter: 0,
             type:type,
+            sentAt : new Date().toLocaleDateString(),
+            media: "",
+            extension:"",
+            parentMessageId: null,
+            forwardedFromUserId: null,
+            mentions:[],
+            isSecret: false,
+            isAnnouncement: false,            
         }
 
         if (attachmentPayload !== null) {
-            newMessage.file = attachmentPayload.file;
-            newMessage.fileType = attachmentPayload.type;
-            newMessage.blobName = attachmentPayload.blobName;
+            //newMessage.file = attachmentPayload.file;
+            //newMessage.fileType = attachmentPayload.type;
+            //newMessage.blobName = attachmentPayload.blobName;
+            // TODO: handle this for media and extension
         }
 
 
@@ -54,14 +78,12 @@ export const ChatProvider = ({ children }) => {
        
         newMessage.senderId = whoAmI.id,
         newMessage.deliveredAt = '';
-        newMessage.time = new Date(),
         newMessage.readAt = '';
         newMessage.deleted = false;
         newMessage.sender = whoAmI.name;
         newMessage.state = 4;
-        newMessage.media = false;
     
-        socket.emit('send', newMessageForBackend)
+        messagesSocket.sendData(newMessageForBackend)
         setSending(false);
         setMessages((prevMessages) => {
             if (prevMessages) {
@@ -79,6 +101,23 @@ export const ChatProvider = ({ children }) => {
         setParentMessage(null);
     };
 
+
+    const pinMessage = (messsageId, durtaion) => {
+        messagesSocket.pinMessage({
+            chatId: currentChat.id,
+            messageId: messsageId,
+            duration: durtaion,
+        });
+        // TODO: add to indexed DB
+    }
+
+    const unPinMessage = (messsageId) => {
+        messagesSocket.unPinMessage({
+            chatId: currentChat.id,
+            messageId: messsageId,
+        });
+        // TODO: remove from IndexedDB
+    }
 
     useEffect(() => {
         const handleReceiveMessage = (messageData) => {
@@ -110,6 +149,9 @@ export const ChatProvider = ({ children }) => {
                 currentChat,
                 selectChat,
                 messages,
+                pinnedMessages,
+                pinMessage,
+                unPinMessage,
                 sendMessage,
                 parentMessage,
                 updateParentMessage,

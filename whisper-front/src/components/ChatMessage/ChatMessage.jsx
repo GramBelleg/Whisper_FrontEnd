@@ -8,10 +8,11 @@ import AudioVoiceMessage from '../AudioVoiceMessage/AudioVoiceMessage'
 import { messageTypes } from '@/services/sendTypeEnum'
 import { useMemo, useState } from 'react'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import { faReply, faShare, faTrash } from '@fortawesome/free-solid-svg-icons'
+import { faReply, faShare, faTrash, faThumbtack, faThumbtackSlash } from '@fortawesome/free-solid-svg-icons'
 import { useModal } from '@/contexts/ModalContext'
 import ForwardMessageModal from '../Modals/ForwardMessageModal/ForwardMessageModal'
 import MessageAttachmentRenderer from '../MessageAttachment/MessageAttachmentRenderer';
+import { useChat } from '@/contexts/ChatContext'
 
 const ChatMessage = ({ message, onDelete, onReply }) => {
     const [isMenuOpen, setIsMenuOpen] = useState(false) // Track menu state
@@ -19,6 +20,7 @@ const ChatMessage = ({ message, onDelete, onReply }) => {
     const [objectLink, setObjectLink] = useState(null)
     const { openModal } = useModal()
     const menuOverlayGutter = 40
+    const { pinMessage, unPinMessage } = useChat();
 
     const toggleMenu = (e) => {
         e.preventDefault() // Prevent default behavior (for long-press or right-click)
@@ -39,6 +41,14 @@ const ChatMessage = ({ message, onDelete, onReply }) => {
     const handleForward = () => {
         openModal(<ForwardMessageModal message={message} />)
         setIsMenuOpen(false)
+    }
+
+    const handlePin = () => {
+        pinMessage(message.id, 0);
+    }
+
+    const handleUnPin = () => {
+        unPinMessage(message.id)
     }
 
     const updateObjectLink = (objectLink) => {
@@ -113,6 +123,17 @@ const ChatMessage = ({ message, onDelete, onReply }) => {
                             <FontAwesomeIcon height={18} icon={faShare} />
                             <span>Forward</span>
                         </button>
+                        {
+                            !message.pinned ?
+                            <button onClick={handlePin}>
+                                <FontAwesomeIcon height={18} icon={faThumbtack} />
+                                <span>Pin</span>
+                            </button> :
+                            <button onClick={handleUnPin}>
+                                <FontAwesomeIcon height={18} icon={faThumbtackSlash} />
+                                <span>UnPin</span>
+                            </button>
+                        }
                         <button className='danger' onClick={handleDelete}>
                             <FontAwesomeIcon height={18} icon={faTrash} />
                             <span>Delete</span>
