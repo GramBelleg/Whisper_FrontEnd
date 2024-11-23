@@ -14,23 +14,23 @@ const LastMessage = ({ sender, messageType, message, messageState, index }) => {
         <DeletedMessage sender={sender}/> // Fixed typo here
       ) : (
         <>
-          {messageType.toLowerCase() === "text".toLowerCase() && (
+          {messageType?.toLowerCase() === "text".toLowerCase() && (
             <TextMessage index={index} message={message}/>
           )}
-          {messageType.toLowerCase() === "image".toLowerCase() && (
+          {messageType?.toLowerCase() === "image".toLowerCase() && (
             <ImageMessage messageState={messageState} />
           )}
-          {(messageType.toLowerCase() === "audio".toLowerCase() || messageType.toLowerCase() === "voiceNote".toLowerCase()) && (
+          {(messageType?.toLowerCase() === "audio".toLowerCase() || messageType.toLowerCase() === "voiceNote".toLowerCase()) && (
             <AudioVoiceNoteMessage
               messageType={messageType}
               messageState={messageState}
               message={message}
             />
           )}
-          {messageType.toLowerCase() === "video".toLowerCase() && (
+          {messageType?.toLowerCase() === "video".toLowerCase() && (
             <VideoMessage messageState={messageState} />
           )}
-          {messageType.toLowerCase() === "sticker".toLowerCase() && (
+          {messageType?.toLowerCase() === "sticker".toLowerCase() && (
             <StickerMessage messageState={messageState} />
           )}
         </>
