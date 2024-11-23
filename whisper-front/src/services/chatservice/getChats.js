@@ -23,7 +23,7 @@ export const getChatsAPI = async () => {
 }
 
 // Function to map message_state values
-const mapMessageState = ( read, delivered ) => {
+export const mapMessageState = ( read, delivered ) => {
     if(!read && !delivered) {
         return 0;
     }
