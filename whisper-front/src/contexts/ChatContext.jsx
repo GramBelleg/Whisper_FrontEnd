@@ -4,6 +4,7 @@ import { whoAmI } from '@/services/chatservice/whoAmI';
 import { mapMessage } from '@/services/chatservice/getMessagesForChat';
 import MessagingSocket from '@/services/sockets/MessagingSocket';
 import { useWhisperDB } from './WhisperDBContext';
+import { handleSearchChat } from '@/services/chatservice/searchChat';
 
 export const ChatContext = createContext();
 
@@ -109,7 +110,15 @@ export const ChatProvider = ({ children }) => {
     const clearParentMessage = () => {
         setParentMessage(null);
     };
-
+    
+    const searchChat = async (query) => {
+        try {
+            const results = await handleSearchChat(query, currentChat.id);
+            return results;
+        } catch (error) {
+            console.log(error);
+        }
+    }
 
     const pinMessage = (messsageId, durtaion) => {
         messagesSocket.pinMessage({
@@ -212,6 +221,7 @@ export const ChatProvider = ({ children }) => {
                 pinMessage,
                 unPinMessage,
                 sendMessage,
+                searchChat,
                 parentMessage,
                 updateParentMessage,
                 clearParentMessage,
