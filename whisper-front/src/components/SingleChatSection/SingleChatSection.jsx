@@ -12,6 +12,7 @@ import SearchSingleChat from '../SearchSingleChat/SearchSingleChat'
 const SingleChatSection = () => {
     const { currentChat, pinnedMessages } = useChat();
 
+
     if (!currentChat) {
         return (<NoChatOpened />);
     }

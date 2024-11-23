@@ -1,9 +1,9 @@
 import { createContext, useContext, useEffect, useState } from 'react';
 import { socket } from '@/services/messagingservice/sockets/sockets'
 import { whoAmI } from '@/services/chatservice/whoAmI';
-import { getMessagesForChatCleaned, getPinnedMessagesForChat, mapMessage } from '@/services/chatservice/getMessagesForChat';
+import { mapMessage } from '@/services/chatservice/getMessagesForChat';
 import MessagingSocket from '@/services/sockets/MessagingSocket';
-import { mapMessageState } from '@/services/chatservice/getChats';
+import { useWhisperDB } from './WhisperDBContext';
 
 export const ChatContext = createContext();
 
@@ -14,6 +14,7 @@ export const ChatProvider = ({ children }) => {
     const [parentMessage, setParentMessage] = useState(null);
     const [sending, setSending] = useState(false);
     const messagesSocket = new MessagingSocket(socket);
+    const { db } = useWhisperDB();
 
     const selectChat = (chat) => {
         setcurrentChat(chat);
@@ -22,7 +23,7 @@ export const ChatProvider = ({ children }) => {
 
     const loadMessages = async (id) => {
         try {
-            const myMessages = await getMessagesForChatCleaned(id);
+            const myMessages = await db.getMessagesForChat(id);
             setMessages(myMessages);
         } catch (error) {
             setMessages([]);
@@ -32,7 +33,7 @@ export const ChatProvider = ({ children }) => {
 
     const loadPinnedMessages = async (id) => {
         try {
-            const myPinnedMessages = await getPinnedMessagesForChat(id);
+            const myPinnedMessages = await db.getPinnedMessagesForChat(id);
             setPinnedMessages(myPinnedMessages);
         } catch (error) {
             setPinnedMessages([]);
@@ -48,7 +49,7 @@ export const ChatProvider = ({ children }) => {
         }
     }, [currentChat]);
 
-    const sendMessage = (type, content, attachmentPayload = null) => {
+    const sendMessage = async (type, content, attachmentPayload = null) => {
         setSending(true);
         const newMessage = {
             chatId: currentChat.id,
@@ -83,8 +84,15 @@ export const ChatProvider = ({ children }) => {
         newMessage.deleted = false;
         newMessage.sender = whoAmI.name;
         newMessage.state = 4;
+        newMessage.time = new Date();
+
     
-        messagesSocket.sendData(newMessageForBackend)
+        // messagesSocket.sendData(newMessageForBackend);
+        try {
+            await db.insertMessage(newMessage);
+        } catch (error) {
+            console.error(error);
+        }
         setSending(false);
         setMessages((prevMessages) => {
             if (prevMessages) {
@@ -194,6 +202,7 @@ export const ChatProvider = ({ children }) => {
     
 
     return (
+        
         <ChatContext.Provider
             value={{
                 currentChat,
