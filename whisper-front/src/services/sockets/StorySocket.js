@@ -23,6 +23,15 @@ class StorySocket extends Socket {
         console.log("hello ", data)
         this.socket.emit("deleteStory", { storyId : data })
     }
+
+    onReceiveMessage(callback) {
+        //this.socket.on('receive', callback);
+    }
+
+    offReceiveMessage(callback) {
+        //this.socket.off('receive', callback);
+    }
+
     disconnect() {
         console.log(`Disconnecting from ${this.serverUrl}`);
         this.socket.disconnect();

@@ -27,6 +27,29 @@ class MessagingSocket extends Socket {
         this.socket.emit('unpinMessage', data);
     }
 
+    onPinMessage(callback) {
+        this.socket.on('pinMessage', callback);
+    }
+
+    onUnPinMessage(callback) {
+        this.socket.on('unpinMessage', callback);
+    }
+
+    offPinMessage(callback) {
+        this.socket.off('pinMessage', callback);
+    }
+
+    offUnPinMessage(callback) {
+        this.socket.off('unpinMessage', callback);
+    }
+
+    onReceiveMessage(callback) {
+        this.socket.on('message', callback);
+    }
+
+    offReceiveMessage(callback) {
+        this.socket.off('message', callback);
+    }
     
     deleteData(data) {
         //this.socket.emit("deleteStory",{storyId:data.id})
