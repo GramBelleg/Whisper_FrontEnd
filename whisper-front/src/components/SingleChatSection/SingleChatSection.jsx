@@ -7,6 +7,7 @@ import { useChat } from '@/contexts/ChatContext'
 import NoChatOpened from '../NoChatOpened/NoChatOpened'
 import PinnedMessages from '../PinnedMessages/PinnedMessages'
 import { useEffect, useState } from 'react'
+import SearchSingleChat from '../SearchSingleChat/SearchSingleChat'
 
 const SingleChatSection = () => {
     const { currentChat, pinnedMessages } = useChat();
@@ -29,8 +30,8 @@ const SingleChatSection = () => {
                     <span className='header-title'>{currentChat.sender}</span>
                     <span className='header-subtitle'>Last seen at {currentChat.lastSeen}</span>
                 </div>
+                <SearchSingleChat/>
                 <div className='header-icons'>
-                    <FontAwesomeIcon style={{height:'24px'}} className='icon' icon={faSearch} />
                     <FontAwesomeIcon style={{height:'24px'}} className='icon' icon={faPhone} />
                     <FontAwesomeIcon style={{height:'24px'}} className='icon' icon={faEllipsisV} />
                 </div>
