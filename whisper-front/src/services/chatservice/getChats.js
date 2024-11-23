@@ -8,11 +8,11 @@ let myUsers = [];
 export const getChatsAPI = async () => {
 
     try {
-        /*const chats = await axios.get("http://localhost:5000/api/chats", {
+        const chats = await axios.get("http://localhost:5000/api/chats", {
             withCredentials: true, // Ensure credentials are included
-        });*/
+        });
 
-        const chats = await axiosInstance.get('/chats');
+        // const chats = await axiosInstance.get('/chats');
 
         console.log(chats.data);
 
@@ -54,19 +54,19 @@ export const mapMessageState = ( read, delivered ) => {
                 othersId: chat.othersId, // TODO: handle with back 
                 name: chat.name, 
                 type: chat.type, 
-                lastMessage: chat.lastMessage.content, 
-                messageTime: chat.lastMessage.sentAt?.slice(0, 19).replace("T", " "),  
+                lastMessage: chat.lastMessage ? chat.lastMessage.content: null, 
+                messageTime: chat.lastMessage ? ChatTextingActions.lastMessage.sentAt?.slice(0, 19).replace("T", " "): null,  
                 // forwarded: false, // TODO: to be removed
-                senderId: chat.lastMessage.sender.id,  
-                messageType: chat.lastMessage.type, 
-                messageState: mapMessageState(chat.lastMessage.read, chat.lastMessage.delivered), 
-                lastMessageId: chat.lastMessage.id,  // WHY?
-                media: chat.lastMessage.media !== null ?  chat.lastMessage.media : '',  // TODO: to be removed
+                senderId: chat.lastMessage? chat.lastMessage.sender.id : null,  
+                messageType: chat.lastMessage? chat.lastMessage.type : null, 
+                messageState: mapMessageState(chat.lastMessage? chat.lastMessage.read : false, chat.lastMessage? chat.lastMessage.delivered : false), 
+                lastMessageId: chat.lastMessage? chat.lastMessage.id: null,  // WHY?
+                media: (chat.lastMessage && chat.lastMessage.media) ?  chat.lastMessage.media : '',  // TODO: to be removed
                 story: chat.hasStory !== null ?  chat.hasStory: false, 
                 muted: chat.isMuted !== null ?  chat.isMuted: false, 
                 profilePic: noUser, // TODO
                 unreadMessageCount: chat.unreadMessageCount, 
-                sender : chat.lastMessage.sender.userName, 
+                sender : chat.lastMessage ? chat.lastMessage.sender.userName: null, 
                 lastSeen: chat.lastSeen?.slice(0, 19).replace("T", " "), 
                 status: chat.status, 
             };
