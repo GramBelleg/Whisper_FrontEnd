@@ -199,10 +199,10 @@ class WhisperDB {
                     chatRequest.onsuccess = () => resolve(chatRequest.result);
                     chatRequest.onerror = () => reject(chatRequest.error);
                 });
-    
+                /* TODO: insert lastMessage
                 if (chat) {
                     // Update the chat object with the lastMessage
-                    chat.lastMessage = message;
+                    chat.lastMessage = {...message};
     
                     const updateRequest = chatStore.put(chat);
                     await new Promise((resolve, reject) => {
@@ -212,7 +212,7 @@ class WhisperDB {
                 } else {
                     throw new Error(`Chat with id ${message.chatId} not found`);
                 }
-    
+                */
                 await tx.complete; // Ensure the transaction completes successfully
                 console.log('Message inserted and chat updated successfully.');
             } catch (error) {
@@ -230,7 +230,12 @@ class WhisperDB {
                 const tx = this.db.transaction(['pinnedmessages'], 'readwrite'); // Include both stores in the transaction
                 const pinnedMessagesStore = tx.objectStore('pinnedmessages');    
                 // Insert the message into the 'messages' store
-                const messageRequest = pinnedMessagesStore.add(message);
+                
+                const messageRequest = pinnedMessagesStore.add({
+                    messageId: message.pinnedMessage,
+                    chatId: message.chatId,
+                    content: message.content,
+                });
     
                 await new Promise((resolve, reject) => {
                     messageRequest.onsuccess = () => resolve();

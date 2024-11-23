@@ -55,7 +55,7 @@ export const mapMessageState = ( read, delivered ) => {
                 name: chat.name, 
                 type: chat.type, 
                 lastMessage: chat.lastMessage ? chat.lastMessage.content: null, 
-                messageTime: chat.lastMessage ? ChatTextingActions.lastMessage.sentAt?.slice(0, 19).replace("T", " "): null,  
+                messageTime: chat.lastMessage ? chat.lastMessage.sentAt?.slice(0, 19).replace("T", " "): null,  
                 // forwarded: false, // TODO: to be removed
                 senderId: chat.lastMessage? chat.lastMessage.sender.id : null,  
                 messageType: chat.lastMessage? chat.lastMessage.type : null, 
