@@ -1,8 +1,9 @@
 import { createContext, useContext, useEffect, useState } from 'react';
 import { socket } from '@/services/messagingservice/sockets/sockets'
 import { whoAmI } from '@/services/chatservice/whoAmI';
-import { getMessagesForChatCleaned, getPinnedMessagesForChat } from '@/services/chatservice/getMessagesForChat';
+import { getMessagesForChatCleaned, getPinnedMessagesForChat, mapMessage } from '@/services/chatservice/getMessagesForChat';
 import MessagingSocket from '@/services/sockets/MessagingSocket';
+import { mapMessageState } from '@/services/chatservice/getChats';
 
 export const ChatContext = createContext();
 
@@ -121,27 +122,76 @@ export const ChatProvider = ({ children }) => {
 
     useEffect(() => {
         const handleReceiveMessage = (messageData) => {
-            setMessages(prevMessages => {
-                const messageIndex = prevMessages.findIndex(
-                    (message) => messageData.content === message.content
-                );
-                
-                if (messageIndex !== -1) {
-                    const newMessages = [...prevMessages];
-                    newMessages[messageIndex] = {
-                        ...newMessages[messageIndex],
-                        id: messageData.id,
-                        state: 'sent'
-                    };
-                    return newMessages;
+            setMessages((prevMessages) => {
+
+                if(currentChat.id === messageData.chatId) {
+                    // Find the index of the message with matching `sentAt` time
+                    const messageIndex = prevMessages.findIndex(
+                        (message) => message.sentAt === messageData.sentAt
+                    );
+        
+                    // If a matching message is found
+                    if (messageIndex !== -1) {
+                        const updatedMessages = [...prevMessages];
+                        updatedMessages[messageIndex] = {...mapMessage(messageData)}
+        
+                        return updatedMessages; // Return the updated array
+                    }
+                } else {
+                    // TODO: save it to indexedDB
                 }
+        
                 return prevMessages;
             });
         };
-        
-        socket.on("receive", handleReceiveMessage);
-        return () => socket.off("receive", handleReceiveMessage);
-    }, []);
+
+        const handlePinMessage = (pinData) => {
+            const { messsageId, chatId } = pinData;
+            if (messsageId === currentChat.id) {
+                const messageIndex = messages.findIndex(
+                    (message) => message.id === chatId
+                );
+                if (messageIndex !== -1) {
+                    const updatedMessages = [...messages];
+                    updatedMessages[messageIndex].isPinned = true
+                    setMessages(updatedMessages);
+                    setPinnedMessages([...pinnedMessages, pinData]);
+                }
+            } else {
+                // TODO: save to indexedDB
+            }
+        }
+
+        const handleUnpinMessage = (pinData) => {
+            const { messsageId, chatId } = pinData;
+            if (messsageId === currentChat.id) {
+                const messageIndex = messages.findIndex(
+                    (message) => message.id === chatId
+                );
+                if (messageIndex !== -1) {
+                    const updatedMessages = [...messages];
+                    updatedMessages[messageIndex].isPinned = false
+                    setMessages(updatedMessages);
+                    setPinnedMessages(pinnedMessages.filter((pin) => pin.id !== pinData.id));
+                }
+            } else {
+                // TODO: save to indexedDB
+            }
+
+        }
+    
+        messagesSocket.onReceiveMessage(handleReceiveMessage);
+        messagesSocket.onPinMessage(handlePinMessage);
+        messagesSocket.onPinMessage(handleUnpinMessage);
+    
+        return () => {
+            messagesSocket.offReceiveMessage(handleReceiveMessage);
+            messagesSocket.offPinMessage(handleReceiveMessage);
+            messagesSocket.offPinMessage(handleUnpinMessage);
+        };
+    }, [messagesSocket]);
+    
+    
 
     return (
         <ChatContext.Provider
