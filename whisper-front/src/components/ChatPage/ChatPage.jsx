@@ -6,27 +6,43 @@ import { useState, useEffect } from 'react';
 import AddNewButton from "../AddNewButton/AddNewButton";
 import { useChat } from "@/contexts/ChatContext";
 import { getChatsCleaned } from "@/services/chatservice/getChats";
+import { useWhisperDB } from "@/contexts/WhisperDBContext";
+import { useModal } from "@/contexts/ModalContext";
+import ErrorMesssage from "../ErrorMessage/ErrorMessage";
 
 const ChatPage = () => {
 
     const { selectChat } = useChat();
-    const [chatList, setChatList] = useState([])
+    const [chatList, setChatList] = useState([]);
+    const { db } = useWhisperDB();
+    const { openModal, closeModal } = useModal();
 
     const handleAddNewClick = () => {
         console.log('Add new clicked');
     };
 
-
     const loadChats = async () => {
-        let allChats = await getChatsCleaned();
-        setChatList(allChats)
-        console.log(allChats)
+        try {
+            let allChats = await db.getChats();
+            setChatList(allChats);
+            console.log(allChats)
+        } catch (error) {
+            openModal(
+                <ErrorMesssage
+                  errorMessage={error.message}
+                  appearFor={3000}
+                  onClose={closeModal}
+                />
+            )
+        }
     }
 
 
     useEffect(() => {
-        loadChats()
-    }, []);
+        if (db) {
+            loadChats();
+        }
+    }, [db]);
     
     return (
         <div className="chat-page">
@@ -37,7 +53,7 @@ const ChatPage = () => {
                 <StoriesContainer />
             </div>
             <div className="sidebar__other-content">
-                {chatList &&  <ChatList chatList={chatList} chooseChat={selectChat}/>}
+                {chatList && chatList.length > 0 &&  <ChatList chatList={chatList} chooseChat={selectChat}/>}
                 <AddNewButton onClick={handleAddNewClick} />
             </div>
         </div>
