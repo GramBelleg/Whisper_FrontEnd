@@ -19,7 +19,7 @@ const ChatItem = ({ index, standaloneChat }) => {
     const maxLength = (
         
         (standaloneChat.muted) ? 33 : 
-        (standaloneChat.sender === whoAmI.name) ? 30 : 15
+        (standaloneChat.name === whoAmI.name) ? 30 : 15
     )
     
     // Track overflow of text
@@ -42,7 +42,7 @@ const ChatItem = ({ index, standaloneChat }) => {
         unreadMessageCount: 0,
         lastMessageId: -1,
         lastMessage:"",
-        sender:"",
+        name:"",
         lastSeen: "",
         muted: false,
         media: false,
@@ -75,9 +75,10 @@ const ChatItem = ({ index, standaloneChat }) => {
             ...prevChat,
             ...standaloneChat,
             messageTime: checkDisplayTime(standaloneChat.messageTime),
-            sender: trimName(standaloneChat.sender)
+            name: trimName(standaloneChat.name)
         }));
 
+        console.log(standaloneChat)
         // Check for overflow when the name changes
         const checkOverflow = () => {
             if (userNameRef.current) {
@@ -113,7 +114,7 @@ const ChatItem = ({ index, standaloneChat }) => {
                                     ref={userNameRef} // Attach the ref to the user name element
                                     className={`user-name ${myChat.muted ? 'muted' : ''} ${isOverflowing ? 'overflow' : ''} ${index ? 'hovered' : ''}`} // Add overflow class conditionally
                                 >
-                                    {myChat.sender}
+                                    {myChat.name}
                                 </p>
                                 {myChat.muted && (
                                     <div className="muted-bell">
@@ -138,7 +139,7 @@ const ChatItem = ({ index, standaloneChat }) => {
                             </div>
                         </div>
                         <div className="messaging-info">
-                            <LastMessage sender={myChat.senderId} messageType={myChat.messageType} message={myChat.lastMessage} index={index} messageState={myChat.messageState}/>
+                            {myChat.lastMessage && <LastMessage sender={myChat.senderId} messageType={myChat.messageType} message={myChat.lastMessage} index={index} messageState={myChat.messageState}/>}
                             { (myChat.unreadMessageCount || myChat.tagged) && <UnRead unReadMessages={myChat.unreadMessageCount} tag={myChat.tagged}/>}
                             <Info index={index} group={myChat.group}/>
                         </div>

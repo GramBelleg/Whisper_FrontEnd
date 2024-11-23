@@ -73,7 +73,7 @@ const ChatMessage = ({ message, onDelete, onReply }) => {
 
 
     const renderMessageContent = useMemo(() => {
-        switch (message.type) {
+        switch (message.type.toLowerCase()) {
             case messageTypes.TEXT:
                 return (
                     <div className="message-text" style={{ whiteSpace: 'pre-line' }}>
