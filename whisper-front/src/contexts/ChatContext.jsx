@@ -112,7 +112,6 @@ export const ChatProvider = ({ children }) => {
             messageId: messsageId,
             duration: durtaion,
         });
-        // TODO: add to indexed DB
     }
 
     const unPinMessage = (messsageId) => {
@@ -120,7 +119,6 @@ export const ChatProvider = ({ children }) => {
             chatId: currentChat.id,
             messageId: messsageId,
         });
-        // TODO: remove from IndexedDB
     }
 
     const handleReceiveMessage = async (messageData) => {
@@ -149,16 +147,25 @@ export const ChatProvider = ({ children }) => {
 
     const handlePinMessage = async (pinData) => {
         try {
-            console.log("hello  shdbhdbdj")
             const activeChat = currentChatRef.current; 
-            await db.pinMessage(pinData);
-            await db.updateMessagesForPinned(pinData.messageId);
-            const { messageId, chatId } = pinData;
 
-            if (activeChat && activeChat.id === chatId) {
+            const messagesForChat = await db.getMessagesForChat(pinData.chatId);
+            const messageToPin = messagesForChat.find(
+                (message) => message.id === pinData.pinnedMessage
+            );
+
+            if (!messageToPin) {
+                throw new Error(`Message with id ${pinData.pinnedMessage} not found in chat ${pinData.chatId}`);
+            }
+
+            await db.pinMessage({...pinData, content: messageToPin.content});
+            await db.updateMessagesForPinned(pinData.messageId);
+
+            if (activeChat && activeChat.id === pinData.chatId) {
                 const messageIndex = messages.findIndex(
-                    (message) => message.id === messageId
+                    (message) => message.id === pinData.pinnedMessage
                 );
+                console.log(messageIndex)
                 if (messageIndex !== -1) {
                     const updatedMessages = [...messages];
                     updatedMessages[messageIndex].isPinned = true
@@ -171,6 +178,7 @@ export const ChatProvider = ({ children }) => {
             console.error(error);
         }
     }
+
     const handleUnpinMessage = (pinData) => {
         const { messageId, chatId } = pinData;
         if (chatId === currentChat.id) {
@@ -191,7 +199,7 @@ export const ChatProvider = ({ children }) => {
     useEffect(() => {
         messagesSocket.onReceiveMessage(handleReceiveMessage);
         messagesSocket.onPinMessage(handlePinMessage);
-        messagesSocket.onPinMessage(handleUnpinMessage);
+        messagesSocket.onUnPinMessage(handleUnpinMessage);
     }, [messagesSocket]);
     
     
