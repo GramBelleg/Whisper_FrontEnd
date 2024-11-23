@@ -9,62 +9,135 @@ import EmailVerification from "./pages/EmailVerification";
 import GithubCallback from "./pages/GithubCallback";
 import FacebookCallback from "./pages/FacebookCallback";
 import { initializeMock } from './mocks/mock';
+import { useEffect, useState } from 'react';
+import LoadingData from './components/LoadingData/LoadingData';
+import { getChatsCleaned } from './services/chatservice/getChats';
+import { useWhisperDB } from './contexts/WhisperDBContext';
+import { getMessagesForChatCleaned, getPinnedMessagesForChat } from './services/chatservice/getMessagesForChat';
 
 function App() {
 
-  const { user, token } = useAuth();
-  if(import.meta.env.VITE_APP_USE_MOCKS === 'true') {
-    initializeMock();
-  }
-  return (
-    <div className="App">
-      <Router>
-      <Routes>
-        {user ? (
-          token && token !== 'undefined' ? (
-            user.role !== "admin" ? (
-              <>
-                <Route
-                  path="/"
-                  element={
-                    <SampleHome/>
-                  }
-                />
-                <Route path="/*" element={<Navigate to="/" />} />
-              </>
-            ) : (
-              <>
-                <Route path="/dashboard" element={<div>Dashboard</div>} />
-                <Route path="/" element={<Navigate to="/dashboard" />} />
-                <Route path="/*" element={<Navigate to="/dashboard" />} />
-              </>
-            )
-          ) : (
-            <>
-              <Route
-                path="/email-verification"
-                element={<EmailVerification />}
-              />
-              <Route
-                path="/*"
-                element={<Navigate to="/email-verification" />}
-              />
-            </>
-          )
-        ) : (
-          <>
-            <Route path="/login" element={<LoginPage />} />
-            <Route path="/signup" element={<SignupPage />} />
-            <Route path="/forgot-password" element={<ForgotPassword />} />
-            <Route path="/*" element={<Navigate to="/signup" />} />
-          </>
-        )}
-        <Route path="/github-callback" element={<GithubCallback />} />
-        <Route path="/facebook-callback" element={<FacebookCallback />} />
-      </Routes>
-    </Router>
-    </div>
-  );
-}
+    const { user, token } = useAuth();
+    const [loading, setLoading] = useState(true);
+    const { db } = useWhisperDB();
 
-export default App
+    if(import.meta.env.VITE_APP_USE_MOCKS === 'true') {
+        initializeMock();
+    }
+  
+    const loadChats = async () => {
+        let allChats = await getChatsCleaned();
+        if (db) {
+            db.insertChats(allChats);
+        }
+        console.log(allChats)
+    }
+
+    const loadMessages = async () => {
+        try {
+            const chats = await db.getChats()
+            for (let chat of chats) {
+                try {
+                    let messages = await getMessagesForChatCleaned(chat.id);
+                    if (messages.length > 0) {
+                        db.insertMessages(messages);
+                    }
+                } catch (error) {
+                    console.log(error.message);
+                }
+            }
+        } catch (error) {
+            console.log(error);
+        }
+      }
+
+    const loadPinnedMessages = async () => {
+        try {
+            const chats = await db.getChats();
+            for (let chat of chats) {
+                try {
+                    let messages = await getPinnedMessagesForChat(chat.id);
+                    if (messages.length > 0) {
+                        db.insertPinnedMessages(chat.id, messages);
+                    }
+                }
+                catch (error) {
+                    console.log(error.message);
+                }
+            }
+        } catch (error) {
+            console.log(error);
+        }
+    }
+      
+    useEffect(() => {
+        try { 
+            if (db) { 
+                loadChats();
+                loadMessages();
+                loadPinnedMessages();
+                setLoading(false);
+            }
+        } catch (error) {
+            console.error(error);
+        }
+    },[db]);
+
+    return (
+        <div className="App">
+            <Router>
+                <Routes>
+                {user ? (
+                    token && token !== 'undefined' ? (
+                        user.role !== "admin" ? (
+                        <>
+                            {
+                                !loading ? (
+                                    <Route
+                                        path="/"
+                                        element={<SampleHome/>}
+                                    />
+                                ) : (
+                                    <Route
+                                    path="/"
+                                    element={<LoadingData/>}
+                                    />
+                                )
+                            }
+                            <Route path="/*" element={<Navigate to="/" />} />
+                        </>
+                    ) : (
+                        <>
+                            <Route path="/dashboard" element={<div>Dashboard</div>} />
+                            <Route path="/" element={<Navigate to="/dashboard" />} />
+                            <Route path="/*" element={<Navigate to="/dashboard" />} />
+                        </>
+                    )
+                    ) : (
+                    <>
+                        <Route
+                            path="/email-verification"
+                            element={<EmailVerification />}
+                            />
+                        <Route
+                            path="/*"
+                            element={<Navigate to="/email-verification" />}
+                        />
+                    </>
+                )
+                ) : (
+                <>
+                    <Route path="/login" element={<LoginPage />} />
+                    <Route path="/signup" element={<SignupPage />} />
+                    <Route path="/forgot-password" element={<ForgotPassword />} />
+                    <Route path="/*" element={<Navigate to="/signup" />} />
+                </>
+                )}
+                <Route path="/github-callback" element={<GithubCallback />} />
+                <Route path="/facebook-callback" element={<FacebookCallback />} />
+            </Routes>
+        </Router>
+        </div>
+    );
+}
+export default App  ;
