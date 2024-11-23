@@ -223,6 +223,71 @@ class WhisperDB {
             throw new Error('Database connection is not initialized.');
         }
     }
+
+    async pinMessage(message) {
+        if (this.db != null) {
+            try {
+                const tx = this.db.transaction(['pinnedmessages'], 'readwrite'); // Include both stores in the transaction
+                const pinnedMessagesStore = tx.objectStore('pinnedmessages');    
+                // Insert the message into the 'messages' store
+                const messageRequest = pinnedMessagesStore.add(message);
+    
+                await new Promise((resolve, reject) => {
+                    messageRequest.onsuccess = () => resolve();
+                    messageRequest.onerror = () => reject(messageRequest.error);
+                });
+
+                await tx.complete; // Ensure the transaction completes successfully
+                console.log('Pinned Message inserted successfully.');
+            } catch (error) {
+                console.error('Failed to insert pinned message:', error);
+                throw new Error('Failed to insert pinned message: ' + error.message);
+            }
+        } else {
+            throw new Error('Database connection is not initialized.');
+        }
+    }
+
+    async updateMessagesForPinned(id) {
+        if (this.db != null) {
+            try {
+                const tx = this.db.transaction('messages', 'readwrite');
+                const store = tx.objectStore('messages');
+    
+                // Fetch the message by its key (assuming the message object has a unique `id` as the keyPath)
+                const request = store.get(id);
+    
+                const existingMessage = await new Promise((resolve, reject) => {
+                    request.onsuccess = () => resolve(request.result);
+                    request.onerror = () => reject(request.error);
+                });
+    
+                if (existingMessage) {
+                    // Update the `pinned` property to true
+                    existingMessage.pinned = true;
+    
+                    const updateRequest = store.put(existingMessage);
+    
+                    await new Promise((resolve, reject) => {
+                        updateRequest.onsuccess = () => resolve();
+                        updateRequest.onerror = () => reject(updateRequest.error);
+                    });
+    
+                    console.log(`Message with id ${message.id} was successfully updated to pinned.`);
+                } else {
+                    throw new Error(`Message with id ${message.id} not found.`);
+                }
+    
+                await tx.complete;
+            } catch (error) {
+                console.error("Failed to update message as pinned:", error);
+                throw new Error("Failed to update message as pinned: " + error.message);
+            }
+        } else {
+            throw new Error("Database connection is not initialized.");
+        }
+    }
+    
     
 
 }

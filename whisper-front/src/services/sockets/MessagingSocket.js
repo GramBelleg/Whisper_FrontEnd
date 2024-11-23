@@ -16,6 +16,7 @@ class MessagingSocket extends Socket {
     }
 
     sendData(data) {
+        console.log("Sending data: ", data);
         this.socket.emit('message', data);
     }
 
