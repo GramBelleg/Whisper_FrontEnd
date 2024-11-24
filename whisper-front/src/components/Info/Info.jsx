@@ -2,6 +2,8 @@ import React, { useRef, useState, useEffect } from "react";
 import "./Info.css";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faChevronDown } from "@fortawesome/free-solid-svg-icons";
+import { useModal } from "@/contexts/ModalContext";
+import MuteDurationModal from "../MuteDurationModal/MuteDurationModal";
 
 const Info = ({ index, group, onMute, onUnMute, muted }) => {
 
@@ -9,7 +11,9 @@ const Info = ({ index, group, onMute, onUnMute, muted }) => {
     const dropdownRef = useRef(null); 
     const [dropdownPosition, setDropdownPosition] = useState("down");
     const [isVisible, setIsVisible] = useState(false);
-    
+    const { openModal, closeModal } = useModal();
+    const [ muteDuration, setMuteDuration ] = useState(null);
+    const [ clicked, setClicked ]= useState(false);
 
     const toggleDropdown = () => {
         setIsVisible(!isVisible);
@@ -33,6 +37,29 @@ const Info = ({ index, group, onMute, onUnMute, muted }) => {
         }
     };
 
+    const handleMute = () => {
+        openModal(
+            <MuteDurationModal
+                setMuteDuration={setMuteDuration}
+                onClose={closeModal}
+                setClicked={setClicked}
+            />
+        );
+    }
+
+    useEffect(() => {
+        if (clicked) {
+            setClicked(false);
+            if (muteDuration) {
+                onMute(0);
+            }
+            setMuteDuration(null);
+        }
+        console.log(muteDuration)
+
+       
+    }, [clicked, muteDuration])
+
     useEffect(() => {
         if (isVisible) {
             handlePositioning();
@@ -46,6 +73,10 @@ const Info = ({ index, group, onMute, onUnMute, muted }) => {
             window.removeEventListener("resize", handleResize);
         };
     }, [isVisible]);
+
+    useEffect(() => {
+        setMuteDuration(null);
+    }, [])
     
 
     return (
@@ -67,7 +98,7 @@ const Info = ({ index, group, onMute, onUnMute, muted }) => {
                     {
                         !muted ? (
                             <li
-                                onClick={() => { onMute(0) }}
+                                onClick={handleMute}
                                 >
                                     Mute notifications
                             </li>
