@@ -128,7 +128,7 @@ class WhisperDB {
                     request.onsuccess = () => resolve(request.result); 
                     request.onerror = () => reject(request.error); 
                 });
-                return messages;
+                return messages.reverse();
             } catch (error) {
                 throw new Error("Failed to get messages from indexed db: " + error.message);
             }
@@ -148,7 +148,7 @@ class WhisperDB {
                     request.onsuccess = () => resolve(request.result); 
                     request.onerror = () => reject(request.error); 
                 });
-                return messages;
+                return messages.reverse();
             } catch (error) {
                 throw new Error("Failed to get messages from indexed db: " + error.message);
             }
@@ -157,7 +157,6 @@ class WhisperDB {
         }
     }
     
-
     async getChats() {
         if (this.db != null) {
             try {
@@ -176,7 +175,6 @@ class WhisperDB {
             throw new Error("Database connection is not initialized.");
         }
     }
-
 
     async insertMessage(message) {
         if (this.db != null) {
@@ -277,7 +275,6 @@ class WhisperDB {
             try {
                 const tx = this.db.transaction('messages', 'readwrite');
                 const store = tx.objectStore('messages');
-    
                 const request = store.get(id);
     
                 const existingMessage = await new Promise((resolve, reject) => {
@@ -287,9 +284,7 @@ class WhisperDB {
     
                 if (existingMessage) {
                     existingMessage.pinned = true;
-    
                     const updateRequest = store.put(existingMessage);
-    
                     await new Promise((resolve, reject) => {
                         updateRequest.onsuccess = () => resolve();
                         updateRequest.onerror = () => reject(updateRequest.error);
@@ -339,6 +334,74 @@ class WhisperDB {
             }
         } else {
             throw new Error("Database connection is not initialized.");
+        }
+    }
+
+    async muteNotifications(chatId) {
+        if (this.db != null) {
+            try {
+                const tx = this.db.transaction('chats', 'readwrite');
+                const store = tx.objectStore('chats');
+                console.log(chatId)
+                const request = store.get(chatId);
+    
+                const existingChat = await new Promise((resolve, reject) => {
+                    request.onsuccess = () => resolve(request.result);
+                    request.onerror = () => reject(request.error);
+                });
+    
+                if (existingChat) {
+                    existingChat.muted = true;
+                    const updateRequest = store.put(existingChat);
+                    await new Promise((resolve, reject) => {
+                        updateRequest.onsuccess = () => resolve();
+                        updateRequest.onerror = () => reject(updateRequest.error);
+                    });
+    
+                    console.log(`chat with id ${chatId} was successfully updated to muted.`);
+                } else {
+                    throw new Error(`Chat with id ${chatId} not found.`);
+                }
+    
+                await tx.complete;
+            } catch (error) {
+                throw new Error("Failed to update message as muted: " + error.message);
+            }
+        } else {
+            throw new Error('Database connection is not initialized.');
+        }
+    }
+
+    async unMuteNotifications(chatId) {
+        if (this.db != null) {
+            try {
+                const tx = this.db.transaction('chats', 'readwrite');
+                const store = tx.objectStore('chats');
+                const request = store.get(chatId);
+    
+                const existingChat = await new Promise((resolve, reject) => {
+                    request.onsuccess = () => resolve(request.result);
+                    request.onerror = () => reject(request.error);
+                });
+    
+                if (existingChat) {
+                    existingChat.muted = false;
+                    const updateRequest = store.put(existingChat);
+                    await new Promise((resolve, reject) => {
+                        updateRequest.onsuccess = () => resolve();
+                        updateRequest.onerror = () => reject(updateRequest.error);
+                    });
+                    console.log(`chat with id ${chatId} was successfully updated to unmuted.`);
+                } else {
+                    throw new Error(`Chat with id ${chatId} not found.`);
+                }
+    
+                await tx.complete;
+            } catch (error) {
+                throw new Error("Failed to update message as unmuted: " + error.message);
+            }
+        } else {
+            throw new Error('Database connection is not initialized.');
         }
     }
 }
