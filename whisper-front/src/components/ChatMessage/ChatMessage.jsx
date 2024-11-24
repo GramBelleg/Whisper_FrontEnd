@@ -44,7 +44,7 @@ const ChatMessage = ({ message, onDelete, onReply }) => {
     }
 
     const handlePin = () => {
-        pinMessage(message.id, 0);
+        pinMessage(message.id);
     }
 
     const handleUnPin = () => {
@@ -88,7 +88,7 @@ const ChatMessage = ({ message, onDelete, onReply }) => {
             default:
                 return null
         }
-    }, [message.type, message.content])
+    }, [message])
 
     return (
         <div

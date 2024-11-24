@@ -9,7 +9,7 @@ export const ChatContext = createContext();
 
 export const ChatProvider = ({ children }) => {
     const [currentChat, setcurrentChat] = useState(null);
-    const [messages, setMessages] = useState([]);// TODO: handle from back
+    const [messages, setMessages] = useState([]);
     const [pinnedMessages, setPinnedMessages] = useState([]);
     const [parentMessage, setParentMessage] = useState(null);
     const [sending, setSending] = useState(false);
@@ -27,7 +27,6 @@ export const ChatProvider = ({ children }) => {
             const myMessages = await db.getMessagesForChat(id);
             setMessages(myMessages);
         } catch (error) {
-            setMessages([]);
             console.log(error);
         }
     }
@@ -37,7 +36,6 @@ export const ChatProvider = ({ children }) => {
             const myPinnedMessages = await db.getPinnedMessagesForChat(id);
             setPinnedMessages(myPinnedMessages);
         } catch (error) {
-            setPinnedMessages([]);
             console.log(error);
         }
     }
@@ -47,6 +45,9 @@ export const ChatProvider = ({ children }) => {
             // TODO: handle with back
             loadMessages(currentChat.id);
             loadPinnedMessages(currentChat.id);
+        } else {
+            setMessages([]);
+            setPinnedMessages([]);
         }
         currentChatRef.current = currentChat;
     }, [currentChat]);
@@ -62,7 +63,7 @@ export const ChatProvider = ({ children }) => {
             type:type.toUpperCase(),
             sentAt : new Date().toISOString(),
             media: "",
-            //extension:"",
+            // extension:"",
             parentMessageId: null,
             forwardedFromUserId: null,
             mentions:[],
@@ -106,7 +107,7 @@ export const ChatProvider = ({ children }) => {
     const clearParentMessage = () => {
         setParentMessage(null);
     };  
-    const pinMessage = (messsageId, durtaion) => {
+    const pinMessage = (messsageId, durtaion = 0) => {
         messagesSocket.pinMessage({
             chatId: currentChat.id,
             messageId: messsageId,
@@ -123,23 +124,10 @@ export const ChatProvider = ({ children }) => {
 
     const handleReceiveMessage = async (messageData) => {
         try {
-            const activeChat = currentChatRef.current; // Get the latest value of currentChat
+            const activeChat = currentChatRef.current; 
             await db.insertMessage({ ...mapMessage(messageData), read: false, delivered: false });
     
-            setMessages((prevMessages) => {
-                if (activeChat && activeChat.id === messageData.chatId) {
-                    const messageIndex = prevMessages.findIndex(
-                        (message) => message.sentAt === messageData.sentAt
-                    );
-    
-                    if (messageIndex !== -1) {
-                        const updatedMessages = [...prevMessages];
-                        updatedMessages[messageIndex] = { ...mapMessage(messageData) };
-                        return updatedMessages;
-                    }
-                }
-                return prevMessages;
-            });
+            loadMessages(activeChat.id);
         } catch (error) {
             console.error(error);
         }
@@ -148,7 +136,6 @@ export const ChatProvider = ({ children }) => {
     const handlePinMessage = async (pinData) => {
         try {
             const activeChat = currentChatRef.current; 
-
             const messagesForChat = await db.getMessagesForChat(pinData.chatId);
             const messageToPin = messagesForChat.find(
                 (message) => message.id === pinData.pinnedMessage
@@ -156,56 +143,68 @@ export const ChatProvider = ({ children }) => {
 
             if (!messageToPin) {
                 throw new Error(`Message with id ${pinData.pinnedMessage} not found in chat ${pinData.chatId}`);
-            }
+            }   
 
-            await db.pinMessage({...pinData, content: messageToPin.content});
-            await db.updateMessagesForPinned(pinData.messageId);
-
-            if (activeChat && activeChat.id === pinData.chatId) {
-                const messageIndex = messages.findIndex(
-                    (message) => message.id === pinData.pinnedMessage
-                );
-                console.log(messageIndex)
-                if (messageIndex !== -1) {
-                    const updatedMessages = [...messages];
-                    updatedMessages[messageIndex].isPinned = true
-                    setMessages(updatedMessages);
-                    setPinnedMessages([...pinnedMessages, pinData]);
-                }
+            try {
+                await db.pinMessage({...pinData, content: messageToPin.content});
+            } catch(error) {
+                throw error;
             }
-        
+            
+            try {
+                await db.updateMessagesForPinned(pinData.pinnedMessage);
+            } catch(error) {
+                throw error;
+            }
+            loadMessages(activeChat.id);
+            loadPinnedMessages(activeChat.id);
         } catch (error) {
             console.error(error);
         }
     }
 
-    const handleUnpinMessage = (pinData) => {
-        const { messageId, chatId } = pinData;
-        if (chatId === currentChat.id) {
-            const messageIndex = messages.findIndex(
-                (message) => message.id === messageId
+    const handleUnpinMessage = async (pinData) => {
+        try {
+            const activeChat = currentChatRef.current; 
+            const messagesForChat = await db.getMessagesForChat(pinData.chatId);
+            const messageToPin = messagesForChat.find(
+                (message) => message.id === pinData.unpinnedMessage
             );
-            if (messageIndex !== -1) {
-                const updatedMessages = [...messages];
-                updatedMessages[messageIndex].isPinned = false
-                setMessages(updatedMessages);
-                setPinnedMessages(pinnedMessages.filter((pin) => pin.id !== pinData.id));
+
+            if (!messageToPin) {
+                throw new Error(`Message with id ${pinData.unpinnedMessage} not found in chat ${pinData.chatId}`);
+            } 
+            try {
+                await db.unPinMessage(messageToPin.id);
+            } catch(error) {
+                throw error;
             }
-        } else {
-            // TODO: save to indexedDB
+
+            try {
+                await db.updateMessagesForUnPinned(messageToPin.id);
+            } catch(error) {
+                throw error;
+            }   
+
+            loadMessages(activeChat.id);
+            loadPinnedMessages(activeChat.id);
+        } catch (error) {
+            console.error(error);
         }
     }
 
     useEffect(() => {
-        messagesSocket.onReceiveMessage(handleReceiveMessage);
-        messagesSocket.onPinMessage(handlePinMessage);
-        messagesSocket.onUnPinMessage(handleUnpinMessage);
+        if(messagesSocket) {
+            messagesSocket.onReceiveMessage(handleReceiveMessage);
+            messagesSocket.onPinMessage(handlePinMessage);
+            messagesSocket.onUnPinMessage(handleUnpinMessage);
+        }
     }, [messagesSocket]);
-    
-    
+
+    useEffect(() => {
+    }, [messages, pinnedMessages]);
 
     return (
-        
         <ChatContext.Provider
             value={{
                 currentChat,
