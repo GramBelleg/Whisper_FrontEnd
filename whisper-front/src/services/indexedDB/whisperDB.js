@@ -184,8 +184,6 @@ class WhisperDB {
                 const tx = this.db.transaction(['messages', 'chats'], 'readwrite'); // Include both stores in the transaction
                 const messageStore = tx.objectStore('messages');
                 const chatStore = tx.objectStore('chats');
-    
-                // Insert the message into the 'messages' store
                 const messageRequest = messageStore.add(message);
     
                 await new Promise((resolve, reject) => {
@@ -193,7 +191,6 @@ class WhisperDB {
                     messageRequest.onerror = () => reject(messageRequest.error);
                 });
     
-                // Fetch the chat object by chatId
                 const chatRequest = chatStore.get(message.chatId);
                 const chat = await new Promise((resolve, reject) => {
                     chatRequest.onsuccess = () => resolve(chatRequest.result);
@@ -229,7 +226,6 @@ class WhisperDB {
             try {
                 const tx = this.db.transaction(['pinnedmessages'], 'readwrite'); // Include both stores in the transaction
                 const pinnedMessagesStore = tx.objectStore('pinnedmessages');    
-                // Insert the message into the 'messages' store
                 
                 const messageRequest = pinnedMessagesStore.add({
                     messageId: message.pinnedMessage,
@@ -242,11 +238,34 @@ class WhisperDB {
                     messageRequest.onerror = () => reject(messageRequest.error);
                 });
 
-                await tx.complete; // Ensure the transaction completes successfully
+                await tx.complete; 
                 console.log('Pinned Message inserted successfully.');
             } catch (error) {
                 console.error('Failed to insert pinned message:', error);
                 throw new Error('Failed to insert pinned message: ' + error.message);
+            }
+        } else {
+            throw new Error('Database connection is not initialized.');
+        }
+    }
+
+    async unPinMessage(messageId) {
+        if (this.db != null) {
+            try {
+                const tx = this.db.transaction(['pinnedmessages'], 'readwrite'); 
+                const pinnedMessagesStore = tx.objectStore('pinnedmessages');    
+                const messageRequest = pinnedMessagesStore.delete(messageId);
+    
+                await new Promise((resolve, reject) => {
+                    messageRequest.onsuccess = () => resolve();
+                    messageRequest.onerror = () => reject(messageRequest.error);
+                });
+
+                await tx.complete; 
+                console.log('Message unpinned from Indexed successfully.');
+            } catch (error) {
+                console.error('Failed to unpin message:', error);
+                throw new Error('Failed to unpin message: ' + error.message);
             }
         } else {
             throw new Error('Database connection is not initialized.');
@@ -259,7 +278,6 @@ class WhisperDB {
                 const tx = this.db.transaction('messages', 'readwrite');
                 const store = tx.objectStore('messages');
     
-                // Fetch the message by its key (assuming the message object has a unique `id` as the keyPath)
                 const request = store.get(id);
     
                 const existingMessage = await new Promise((resolve, reject) => {
@@ -268,7 +286,6 @@ class WhisperDB {
                 });
     
                 if (existingMessage) {
-                    // Update the `pinned` property to true
                     existingMessage.pinned = true;
     
                     const updateRequest = store.put(existingMessage);
@@ -278,23 +295,52 @@ class WhisperDB {
                         updateRequest.onerror = () => reject(updateRequest.error);
                     });
     
-                    console.log(`Message with id ${message.id} was successfully updated to pinned.`);
+                    console.log(`Message with id ${id} was successfully updated to pinned.`);
                 } else {
-                    throw new Error(`Message with id ${message.id} not found.`);
+                    throw new Error(`Message with id ${id} not found.`);
                 }
     
                 await tx.complete;
             } catch (error) {
-                console.error("Failed to update message as pinned:", error);
                 throw new Error("Failed to update message as pinned: " + error.message);
             }
         } else {
             throw new Error("Database connection is not initialized.");
         }
     }
-    
-    
 
+    async updateMessagesForUnPinned(id) {
+        if (this.db != null) {
+            try {
+                const tx = this.db.transaction('messages', 'readwrite');
+                const store = tx.objectStore('messages');
+                const request = store.get(id);
+    
+                const existingMessage = await new Promise((resolve, reject) => {
+                    request.onsuccess = () => resolve(request.result);
+                    request.onerror = () => reject(request.error);
+                });
+    
+                if (existingMessage) {
+                    existingMessage.pinned = false;
+                    const updateRequest = store.put(existingMessage);
+                    await new Promise((resolve, reject) => {
+                        updateRequest.onsuccess = () => resolve();
+                        updateRequest.onerror = () => reject(updateRequest.error);
+                    });
+                    console.log(`Message with id ${id} was successfully updated to unpinned.`);
+                } else {
+                    throw new Error(`Message with id ${id} not found.`);
+                }
+    
+                await tx.complete;
+            } catch (error) {
+                throw new Error("Failed to update message as unpinned: " + error.message);
+            }
+        } else {
+            throw new Error("Database connection is not initialized.");
+        }
+    }
 }
 
 export default WhisperDB;
