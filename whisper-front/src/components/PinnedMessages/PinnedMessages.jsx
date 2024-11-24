@@ -8,7 +8,7 @@ const PinnedMessages = ({ onGoToMessage }) => {
     const [activeIndex, setActiveIndex] = useState(0);
     const [isDropdownOpen, setIsDropdownOpen] = useState(false);
     const dropdownRef = useRef(null);
-    const { messagesSocket, pinnedMessages, unPinMessage } = useChat();
+    const { pinnedMessages, unPinMessage } = useChat();
 
     const handleNextMessage = () => {
         setActiveIndex((prevIndex) => (prevIndex + 1) % pinnedMessages.length);
