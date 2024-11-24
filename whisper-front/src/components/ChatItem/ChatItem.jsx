@@ -12,12 +12,15 @@ import "./ChatItem.css";
 import { whoAmI } from "../../services/chatservice/whoAmI";
 import PendingSend from "../PendingSend/PendingSend";
 import { useChat } from "@/contexts/ChatContext";
+import { muteChat, unMuteChat } from "@/services/chatservice/muteUnmuteChat";
+import { useWhisperDB } from "@/contexts/WhisperDBContext";
 
 
-const ChatItem = ({ index, standaloneChat }) => {
+const ChatItem = ({ index, standaloneChat, setAction }) => {
+
+    const { db } = useWhisperDB();
 
     const maxLength = (
-        
         (standaloneChat.muted) ? 33 : 
         (standaloneChat.name === whoAmI.name) ? 30 : 15
     )
@@ -68,9 +71,46 @@ const ChatItem = ({ index, standaloneChat }) => {
         }
     };
 
-    // Use Effect that renders on change in the coming object
+    const handleMute = async (duration = 0) => {
+        try {
+            await muteChat(standaloneChat.id, {
+                type: standaloneChat.type,
+                isMuted: true,
+                duration: duration
+            });
+
+            try {
+                await db.muteNotifications(standaloneChat.id);
+            } catch (error) {
+                console.error(error);
+            }
+            setAction(true);
+        } catch (error) {
+            console.log(error);
+        }
+    }
+
+    const handleUnMute = async (duration = 0) => {
+        try {
+            await unMuteChat(standaloneChat.id, {
+                type: standaloneChat.type,
+                isMuted: false,
+                duration: duration
+            });
+
+            try {
+                await db.unMuteNotifications(standaloneChat.id);
+            } catch (error) {
+                console.error(error);
+            }
+            setAction(true);
+        } catch (error) {
+            console.log(error);
+        }
+    }
+
+
     useEffect(() => {
-        // Update chat state from standaloneChat
         setMyChat((prevChat) => ({
             ...prevChat,
             ...standaloneChat,
@@ -78,8 +118,7 @@ const ChatItem = ({ index, standaloneChat }) => {
             name: trimName(standaloneChat.name)
         }));
 
-        console.log(standaloneChat)
-        // Check for overflow when the name changes
+        console.log("Hello from chat", standaloneChat)
         const checkOverflow = () => {
             if (userNameRef.current) {
                 const { scrollWidth, clientWidth } = userNameRef.current;
@@ -87,13 +126,13 @@ const ChatItem = ({ index, standaloneChat }) => {
             }
         };
 
-        checkOverflow(); // Initial check
-        window.addEventListener("resize", checkOverflow); // Check on resize
+        checkOverflow(); 
+        window.addEventListener("resize", checkOverflow); 
 
         return () => {
-            window.removeEventListener("resize", checkOverflow); // Cleanup
+            window.removeEventListener("resize", checkOverflow); 
         };
-    }, [standaloneChat]); // Dependencies
+    }, [standaloneChat]); 
 
     return ( 
         <div data-testid="chat-item" className="single-chat" onClick={handleClick}>
@@ -141,7 +180,13 @@ const ChatItem = ({ index, standaloneChat }) => {
                         <div className="messaging-info">
                             {myChat.lastMessage && <LastMessage sender={myChat.senderId} messageType={myChat.messageType} message={myChat.lastMessage} index={index} messageState={myChat.messageState}/>}
                             { (myChat.unreadMessageCount || myChat.tagged) && <UnRead unReadMessages={myChat.unreadMessageCount} tag={myChat.tagged}/>}
-                            <Info index={index} group={myChat.group}/>
+                            <Info 
+                                index={index} 
+                                group={myChat.group} 
+                                muted={myChat.muted}
+                                onMute={handleMute}
+                                onUnMute={handleUnMute}
+                            />
                         </div>
                     </div>
                 </div>
