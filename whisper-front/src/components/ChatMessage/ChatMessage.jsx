@@ -57,7 +57,6 @@ const ChatMessage = ({ message, onDelete, onReply }) => {
 
     const messageTime = useMemo(() => {
         // Assuming message.time is "2024-11-01 18:24:00"
-        console.log(message.time)
         const date = new Date(message.time);
         let hours = date.getHours();
         let minutes = date.getMinutes();

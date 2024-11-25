@@ -16,7 +16,6 @@ const SingleChatSection = () => {
         return (<NoChatOpened />);
     }
     useEffect(() => {
-
     }, [pinnedMessages])
     
     return (
