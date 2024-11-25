@@ -14,7 +14,7 @@ export const getChatsAPI = async () => {
 
         // const chats = await axiosInstance.get('/chats');
 
-        console.log(chats.data);
+        console.log(chats);
 
         return chats.data;
     } catch (error) {
@@ -55,6 +55,7 @@ export const mapMessageState = ( read, delivered ) => {
                 name: chat.name, 
                 type: chat.type, 
                 lastMessage: chat.lastMessage ? chat.lastMessage.content: null, 
+                drafted: chat.lastMessage ? chat.lastMessage.drafted : false,
                 messageTime: chat.lastMessage ? chat.lastMessage.sentAt?.slice(0, 19).replace("T", " "): null,  
                 // forwarded: false, // TODO: to be removed
                 senderId: chat.lastMessage? chat.lastMessage.sender.id : null,  

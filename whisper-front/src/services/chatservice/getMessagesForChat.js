@@ -57,7 +57,7 @@ export const mapMessage = (message) => {
         
         sender: message.sender.userName,
         senderId: message.sender.id, 
-        profilePic: noUser, 
+        profilePic: noUser,
         
         // TODO: See comments
     }
