@@ -27,20 +27,9 @@ const ChatActions = () => {
 
     const showSendIcon = useMemo(() => isTyping || isRecording, [isTyping, isRecording])
 
-    const handleGifAttach = async (gifObject) => {
-        try {
-            const response = await fetch(gifObject.url);
-            const blob = await response.blob();
-            
-            const file = new File([blob], `${gifObject.id}.gif`, { type: 'image/gif' });
-            console.log("gif" ,file)
-            setAttachedFile(file);
-            setAttachmentType(1);
-            return file;
-          } catch (error) {
-            console.error("Error converting GIF to File:", error);
-            return null;
-          }
+    const handleGifAttach = (gifFile) => {
+        setAttachedFile(gifFile);
+        setAttachmentType(1);
     }
 
     const handleStickerAttach = (url) => {
