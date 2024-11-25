@@ -11,7 +11,7 @@ import { useModal } from '@/contexts/ModalContext';
 const StoriesTab = ({
     loading,
     error,
-    data,
+    stories,
     scrollContainerRef,
     showLeftArrow,
     showRightArrow,
@@ -97,18 +97,18 @@ const StoriesTab = ({
                       <span className="story-user">{whoAmI.name}</span>
                     </li>
 
-                    {data?.map((story) => (
+                    {stories?.map((story, index) => (
                       <li
-                        key={story.userId}
+                        key={index + 2}
                         className="story-item"
                       >
-                        <div className={`profile-picture ${story.seen ? '' : 'unseen'}`}>
+                        <div className={`profile-picture ${false ? '' : 'unseen'}`}>
                           <img
-                            src={story.profilePicture}
-                            alt={`${story.user}'s profile`}
+                            src={story.profilePic}
+                            alt={`${story.userName}'s profile`}
                           />
                         </div>
-                        <span className="story-user">{story.user}</span>
+                        <span className="story-user">{story.userName}</span>
                       </li>
                     ))}
                     {showRightArrow && (
