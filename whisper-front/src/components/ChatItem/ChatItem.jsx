@@ -57,6 +57,7 @@ const ChatItem = ({ index, standaloneChat, setAction }) => {
         story: false,
         othersId: -1,
         profilePic: '',
+        drafted:false
     });
 
     const { selectChat } = useChat();
@@ -66,7 +67,6 @@ const ChatItem = ({ index, standaloneChat, setAction }) => {
         // Check if the click is on the Info component
         const infoElement = e.target.closest('.info'); // Assuming .info-component is the class for the Info component
         if (!infoElement) {
-
             selectChat(myChat);
         }
     };
@@ -118,7 +118,6 @@ const ChatItem = ({ index, standaloneChat, setAction }) => {
             name: trimName(standaloneChat.name)
         }));
 
-        console.log("Hello from chat", standaloneChat)
         const checkOverflow = () => {
             if (userNameRef.current) {
                 const { scrollWidth, clientWidth } = userNameRef.current;
@@ -164,10 +163,10 @@ const ChatItem = ({ index, standaloneChat, setAction }) => {
                             <div className="ticks-info">
                                 <div className="tick">
                                 {
-                                        myChat.messageState === 0  && <SentTicks data-testid="sent-tick"/> || 
-                                        myChat.messageState ==  1 && <DeliveredTicks data-testid="delivered-tick"/> || 
-                                        myChat.messageState ==  2 && <ReadTicks data-testid="read-tick"/> || 
-                                        myChat.messageState ==  4 && <PendingSend data-testid="pending-tick"/>  
+                                        ( myChat.messageState && myChat.messageState === 0 ) && <SentTicks data-testid="sent-tick"/> || 
+                                        ( myChat.messageState && myChat.messageState === 1 ) && <DeliveredTicks data-testid="delivered-tick"/> || 
+                                        ( myChat.messageState && myChat.messageState === 2 ) && <ReadTicks data-testid="read-tick"/> || 
+                                        ( myChat.messageState && myChat.messageState === 4 ) && <PendingSend data-testid="pending-tick"/>  
                                 } 
                                 </div>
                                 <div className="message-time">
@@ -178,7 +177,7 @@ const ChatItem = ({ index, standaloneChat, setAction }) => {
                             </div>
                         </div>
                         <div className="messaging-info">
-                            {myChat.lastMessage && <LastMessage sender={myChat.senderId} messageType={myChat.messageType} message={myChat.lastMessage} index={index} messageState={myChat.messageState}/>}
+                            { myChat.lastMessage && <LastMessage myChat={myChat} index={index}/>}
                             { (myChat.unreadMessageCount || myChat.tagged) && <UnRead unReadMessages={myChat.unreadMessageCount} tag={myChat.tagged}/>}
                             <Info 
                                 index={index} 
