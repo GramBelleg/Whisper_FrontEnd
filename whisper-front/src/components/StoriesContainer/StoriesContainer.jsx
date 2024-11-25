@@ -1,19 +1,30 @@
 import StoriesTab from './StoriesTab';
 import React, { useRef, useState, useEffect } from "react";
-import useFetch from '../../services/useFetch';
 import { useModal } from '@/contexts/ModalContext';
-import { getMyStories, getUsersWithStoriesCleaned } from '@/services/storiesservice/getStories';
-import MyStoriesList from '../MyStoriesList/MyStoriesList';
+import StoriesList from '../StoriesList/StoriesList';
 import AddNewStoryModal from '../AddNewStoryModal/AddNewStoryModal';
+import { getUsersWithStoriesCleaned } from '@/services/storiesservice/getStories';
+import { whoAmI } from '@/services/chatservice/whoAmI';
+import { StoriesProvider, useStories } from '@/contexts/StoryContext';
 
 export default function StoriesContainer() {
     const scrollContainerRef = useRef(null);
     const [showLeftArrow, setShowLeftArrow] = useState(false);
     const [showRightArrow, setShowRightArrow] = useState(true);
-    const [myStories, setMyStories] = useState([]);
     const [userStories, setUserStories] = useState([])
-
     const { openModal, closeModal } = useModal();
+    const { selectUser, stories } = useStories();
+    
+
+    const getStories = async () => {
+        try {
+            const data = await getUsersWithStoriesCleaned();
+            setUserStories(data);
+            console.log("Getting stories", data)
+        } catch (error) {
+            console.log(error);
+        }
+    }
 
     const handleScroll = () => {
         if (scrollContainerRef.current) {
@@ -23,18 +34,7 @@ export default function StoriesContainer() {
         }
     };
 
-    const fetchMyStories = async () => {
-        try {
-            const data = await getMyStories();
-            console.log(data);
-            setMyStories(data);
-        } catch (error) {
-            console.log(error);
-        }
-    };
-
     useEffect(() => {
-        fetchMyStories();
         getStories();
     }, []);
 
@@ -70,35 +70,39 @@ export default function StoriesContainer() {
                 />)
         }
     }
-    const handleMyStoryClick = (file, filePreview) => {
-        if (myStories.length > 0) {
-            openModal(<MyStoriesList 
-                        incomingStories={myStories} 
-                        onClose={closeModal} 
-                        handleAddStory={handleAddStory}
-                        handleDeleteStory={fetchMyStories}
-                    />);
+
+    const handleMyStoryClick = (file = null, filePreview = null) => {
+        if (whoAmI.hasStory) {
+            openModal(
+                <StoriesProvider>
+                    <StoriesList
+                        onClose={closeModal}
+                        handleAddStory={() => {}}
+                        handleDeleteStory={() => {}}
+                    />
+                </StoriesProvider>
+            );
         } else {   
             handleAddStory(file, filePreview);
-            
         }
     };
 
-   
-    // const { data, error, loading } = useFetch('/stories'); TODO: handle others stories
-
-    const getStories = async () => {
-        try {
-            const data = await getUsersWithStoriesCleaned();
-            setUserStories(data);
-            console.log(data)
-        } catch (error) {
-
-        }
+    const handleStoryClick = (user) => {
+        selectUser(user);
+        openModal(
+            <StoriesList
+                onClose={closeModal}
+                handleAddStory={() => {}}
+                handleDeleteStory={() => {}}
+            />
+        );
     }
+
+    useEffect(() => {}, [stories]);
+   
     return (
             <StoriesTab
-                error={new Error("")}
+                error={null}
                 loading={false}
                 stories={userStories}
                 showLeftArrow={showLeftArrow}
@@ -106,8 +110,8 @@ export default function StoriesContainer() {
                 scrollContainerRef={scrollContainerRef}
                 scrollLeft={scrollLeft}
                 scrollRight={scrollRight}
+                handleStoryClick={handleStoryClick}
                 handleMyStoryClick={handleMyStoryClick}
-                myStoriesLength={myStories?.length}
             />
     );
 }

@@ -17,8 +17,8 @@ const StoriesTab = ({
     showRightArrow,
     scrollLeft,
     scrollRight,
-    handleMyStoryClick,
-    myStoriesLength,
+    handleStoryClick,
+    handleMyStoryClick
 }) => {
 
     const { openModal, closeModal } = useModal();
@@ -26,7 +26,7 @@ const StoriesTab = ({
     
     useEffect(() => {
       console.log("hello from Stories tab")
-    }, [myStoriesLength])
+    }, [whoAmI.hasStory])
     // Reference to the hidden file input element
     const fileInputRef = useRef(null);
 
@@ -88,7 +88,7 @@ const StoriesTab = ({
                             alt={`${whoAmI.name}'s profile`}
                           />
                         </div>
-                        {myStoriesLength === 0 && (
+                        {!whoAmI.hasStory && (
                           <div className="plus-icon-container" onClick={handlePlusIconClick}>
                             <FontAwesomeIcon icon={faPlus} className="plus-icon" />
                           </div>
@@ -101,6 +101,7 @@ const StoriesTab = ({
                       <li
                         key={index + 2}
                         className="story-item"
+                        onClick={() => handleStoryClick(story)}
                       >
                         <div className={`profile-picture ${false ? '' : 'unseen'}`}>
                           <img
