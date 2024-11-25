@@ -1,0 +1,71 @@
+
+/* StoriesList.css */
+
+.my-stories-container {
+    position: relative;
+    width: 900px;
+    margin: 0 auto;
+}
+
+.story-wrapper::-webkit-scrollbar {
+    display: none; /* For Chrome, Safari, and Edge */
+}
+
+.story-wrapper {
+    position: relative;
+    aspect-ratio: 1 / 1;
+    width: 100%;
+    background-color: rgba(0, 0, 0, 0.1);
+    border-radius: 0.5rem;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    overflow: hidden;
+    scrollbar-width: none; /* For Firefox */
+    -ms-overflow-style: none; /* For Internet Explorer and Edge */
+}
+
+.story-content {
+    position: absolute;
+    inset: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.nav-button {
+    padding: 0.5rem;
+    border-radius: 9999px;
+    background-color: rgba(0, 0, 0, 0.2);
+    color: white;
+    transition: background-color 0.3s;
+}
+
+.nav-button:hover {
+    background-color: rgba(0, 0, 0, 0.4);
+}
+
+.indicators-container {
+    position: absolute;
+    top: 1rem;
+    left: 0;
+    right: 0;
+    display: flex;
+    justify-content: center;
+    gap: 0.25rem;
+    padding: 0 1rem;
+}
+
+.indicator {
+    height: 0.25rem;
+    border-radius: 9999px;
+    transition: all 0.3s;
+}
+
+.indicator-active {
+    background-color: white;
+    width: 2rem;
+}
+
+.indicator-inactive {
+    background-color: rgba(255, 255, 255, 0.4);
+    width: 1rem;
+}
