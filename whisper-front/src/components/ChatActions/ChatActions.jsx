@@ -9,6 +9,8 @@ import { messageTypes } from '@/services/sendTypeEnum'
 import ParentMessage from '../ParentMessage/ParentMessage'
 import { useChat } from '@/contexts/ChatContext'
 import useFetch from '@/services/useFetch'
+import CustomStickersPicker from '../CustomStickersPicker/CustomStickersPicker'
+import UnifiedPicker from '../UnifiedPicker/UnifiedPicker'
 
 const ChatActions = () => {
     const [textMessage, setTextMessage] = useState('')
@@ -25,7 +27,25 @@ const ChatActions = () => {
 
     const showSendIcon = useMemo(() => isTyping || isRecording, [isTyping, isRecording])
 
-    
+    const handleGifAttach = async (gifObject) => {
+        try {
+            const response = await fetch(gifObject.url);
+            const blob = await response.blob();
+            
+            const file = new File([blob], `${gifObject.id}.gif`, { type: 'image/gif' });
+            console.log("gif" ,file)
+            setAttachedFile(file);
+            setAttachmentType(1);
+            return file;
+          } catch (error) {
+            console.error("Error converting GIF to File:", error);
+            return null;
+          }
+    }
+
+    const handleStickerAttach = (url) => {
+        sendMessage(messageTypes.IMAGE, url)
+    }
 
     const removeAttachment = () => {
         setAttachedFile(null);
@@ -159,6 +179,11 @@ const ChatActions = () => {
                             id="image-input" 
                             ref={imageInputRef}
                         />
+                        <UnifiedPicker
+                            onGifSelect={handleGifAttach}
+                            onStickerSelect={handleStickerAttach}
+                        />
+
                     </div>
 
                     {isRecording ? (
