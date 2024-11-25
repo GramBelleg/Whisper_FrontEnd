@@ -1,7 +1,5 @@
 import axios from "axios";
 
-
-
 export const muteChat = async (chatId, muteObject) => {
     try {
         const response = await axios.post(

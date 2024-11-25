@@ -2,6 +2,7 @@ import MessagesStore from "./MessagesStore";
 import ChatsStore from "./ChatsStore";
 import StoriesStore from "./StoriesStore";
 import { DB_CONFIG } from "./DBConfig";
+import { whoAmI } from "../chatservice/whoAmI";
 
 class WhisperDB {
     constructor() {
@@ -176,6 +177,28 @@ class WhisperDB {
         }
     }
 
+    async getDraftedMessage(chatId) {
+        if (this.db != null) {
+            try {
+                const tx = this.db.transaction('chats', 'readonly');
+                const store = tx.objectStore('chats');
+                const request = store.get(chatId);
+                const chat = await new Promise((resolve, reject) => {
+                    request.onsuccess = () => resolve(request.result);
+                    request.onerror = () => reject(request.error);
+                });
+                if (chat && chat.drafted)
+                    return chat.lastMessage;
+                else 
+                    throw new Error("Chat not found.");
+            } catch (error) {
+                throw new Error("Failed to get message from indexed db: " + error.message);
+            }
+        } else {
+            throw new Error("Database connection is not initialized.");
+        }
+    }
+
     async insertMessage(message) {
         if (this.db != null) {
             try {
@@ -188,31 +211,81 @@ class WhisperDB {
                     messageRequest.onsuccess = () => resolve();
                     messageRequest.onerror = () => reject(messageRequest.error);
                 });
-    
+                
                 const chatRequest = chatStore.get(message.chatId);
                 const chat = await new Promise((resolve, reject) => {
                     chatRequest.onsuccess = () => resolve(chatRequest.result);
                     chatRequest.onerror = () => reject(chatRequest.error);
                 });
-                /* TODO: insert lastMessage
+
                 if (chat) {
-                    // Update the chat object with the lastMessage
-                    chat.lastMessage = {...message};
+                    if (message.senderId === whoAmI.id || (chat.drafted === false && message.senderId !== whoAmI.id)) {
+                        chat.lastMessageId = message.id;
+                        chat.lastMessage = message.content;
+                        chat.messageTime = message.time;
+                        chat.senderId = message.senderId;
+                        chat.sender = message.sender;
+                        chat.messageType = message.type;
+                        chat.messageState = message.state;
+                        chat.media = message.media ? message.media : null;
+                        chat.drafted = false;
+        
+                        const updateRequest = chatStore.put(chat);
+                        await new Promise((resolve, reject) => {
+                            updateRequest.onsuccess = () => resolve();
+                            updateRequest.onerror = () => reject(updateRequest.error);
+                        });
+                    }
+                } else {
+                    throw new Error(`Chat with id ${message.chatId} not found`);
+                }
+
+                await tx.complete; // Ensure the transaction completes successfully
+                console.log('Message inserted and chat updated successfully.');
+            } catch (error) {
+                console.error('Failed to insert message or update chat:', error);
+                throw new Error('Failed to insert message or update chat: ' + error.message);
+            }
+        } else {
+            throw new Error('Database connection is not initialized.');
+        }
+    }
+
+    async insertDraftedMessage(draftedMessage) {
+        if (this.db) {
+            try {
+                const tx = this.db.transaction('chats', 'readwrite'); // Include both stores in the transaction
+                const chatStore = tx.objectStore('chats');
+
+                const chatRequest = chatStore.get(draftedMessage.chatId);
+                const chat = await new Promise((resolve, reject) => {
+                    chatRequest.onsuccess = () => resolve(chatRequest.result);
+                    chatRequest.onerror = () => reject(chatRequest.error);
+                });
+                if (chat) {
+                    chat.lastMessageId = null;
+                    chat.lastMessage = draftedMessage.draftContent;
+                    chat.messageTime = draftedMessage.draftTime;
+                    chat.senderId = null;
+                    chat.sender = null;
+                    chat.messageType = null;
+                    chat.messageState = null;
+                    chat.media = null;
+                    chat.drafted = true;
+                    
     
                     const updateRequest = chatStore.put(chat);
                     await new Promise((resolve, reject) => {
                         updateRequest.onsuccess = () => resolve();
                         updateRequest.onerror = () => reject(updateRequest.error);
                     });
+
+                    
                 } else {
                     throw new Error(`Chat with id ${message.chatId} not found`);
                 }
-                */
-                await tx.complete; // Ensure the transaction completes successfully
-                console.log('Message inserted and chat updated successfully.');
             } catch (error) {
-                console.error('Failed to insert message or update chat:', error);
-                throw new Error('Failed to insert message or update chat: ' + error.message);
+
             }
         } else {
             throw new Error('Database connection is not initialized.');
@@ -264,6 +337,41 @@ class WhisperDB {
             } catch (error) {
                 console.error('Failed to unpin message:', error);
                 throw new Error('Failed to unpin message: ' + error.message);
+            }
+        } else {
+            throw new Error('Database connection is not initialized.');
+        }
+    }
+
+    async draftMessage(id) {
+        if (this.db != null) {
+            try {
+                const tx = this.db.transaction('messages', 'readwrite');
+                const store = tx.objectStore('messages');
+                console.log(id)
+                const request = store.get(id);
+    
+                const existingMessage = await new Promise((resolve, reject) => {
+                    request.onsuccess = () => resolve(request.result);
+                    request.onerror = () => reject(request.error);
+                });
+    
+                if (existingMessage) {
+                    existingMessage.drafted = true;
+                    const updateRequest = store.put(existingMessage);
+                    await new Promise((resolve, reject) => {
+                        updateRequest.onsuccess = () => resolve();
+                        updateRequest.onerror = () => reject(updateRequest.error);
+                    });
+    
+                    console.log(`message with id ${id} was successfully updated to muted.`);
+                } else {
+                    throw new Error(`Message with id ${id} not found.`);
+                }
+    
+                await tx.complete;
+            } catch (error) {
+                throw new Error("Failed to update message as muted: " + error.message);
             }
         } else {
             throw new Error('Database connection is not initialized.');
@@ -401,6 +509,41 @@ class WhisperDB {
                 throw new Error("Failed to update message as unmuted: " + error.message);
             }
         } else {
+            throw new Error('Database connection is not initialized.');
+        }
+    }
+
+    async updateUnReadMessagesCount(chatId, count) {
+        if (this.db != null) {
+            try {
+                const tx = this.db.transaction('chats', 'readwrite');
+                const store = tx.objectStore('chats');
+                const request = store.get(chatId);
+                
+                const existingChat = await new Promise((resolve, reject) => {
+                    request.onsuccess = () => resolve(request.result);
+                    request.onerror = () => reject(request.error);
+                });
+
+                if (existingChat) {
+                    if (count)
+                        existingChat.unreadMessageCount += 1;
+                    else 
+                        existingChat.unreadMessageCount = 0;
+                    console.log(existingChat)
+
+                    const updateRequest = store.put(existingChat);
+                    await new Promise((resolve, reject) => {
+                        updateRequest.onsuccess = () => resolve();
+                        updateRequest.onerror = () => reject(updateRequest.error);
+                    });
+                    console.log(`chat with id ${chatId} was successfully updated to correct unread count.`);
+                }
+            }
+            catch (error) {
+            }
+        } 
+        else {
             throw new Error('Database connection is not initialized.');
         }
     }
