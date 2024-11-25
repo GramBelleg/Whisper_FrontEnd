@@ -4,10 +4,10 @@ import { whoAmI } from "../chatservice/whoAmI";
 
 let myStories = [];
 
-export const getMyStoriesAPI = async () => {
+export const getStoriesAPI = async (id) => {
     try {
         
-        const response = await axios.get(`http://localhost:5000/api/user/story/${whoAmI.id}`,{
+        const response = await axios.get(`http://localhost:5000/api/user/story/${id}`,{
             withCredentials: true
         });
             
@@ -17,10 +17,10 @@ export const getMyStoriesAPI = async () => {
     }
 };
 
-export const getMyStories = async () => {
+export const getStories = async (id) => {
     try {
         
-        const response = await getMyStoriesAPI();
+        const response = await getStoriesAPI(id);
 
         console.log(response)
         const tempStories =  response.stories;  
