@@ -16,6 +16,7 @@ export const ChatProvider = ({ children }) => {
     const messagesSocket = new MessagingSocket(socket);
     const { db } = useWhisperDB();
     const currentChatRef = useRef(currentChat);
+    const [messageReceived, setMessageReceived] = useState(false);
 
     const selectChat = (chat) => {
         setcurrentChat(chat);
@@ -40,10 +41,19 @@ export const ChatProvider = ({ children }) => {
         }
     }
 
+    const clearUnreadMessages = async (id) => {
+        try {
+            await db.updateUnReadMessagesCount(id, 0);
+        } catch (error) {
+            console.log(error.message);
+        }
+    }
+
     useEffect(() => {
         if (currentChat) {
             // TODO: handle with back
             loadMessages(currentChat.id);
+            clearUnreadMessages(currentChat.id);
             loadPinnedMessages(currentChat.id);
         } else {
             setMessages([]);
@@ -125,9 +135,29 @@ export const ChatProvider = ({ children }) => {
     const handleReceiveMessage = async (messageData) => {
         try {
             const activeChat = currentChatRef.current; 
-            await db.insertMessage({ ...mapMessage(messageData), read: false, delivered: false });
-    
-            loadMessages(activeChat.id);
+            const myMessageData = {
+                ...messageData,
+            }
+
+            try {
+                await db.insertMessage({ ...mapMessage(myMessageData), drafted: false});
+                setMessageReceived(true);
+            } catch (error) {
+                throw error;
+            }
+            
+            if (activeChat && activeChat.id === myMessageData.chatId) {
+                loadMessages(activeChat.id); 
+            } 
+            else {
+                try {
+                    await db.updateUnReadMessagesCount(myMessageData.chatId, 1);
+                } catch (error) {
+                    throw error;
+                }
+            }
+            setMessageReceived(false);
+                
         } catch (error) {
             console.error(error);
         }
@@ -210,6 +240,7 @@ export const ChatProvider = ({ children }) => {
                 currentChat,
                 selectChat,
                 messages,
+                messageReceived,
                 pinnedMessages,
                 pinMessage,
                 unPinMessage,

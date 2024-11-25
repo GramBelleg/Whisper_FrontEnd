@@ -10,7 +10,7 @@ import { useModal } from "@/contexts/ModalContext";
 import ErrorMesssage from "../ErrorMessage/ErrorMessage";
 
 const ChatPage = () => {
-    const { selectChat } = useChat();
+    const { messageReceived, messages, selectChat } = useChat();
     const [chatList, setChatList] = useState([]);
     const { db } = useWhisperDB();
     const { openModal, closeModal } = useModal();
@@ -35,19 +35,20 @@ const ChatPage = () => {
         }
     }
 
-
     useEffect(() => {
         if (db) {
             loadChats();
         }
-    }, [db])
+    }, [db]);
 
     useEffect(() => {
         if (action) {
             loadChats();
             setAction(false);
         }
-    }, [action])
+    }, [action]);
+
+    useEffect(() => { loadChats() }, [messages, messageReceived]);
     
     return (
         <div className="chat-page">

@@ -17,12 +17,6 @@ const ChatTextingActions = ({ textMessage, setTextMessage, triggerSendMessage })
         setTextMessage((prevMessage) => prevMessage + emojiObject.emoji);
     };
 
-    useEffect(() => {
-        if (textMessage.length === 0) {
-            textareaRef.current.style.height = 'auto';
-        }
-    }, [textMessage]);
-
     const updateNewMessage = (event) => {
         textareaRef.current.style.height = 'auto';
         event.target.style.height = `${event.target.scrollHeight}px`;
@@ -32,6 +26,12 @@ const ChatTextingActions = ({ textMessage, setTextMessage, triggerSendMessage })
             setTextMessage(value);
         }
     };
+
+    useEffect(() => {
+        if (textMessage.length === 0) {
+            textareaRef.current.style.height = 'auto';
+        }
+    }, [textMessage]);
 
     return (
         <>
