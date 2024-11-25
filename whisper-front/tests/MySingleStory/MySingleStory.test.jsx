@@ -3,7 +3,7 @@ import { vi } from "vitest";
 import { useModal } from "@/contexts/ModalContext"; // adjust the path as needed
 import { downloadBlob } from "@/services/blobs/blob"; // adjust the path as needed
 import { setStoryPrivacySettings } from "@/services/storiesservice/setStoryVisibility"; // adjust the path as needed
-import MySingleStory from "@/components/MySingleStory/MySingleStory";
+import SingleStory from "@/components/SingleStory/SingleStory";
 
 vi.mock("@/services/blobs/blob", () => ({
     downloadBlob: vi.fn(),
@@ -32,11 +32,11 @@ const story = {
     privacy: "everyone",
 };
 
-describe("MySingleStory tests", () => {
+describe("SingleStory tests", () => {
     it("renders the story content", async () => {
         downloadBlob.mockResolvedValueOnce({ blob: new Blob() });
     
-        render(<MySingleStory story={story}/>);
+        render(<SingleStory story={story}/>);
     
         // Check if the story content renders correctly
         expect(screen.getByText("ahmed")).toBeInTheDocument();
@@ -45,7 +45,7 @@ describe("MySingleStory tests", () => {
     it("doesn't show content ", async () => {
         downloadBlob.mockReturnValueOnce(new Promise(() => {})); // Simulate pending download
         
-        render(<MySingleStory story={null}/>);
+        render(<SingleStory story={null}/>);
         const storyContent = screen.queryByText(/ahmed/i); // Adjust to check for story content or specific text
         expect(storyContent).toBeNull(); // Ensure 'ahmed' is not rendered
     });
@@ -53,7 +53,7 @@ describe("MySingleStory tests", () => {
     it("opens dropdown menu when clicking the three dots", async () => {
         downloadBlob.mockResolvedValueOnce({ blob: new Blob() });
 
-        render(<MySingleStory story={story} />);
+        render(<SingleStory story={story} />);
 
         // Click on the three dots
         const threeDotsButton = screen.getByLabelText("Options");
@@ -69,7 +69,7 @@ describe("MySingleStory tests", () => {
         downloadBlob.mockResolvedValueOnce({ blob: new Blob() });
 
         const handleAddNewStoryClick = vi.fn();
-        render(<MySingleStory story={story} handleAddNewStoryClick={handleAddNewStoryClick}/>);
+        render(<SingleStory story={story} handleAddNewStoryClick={handleAddNewStoryClick}/>);
 
         const threeDotsButton = screen.getByLabelText("Options");
         fireEvent.click(threeDotsButton);
@@ -87,7 +87,7 @@ describe("MySingleStory tests", () => {
         downloadBlob.mockResolvedValueOnce({ blob: new Blob() });
 
         const onDeleteStory = vi.fn();
-        render(<MySingleStory story={story} onDeleteStory={onDeleteStory} />);
+        render(<SingleStory story={story} onDeleteStory={onDeleteStory} />);
 
         const threeDotsButton = screen.getByLabelText("Options");
         fireEvent.click(threeDotsButton);
@@ -102,7 +102,7 @@ describe("MySingleStory tests", () => {
 
     it("opens visibility dropdown when clicking 'Who Can See My Story?'", async () => {
 
-        render(<MySingleStory story={story} />);
+        render(<SingleStory story={story} />);
 
         const threeDotsButton = screen.getByLabelText("Options");
         fireEvent.click(threeDotsButton);
@@ -119,7 +119,7 @@ describe("MySingleStory tests", () => {
 
     it("choose correctly 'Who Can See My Story?'", async () => {
 
-        render(<MySingleStory story={story} />);
+        render(<SingleStory story={story} />);
 
         const threeDotsButton = screen.getByLabelText("Options");
         fireEvent.click(threeDotsButton);
