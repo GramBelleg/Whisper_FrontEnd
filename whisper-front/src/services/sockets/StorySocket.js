@@ -24,11 +24,11 @@ class StorySocket extends Socket {
         this.socket.emit("deleteStory", { storyId : data })
     }
 
-    onReceiveMessage(callback) {
-        //this.socket.on('receive', callback);
+    onReceiveStory(callback) {
+        this.socket.on('story', callback);
     }
 
-    offReceiveMessage(callback) {
+    offReceiveStory(callback) {
         //this.socket.off('receive', callback);
     }
 

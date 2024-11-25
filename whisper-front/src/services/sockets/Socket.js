@@ -19,13 +19,7 @@ class Socket {
         throw new Error("Method 'deleteData' must be implemented by subclasses");
     }
 
-    onReceiveMessage(callback) {
-        throw new Error("Method 'onReceiveMessage' must be implemented by subclasses");
-    }
-
-    offReceiveMessage(callback) {
-        throw new Error("Method 'offReceiveMessage' must be implemented by subclasses");
-    }
+    
 
     disconnect() {
         throw new Error("Method 'disconnect' must be implemented by subclasses")
