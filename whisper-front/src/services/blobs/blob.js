@@ -70,26 +70,24 @@ export const uploadBlob = async (file, data) => {
 export const getBlobUrl = async (blobName) => {
     let error = '';
     let imageUrl = '';
+    let blob = '';
 
     if (blobName) {
         try {
-            const response = await axiosInstance.get(`/getPresignedUrl`, {
+            const response = await axiosInstance.get(`/api/media/read`, {
                 params: { blobName },
             });
 
             if (response.status !== 200 || !response.data.presignedUrl) {
                 throw new Error("Error fetching presigned URL");
             }
-
             const presignedUrl = response.data.presignedUrl;
-
             const blobResponse = await fetch(presignedUrl);
-
             if (!blobResponse.ok) {
                 throw new Error("Error fetching blob");
             }
 
-            const blob = await blobResponse.blob();
+            blob = await blobResponse.blob();
 
             imageUrl = URL.createObjectURL(blob);
         } catch (err) {
@@ -101,5 +99,5 @@ export const getBlobUrl = async (blobName) => {
         console.error("Error:", error);
     }
 
-    return { imageUrl, error };
+    return { blob, imageUrl, error };
 };

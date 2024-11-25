@@ -1,7 +1,6 @@
 import React, { useEffect, useState } from 'react'
 import PropTypes from 'prop-types'
-import axios from 'axios'
-import { getBlobUrl } from '@/services/blobs/blob'
+import { getStickers } from '@/services/chatservice/getStickers'
 
 const CustomStickersPicker = ({ handleStickerClick }) => {
     const [stickers, setStickers] = useState([])
@@ -10,25 +9,8 @@ const CustomStickersPicker = ({ handleStickerClick }) => {
     useEffect(() => {
         const fetchStickers = async () => {
             try {
-                const response = await axios.get('http://localhost:5000/api/stickers', {
-                    withCredentials: true
-                })
-
-                const blobNames = response.data.stickers
-
-                const fetchedStickers = await Promise.all(
-                    blobNames.map(async (blobName) => {
-                        const { imageUrl, error } = await getBlobUrl(blobName)
-                        if (imageUrl) {
-                            return imageUrl
-                        } else {
-                            console.error(`Error fetching sticker for ${blobName}:`, error)
-                            return null
-                        }
-                    })
-                )
-
-                setStickers(fetchedStickers.filter(Boolean))
+                const fetchedStickers = await getStickers();
+                setStickers(fetchedStickers)
                 setStickers([
                     'https://cdn-icons-png.flaticon.com/512/616/616489.png',
                     'https://cdn-icons-png.flaticon.com/512/742/742751.png',
