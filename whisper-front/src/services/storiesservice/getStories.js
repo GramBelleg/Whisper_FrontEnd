@@ -50,11 +50,13 @@ export const getMyStories = async () => {
             
 }
 
-export const getStoriesAPI = async () => {
+export const getUsersWithStoriesAPI = async () => {
 
     try {
-        const stories = await axiosInstance.get("/stories");
-
+        //const stories = await axiosInstance.get("/stories");
+        const stories = await axios.get(`http://localhost:5000/api/user/story`,{
+            withCredentials: true
+        });
         console.log(stories.data);
 
         return stories.data;
@@ -63,20 +65,19 @@ export const getStoriesAPI = async () => {
     }
 }
 
-export const getStoriesCleaned = async () => {
+export const getUsersWithStoriesCleaned = async () => {
     try {
         
-        const stories = await getStoriesAPI();
+        const stories = await getUsersWithStoriesAPI();
 
         myStories = []
         
-        stories.map((story) => {
+        // TODO: handle with back
+        stories.users.users.map((story) => {
             const flattenedStory = {
                 id: story.id,
-                content: story.content, 
-                media: story.media,
-                likes: story.likes,
-                time: story.time
+                userName: story.userName,
+                profilePic: story.profilePic
             };
             myStories.push(flattenedStory);
         });
