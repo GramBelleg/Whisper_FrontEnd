@@ -547,6 +547,25 @@ class WhisperDB {
             throw new Error('Database connection is not initialized.');
         }
     }
+
+    async getUserStories(id) {
+        if (this.db != null) {
+            try {
+                const tx = this.db.transaction('stories', 'readonly'); 
+                const store = tx.objectStore('stories'); 
+                const request = store.getAll(); 
+                const stories = await new Promise((resolve, reject) => {
+                    request.onsuccess = () => resolve(request.result); 
+                    request.onerror = () => reject(request.error); // Reject on error
+                });
+                return stories; 
+            } catch (error) {
+                throw new Error("Failed to get stories from indexed db: " + error.message);
+            }
+        } else {
+            throw new Error("Database connection is not initialized.");
+        }
+    }
 }
 
 export default WhisperDB;
