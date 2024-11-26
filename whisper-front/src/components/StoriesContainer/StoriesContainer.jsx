@@ -15,7 +15,6 @@ export default function StoriesContainer() {
     const { openModal, closeModal } = useModal();
     const { selectUser, stories } = useStories();
     
-
     const getStories = async () => {
         try {
             const data = await getUsersWithStoriesCleaned();
@@ -37,7 +36,6 @@ export default function StoriesContainer() {
     useEffect(() => {
         getStories();
     }, []);
-
 
     useEffect(() => {
         const scrollContainer = scrollContainerRef.current;
@@ -66,37 +64,26 @@ export default function StoriesContainer() {
                     file={file} 
                     filePreview={filePreview} 
                     onClose={closeModal}
-                    onStoryAdded={fetchMyStories}
-                />)
+                    //onStoryAdded={fetchMyStories}
+                />
+            );
         }
     }
 
-    const handleMyStoryClick = (file = null, filePreview = null) => {
-        if (whoAmI.hasStory) {
+    const handleStoryClick = (user, file = null, filePreview = null) => {
+        if (!file) {   
+            selectUser(user);
             openModal(
-                <StoriesProvider>
-                    <StoriesList
-                        onClose={closeModal}
-                        handleAddStory={() => {}}
-                        handleDeleteStory={() => {}}
-                    />
-                </StoriesProvider>
+                <StoriesList
+                    onClose={closeModal}
+                    handleAddStory={() => {}}
+                    handleDeleteStory={() => {}}
+                />
             );
         } else {   
             handleAddStory(file, filePreview);
         }
     };
-
-    const handleStoryClick = (user) => {
-        selectUser(user);
-        openModal(
-            <StoriesList
-                onClose={closeModal}
-                handleAddStory={() => {}}
-                handleDeleteStory={() => {}}
-            />
-        );
-    }
 
     useEffect(() => {}, [stories]);
    
@@ -111,7 +98,6 @@ export default function StoriesContainer() {
                 scrollLeft={scrollLeft}
                 scrollRight={scrollRight}
                 handleStoryClick={handleStoryClick}
-                handleMyStoryClick={handleMyStoryClick}
             />
     );
 }

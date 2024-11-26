@@ -7,18 +7,15 @@ import { uploadBlob } from "@/services/blobs/blob";
 import { downloadLink, uploadLink } from "@/mocks/mockData";
 import ErrorMesssage from "../ErrorMessage/ErrorMessage";
 import { useModal } from "@/contexts/ModalContext";
-import StorySocket from "@/services/sockets/StorySocket";
+import { useStories } from "@/contexts/StoryContext";
 
-const AddNewStoryModal = ({ file, filePreview, onClose, onStoryAdded }) => {
-
+const AddNewStoryModal = ({ file, filePreview, onClose }) => {
     const textareaRef = useRef(null);
-
     const [storyText, setStoryText] = useState('');
     const [fileType, setFileType] = useState('');
     const [loading, setLoading] = useState(false);
-
     const { openModal , closeModalError } = useModal();
-    const myStorySocket =  new StorySocket();
+    const { storiesSocket } = useStories();
     
     const updateNewMessage = (event) => {
         textareaRef.current.style.height = 'auto';
@@ -42,9 +39,9 @@ const AddNewStoryModal = ({ file, filePreview, onClose, onStoryAdded }) => {
                         "type": fileType,
                 }
 
-                myStorySocket.sendData(newStory);
+                storiesSocket.sendData(newStory);
 
-                onStoryAdded();
+                // onStoryAdded(); TODO: send story
                 setLoading(false);
                 onClose();
             }
