@@ -20,7 +20,6 @@ class StorySocket extends Socket {
     }
 
     deleteData(data) {
-        console.log("hello ", data)
         this.socket.emit("deleteStory", { storyId : data })
     }
 

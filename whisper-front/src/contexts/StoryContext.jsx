@@ -3,6 +3,10 @@ import { socket } from '@/services/messagingservice/sockets/sockets'
 import StorySocket from "@/services/sockets/StorySocket";
 import { getStories } from "@/services/storiesservice/getStories";
 import { downloadBlob } from "@/services/blobs/blob";
+import { whoAmI } from "@/services/chatservice/whoAmI";
+import { downloadLink, uploadLink } from "@/mocks/mockData";
+import { uploadBlob } from "@/services/blobs/blob";
+
 
 export const StoryContext = createContext();
 
@@ -11,7 +15,7 @@ export const StoriesProvider = ({ children }) => {
     const [ currentStory, setCurrentStory ] = useState(null);
     const [currentIndex, setCurrentIndex] = useState(null);
     const [ stories, setStories ] = useState([]);
-    const [uploading, setIsUploading] = useState(false);
+    const [ isUploading, setIsUploading] = useState(false);
     const storiesSocket = new StorySocket(socket);
     const currentUserRef = useRef();
     const currentStoryRef = useRef();
@@ -31,10 +35,6 @@ export const StoriesProvider = ({ children }) => {
         }
     };
 
-    const uploadStory = async () => {
-        // TODO: upload story
-    }
-
     const loadUserStories = async () => {
         try {
             const data = await getStories(currentUser.id);
@@ -45,9 +45,25 @@ export const StoriesProvider = ({ children }) => {
         }
     };
 
+    const handleRecieveStory = async (storyData) => {
+        /*
+        {
+            "id": 0,
+            "userId": 0,
+            "content": "string",
+            "media": "string",
+            "date": "2019-08-24T14:15:22Z"
+        }
+        */
+       if (storyData.userId === whoAmI.id) {
+       }
+        console.log(storyData);
+    }
+
     const fetchStoryUrl = async () => {
         try {
-            if(currentStory) {
+            if(currentStory) {  
+                console.log(currentStory)
                 const { blob } = await downloadBlob({ "presignedUrl": currentStory.media });
                 const newBlob = new Blob([blob], { type: currentStory.type });
                 const objectUrl = URL.createObjectURL(newBlob);
@@ -60,6 +76,20 @@ export const StoriesProvider = ({ children }) => {
             console.log(error)
         }
     };
+
+    const uploadStory = async (newStory) => {
+        setIsUploading(true);
+        try {
+            const blobName = await uploadBlob(file, uploadLink);
+            if(blobName) {
+                storiesSocket.sendData(newStory);
+                setIsUploading(false);
+            }
+        } catch (error) {
+            setIsUploading(false);
+            setError(error.message);
+        } 
+    }
 
     useEffect(() => {
         if (currentUser) {
@@ -87,9 +117,7 @@ export const StoriesProvider = ({ children }) => {
 
     useEffect(() => {
         if(storiesSocket) {
-            //storiesSocket.onReceiveMessage(handleReceiveMessage);
-            //storiesSocket.onPinMessage(handlePinMessage);
-            //storiesSocket.onUnPinMessage(handleUnpinMessage);
+            storiesSocket.onReceiveStory(handleRecieveStory);
         }
     }, [storiesSocket]);
 
@@ -109,8 +137,10 @@ export const StoriesProvider = ({ children }) => {
                 loading,
                 error,
                 currentUser,
+                isUploading,
                 selectUser,
                 fetchStoryUrl,
+                uploadStory,
                 storiesSocket,
                 selectStory
             }}

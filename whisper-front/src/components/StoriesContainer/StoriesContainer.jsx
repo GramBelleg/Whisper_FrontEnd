@@ -4,8 +4,7 @@ import { useModal } from '@/contexts/ModalContext';
 import StoriesList from '../StoriesList/StoriesList';
 import AddNewStoryModal from '../AddNewStoryModal/AddNewStoryModal';
 import { getUsersWithStoriesCleaned } from '@/services/storiesservice/getStories';
-import { whoAmI } from '@/services/chatservice/whoAmI';
-import { StoriesProvider, useStories } from '@/contexts/StoryContext';
+import { useStories } from '@/contexts/StoryContext';
 
 export default function StoriesContainer() {
     const scrollContainerRef = useRef(null);
@@ -64,7 +63,7 @@ export default function StoriesContainer() {
                     file={file} 
                     filePreview={filePreview} 
                     onClose={closeModal}
-                    //onStoryAdded={fetchMyStories}
+                    onStoryAdded={() => {}}
                 />
             );
         }
@@ -76,7 +75,7 @@ export default function StoriesContainer() {
             openModal(
                 <StoriesList
                     onClose={closeModal}
-                    handleAddStory={() => {}}
+                    handleAddStory={handleAddStory}
                     handleDeleteStory={() => {}}
                 />
             );
