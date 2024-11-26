@@ -40,10 +40,7 @@ const StoriesTab = ({
                   appearFor={3000}
                   />
             );
-
-            setTimeout(() => {
-
-            }, 3000)
+            setTimeout(() => {}, 3000)
             setFirstError(false);
         }
       }
@@ -57,13 +54,18 @@ const StoriesTab = ({
 
     // Function to handle file selection
     const handleFileChange = (e) => {
+      console.log("File input changed"); // Debugging log
       const file = e.target.files[0];
+      
       if (file && (file.type.startsWith("image/") || file.type.startsWith("video/"))) {
-          const filePreview = URL.createObjectURL(file);
-          // Add the new story to the myStories mock -> TODO: call API
-          handleStoryClick(whoAmI, file, filePreview);
+        const filePreview = URL.createObjectURL(file);
+        console.log("Selected file:", file); // Debugging log for the selected file
+        handleStoryClick(whoAmI, file, filePreview);
+      } else {
+        console.log("No valid file selected");
       }
-  };
+    };
+    
 
     return (
         <div className="stories-container">
@@ -120,7 +122,7 @@ const StoriesTab = ({
             type="file"
             ref={fileInputRef}
             style={{ display: 'none' }}
-            onChange={handleFileChange}
+            onChange={handleFileChange} 
           />
         </div>
     );

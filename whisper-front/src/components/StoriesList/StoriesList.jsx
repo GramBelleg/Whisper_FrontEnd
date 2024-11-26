@@ -6,6 +6,7 @@ import './StoriesList.css';
 import ErrorMesssage from '../ErrorMessage/ErrorMessage';
 import { useModal } from '@/contexts/ModalContext';
 import { useStories } from '@/contexts/StoryContext';
+import { whoAmI } from '@/services/chatservice/whoAmI';
 
 const StoriesList = ({ onClose, handleAddStory, handleDeleteStory }) => {
     const { stories, storiesSocket, selectStory, currentIndex } = useStories();
@@ -50,6 +51,7 @@ const StoriesList = ({ onClose, handleAddStory, handleDeleteStory }) => {
 
     const handleFileChange = (e) => {
         const file = e.target.files[0];
+        
         if (file && (file.type.startsWith("image/") || file.type.startsWith("video/"))) {
             const filePreview = URL.createObjectURL(file);
             // Add the new story to the myStories mock -> TODO: call API
@@ -102,7 +104,9 @@ const StoriesList = ({ onClose, handleAddStory, handleDeleteStory }) => {
             type="file"
             ref={fileInputRef}
             style={{ display: 'none' }}
-            onChange={handleFileChange}
+            onChange={(event) => {
+                handleFileChange(event); // Your file handling logic
+            }}
         />
     </div>
   );
