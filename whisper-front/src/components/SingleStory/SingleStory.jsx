@@ -6,9 +6,10 @@ import { useModal } from "@/contexts/ModalContext";
 import ErrorMesssage from "../ErrorMessage/ErrorMessage";
 import { setStoryPrivacySettings } from "@/services/storiesservice/setStoryVisibility";
 import { useStories } from "@/contexts/StoryContext";
+import { whoAmI } from "@/services/chatservice/whoAmI";
 
 const SingleStory = ({ onNextStory, onDeleteStory, handleAddNewStoryClick, onClose }) => {
-    const { loading, error, url, currentStory, fetchStoryUrl } = useStories();
+    const { loading, error, url, currentStory, currentUser } = useStories();
     const [dropdownVisible, setDropdownVisible] = useState(false);
     const [visibilityDropDownVisible, setVisibilityDropDownVisible] = useState(false);
     const [remainingTime, setRemainingTime] = useState(20000); // 20 seconds
@@ -18,7 +19,7 @@ const SingleStory = ({ onNextStory, onDeleteStory, handleAddNewStoryClick, onClo
     const intervalRef = useRef(null);
     const startTimeRef = useRef(Date.now());
     const dropdownRef = useRef(null);
-    const {openModal, closeModal} = useModal();
+    const { openModal, closeModal } = useModal();
 
     const handleClickOutside = (event) => {
         if (
@@ -50,15 +51,17 @@ const SingleStory = ({ onNextStory, onDeleteStory, handleAddNewStoryClick, onClo
         document.addEventListener("mousedown", handleClickOutside);
         setDropdownVisible(false);
         setVisibilityDropDownVisible(false);
+        console.log(currentStory)
         storyVisibilityChangedRef.current = false;
         dropdownRef.current = null;
         videoRef.current = null;
-        
         return () => {
             clearTimeout(intervalRef.current);
             document.removeEventListener("mousedown", handleClickOutside);
         };
-    }, [currentStory?.id]);
+    }, [currentStory]);
+
+    useEffect(() => {console.log(currentUser)}, [currentUser])
 
     useEffect(() => {
         intervalRef.current = null;
@@ -77,7 +80,7 @@ const SingleStory = ({ onNextStory, onDeleteStory, handleAddNewStoryClick, onClo
             )
             setTimeout(() => { onClose() },  3000);
         }
-    }, error)
+    }, [error])
 
     const handleDeleteStory = () => {
         onDeleteStory(intervalRef);
@@ -164,23 +167,26 @@ const SingleStory = ({ onNextStory, onDeleteStory, handleAddNewStoryClick, onClo
 
   return (
         <>
-            <div className="dropdown-container">
-                <button onClick={handleDropdownToggle} className="three-dots-button" aria-label="Options">
-                    <FontAwesomeIcon icon={faEllipsisV} className="h-8 w-8" />
-                </button>
-                {dropdownVisible && (
-                    <div className="dropdown-menu">
-                        <button onClick={handleAddNewStoryClick} className="dropdown-item add">Add</button>
-                        <button onClick={handleDeleteStory} className="dropdown-item delete">Delete</button>
-                        <div className="edit-visibility-within-story">
-                            <FontAwesomeIcon icon={faEye} />
-                        <button onClick={handleEditVisibility} className="dropdown-item visibility">
-                            Who Can See My Story?
+            {
+                currentUser?.id === whoAmI.id && (
+                    <div className="dropdown-container">
+                        <button onClick={handleDropdownToggle} className="three-dots-button" aria-label="Options">
+                            <FontAwesomeIcon icon={faEllipsisV} className="h-8 w-8" />
                         </button>
-                        </div>
+                        {dropdownVisible && (
+                            <div className="dropdown-menu">
+                                <button onClick={handleAddNewStoryClick} className="dropdown-item add">Add</button>
+                                <button onClick={handleDeleteStory} className="dropdown-item delete">Delete</button>
+                                <div className="edit-visibility-within-story">
+                                    <FontAwesomeIcon icon={faEye} />
+                                <button onClick={handleEditVisibility} className="dropdown-item visibility">
+                                    Who Can See My Story?
+                                </button>
+                                </div>
+                            </div>
+                        )}
                     </div>
-                )}
-            </div>
+            )}
             {visibilityDropDownVisible && (
                 <div className="within-story-visibility" ref={dropdownRef}>
                     <label>
