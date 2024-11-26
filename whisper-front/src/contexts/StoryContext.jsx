@@ -9,7 +9,7 @@ export const StoryContext = createContext();
 export const StoriesProvider = ({ children }) => {
     const [ currentUser, setCurrentUser ] = useState(null);
     const [ currentStory, setCurrentStory ] = useState(null);
-    const [currentIndex, setCurrentIndex] = useState(-1);
+    const [currentIndex, setCurrentIndex] = useState(null);
     const [ stories, setStories ] = useState([]);
     const [uploading, setIsUploading] = useState(false);
     const storiesSocket = new StorySocket(socket);
@@ -38,7 +38,6 @@ export const StoriesProvider = ({ children }) => {
     const loadUserStories = async () => {
         try {
             const data = await getStories(currentUser.id);
-            console.log("Data ", data);
             setStories([...data]);
         } catch (error) {
             setStories([]);
@@ -58,7 +57,7 @@ export const StoriesProvider = ({ children }) => {
                 throw new Error("Story is not loaded");
             }
         } catch (error) {
-            throw error;
+            console.log(error)
         }
     };
 
@@ -66,7 +65,6 @@ export const StoriesProvider = ({ children }) => {
         if (currentUser) {
             loadUserStories();
             setCurrentIndex(0);
-            setCurrentStory(stories[currentIndex])
         } else {
             setStories([]);
             setCurrentIndex(0);
@@ -88,12 +86,6 @@ export const StoriesProvider = ({ children }) => {
     }, [currentStory]);
 
     useEffect(() => {
-        if (stories) {
-            setCurrentStory(stories[currentIndex]);
-        }
-    }, [currentIndex])
-
-    useEffect(() => {
         if(storiesSocket) {
             //storiesSocket.onReceiveMessage(handleReceiveMessage);
             //storiesSocket.onPinMessage(handlePinMessage);
@@ -101,7 +93,11 @@ export const StoriesProvider = ({ children }) => {
         }
     }, [storiesSocket]);
 
-    useEffect(() => {}, [stories])
+    useEffect(() => {
+        if (stories) {
+            setCurrentStory(stories[currentIndex]);
+        }
+    }, [stories])
     
     return (
         <StoryContext.Provider
@@ -112,6 +108,7 @@ export const StoriesProvider = ({ children }) => {
                 url,
                 loading,
                 error,
+                currentUser,
                 selectUser,
                 fetchStoryUrl,
                 storiesSocket,

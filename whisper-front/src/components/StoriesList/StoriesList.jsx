@@ -29,7 +29,6 @@ const StoriesList = ({ onClose, handleAddStory, handleDeleteStory }) => {
 
     const myHandleDeleteStory = async (intervalRef) => {
         try {
-            
             const storyId = stories[currentIndex].id;
             storiesSocket.deleteData(storyId);
             const newStories = stories.filter(story => story.id !== storyId);
@@ -52,7 +51,6 @@ const StoriesList = ({ onClose, handleAddStory, handleDeleteStory }) => {
     const handleFileChange = (e) => {
         const file = e.target.files[0];
         if (file && (file.type.startsWith("image/") || file.type.startsWith("video/"))) {
-  
             const filePreview = URL.createObjectURL(file);
             // Add the new story to the myStories mock -> TODO: call API
             handleAddStory(file, filePreview);
@@ -66,7 +64,6 @@ const StoriesList = ({ onClose, handleAddStory, handleDeleteStory }) => {
     <div className="my-stories-container">
         <div className="story-wrapper">
             <SingleStory
-                story={stories[currentIndex]}
                 onNextStory={handleNextStory}
                 onDeleteStory={myHandleDeleteStory}
                 handleAddNewStoryClick={handleAddNewStoryClick}
@@ -74,7 +71,7 @@ const StoriesList = ({ onClose, handleAddStory, handleDeleteStory }) => {
             />
             <div className="absolute inset-0 flex items-center justify-between p-4">
                 <button 
-                    onClick={() => { handlePrevStory()}}
+                    onClick={() => handlePrevStory()}
                     className="nav-button"
                     aria-label="Previous story"
                 >

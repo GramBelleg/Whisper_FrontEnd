@@ -18,20 +18,16 @@ const StoriesTab = ({
     scrollLeft,
     scrollRight,
     handleStoryClick,
-    handleMyStoryClick
 }) => {
 
     const { openModal, closeModal } = useModal();
     const [firstError, setFirstError] = useState(true);
+    const fileInputRef = useRef(null);
     
     useEffect(() => {
-      console.log("hello from Stories tab")
     }, [whoAmI.hasStory])
-    // Reference to the hidden file input element
-    const fileInputRef = useRef(null);
 
     if (loading) {
-        
         return <div>Loading...</div>;
     }
     
@@ -63,14 +59,11 @@ const StoriesTab = ({
     const handleFileChange = (e) => {
       const file = e.target.files[0];
       if (file && (file.type.startsWith("image/") || file.type.startsWith("video/"))) {
-
           const filePreview = URL.createObjectURL(file);
           // Add the new story to the myStories mock -> TODO: call API
-          handleMyStoryClick(file, filePreview);
+          handleStoryClick(whoAmI, file, filePreview);
       }
   };
-
-  
 
     return (
         <div className="stories-container">
@@ -80,7 +73,7 @@ const StoriesTab = ({
                     {showLeftArrow && (
                       <LeftArrow onClick={scrollLeft} className="arrow-button prev" />
                     )}
-                    <li key={1} className="story-item" onClick={() => handleMyStoryClick()}>
+                    <li key={1} className="story-item" onClick={() => handleStoryClick(whoAmI)}>
                       <div className="profile-picture-container">
                         <div className={`profile-picture ${false ? '' : 'unseen'}`}>
                           <img
@@ -94,24 +87,27 @@ const StoriesTab = ({
                           </div>
                         )}
                       </div>
-                      <span className="story-user">{whoAmI.name}</span>
+                      <span className="story-user">{whoAmI.userName}</span>
                     </li>
 
-                    {stories?.map((story, index) => (
-                      <li
-                        key={index + 2}
-                        className="story-item"
-                        onClick={() => handleStoryClick(story)}
-                      >
-                        <div className={`profile-picture ${false ? '' : 'unseen'}`}>
-                          <img
-                            src={story.profilePic}
-                            alt={`${story.userName}'s profile`}
-                          />
-                        </div>
-                        <span className="story-user">{story.userName}</span>
-                      </li>
-                    ))}
+                    {stories?.map((story) =>
+                      story.id !== whoAmI.id && (
+                        <li
+                          key={story.id} // Use story.id for a unique key if it's unique
+                          className="story-item"
+                          onClick={() => handleStoryClick(story)}
+                        >
+                          <div className={`profile-picture unseen`}>
+                            <img
+                              src={story.profilePic}
+                              alt={`${story.userName}'s profile`}
+                            />
+                          </div>
+                          <span className="story-user">{story.userName}</span>
+                        </li>
+                     )
+                    )}
+
                     {showRightArrow && (
                       <RightArrow onClick={scrollRight} className="arrow-button next" />
                     )}
