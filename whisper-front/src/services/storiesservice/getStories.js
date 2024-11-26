@@ -67,12 +67,9 @@ export const getUsersWithStoriesAPI = async () => {
 
 export const getUsersWithStoriesCleaned = async () => {
     try {
-        
         const stories = await getUsersWithStoriesAPI();
-
         myStories = []
         
-        // TODO: handle with back
         stories.users.users.map((story) => {
             const flattenedStory = {
                 id: story.id,
@@ -83,10 +80,7 @@ export const getUsersWithStoriesCleaned = async () => {
         });
         return myStories;
         
-        
     } catch (error) {
         console.log("Error " ,error.message);
     }
-    
-    
 }
