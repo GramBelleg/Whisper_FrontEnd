@@ -10,14 +10,12 @@ export const signupResponse = {
 };
 
 export const uploadLink = {
-    "presignedUrl": "/api/container1/61730487929490.string?sv=2024-11-04&se=2024-11-11T19%3A05%3A29Z&sr=b&sp=cw&sig=Ew1isHt6Xcn%2BU8FMUM9tOUMAodW%2FQW3vOPmkefOBTAQ%3D",
-    "blobName": "61730487929490.string",
-    //2"presignedUrl": "/api/container1/61730546732593.string?sv=2024-11-04&se=2024-11-12T11%3A25%3A32Z&sr=b&sp=cw&sig=JVfu%2F6fTbncbvJqkcCfHqlu24OZfWw%2Fg3oSu9iqZ3Vw%3D"
+    "presignedUrl": "/api/container1/161732561072461.string?sv=2024-11-04&se=2024-12-05T18%3A57%3A52Z&sr=b&sp=cw&sig=8KbvpADoIvpc%2FAhYY8qTbGB4lKAQ4YBbkjfAlEO5tP0%3D",
+    "blobName": "161732561072461.string"
+}
 
-  }
 export const downloadLink = {
-    //2"presignedUrl": "https://whisperblob.blob.core.windows.net/container1/1729533525359.webm?sv=2024-11-04&se=2024-10-31T17%3A59%3A36Z&sr=b&sp=r&sig=ClsWyg9wRIBLvHqoIB7RsEEjR7%2BbpH7gcw8hwhxktKU%3D"
-    "presignedUrl": "/api/container1/61730487929490.string?sv=2024-11-04&se=2024-11-11T19%3A08%3A57Z&sr=b&sp=r&sig=%2BZkrxeMtJOPMyFJibsqTWKrPfdoNkVslDVmweZ%2F0qBw%3D"
+    "presignedUrl": "/api/container1/161732561072461.string?sv=2024-11-04&se=2024-12-07T06%3A01%3A25Z&sr=b&sp=r&sig=6Yvvtjjv9d%2BJ7m%2BuY0sFxAoUAwQga%2BmdhJlWHg%2FbH3g%3D"
 }
 export const storiesData = [
     {userId: 1, user:"amr", profilePicture: profilePicture, seen: true, date: "1/2/2022", content: "hello from amr"},
