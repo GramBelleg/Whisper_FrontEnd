@@ -9,7 +9,7 @@ import { useStories } from "@/contexts/StoryContext";
 import { whoAmI } from "@/services/chatservice/whoAmI";
 
 const SingleStory = ({ onNextStory, onDeleteStory, handleAddNewStoryClick, onClose }) => {
-    const { loading, error, url, currentStory, currentUser } = useStories();
+    const { loading, error, url, currentStory, currentUser, selectUser } = useStories();
     const [dropdownVisible, setDropdownVisible] = useState(false);
     const [visibilityDropDownVisible, setVisibilityDropDownVisible] = useState(false);
     const [remainingTime, setRemainingTime] = useState(20000); // 20 seconds
@@ -30,6 +30,7 @@ const SingleStory = ({ onNextStory, onDeleteStory, handleAddNewStoryClick, onClo
             setDropdownVisible(false);
             setVisibilityDropDownVisible(false);
             startInterval(); 
+            
             if(storyVisibilityChangedRef.current === true) {
                 try {
                     setStoryPrivacySettings(currentStory?.id, storyVisibility);

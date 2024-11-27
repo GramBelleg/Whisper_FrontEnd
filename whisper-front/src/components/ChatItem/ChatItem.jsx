@@ -19,6 +19,7 @@ import { useWhisperDB } from "@/contexts/WhisperDBContext";
 const ChatItem = ({ index, standaloneChat, setAction }) => {
 
     const { db } = useWhisperDB();
+    const { selectChat } = useChat();
 
     const maxLength = (
         (standaloneChat.muted) ? 33 : 
@@ -59,8 +60,6 @@ const ChatItem = ({ index, standaloneChat, setAction }) => {
         profilePic: '',
         drafted:false
     });
-
-    const { selectChat } = useChat();
 
     // Function to handle clicks and call chooseChat
     const handleClick = (e) => {

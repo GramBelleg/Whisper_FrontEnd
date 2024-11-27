@@ -11,7 +11,7 @@ const AddNewStoryModal = ({ file, filePreview, onClose }) => {
     const textareaRef = useRef(null);
     const [storyText, setStoryText] = useState('');
     const [fileType, setFileType] = useState('');
-    const { uploadStory, uploading } = useStories();
+    const { uploadStory, isUploading } = useStories();
     
     const updateNewMessage = (event) => {
         textareaRef.current.style.height = 'auto';
@@ -36,8 +36,8 @@ const AddNewStoryModal = ({ file, filePreview, onClose }) => {
                 "media": downloadLink.presignedUrl,
                 "type": fileType,
             }
-            await uploadStory(newStory);
-            
+            console.log(newStory)
+            await uploadStory(file, newStory);
         } catch (error) {
             console.log(error);
         } finally {
@@ -67,9 +67,7 @@ const AddNewStoryModal = ({ file, filePreview, onClose }) => {
         }
     }, [storyText]);
 
-    useEffect(() => {
-        console.log("Add new story modal")
-    },[])
+    useEffect(() => {}, [isUploading])
 
     const showUploading = () => {
         return (
@@ -109,7 +107,7 @@ const AddNewStoryModal = ({ file, filePreview, onClose }) => {
                         <FontAwesomeIcon className="send-story-icon" icon={faPaperPlane} onClick={sendMyStory}/>
                     </div>
 
-                    {uploading && showUploading()}
+                    {isUploading && showUploading()}
                 </div>
             )
         )     
