@@ -3,26 +3,14 @@ import React, { useRef, useState, useEffect } from "react";
 import { useModal } from '@/contexts/ModalContext';
 import StoriesList from '../StoriesList/StoriesList';
 import AddNewStoryModal from '../AddNewStoryModal/AddNewStoryModal';
-import { getUsersWithStoriesCleaned } from '@/services/storiesservice/getStories';
 import { useStories } from '@/contexts/StoryContext';
 
 export default function StoriesContainer() {
     const scrollContainerRef = useRef(null);
     const [showLeftArrow, setShowLeftArrow] = useState(false);
     const [showRightArrow, setShowRightArrow] = useState(true);
-    const [userStories, setUserStories] = useState([])
     const { openModal, closeModal } = useModal();
-    const { selectUser, stories } = useStories();
-    
-    const getStories = async () => {
-        try {
-            const data = await getUsersWithStoriesCleaned();
-            setUserStories(data);
-            console.log("Getting stories", data)
-        } catch (error) {
-            console.log(error);
-        }
-    }
+    const { selectUser, stories, storiesTab } = useStories();
 
     const handleScroll = () => {
         if (scrollContainerRef.current) {
@@ -31,10 +19,6 @@ export default function StoriesContainer() {
             setShowRightArrow(scrollLeft < scrollWidth - clientWidth - 1);
         }
     };
-
-    useEffect(() => {
-        getStories();
-    }, []);
 
     useEffect(() => {
         const scrollContainer = scrollContainerRef.current;
@@ -84,13 +68,13 @@ export default function StoriesContainer() {
         }
     };
 
-    useEffect(() => {}, [stories]);
+    useEffect(() => {}, [stories, storiesTab]);
    
     return (
             <StoriesTab
                 error={null}
                 loading={false}
-                stories={userStories}
+                stories={storiesTab}
                 showLeftArrow={showLeftArrow}
                 showRightArrow={showRightArrow}
                 scrollContainerRef={scrollContainerRef}

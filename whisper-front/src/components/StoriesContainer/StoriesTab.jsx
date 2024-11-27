@@ -45,14 +45,12 @@ const StoriesTab = ({
         }
       }
 
-    // Function to trigger the file input click
     const handlePlusIconClick = () => {
         if (fileInputRef.current) {
             fileInputRef.current.click();
         }
     };
 
-    // Function to handle file selection
     const handleFileChange = (e) => {
       console.log("File input changed"); // Debugging log
       const file = e.target.files[0];
@@ -93,9 +91,9 @@ const StoriesTab = ({
                     </li>
 
                     {stories?.map((story) =>
-                      story.id !== whoAmI.id && (
+                      story.userId !== whoAmI.id && (
                         <li
-                          key={story.id} // Use story.id for a unique key if it's unique
+                          key={story.userId} // Use story.userId for a unique key if it's unique
                           className="story-item"
                           onClick={() => handleStoryClick(story)}
                         >

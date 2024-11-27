@@ -6,7 +6,6 @@ import './StoriesList.css';
 import ErrorMesssage from '../ErrorMessage/ErrorMessage';
 import { useModal } from '@/contexts/ModalContext';
 import { useStories } from '@/contexts/StoryContext';
-import { whoAmI } from '@/services/chatservice/whoAmI';
 
 const StoriesList = ({ onClose, handleAddStory, handleDeleteStory }) => {
     const { stories, storiesSocket, selectStory, currentIndex } = useStories();
@@ -46,20 +45,17 @@ const StoriesList = ({ onClose, handleAddStory, handleDeleteStory }) => {
         } catch (error) {
             openModal(<ErrorMesssage errorMessage={error.message} onClose={closeModal} appearFor={5000}/>)
         }
-        
     };
 
     const handleFileChange = (e) => {
         const file = e.target.files[0];
-        
         if (file && (file.type.startsWith("image/") || file.type.startsWith("video/"))) {
             const filePreview = URL.createObjectURL(file);
-            // Add the new story to the myStories mock -> TODO: call API
             handleAddStory(file, filePreview);
         }
     };
 
-    useEffect(() => {}, [stories]);
+    useEffect(() => {console.log(currentIndex)}, [stories, currentIndex]);
 
 
   return (
@@ -88,7 +84,7 @@ const StoriesList = ({ onClose, handleAddStory, handleDeleteStory }) => {
                 </button>
             </div>
             <div className="indicators-container">
-                {stories.map((_, index) => (
+                {stories?.map((_, index) => (
                     <div
                         key={index}
                         className={`indicator ${
