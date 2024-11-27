@@ -1,11 +1,11 @@
 import { createContext, useContext, useEffect, useRef, useState } from "react";
-import { socket } from '@/services/messagingservice/sockets/sockets'
 import StorySocket from "@/services/sockets/StorySocket";
 import { getStories } from "@/services/storiesservice/getStories";
 import { downloadBlob } from "@/services/blobs/blob";
-import { whoAmI } from "@/services/chatservice/whoAmI";
 import { downloadLink, uploadLink } from "@/mocks/mockData";
 import { uploadBlob } from "@/services/blobs/blob";
+import { useWhisperDB } from "./WhisperDBContext";
+import { whoAmI } from "@/services/chatservice/whoAmI";
 
 
 export const StoryContext = createContext();
@@ -15,29 +15,52 @@ export const StoriesProvider = ({ children }) => {
     const [ currentStory, setCurrentStory ] = useState(null);
     const [currentIndex, setCurrentIndex] = useState(null);
     const [ stories, setStories ] = useState([]);
+    const [storiesTab, setStoriesTab] = useState([])
     const [ isUploading, setIsUploading] = useState(false);
-    const storiesSocket = new StorySocket(socket);
+    const storiesSocket = new StorySocket();
     const currentUserRef = useRef();
     const currentStoryRef = useRef();
     const [url, setUrl] = useState(null);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
+    const { db } = useWhisperDB();      
 
     const selectUser = (user) => {
         setCurrentUser(user);
     };
 
     const selectStory = (next) => {
-        if (next) {
-            setCurrentIndex((prev) => (prev < stories.length - 1 ? prev + 1 : 0));
-        } else {
-            setCurrentIndex((prev) => (prev > 0 ? prev - 1 : stories.length - 1));
+        if (stories) {
+            setCurrentIndex((prevIndex) =>
+                    next
+                        ? (prevIndex < stories.length - 1 ? prevIndex + 1 : 0)
+                        : (prevIndex > 0 ? prevIndex - 1 : stories.length - 1)
+            );
         }
     };
 
+    const localGetStories = async () => {
+        if (db) {
+            try {
+                const data = await db.getStories();
+                setStoriesTab(data);
+            } catch (error) {
+                console.log(error);
+            }
+        }
+    }
+
     const loadUserStories = async () => {
+        let data;
         try {
-            const data = await getStories(currentUser.id);
+            try {
+                data = await db.getUserStories(currentUser.id);
+            } catch (error) {
+                console.log(error);
+                data = await getStories(currentUser.id);
+                await db.insertUserStories(data, currentUser.id);
+            } 
+            console.log(data)
             setStories([...data]);
         } catch (error) {
             setStories([]);
@@ -46,24 +69,26 @@ export const StoriesProvider = ({ children }) => {
     };
 
     const handleRecieveStory = async (storyData) => {
-        /*
-        {
-            "id": 0,
-            "userId": 0,
-            "content": "string",
-            "media": "string",
-            "date": "2019-08-24T14:15:22Z"
+        try {
+            await db.postStory(storyData);
+            const userHasStories = await db.userHasStories(storyData.userId);
+            if (!userHasStories) {
+                await db.postUserStories(storyData);
+            }
+
+            if (storyData.userId === whoAmI.id) {
+                //loadUserStories();
+            }
+        } catch (error) {
+            console.log(error);
+        } finally {
+            setIsUploading(false);
         }
-        */
-       if (storyData.userId === whoAmI.id) {
-       }
-        console.log(storyData);
     }
 
     const fetchStoryUrl = async () => {
         try {
             if(currentStory) {  
-                console.log(currentStory)
                 const { blob } = await downloadBlob({ "presignedUrl": currentStory.media });
                 const newBlob = new Blob([blob], { type: currentStory.type });
                 const objectUrl = URL.createObjectURL(newBlob);
@@ -77,16 +102,16 @@ export const StoriesProvider = ({ children }) => {
         }
     };
 
-    const uploadStory = async (newStory) => {
+    const uploadStory = async (file, newStory) => {
         setIsUploading(true);
         try {
             const blobName = await uploadBlob(file, uploadLink);
             if(blobName) {
                 storiesSocket.sendData(newStory);
-                setIsUploading(false);
             }
         } catch (error) {
             setIsUploading(false);
+            console.log(error);
             setError(error.message);
         } 
     }
@@ -94,24 +119,24 @@ export const StoriesProvider = ({ children }) => {
     useEffect(() => {
         if (currentUser) {
             loadUserStories();
-            setCurrentIndex(0);
         } else {
             setStories([]);
-            setCurrentIndex(0);
-            setCurrentStory(null);
         }
         currentUserRef.current = currentUser;
     }, [currentUser]);
 
-    useEffect(() => {
-        currentStoryRef.current = currentStory;
-        setLoading(true);
-        setError(null);
-        try {
-            fetchStoryUrl();
-        } catch (error) {
-            setError(error);
-            setLoading(false);
+    useEffect(() => { 
+        if (currentStory) {
+            currentStoryRef.current = currentStory;
+            setLoading(true);
+            setError(null);
+            console.log("aywa")
+            try {
+                fetchStoryUrl();
+            } catch (error) {
+                setError(error);
+                setLoading(false);
+            }
         }
     }, [currentStory]);
 
@@ -122,10 +147,25 @@ export const StoriesProvider = ({ children }) => {
     }, [storiesSocket]);
 
     useEffect(() => {
+        console.log(stories)
         if (stories) {
-            setCurrentStory(stories[currentIndex]);
+            setCurrentIndex(0);
+            setCurrentStory(stories[0]);
+        } else {
+            setCurrentStory(null);
         }
     }, [stories])
+
+    useEffect(() => {
+        localGetStories();
+    }, [db]);
+
+    useEffect(() => {
+        if (currentIndex > -1 && stories) {
+            console.log(currentIndex)
+            setCurrentStory(stories[currentIndex])
+        }
+    }, [currentIndex])
     
     return (
         <StoryContext.Provider
@@ -138,6 +178,7 @@ export const StoriesProvider = ({ children }) => {
                 error,
                 currentUser,
                 isUploading,
+                storiesTab,
                 selectUser,
                 fetchStoryUrl,
                 uploadStory,
@@ -148,7 +189,6 @@ export const StoriesProvider = ({ children }) => {
             {children}
         </StoryContext.Provider>
     )
-
 }
 
 export const useStories = () => {
