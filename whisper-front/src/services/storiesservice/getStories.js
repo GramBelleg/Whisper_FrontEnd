@@ -10,6 +10,7 @@ export const getStoriesAPI = async (id) => {
         const response = await axios.get(`http://localhost:5000/api/user/story/${id}`,{
             withCredentials: true
         });
+        console.log("zabt el zabt",response)
             
         return response.data;
     } catch (error) {
@@ -24,8 +25,6 @@ export const getStories = async (id) => {
 
         console.log(response)
         const tempStories =  response.stories;  
-
-        
 
         myStories = [];
 
