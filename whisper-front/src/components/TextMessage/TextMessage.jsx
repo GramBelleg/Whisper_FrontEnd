@@ -1,7 +1,7 @@
 // This renders sent or recieved text
 // It is used by the last message
 
-import { useRef } from "react";
+import { useEffect, useRef } from "react";
 import "./TextMessage.css";
 
 const TextMessage = ({index, message}) => {
@@ -12,7 +12,6 @@ const TextMessage = ({index, message}) => {
     const trimmedMessage = message.length > maxLength
         ? `${message.slice(0, maxLength - 3)}...`
         : message;
-
     
     return ( 
         <p ref={textRef} className={`text-message ${index ? 'hovered' : ''}`}>
