@@ -2,7 +2,7 @@ import axiosInstance from "../axiosInstance";
 import axios from "axios";
 import { whoAmI } from "../chatservice/whoAmI";
 import UserSocket from "../sockets/UserSocket";
-import { downloadBlob, uploadBlob } from "@/services/blobs/blob";
+import { downloadBlob, getBlobUrl, uploadBlob } from "@/services/blobs/blob";
 import useAuth from "@/hooks/useAuth";
 import { useEffect } from "react";
 
@@ -133,38 +133,26 @@ export const sendUpdateCode = async (email) => {
 
   export const setProfilePic = async (blobName) => {
     try {
-      console.log("updateProfilePic called");
-      const token = localStorage.getItem("token");
+      // Generate an Object URL for the downloaded blob
+      const blob = await getBlobUrl(blobName);
+      console.log('Profile picture retrieved successfully, Object URL created:', blob);
   
-      const blobResponse = await axiosInstance.post(
-        'api/media/read',
-        { blobName },
-        {
-            headers: {
-                'Authorization': `Bearer ${token}`,
-            },
-            withCredentials: true,
-        }
-    );
-
-    console.log("Blob response:", blobResponse);
-    const { blob } = await downloadBlob(blobResponse.data);
-    const newBlob = new Blob([blob]);
-    const objectUrl = URL.createObjectURL(newBlob);
-    return objectUrl;
+      return blob.imageUrl; // Return the Object URL
   
     } catch (error) {
-      console.error('Error updating profile picture:', error);
+      console.error('Error retrieving profile picture:', error);
       throw new Error(
-        error.response?.data?.message || 'An error occurred while updating the profile picture'
+        error.response?.data?.message || 'An error occurred while retrieving the profile picture'
       );
     }
   };
+  
   
   export const getPFP = async ({ userId, profilePic }) => {
     console.log("getpfp")
     if (profilePic) {
       const profilePicUrl = await setProfilePic(profilePic); // Resolve via setProfilePic
+      console.log("getpfp res",profilePicUrl)
       return profilePicUrl;
     } else if(profilePic==="") {
       // deleteProfilePic(userId);
