@@ -34,7 +34,7 @@ const SearchSingleChat = () => {
       {showSearchBar && (
         <div className="absolute left-0 transform -translate-x-full w-full sm:w-80 shadow-lg rounded-md p-2 z-10">
           <SearchBar handleQueryChange={handleQueryChange} />
-          {isDropdownVisible && searchResults.length > 0 && (
+          {isDropdownVisible && searchResults && searchResults.length > 0 && (
             <ul className="absolute left-0 mt-2 w-full bg-dark shadow-lg rounded-md max-h-60 overflow-y-auto">
               {searchResults.map((result, index) => (
                 <li
@@ -49,7 +49,9 @@ const SearchSingleChat = () => {
               ))}
             </ul>
           )}
-          {isDropdownVisible && searchResults.length === 0 && (
+          {((isDropdownVisible && searchResults && searchResults.length === 0)||
+           (!searchResults && query.length>0)) && 
+           (
             <div className="absolute left-0 mt-2 w-full bg-dark shadow-lg rounded-md p-4 text-center text-gray-500">
               No results found.
             </div>
