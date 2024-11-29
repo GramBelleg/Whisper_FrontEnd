@@ -3,7 +3,7 @@ import { formatDuration } from '@/utils/formatDuration'
 import ChatTextingActions from '../ChatTextingActions/ChatTextingActions'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faCircleNotch, faFile, faImage, faMicrophoneAlt, faPaperclip, faPaperPlane, faTimes, faTrashAlt } from '@fortawesome/free-solid-svg-icons'
-import { useMemo, useRef, useState } from 'react'
+import { useEffect, useMemo, useRef, useState } from 'react'
 import useVoiceRecorder from '@/hooks/useVoiceRecorder'
 import { messageTypes } from '@/services/sendTypeEnum'
 import ParentMessage from '../ParentMessage/ParentMessage'
@@ -11,12 +11,13 @@ import { useChat } from '@/contexts/ChatContext'
 import useFetch from '@/services/useFetch'
 import CustomStickersPicker from '../CustomStickersPicker/CustomStickersPicker'
 import UnifiedPicker from '../UnifiedPicker/UnifiedPicker'
+import { draftMessage } from '@/services/chatservice/draftMessage'
+import { useWhisperDB } from '@/contexts/WhisperDBContext'
 
 const ChatActions = () => {
     const [textMessage, setTextMessage] = useState('')
     const { isRecording, duration, startRecording, stopRecording, discardRecording } = useVoiceRecorder()
     const { sendMessage, sending } = useChat()
-
     const [attachedFile, setAttachedFile] = useState(null);
     const [showAttachMenu, setShowAttachMenu] = useState(false);
     const fileInputRef = useRef(null);
@@ -24,7 +25,6 @@ const ChatActions = () => {
     const [attachmentType, setAttachmentType] = useState(-1);
     const { data: uploadData, error:errorUpload, loading: loadingUpload } = useFetch('/uploadAttachment');
     const isTyping = useMemo(() => textMessage.length > 0, [textMessage])
-
     const showSendIcon = useMemo(() => isTyping || isRecording, [isTyping, isRecording])
 
     const handleGifAttach = (gifFile) => {
@@ -35,6 +35,9 @@ const ChatActions = () => {
     const handleStickerAttach = (url) => {
         sendMessage(messageTypes.IMAGE, url)
     }
+    const { currentChat } = useChat();
+    const { db } = useWhisperDB();
+    const [ chatId, setChatId ] = useState(-1);
 
     const removeAttachment = () => {
         setAttachedFile(null);
@@ -128,6 +131,53 @@ const ChatActions = () => {
             setTextMessage('')
         }
     }
+
+    useEffect(() => {
+        const setMessageByDrafted = async () => {
+            try {
+                if (currentChat) {
+                    const lastMessage = await db.getDraftedMessage(currentChat.id);
+                    if (lastMessage) {
+                        setTextMessage(lastMessage);
+                    } else {
+                        setTextMessage('');
+                    }
+                }
+            } catch (error) {
+                console.log(error);
+                setTextMessage('');
+            }
+        }
+
+        const setDraftedMessage = async () => {
+            if (textMessage && textMessage.length > 0) {
+                try {
+                    const draftTime = new Date().toISOString();
+                    const draftedMessage = {
+                        chatId: chatId,
+                        draftContent: textMessage,
+                        draftTime: draftTime
+                    };
+                    
+
+                    //await draftMessage(draftedMessage);
+
+                    console.log("Drafting message")
+                   
+                    await db.insertDraftedMessage(draftedMessage);
+                } catch (error) {
+                    console.log(error.message);
+                }
+            }
+            if (currentChat) {
+                setChatId(currentChat.id);
+            }
+        }
+        
+        setDraftedMessage();
+        setMessageByDrafted();
+
+    }, [currentChat])
 
     return (
         <div className='chat-actions-container'>

@@ -1,4 +1,4 @@
-import { createContext, useContext, useEffect, useState } from 'react';
+import { createContext, useContext, useEffect, useRef, useState } from 'react';
 import { socket } from '@/services/messagingservice/sockets/sockets'
 import { whoAmI } from '@/services/chatservice/whoAmI';
 import { mapMessage } from '@/services/chatservice/getMessagesForChat';
@@ -10,12 +10,14 @@ export const ChatContext = createContext();
 
 export const ChatProvider = ({ children }) => {
     const [currentChat, setcurrentChat] = useState(null);
-    const [messages, setMessages] = useState([]);// TODO: handle from back
+    const [messages, setMessages] = useState([]);
     const [pinnedMessages, setPinnedMessages] = useState([]);
     const [parentMessage, setParentMessage] = useState(null);
     const [sending, setSending] = useState(false);
     const messagesSocket = new MessagingSocket(socket);
     const { db } = useWhisperDB();
+    const currentChatRef = useRef(currentChat);
+    const [messageReceived, setMessageReceived] = useState(false);
 
     const selectChat = (chat) => {
         setcurrentChat(chat);
@@ -27,7 +29,6 @@ export const ChatProvider = ({ children }) => {
             const myMessages = await db.getMessagesForChat(id);
             setMessages(myMessages);
         } catch (error) {
-            setMessages([]);
             console.log(error);
         }
     }
@@ -37,8 +38,15 @@ export const ChatProvider = ({ children }) => {
             const myPinnedMessages = await db.getPinnedMessagesForChat(id);
             setPinnedMessages(myPinnedMessages);
         } catch (error) {
-            setPinnedMessages([]);
             console.log(error);
+        }
+    }
+
+    const clearUnreadMessages = async (id) => {
+        try {
+            await db.updateUnReadMessagesCount(id, 0);
+        } catch (error) {
+            console.log(error.message);
         }
     }
 
@@ -46,8 +54,13 @@ export const ChatProvider = ({ children }) => {
         if (currentChat) {
             // TODO: handle with back
             loadMessages(currentChat.id);
+            clearUnreadMessages(currentChat.id);
             loadPinnedMessages(currentChat.id);
+        } else {
+            setMessages([]);
+            setPinnedMessages([]);
         }
+        currentChatRef.current = currentChat;
     }, [currentChat]);
 
     const sendMessage = async (type, content, attachmentPayload = null) => {
@@ -57,11 +70,11 @@ export const ChatProvider = ({ children }) => {
             content:content,
             forwarded: false,
             selfDestruct: true,
-            expiresAfter: 0,
-            type:type,
-            sentAt : new Date().toLocaleDateString(),
+            expiresAfter: 5,
+            type:type.toUpperCase(),
+            sentAt : new Date().toISOString(),
             media: "",
-            extension:"",
+            // extension:"",
             parentMessageId: null,
             forwardedFromUserId: null,
             mentions:[],
@@ -88,12 +101,7 @@ export const ChatProvider = ({ children }) => {
         newMessage.time = new Date();
 
     
-        // messagesSocket.sendData(newMessageForBackend);
-        try {
-            await db.insertMessage(newMessage);
-        } catch (error) {
-            console.error(error);
-        }
+        messagesSocket.sendData(newMessageForBackend);
         setSending(false);
         setMessages((prevMessages) => {
             if (prevMessages) {
@@ -118,15 +126,14 @@ export const ChatProvider = ({ children }) => {
         } catch (error) {
             console.log(error);
         }
-    }
-
-    const pinMessage = (messsageId, durtaion) => {
+    } 
+    
+    const pinMessage = (messsageId, durtaion = 0) => {
         messagesSocket.pinMessage({
             chatId: currentChat.id,
             messageId: messsageId,
             duration: durtaion,
         });
-        // TODO: add to indexed DB
     }
 
     const unPinMessage = (messsageId) => {
@@ -134,89 +141,117 @@ export const ChatProvider = ({ children }) => {
             chatId: currentChat.id,
             messageId: messsageId,
         });
-        // TODO: remove from IndexedDB
+    }
+
+    const handleReceiveMessage = async (messageData) => {
+        try {
+            const activeChat = currentChatRef.current; 
+            const myMessageData = {
+                ...messageData,
+            }
+
+            try {
+                await db.insertMessage({ ...mapMessage(myMessageData), drafted: false});
+                setMessageReceived(true);
+            } catch (error) {
+                throw error;
+            }
+            
+            if (activeChat && activeChat.id === myMessageData.chatId) {
+                loadMessages(activeChat.id); 
+            } 
+            else {
+                try {
+                    await db.updateUnReadMessagesCount(myMessageData.chatId, 1);
+                } catch (error) {
+                    throw error;
+                }
+            }
+            setMessageReceived(false);
+                
+        } catch (error) {
+            console.error(error);
+        }
+    };
+
+    const handlePinMessage = async (pinData) => {
+        try {
+            const activeChat = currentChatRef.current; 
+            const messagesForChat = await db.getMessagesForChat(pinData.chatId);
+            const messageToPin = messagesForChat.find(
+                (message) => message.id === pinData.pinnedMessage
+            );
+
+            if (!messageToPin) {
+                throw new Error(`Message with id ${pinData.pinnedMessage} not found in chat ${pinData.chatId}`);
+            }   
+
+            try {
+                await db.pinMessage({...pinData, content: messageToPin.content});
+            } catch(error) {
+                throw error;
+            }
+            
+            try {
+                await db.updateMessagesForPinned(pinData.pinnedMessage);
+            } catch(error) {
+                throw error;
+            }
+            loadMessages(activeChat.id);
+            loadPinnedMessages(activeChat.id);
+        } catch (error) {
+            console.error(error);
+        }
+    }
+
+    const handleUnpinMessage = async (pinData) => {
+        try {
+            const activeChat = currentChatRef.current; 
+            const messagesForChat = await db.getMessagesForChat(pinData.chatId);
+            const messageToPin = messagesForChat.find(
+                (message) => message.id === pinData.unpinnedMessage
+            );
+
+            if (!messageToPin) {
+                throw new Error(`Message with id ${pinData.unpinnedMessage} not found in chat ${pinData.chatId}`);
+            } 
+            try {
+                await db.unPinMessage(messageToPin.id);
+            } catch(error) {
+                throw error;
+            }
+
+            try {
+                await db.updateMessagesForUnPinned(messageToPin.id);
+            } catch(error) {
+                throw error;
+            }   
+
+            loadMessages(activeChat.id);
+            loadPinnedMessages(activeChat.id);
+        } catch (error) {
+            console.error(error);
+        }
     }
 
     useEffect(() => {
-        const handleReceiveMessage = (messageData) => {
-            setMessages((prevMessages) => {
-
-                if(currentChat.id === messageData.chatId) {
-                    // Find the index of the message with matching `sentAt` time
-                    const messageIndex = prevMessages.findIndex(
-                        (message) => message.sentAt === messageData.sentAt
-                    );
-        
-                    // If a matching message is found
-                    if (messageIndex !== -1) {
-                        const updatedMessages = [...prevMessages];
-                        updatedMessages[messageIndex] = {...mapMessage(messageData)}
-        
-                        return updatedMessages; // Return the updated array
-                    }
-                } else {
-                    // TODO: save it to indexedDB
-                }
-        
-                return prevMessages;
-            });
-        };
-
-        const handlePinMessage = (pinData) => {
-            const { messsageId, chatId } = pinData;
-            if (messsageId === currentChat.id) {
-                const messageIndex = messages.findIndex(
-                    (message) => message.id === chatId
-                );
-                if (messageIndex !== -1) {
-                    const updatedMessages = [...messages];
-                    updatedMessages[messageIndex].isPinned = true
-                    setMessages(updatedMessages);
-                    setPinnedMessages([...pinnedMessages, pinData]);
-                }
-            } else {
-                // TODO: save to indexedDB
-            }
+        if(messagesSocket) {
+            messagesSocket.onReceiveMessage(handleReceiveMessage);
+            messagesSocket.onPinMessage(handlePinMessage);
+            messagesSocket.onUnPinMessage(handleUnpinMessage);
         }
-
-        const handleUnpinMessage = (pinData) => {
-            const { messsageId, chatId } = pinData;
-            if (messsageId === currentChat.id) {
-                const messageIndex = messages.findIndex(
-                    (message) => message.id === chatId
-                );
-                if (messageIndex !== -1) {
-                    const updatedMessages = [...messages];
-                    updatedMessages[messageIndex].isPinned = false
-                    setMessages(updatedMessages);
-                    setPinnedMessages(pinnedMessages.filter((pin) => pin.id !== pinData.id));
-                }
-            } else {
-                // TODO: save to indexedDB
-            }
-
-        }
-    
-        messagesSocket.onReceiveMessage(handleReceiveMessage);
-        messagesSocket.onPinMessage(handlePinMessage);
-        messagesSocket.onPinMessage(handleUnpinMessage);
-    
-        return () => {
-            messagesSocket.offReceiveMessage(handleReceiveMessage);
-            messagesSocket.offPinMessage(handleReceiveMessage);
-            messagesSocket.offPinMessage(handleUnpinMessage);
-        };
     }, [messagesSocket]);
-    
-    
+
+    useEffect(() => {
+    }, [messages, pinnedMessages]);
 
     return (
-        
         <ChatContext.Provider
             value={{
                 currentChat,
                 selectChat,
                 messages,
+                messageReceived,
                 pinnedMessages,
                 pinMessage,
                 unPinMessage,

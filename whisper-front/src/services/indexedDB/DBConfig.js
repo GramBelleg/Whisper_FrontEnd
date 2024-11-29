@@ -16,7 +16,7 @@ export const DB_CONFIG = {
         },
         pinnedmessages : {
             name : 'pinnedmessages',
-            keyPath : 'id',
+            keyPath : 'messageId',
             indexes : [
                 { name: 'chatId', keyPath: 'chatId', options: { unique: false } }
             ]

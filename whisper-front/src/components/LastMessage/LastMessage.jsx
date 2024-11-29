@@ -5,36 +5,45 @@ import StickerMessage from "../StickerMessage/StickerMessage";
 import VideoMessage from "../VideoMessage/VideoMessage";
 import AudioVoiceNoteMessage from "../AudioVoiceNoteMessage/AudioVoiceNoteMessage";
 import DeletedMessage from "../DeletedMessage/DeletedMessage"; // Fixed typo here
+import DraftedMessage from "../DraftedMessage/DraftedMessage";
 
-const LastMessage = ({ sender, messageType, message, messageState, index }) => {
+const LastMessage = ({ myChat , index }) => {
 
   return (
     <div className="last-message">
-      {messageState === 3 ? (
-        <DeletedMessage sender={sender}/> // Fixed typo here
-      ) : (
-        <>
-          {messageType?.toLowerCase() === "text".toLowerCase() && (
-            <TextMessage index={index} message={message}/>
-          )}
-          {messageType?.toLowerCase() === "image".toLowerCase() && (
-            <ImageMessage messageState={messageState} />
-          )}
-          {(messageType?.toLowerCase() === "audio".toLowerCase() || messageType?.toLowerCase() === "voiceNote".toLowerCase()) && (
-            <AudioVoiceNoteMessage
-              messageType={messageType}
-              messageState={messageState}
-              message={message}
-            />
-          )}
-          {messageType?.toLowerCase() === "video".toLowerCase() && (
-            <VideoMessage messageState={messageState} />
-          )}
-          {messageType?.toLowerCase() === "sticker".toLowerCase() && (
-            <StickerMessage messageState={messageState} />
-          )}
-        </>
-      )}
+        {
+            myChat.drafted ? (
+                <DraftedMessage message={myChat.lastMessage}/>
+            ) :
+            (
+                myChat.messageState === 3 ? (
+                    <DeletedMessage sender={myChat.senderId}/> // Fixed typo here
+                ) : 
+                (
+                    <>
+                        {myChat.messageType?.toLowerCase() === "text".toLowerCase() && (
+                            <TextMessage index={index} message={myChat.lastMessage}/>
+                        )}
+                        {myChat.messageType?.toLowerCase() === "image".toLowerCase() && (
+                            <ImageMessage messageState={myChat.messageState} />
+                        )}
+                        {(myChat.messageType?.toLowerCase() === "audio".toLowerCase() || myChat.messageType.toLowerCase() === "voiceNote".toLowerCase()) && (
+                            <AudioVoiceNoteMessage
+                            messageType={myChat.messageType}
+                            messageState={myChat.messageState}
+                            message={myChat.lastMessage}
+                            />
+                        )}
+                        {myChat.messageType?.toLowerCase() === "video".toLowerCase() && (
+                            <VideoMessage messageState={myChat.messageState} />
+                        )}
+                        {myChat.messageType?.toLowerCase() === "sticker".toLowerCase() && (
+                            <StickerMessage messageState={myChat.messageState} />
+                        )}
+                    </>
+                )
+            )
+        }
     </div>
   );
 };

@@ -4,12 +4,11 @@ import "./PinnedMessages.css";
 import { faThumbtack, faChevronDown } from "@fortawesome/free-solid-svg-icons";
 import { useChat } from "@/contexts/ChatContext";
 
-const PinnedMessages = ({ pinnedMessages, onGoToMessage }) => {
+const PinnedMessages = ({ onGoToMessage }) => {
     const [activeIndex, setActiveIndex] = useState(0);
     const [isDropdownOpen, setIsDropdownOpen] = useState(false);
     const dropdownRef = useRef(null);
-    const { unPinMessage } = useChat();
-    const [myPinnedMessages, setMyPinnedMessages] = useState([]);
+    const { pinnedMessages, unPinMessage } = useChat();
 
     const handleNextMessage = () => {
         setActiveIndex((prevIndex) => (prevIndex + 1) % pinnedMessages.length);
@@ -26,15 +25,8 @@ const PinnedMessages = ({ pinnedMessages, onGoToMessage }) => {
     };
 
     const handleUnpin = () => {
-        const updatedMessages = pinnedMessages.filter(
-            (_, index) => index !== activeIndex
-        );
+        unPinMessage(pinnedMessages[activeIndex].messageId);
 
-        setMyPinnedMessages(updatedMessages);
-        
-        unPinMessage(pinnedMessages[activeIndex].id);
-
-        // Adjust the active index only after the pinnedMessages update
         const newActiveIndex =
             activeIndex >= pinnedMessages.length - 1
                 ? pinnedMessages.length - 2
@@ -51,11 +43,7 @@ const PinnedMessages = ({ pinnedMessages, onGoToMessage }) => {
         setIsDropdownOpen(false);
     };
 
-    // Watch for changes in pinnedMessages
-    useEffect(() => {
-        setMyPinnedMessages(pinnedMessages);
-        setActiveIndex(0);
-    }, [pinnedMessages]);
+    useEffect(() => {}, [pinnedMessages]);
 
     useEffect(() => {
         const handleClickOutside = (event) => {
@@ -74,7 +62,7 @@ const PinnedMessages = ({ pinnedMessages, onGoToMessage }) => {
     return (
         <div className="pinned-messages-container">
             <div className="indicators-container">
-                {myPinnedMessages?.map((_, index) => (
+                {pinnedMessages?.map((_, index) => (
                     <div
                         key={index}
                         className={`indicator ${
@@ -86,7 +74,11 @@ const PinnedMessages = ({ pinnedMessages, onGoToMessage }) => {
 
             <div
                 className="pinned-messages"
-                onClick={handleNextMessage}
+                onClick={(e) => {
+                    if (!dropdownRef.current || !dropdownRef.current.contains(e.target)) {
+                        handleNextMessage();
+                    }
+                }}
                 onContextMenu={(e) => {
                     e.preventDefault(); // Prevent default context menu
                     handlePreviousMessage();
@@ -95,13 +87,17 @@ const PinnedMessages = ({ pinnedMessages, onGoToMessage }) => {
                 <FontAwesomeIcon icon={faThumbtack} style={{ height: "24px" }} className="icon-pin" />
                 <div className="messages-list">
                     <div className="pinned-message">
-                        <p className="message-content" title={myPinnedMessages[activeIndex]?.content}>
-                            {myPinnedMessages[activeIndex]?.content}
+                        <p className="message-content" title={pinnedMessages[activeIndex]?.content}>
+                            {pinnedMessages[activeIndex]?.content}
                         </p>
                     </div>
                 </div>
 
-                <div className="dropdown-container" ref={dropdownRef}>
+                <div
+                    className="dropdown-container"
+                    ref={dropdownRef}
+                    onClick={(e) => e.stopPropagation()} // Prevent bubbling to the parent container
+                >
                     <FontAwesomeIcon 
                         icon={faChevronDown}
                         className="dropdown-icon"
@@ -115,6 +111,7 @@ const PinnedMessages = ({ pinnedMessages, onGoToMessage }) => {
                     )}
                 </div>
             </div>
+
         </div>
     );
 };

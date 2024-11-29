@@ -5,17 +5,16 @@ import SearchBar from "../SearchBar/SearchBar";
 import { useState, useEffect } from 'react';
 import AddNewButton from "../AddNewButton/AddNewButton";
 import { useChat } from "@/contexts/ChatContext";
-import { getChatsCleaned } from "@/services/chatservice/getChats";
 import { useWhisperDB } from "@/contexts/WhisperDBContext";
 import { useModal } from "@/contexts/ModalContext";
 import ErrorMesssage from "../ErrorMessage/ErrorMessage";
 
 const ChatPage = () => {
-
-    const { selectChat } = useChat();
+    const { messageReceived, messages, selectChat } = useChat();
     const [chatList, setChatList] = useState([]);
     const { db } = useWhisperDB();
     const { openModal, closeModal } = useModal();
+    const [action, setAction] = useState(null);
 
     const handleAddNewClick = () => {
         console.log('Add new clicked');
@@ -25,7 +24,6 @@ const ChatPage = () => {
         try {
             let allChats = await db.getChats();
             setChatList(allChats);
-            console.log(allChats)
         } catch (error) {
             openModal(
                 <ErrorMesssage
@@ -37,12 +35,20 @@ const ChatPage = () => {
         }
     }
 
-
     useEffect(() => {
         if (db) {
             loadChats();
         }
     }, [db]);
+
+    useEffect(() => {
+        if (action) {
+            loadChats();
+            setAction(false);
+        }
+    }, [action]);
+
+    useEffect(() => { loadChats() }, [messages, messageReceived]);
     
     return (
         <div className="chat-page">
@@ -53,7 +59,7 @@ const ChatPage = () => {
                 <StoriesContainer />
             </div>
             <div className="sidebar__other-content">
-                {chatList && chatList.length > 0 &&  <ChatList chatList={chatList} chooseChat={selectChat}/>}
+                {chatList && chatList.length > 0 &&  <ChatList chatList={chatList} chooseChat={selectChat} setAction={setAction}/>}
                 <AddNewButton onClick={handleAddNewClick} />
             </div>
         </div>

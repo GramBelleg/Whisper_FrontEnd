@@ -15,14 +15,11 @@ const MySingleStory = ({ story, onNextStory, onDeleteStory, handleAddNewStoryCli
     const [visibilityDropDownVisible, setVisibilityDropDownVisible] = useState(false);
     const [remainingTime, setRemainingTime] = useState(20000); // 20 seconds
     const [storyVisibility, setStoryVisibility] = useState("Everyone");
-
-
     const storyVisibilityChangedRef = useRef(false);
     const videoRef = useRef();
     const intervalRef = useRef(null);
     const startTimeRef = useRef(Date.now());
     const dropdownRef = useRef(null);
-
     const {openModal, closeModal} = useModal();
 
     const handleClickOutside = (event) => {
@@ -33,7 +30,7 @@ const MySingleStory = ({ story, onNextStory, onDeleteStory, handleAddNewStoryCli
         ) {
             setDropdownVisible(false);
             setVisibilityDropDownVisible(false);
-            startInterval(); // Resume interval when clicking outside
+            startInterval(); 
             if(storyVisibilityChangedRef.current === true) {
                 try {
                     setStoryPrivacySettings(story?.id, storyVisibility);
@@ -53,9 +50,7 @@ const MySingleStory = ({ story, onNextStory, onDeleteStory, handleAddNewStoryCli
 
 
     useEffect(() => {
-
         document.addEventListener("mousedown", handleClickOutside);
-        
         setUrl(null);
         setLoading(true);
         setDropdownVisible(false);
@@ -67,7 +62,6 @@ const MySingleStory = ({ story, onNextStory, onDeleteStory, handleAddNewStoryCli
         intervalRef.current = null;
         startTimeRef.current = Date.now();
         
-        // Fetch and set the story URL
         const fetchUrl = async () => {
             try {
                 if(story) {
@@ -96,20 +90,14 @@ const MySingleStory = ({ story, onNextStory, onDeleteStory, handleAddNewStoryCli
         };
 
         fetchUrl();
-
-        // Start the timer
         startInterval();
-
-        // Cleanup on unmount
         return () => {
             if (url) {
                 URL.revokeObjectURL(url);
             }
             
-
             clearTimeout(intervalRef.current);
             document.removeEventListener("mousedown", handleClickOutside);
-
         };
     }, [story?.id]);
     
@@ -176,10 +164,10 @@ const MySingleStory = ({ story, onNextStory, onDeleteStory, handleAddNewStoryCli
         if (story && story?.type.startsWith("image/")) {
             return (
                 <img
-                src={url}
-                alt="Story content"
-                className="w-full h-full object-contain"
-                onError={() => setError("Failed to load image")}
+                    src={url}
+                    alt="Story content"
+                    className="w-full h-full object-contain"
+                    onError={() => setError("Failed to load image")}
                 />
             );
         }
@@ -202,46 +190,46 @@ const MySingleStory = ({ story, onNextStory, onDeleteStory, handleAddNewStoryCli
     };
 
   return (
-    <>
-        <div className="dropdown-container">
-            <button onClick={handleDropdownToggle} className="three-dots-button" aria-label="Options">
-                <FontAwesomeIcon icon={faEllipsisV} className="h-8 w-8" />
-            </button>
-            {dropdownVisible && (
-                <div className="dropdown-menu">
-                    <button onClick={handleAddNewStoryClick} className="dropdown-item add">Add</button>
-                    <button onClick={handleDeleteStory} className="dropdown-item delete">Delete</button>
-                    <div className="edit-visibility-within-story">
-                        <FontAwesomeIcon icon={faEye} />
-                    <button onClick={handleEditVisibility} className="dropdown-item visibility">
-                        Who Can See My Story?
-                    </button>
+        <>
+            <div className="dropdown-container">
+                <button onClick={handleDropdownToggle} className="three-dots-button" aria-label="Options">
+                    <FontAwesomeIcon icon={faEllipsisV} className="h-8 w-8" />
+                </button>
+                {dropdownVisible && (
+                    <div className="dropdown-menu">
+                        <button onClick={handleAddNewStoryClick} className="dropdown-item add">Add</button>
+                        <button onClick={handleDeleteStory} className="dropdown-item delete">Delete</button>
+                        <div className="edit-visibility-within-story">
+                            <FontAwesomeIcon icon={faEye} />
+                        <button onClick={handleEditVisibility} className="dropdown-item visibility">
+                            Who Can See My Story?
+                        </button>
+                        </div>
                     </div>
+                )}
+            </div>
+            {visibilityDropDownVisible && (
+                <div className="within-story-visibility" ref={dropdownRef}>
+                    <label>
+                        <input type="radio" value="Everyone" checked={storyVisibility === "Everyone"} onChange={() => {handleVisibilityChange("Everyone")}} />
+                        Everyone
+                    </label>
+                    <label>
+                        <input type="radio" value="Contacts" checked={storyVisibility === "Contacts"} onChange={() => {handleVisibilityChange("Contacts")}} />
+                        My Contacts
+                    </label>
+                    <label>
+                        <input type="radio" value="Nobody" checked={storyVisibility === "Nobody"} onChange={() => {handleVisibilityChange("Nobody")}} />
+                        No One
+                    </label>
                 </div>
             )}
-        </div>
-        {visibilityDropDownVisible && (
-            <div className="within-story-visibility" ref={dropdownRef}>
-                <label>
-                    <input type="radio" value="Everyone" checked={storyVisibility === "Everyone"} onChange={() => {handleVisibilityChange("Everyone")}} />
-                    Everyone
-                </label>
-                <label>
-                    <input type="radio" value="Contacts" checked={storyVisibility === "Contacts"} onChange={() => {handleVisibilityChange("Contacts")}} />
-                    My Contacts
-                </label>
-                <label>
-                    <input type="radio" value="Nobody" checked={storyVisibility === "Nobody"} onChange={() => {handleVisibilityChange("Nobody")}} />
-                    No One
-                </label>
-            </div>
-        )}
-        {renderContent()}
-        <div className="story-content-text">
+            {renderContent()}
+            <div className="story-content-text">
                 {story?.content}
-        </div>
-    </>
-  );
+            </div>
+        </>
+    );
 };
 
 export default MySingleStory;

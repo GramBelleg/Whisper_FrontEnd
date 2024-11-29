@@ -5,8 +5,11 @@ import noUser from "../../assets/images/no-user.png";
 
 export const getMessagesForChatFromAPI = async (id) => {
     try {
-        const  response = await axiosInstance.get(`/chatMessages/${id}`);
-        // { withCredentials: true, }
+        //const  response = await axiosInstance.get(`/chatMessages/${id}`);
+        const response = await axios.get(`http://localhost:5000/api/messages/${id}/getMessages`, 
+            {withCredentials: true}
+        );
+
         return response.data;
     } catch (error) {
         throw error;
@@ -35,7 +38,7 @@ export const mapMessage = (message) => {
         media:   message.media,  // TODO: handle this
         extension:  message.extension,  // TODO: handle this
         time: message.time.slice(0, 19).replace("T", " "),  
-        sentAt: message.sentAt.slice(0, 19).replace("T", " "),  // TODO: handle this
+        sentAt: message.sentAt.slice(0, 23).replace("T", " "),  // TODO: handle this
         state: mapMessageState(message.read, message.delivered),  // TODO: handle pending
         forwarded : message.forwarded, 
         expiresAfter: message.expiresAfter, 
@@ -54,7 +57,7 @@ export const mapMessage = (message) => {
         
         sender: message.sender.userName,
         senderId: message.sender.id, 
-        profilePic: noUser, 
+        profilePic: noUser,
         
         // TODO: See comments
     }

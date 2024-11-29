@@ -44,7 +44,7 @@ const ChatMessage = ({ message, onDelete, onReply }) => {
     }
 
     const handlePin = () => {
-        pinMessage(message.id, 0);
+        pinMessage(message.id);
     }
 
     const handleUnPin = () => {
@@ -57,7 +57,6 @@ const ChatMessage = ({ message, onDelete, onReply }) => {
 
     const messageTime = useMemo(() => {
         // Assuming message.time is "2024-11-01 18:24:00"
-        console.log(message.time)
         const date = new Date(message.time);
         let hours = date.getHours();
         let minutes = date.getMinutes();
@@ -73,7 +72,7 @@ const ChatMessage = ({ message, onDelete, onReply }) => {
 
 
     const renderMessageContent = useMemo(() => {
-        switch (message.type) {
+        switch (message.type.toLowerCase()) {
             case messageTypes.TEXT:
                 return (
                     <div className="message-text" style={{ whiteSpace: 'pre-line' }}>
@@ -88,7 +87,7 @@ const ChatMessage = ({ message, onDelete, onReply }) => {
             default:
                 return null
         }
-    }, [message.type, message.content])
+    }, [message])
 
     return (
         <div
