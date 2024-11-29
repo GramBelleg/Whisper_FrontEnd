@@ -108,7 +108,7 @@ describe('SingleChatSection', () => {
       const removeButton = screen.getByTestId('remove-attachment-button');
       expect(removeButton).toBeInTheDocument();
   });
-  test('big attachment upload', async () => {
+  test('bigger than maximum attachment upload', async () => {
     render(<SingleChatSection selectedUser={selectedUser} />);
     const sizeInMB = 100;
     const sizeInBytes = sizeInMB * 1024 * 1024; 

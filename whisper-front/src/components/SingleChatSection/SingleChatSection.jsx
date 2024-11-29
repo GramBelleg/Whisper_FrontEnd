@@ -45,20 +45,24 @@ const SingleChatSection = ({ selectedUser }) => {
                 state:"pending",
                 othersId: selectedUser.userId,
                 file: null,
-                blobName: null,
+                media: null,
                 objectLink: "",
                 fileType: attachmentType,
                 size: null,
+                extension: null,
                 autoDownload: null,
+                fileName: null,
             }
             if (attachedFile !== null) {
                 tempMessageObject.file=attachedFile;
+                tempMessageObject.fileName = attachedFile.name;
+                tempMessageObject.extension = attachedFile.type;
                 tempMessageObject.size = attachedFile.size;
                 removeAttachment();
                 if (uploadData) {
                     let blob = await uploadFile(tempMessageObject,uploadData);
                     if (blob) {
-                        tempMessageObject.blobName = blob.blobName;
+                        tempMessageObject.media = blob.blobName;
                     }
                 }
                 if (errorUpload) {

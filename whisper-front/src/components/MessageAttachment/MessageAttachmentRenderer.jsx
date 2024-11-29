@@ -38,6 +38,7 @@ const MessageAttachmentRenderer = ({ myMessage, onUpdateLink }) => {
         // If file type is not 0, handle size check and download
         if (myMessage.fileType !== 0 && !autoDownload) {
           const fileSize = myMessage.size;
+          console.log(fileSize);
           if (fileSize < whoAmI.autoDownloadSize) {
             const newObjectUrl = await downloadAttachment(downloadData, myMessage);
             setObjectUrl(newObjectUrl);
@@ -115,9 +116,9 @@ const MessageAttachmentRenderer = ({ myMessage, onUpdateLink }) => {
 
   const renderAttachment = () => {
     console.log('Rendering attachment for message:', myMessage.id, 'objectUrl:', objectUrl);
-    const fileType = myMessage.file.type;
+    const fileType = myMessage.extension;
 
-    if (!myMessage.file) return <p>No attachment available</p>;
+    if (!myMessage.media) return <p>No attachment available</p>;
     if (isLoading || !downloadData) {
       return (
         <div>
@@ -177,7 +178,7 @@ const MessageAttachmentRenderer = ({ myMessage, onUpdateLink }) => {
             />
           </div>
           <div className="text-sm text-gray-500 mt-2">
-            {myMessage.file.name}
+            {myMessage.fileName}
           </div>
         </div>
       );
@@ -185,8 +186,8 @@ const MessageAttachmentRenderer = ({ myMessage, onUpdateLink }) => {
     
     if (myMessage.fileType === 0 || (fileType && ((!fileType.startsWith("image/") && !fileType.startsWith("video/"))))) {
       return (
-        <a href={objectUrl} download={myMessage.file.name} className="file-attachment" data-testid="download-link">
-          {myMessage.file.name}
+        <a href={objectUrl} download={myMessage.fileName} className="file-attachment" data-testid="download-link">
+          {myMessage.fileName}
         </a>
       );
     }

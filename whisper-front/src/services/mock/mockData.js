@@ -60,13 +60,11 @@ export const Chats = [
 //     "presignedUrl": "/api/container1/61730487929490.string?sv=2024-11-04&se=2024-11-11T19%3A08%3A57Z&sr=b&sp=r&sig=%2BZkrxeMtJOPMyFJibsqTWKrPfdoNkVslDVmweZ%2F0qBw%3D"
 // }
 export const downloadLink = {
-    //vid
-    "presignedUrl": "/api/container1/61730546732593.string?sv=2024-11-04&se=2024-11-12T18%3A08%3A47Z&sr=b&sp=r&sig=McIinnmuVtRCb4Z1fPR3xqoKMT7kgwf%2FJrj5B81cE2I%3D"
-
-}
+    "presignedUrl": "/api/container1/11732368155588.string?sv=2024-11-04&se=2024-12-03T13%3A26%3A58Z&sr=b&sp=r&sig=I3WYW%2Fc9ecRaAyBBTHSlsA52idArcOzY8ueCZaLchv0%3D"
+  }
 export const uploadLink ={
-    "presignedUrl": "/api/container1/61730546732593.string?sv=2024-11-04&se=2024-11-12T11%3A25%3A32Z&sr=b&sp=cw&sig=JVfu%2F6fTbncbvJqkcCfHqlu24OZfWw%2Fg3oSu9iqZ3Vw%3D",
-    "blobName": "61730546732593.string"
+    "presignedUrl": "/api/container1/11732368155588.string?sv=2024-11-04&se=2024-12-03T13%3A22%3A35Z&sr=b&sp=cw&sig=5nf6q%2BsJsBl6BVIyZMyJA6OASLjo3Vh85BMIF8Lu56c%3D",
+    "blobName": "11732368155588.string"
   }
 export const storiesData = [
     {userId: 1, user:"amr", profilePicture: profilePicture, seen: true, date: "1/2/2022", content: "hello from amr"},
