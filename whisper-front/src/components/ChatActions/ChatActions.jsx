@@ -6,14 +6,16 @@ import { faCircleNotch, faFile, faImage, faMicrophoneAlt, faPaperclip, faPaperPl
 import { useMemo, useRef, useState } from 'react'
 import useVoiceRecorder from '@/hooks/useVoiceRecorder'
 import { messageTypes } from '@/services/sendTypeEnum'
-import ParentMessage from '../ParentMessage/ParentMessage'
 import { useChat } from '@/contexts/ChatContext'
 import useFetch from '@/services/useFetch'
+import parentRelationshipTypes from '@/services/chatservice/parentRelationshipTypes'
+import ParentMessage from '../ParentMessage/ParentMessage'
+import { uploadMedia } from '@/services/chatservice/media'
 
 const ChatActions = () => {
     const [textMessage, setTextMessage] = useState('')
     const { isRecording, duration, startRecording, stopRecording, discardRecording } = useVoiceRecorder()
-    const { sendMessage, sending } = useChat()
+    const { sendMessage, sending, parentMessage } = useChat()
 
     const [attachedFile, setAttachedFile] = useState(null);
     const [showAttachMenu, setShowAttachMenu] = useState(false);
@@ -23,7 +25,7 @@ const ChatActions = () => {
     const { data: uploadData, error:errorUpload, loading: loadingUpload } = useFetch('/uploadAttachment');
     const isTyping = useMemo(() => textMessage.length > 0, [textMessage])
 
-    const showSendIcon = useMemo(() => isTyping || isRecording, [isTyping, isRecording])
+    const showSendIcon = useMemo(() => (parentMessage && parentMessage.relationship === parentRelationshipTypes.FORWARD) || isTyping || isRecording, [parentMessage, isTyping, isRecording])
 
     
 
@@ -93,8 +95,17 @@ const ChatActions = () => {
 
     const triggerSendMessage = async () => {
         if (isRecording) {
-            stopRecording((audioURL) => {
-                sendMessage(messageTypes.AUDIO, audioURL)
+            stopRecording(async (audioBlob) => {
+                const blobName = await uploadMedia({
+                    extension: 'wav',
+                    file: audioBlob
+                });
+                sendMessage({
+                    type: messageTypes.AUDIO,
+                    content: '',
+                    media: blobName,
+                    extension: 'wav'
+                })
             })
             return
         } else if (textMessage.trim()) {
@@ -115,7 +126,12 @@ const ChatActions = () => {
                     console.log(errorUpload)
                 }
             }
-            sendMessage(messageTypes.TEXT, textMessage, attachmentPayload)
+            sendMessage({
+                type: messageTypes.TEXT,
+                content: textMessage,
+                media: attachmentPayload ? attachmentPayload.blobName : null,
+                extension: attachmentPayload ? attachmentPayload.type : null
+            })
             setTextMessage('')
         }
     }
