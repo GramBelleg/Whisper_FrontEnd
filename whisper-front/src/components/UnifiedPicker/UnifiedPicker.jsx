@@ -44,6 +44,8 @@ const UnifiedPicker = ({ onGifSelect, onStickerSelect }) => {
                     </div>
                     <div className='flex justify-center align-center items-center mb-4'>
                         <button
+                            id="button-gif"
+                            data-testid="button-gif"
                             className={`flex-1 py-2 mx-2 text-center text-sm rounded-lg ${
                                 activeTab === 'GIF' ? 'bg-indigo-500 text-white' : 'bg-gray-700 hover:bg-gray-600'
                             }`}
@@ -52,6 +54,8 @@ const UnifiedPicker = ({ onGifSelect, onStickerSelect }) => {
                             GIF
                         </button>
                         <button
+                            id="button-stickers"
+                            data-testid="button-stickers"
                             className={`flex-1 py-2 mx-2 text-center text-sm rounded-lg ${
                                 activeTab === 'Stickers' ? 'bg-indigo-500 text-white' : 'bg-gray-700 hover:bg-gray-600'
                             }`}
