@@ -5,11 +5,12 @@ import axiosInstance from "../axiosInstance";
 let myChats = [];
 let myUsers = [];
 
-export const getChatsAPI = async () => {
+export const getChatsAPI = async (filters = {}) => {
 
     try {
         const chats = await axios.get("http://localhost:5000/api/chats", {
             withCredentials: true, // Ensure credentials are included
+            params: filters
         });
 
         // const chats = await axiosInstance.get('/chats');
@@ -36,9 +37,9 @@ export const mapMessageState = ( read, delivered ) => {
 };
   
 
-  export const getChatsCleaned = async () => {
+  export const getChatsCleaned = async (filters = {}) => {
     try {
-        const chats = await getChatsAPI();
+        const chats = await getChatsAPI(filters);
 
         myChats = []
 

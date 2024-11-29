@@ -1,10 +1,11 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faTimes, faUsers } from "@fortawesome/free-solid-svg-icons";
 import useFetch from "@/services/useFetch";
 import { handleNoUserImage } from "@/services/chatservice/addDefaultImage";
 import "./ChatSelector.css";
 import { useModal } from "@/contexts/ModalContext";
+import { getChatsCleaned } from "@/services/chatservice/getChats";
 
 const ChatSelector = ({ 
   onChatSelect,
@@ -12,13 +13,34 @@ const ChatSelector = ({
   renderCustomHeader,
   className = ""
 }) => {
-  const [filters, setFilters] = useState({ keyword: '' });
-  const { data: chatList, error: errorChats, loading: loadingChats } = useFetch('/api/chats', filters);
+  const [filters, setFilters] = useState({ keyword: '', usersOnly: 1, unblockedOnly: 1 });
+  const [chatList, setChatList] = useState([]);
+  const [loadingChats, setLoadingChats] = useState(false);
+  const [errorChats, setErrorChats] = useState(null);
+
   const { closeModal } = useModal();
 
   const handleSearch = (e) => {
     setFilters(prev => ({ ...prev, keyword: e.target.value }));
   };
+
+  useEffect(() => {
+    const loadChats = async () => {
+      setLoadingChats(true);
+      try {
+        let chats = await getChatsCleaned(filters)
+        setChatList(chats); 
+      } catch (error) {
+        setErrorChats(error.message);
+      } finally {
+        setLoadingChats(false);
+      }
+    }
+
+    loadChats();
+  }, [filters]);
+
+  
 
   const renderChatItem = (chat, index) => {
     return (
