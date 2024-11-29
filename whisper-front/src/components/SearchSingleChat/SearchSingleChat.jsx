@@ -68,11 +68,13 @@ const SearchSingleChat = () => {
           setShowSearchBar(!showSearchBar);
           setIsDropdownVisible(false); 
         }}
+        data-testid="search-icon"
       />
     ) : <FontAwesomeIcon 
     className="icon cursor-pointer text-primary hover:text-primary"
     style={{ height: '24px' }} icon={faClose} 
     onClick={() => setShowSearchBar(!showSearchBar)}
+    data-testid="close-icon"
     />
 }
     </div>
