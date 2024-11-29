@@ -4,9 +4,11 @@ import { whoAmI } from "../chatservice/whoAmI";
 import UserSocket from "../sockets/UserSocket";
 import { downloadBlob, uploadBlob } from "@/services/blobs/blob";
 import useAuth from "@/hooks/useAuth";
+import { useEffect } from "react";
 
 const userSocket = new UserSocket();
 const userId = whoAmI.id;
+ 
 
 export const updateBio = async (bio) => {
     try {
@@ -80,7 +82,7 @@ export const sendUpdateCode = async (email) => {
     }
   };
   
-  export const updateProfilePic = async (userID,file) => {
+  export const updateProfilePic = async (userID, file) => {
     try {
       console.log("updateProfilePic called");
       const token = localStorage.getItem("token");
@@ -91,74 +93,102 @@ export const sendUpdateCode = async (email) => {
         {
           fileName: file.name,
           fileType: file.type,
-          fileExtension: file.name.split('.').pop()
+          fileExtension: file.name.split('.').pop(),
         },
         {
           headers: {
-            'Authorization': `Bearer ${token}`,
+            Authorization: `Bearer ${token}`,
           },
           withCredentials: true,
         }
       );
   
       if (!blobResponse || !blobResponse.data || !blobResponse.data.presignedUrl || !blobResponse.data.blobName) {
-        throw new Error("Invalid response structure from API.");
+        throw new Error('Invalid response structure from API.');
       }
   
       const { presignedUrl, blobName } = blobResponse.data;
-      const newUrl = presignedUrl.replace("https://whisperblob.blob.core.windows.net", "api");
+      const newUrl = presignedUrl.replace('https://whisperblob.blob.core.windows.net', 'api');
   
-      // Upload the file to the blob storage using the presigned URL
+      // Upload the blob
       await uploadBlob(file, { presignedUrl: newUrl, blobName });
-      console.log("File uploaded successfully");
+      console.log('File uploaded successfully');
   
-      userSocket.setProfilePic(userID,blobName);
-
-      console.log("Profile picture updated successfully");
-      
+      // Update the user's profile picture
+      userSocket.emitPFP({userID, profilePic:blobName});
+  
+      // Generate Object URL for the file
+      const objectUrl = URL.createObjectURL(file); // Use the original `file` object
+      console.log('Profile picture updated successfully, Object URL created:', objectUrl);
+  
+      return objectUrl; // Return the Object URL
+  
     } catch (error) {
-      console.error("Error updating profile picture:", error);
-      throw new Error(error.response?.data?.message || "An error occurred while updating the profile picture");
+      console.error('Error updating profile picture:', error);
+      throw new Error(
+        error.response?.data?.message || 'An error occurred while updating the profile picture'
+      );
     }
   };
 
+  export const setProfilePic = async (blobName) => {
+    try {
+      console.log("updateProfilePic called");
+      const token = localStorage.getItem("token");
+  
+      const blobResponse = await axiosInstance.post(
+        'api/media/read',
+        { blobName },
+        {
+            headers: {
+                'Authorization': `Bearer ${token}`,
+            },
+            withCredentials: true,
+        }
+    );
+
+    console.log("Blob response:", blobResponse);
+    const { blob } = await downloadBlob(blobResponse.data);
+    const newBlob = new Blob([blob]);
+    const objectUrl = URL.createObjectURL(newBlob);
+    return objectUrl;
+  
+    } catch (error) {
+      console.error('Error updating profile picture:', error);
+      throw new Error(
+        error.response?.data?.message || 'An error occurred while updating the profile picture'
+      );
+    }
+  };
+  
+  export const getPFP = async ({ userId, profilePic }) => {
+    console.log("getpfp")
+    if (profilePic) {
+      const profilePicUrl = await setProfilePic(profilePic); // Resolve via setProfilePic
+      return profilePicUrl;
+    } else if(profilePic==="") {
+      // deleteProfilePic(userId);
+    } else {
+      console.error("No profile picture data received for the specified user");
+      return null;
+    }
+  };
+  
 
   export const getProfilePic = async (userID, blobName) => {
-    console.log("getProfilePic called");
+    console.log("getProfilePic called",userID,blobName);
     const token = localStorage.getItem("token");
 
     try {
-        const profilePicBlobName = await new Promise((resolve) => {
-            let timeoutReached = false;
 
-            const timeout = setTimeout(() => {
-                timeoutReached = true;
-                console.log("Socket response timed out, using fallback blob name");
-                resolve(blobName);
-            }, 5000);
-
-            userSocket.getProfilePic(userID,(error, socketBlobName) => {
-                if (!timeoutReached) {
-                    clearTimeout(timeout);
-                    if (error || !socketBlobName) {
-                        console.log("Failed to get profile picture from socket, using fallback blob name");
-                        resolve(blobName);
-                    } else {
-                        console.log("Profile picture blob name from socket:", socketBlobName);
-                        resolve(socketBlobName);
-                    }
-                }
-            });
-        });
-
-        if (!profilePicBlobName) {
+        if (!blobName) {
             console.log("No profile picture blob name available");
             return null;
         }
 
         const blobResponse = await axiosInstance.post(
             'api/media/read',
-            { blobName: profilePicBlobName },
+            { blobName: blobName },
             {
                 headers: {
                     'Authorization': `Bearer ${token}`,
@@ -180,26 +210,10 @@ export const sendUpdateCode = async (email) => {
 };
 
 
-  export const deleteProfilePic = async () => {
+  export const deleteProfilePic = async (userID) => {
     try {
-      console.log("deleteProfilePic called");
-
-      const response = await axios.put("http://localhost:5000/api/user/profilepic", 
-        {blobName: null},
-        {
-            headers: {
-                'Authorization': `Bearer ${localStorage.getItem('token')}`,
-                'Content-Type': 'application/json',
-            },
-        }
-    );
-
-    if (response.status === 200) {
-        // this.socket.emit("pfp", { profilePic: blobName });
-        console.log("Sent profile pic set event with blobName:", blobName);
-    } else {
-        console.error("Failed to set profile picture:", response.statusText);
-    }
+      userSocket.emitPFP({userID:userID,profilePic:""});
+      console.log("Sent profile pic set event with blobName:", "");
    
     } catch (error) {
       console.error("Error deleting profile picture:", error);

@@ -9,42 +9,57 @@ import {
     sendUpdateCode, 
     updateProfilePic, 
     getProfilePic, 
-    deleteProfilePic
+    deleteProfilePic,
+    getPFP,
   } from '@/services/profileServices/ProfileSettingsService';
 import useAuth from './useAuth';
+import UserSocket from '@/services/sockets/UserSocket';
+
+
+const userSocket = new UserSocket();
+
 
 export const useProfileSettings = () => {
     const { profilePic, setProfilePic } = useProfileContext();
     const [errors, setErrors] = useState({ bio: null, name: null, userName: null, profilePic: null });
     const { handleUpdateUser,user } = useAuth();
-    const [loading, setLoading] = useState(false);
+    const [loading, setLoading] = useState(false);  
 
-    useEffect(() => {
-        if (!profilePic)
-        {
-        fetchProfilePic();
-        console.log("fetching profile pic")
-        }
-    }, []);
+
+      
 
     const fetchProfilePic = async () => {
         try {
-            clearError('profilePic');
-            console.log("will call getProfilePic from service")
-            setLoading(true);
-            console.log(user.profilePic)
-            console.log(user.id)
-
-            const profilePicUrl = await getProfilePic(user.id,user.profilePic);
-            setProfilePic(profilePicUrl);
+            const profilePicUrl = await getProfilePic(user.id, user.profilePic);
+            if (profilePicUrl) setProfilePic(profilePicUrl);
         } catch (err) {
-            setErrors(prevErrors => ({ ...prevErrors, profilePic: 'Error fetching profile picture.' }));
-            console.error('Error fetching profile picture:', err);
-        }
-        finally{
-            setLoading(false);
+            setErrors((prev) => ({ ...prev, profilePic: "Error fetching profile picture." }));
+            console.error("Error fetching profile picture:", err);
         }
     };
+
+    useEffect(() => {
+        if (!profilePic) {
+            fetchProfilePic();
+            console.log("Fetching profile pic...");
+        }
+
+        const onPFPUpdate = async (data) => {
+            console.log("Received 'pfp' event data:", data);
+            if(data.userId !== user.id) return;
+            const profilePicUrl = await getProfilePic(data.userId, data.profilePic);
+
+            setProfilePic(profilePicUrl);
+        };
+
+         userSocket.onPFP(onPFPUpdate);
+
+
+        return () => {
+            userSocket.offPFP(onPFPUpdate);
+        };
+    }, [user?.id]);
+      
 
     const handleBioUpdate = async (newBio) => {
         try {
@@ -183,10 +198,8 @@ const handleProfilePicUpdate = async (newProfilePic) => {
         setErrors(prevErrors => ({ ...prevErrors, profilePic: null }));
         console.log("will call updateProfilePic from service")
         setLoading(true);
-        const response = await updateProfilePic(user.id,newProfilePic);
-        const updatedProfilePic = await getProfilePic(user.id,user.profilePic); 
+        const updatedProfilePic = await updateProfilePic(user.id,newProfilePic);
         setProfilePic(updatedProfilePic);
-        return response;
     } catch (err) {
         if (err.response && err.response.data) {
             setErrors(prevErrors => ({ ...prevErrors, profilePic: err.response.data.message || 'An error occurred' }));
@@ -205,8 +218,7 @@ const handleProfilePicDelete = async () => {
         setErrors(prevErrors => ({ ...prevErrors, profilePic: null }));
         console.log("will call delteProfilePic from service")
         setLoading(true);
-        const response = await deleteProfilePic();
-        // const updatedProfilePic = await getProfilePic(); 
+        const response = await deleteProfilePic(user.id);
         setProfilePic(null);
         return response;
     } catch (err) {
