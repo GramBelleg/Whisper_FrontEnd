@@ -121,10 +121,18 @@ export const ChatProvider = ({ children }) => {
     
     const searchChat = async (query) => {
         try {
-            const results = await handleSearchChat(query, currentChat.id);
-            return results;
+            if (currentChat) {
+                const response = await db.getMessagesForChat(currentChat.id)
+                const filteredMessages = response.filter((message) =>
+                    message.content.toLowerCase().includes(query.toLowerCase())
+                );
+                return filteredMessages;
+            }
+            else {
+                throw new Error('No chat selected');
+            }
         } catch (error) {
-            console.log(error);
+            console.error(error);
         }
     } 
     
