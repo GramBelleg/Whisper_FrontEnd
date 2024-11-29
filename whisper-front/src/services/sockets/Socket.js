@@ -2,13 +2,19 @@ import { io } from 'socket.io-client';
 
 class Socket {
 
-    serverUrl = "http://localhost:5000";
+    static socketInstance; // Shared socket instance for all subclasses
+    serverUrl = "http://localhost:5000/";
 
     constructor() {
-        this.socket = io(this.serverUrl, {
-            withCredentials: true
-        });
-        console.log("hello from socket base class");
+        if (!Socket.socketInstance) {
+            // Create the shared socket connection only once
+            Socket.socketInstance = io(this.serverUrl, {
+                withCredentials: true
+            });
+            console.log("Socket connection established");
+        }
+        console.log("called")
+        this.socket = Socket.socketInstance; // Assign the shared socket to the instance
     }
 
     sendData(data) {
@@ -19,17 +25,11 @@ class Socket {
         throw new Error("Method 'deleteData' must be implemented by subclasses");
     }
 
-    onReceiveMessage(callback) {
-        throw new Error("Method 'onReceiveMessage' must be implemented by subclasses");
-    }
 
-    offReceiveMessage(callback) {
-        throw new Error("Method 'offReceiveMessage' must be implemented by subclasses");
-    }
 
     disconnect() {
         throw new Error("Method 'disconnect' must be implemented by subclasses")
-    }   
+    }
 }
 
 export default Socket;
