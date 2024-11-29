@@ -11,13 +11,16 @@ import { useEffect } from 'react'
 
 const SingleChatSection = () => {
     const { currentChat, pinnedMessages } = useChat();
-
-    if (!currentChat) {
-        return (<NoChatOpened />);
-    }
     useEffect(() => {
 
     }, [pinnedMessages])
+
+    
+    if (!currentChat) {
+        return (<NoChatOpened />);
+    }
+
+    
     
     return (
         <div className='single-chat-container'>

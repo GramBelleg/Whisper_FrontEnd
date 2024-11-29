@@ -14,10 +14,9 @@ const SingleChatMessagesList = () => {
     return (
         <div className="single-chat-messages-list">
             {
-                messages?.map((message,index) => (
+                messages?.map((message) => (
                     <ChatMessage
-                        key={index}
-                        onReply={() => { updateParentMessage(message, parentRelationshipTypes.REPLY); }}
+                        key={message.id}
                         message={message}
                     />
                 ))

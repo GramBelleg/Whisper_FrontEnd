@@ -18,7 +18,7 @@ import { useWhisperDB } from "@/contexts/WhisperDBContext";
 
 const ChatItem = ({ index, standaloneChat, setAction }) => {
 
-    const { db } = useWhisperDB();
+    const { dbRef } = useWhisperDB();
 
     const maxLength = (
         (standaloneChat.muted) ? 33 : 
@@ -80,7 +80,7 @@ const ChatItem = ({ index, standaloneChat, setAction }) => {
             });
 
             try {
-                await db.muteNotifications(standaloneChat.id);
+                await dbRef.current.muteNotifications(standaloneChat.id);
             } catch (error) {
                 console.error(error);
             }
@@ -99,7 +99,7 @@ const ChatItem = ({ index, standaloneChat, setAction }) => {
             });
 
             try {
-                await db.unMuteNotifications(standaloneChat.id);
+                await dbRef.current.unMuteNotifications(standaloneChat.id);
             } catch (error) {
                 console.error(error);
             }

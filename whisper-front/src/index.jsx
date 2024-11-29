@@ -13,7 +13,6 @@ import {  WhisperDBProvider } from './contexts/WhisperDBContext.jsx'
 
 
 createRoot(document.getElementById('root')).render(
-    <StrictMode>
         <ProfileSettingsProvider>
         <AuthProvider>
             <GoogleOAuthProvider clientId={import.meta.env.VITE_APP_GOOGLE_CLIENT_ID}>
@@ -24,5 +23,4 @@ createRoot(document.getElementById('root')).render(
             </GoogleOAuthProvider>
         </AuthProvider>
         </ProfileSettingsProvider>
-    </StrictMode>   
 )

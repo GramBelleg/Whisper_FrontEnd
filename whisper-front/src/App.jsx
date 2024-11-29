@@ -15,73 +15,83 @@ import { getChatsCleaned } from './services/chatservice/getChats';
 import { useWhisperDB } from './contexts/WhisperDBContext';
 import { getMessagesForChatCleaned, getPinnedMessagesForChat } from './services/chatservice/getMessagesForChat';
 
+
 function App() {
 
     const { user, token } = useAuth();
     const [loading, setLoading] = useState(true);
-    const { db } = useWhisperDB();
+    const { dbRef , initDB } = useWhisperDB();
 
     if(import.meta.env.VITE_APP_USE_MOCKS === 'true') {
         initializeMock();
     }
+
+    
   
-    const loadChats = async () => {
-        let allChats = await getChatsCleaned();
-        if (db) {
-            db.insertChats(allChats);
-        }
-        console.log(allChats)
-    }
-
-    const loadMessages = async () => {
-        try {
-            const chats = await db.getChats()
-            for (let chat of chats) {
-                try {
-                    let messages = await getMessagesForChatCleaned(chat.id);
-                    if (messages.length > 0) {
-                        db.insertMessages(messages);
-                    }
-                } catch (error) {
-                    console.log(error.message);
-                }
-            }
-        } catch (error) {
-            console.log(error);
-        }
-      }
-
-    const loadPinnedMessages = async () => {
-        try {
-            const chats = await db.getChats();
-            for (let chat of chats) {
-                try {
-                    let messages = await getPinnedMessagesForChat(chat.id);
-                    if (messages.length > 0) {
-                        db.insertPinnedMessages(chat.id, messages);
-                    }
-                }
-                catch (error) {
-                    console.log(error.message);
-                }
-            }
-        } catch (error) {
-            console.log(error);
-        }
-    }
+    
       
     useEffect(() => {
-        try { 
-            if (db) { 
-                loadChats();
-                loadMessages();
-                loadPinnedMessages();
-                setLoading(false);
+
+        const init = async () => {
+            await initDB();
+            await loadChats();
+            loadMessages();
+            loadPinnedMessages();
+        }
+
+       
+        
+        const loadChats = async () => {
+            let allChats = await getChatsCleaned();
+            dbRef.current.insertChats(allChats);
+            console.log(allChats)
+        }
+    
+        const loadMessages = async () => {
+            try {
+                const chats = await dbRef.current.getChats()
+                for (let chat of chats) {
+                    try {
+                        let messages = await getMessagesForChatCleaned(chat.id);
+                        if (messages.length > 0) {
+                            dbRef.current.insertMessages(messages);
+                        }
+                    } catch (error) {
+                        console.log(error.message);
+                    }
+                }
+            } catch (error) {
+                console.log(error);
             }
+          }
+    
+        const loadPinnedMessages = async () => {
+            try {
+                const chats = await dbRef.current.getChats();
+                for (let chat of chats) {
+                    try {
+                        let messages = await getPinnedMessagesForChat(chat.id);
+                        if (messages.length > 0) {
+                            dbRef.current.insertPinnedMessages(chat.id, messages);
+                        }
+                    }
+                    catch (error) {
+                        console.log(error.message);
+                    }
+                }
+            } catch (error) {
+                console.log(error);
+            }
+        }
+
+        try { 
+            init();
         } catch (error) {
             console.error(error);
+        } finally {
+            setLoading(false);
         }
-    },[db]);
+    },[dbRef, initDB]);
 
     return (
         <div className="App">
