@@ -25,6 +25,7 @@ const StoriesTab = ({
     const fileInputRef = useRef(null);
     
     useEffect(() => {
+
     }, [whoAmI.hasStory])
 
     if (loading) {
@@ -91,9 +92,9 @@ const StoriesTab = ({
                     </li>
 
                     {stories?.map((story) =>
-                      story.userId !== whoAmI.id && (
+                      story.userId !== whoAmI.userId && (
                         <li
-                          key={story.userId} // Use story.userId for a unique key if it's unique
+                          key={story.userId} 
                           className="story-item"
                           onClick={() => handleStoryClick(story)}
                         >

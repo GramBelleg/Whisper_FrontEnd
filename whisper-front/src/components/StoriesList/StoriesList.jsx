@@ -1,16 +1,13 @@
-import React, { useState, useRef, useEffect } from 'react';
+import React, { useRef, useEffect } from 'react';
 import { faArrowLeft, faArrowRight } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import SingleStory from '../SingleStory/SingleStory';
 import './StoriesList.css';
-import ErrorMesssage from '../ErrorMessage/ErrorMessage';
-import { useModal } from '@/contexts/ModalContext';
 import { useStories } from '@/contexts/StoryContext';
 
-const StoriesList = ({ onClose, handleAddStory, handleDeleteStory }) => {
-    const { stories, storiesSocket, selectStory, currentIndex } = useStories();
+const StoriesList = ({ onClose, handleAddStory }) => {
+    const { stories, selectStory, currentIndex } = useStories();
     const fileInputRef = useRef(null);
-    const { openModal, closeModal }  = useModal();
     
 
     const handleNextStory = () => {
@@ -27,26 +24,6 @@ const StoriesList = ({ onClose, handleAddStory, handleDeleteStory }) => {
         }
     }
 
-    const myHandleDeleteStory = async (intervalRef) => {
-        try {
-            const storyId = stories[currentIndex].id;
-            storiesSocket.deleteData(storyId);
-            const newStories = stories.filter(story => story.id !== storyId);
-            //setStories(newStories);
-            if (currentIndex <= newStories.length - 1) { 
-                //setCurrentIndex((prev) => (prev < newStories.length - 1 ? prev + 1 : 0));
-            }
-            else {
-                clearTimeout(intervalRef.current);
-                onClose();
-            }
-            handleDeleteStory();
-
-        } catch (error) {
-            openModal(<ErrorMesssage errorMessage={error.message} onClose={closeModal} appearFor={5000}/>)
-        }
-    };
-
     const handleFileChange = (e) => {
         const file = e.target.files[0];
         if (file && (file.type.startsWith("image/") || file.type.startsWith("video/"))) {
@@ -55,7 +32,9 @@ const StoriesList = ({ onClose, handleAddStory, handleDeleteStory }) => {
         }
     };
 
-    useEffect(() => {console.log(currentIndex)}, [stories, currentIndex]);
+    useEffect(() => {
+        
+    }, [stories, currentIndex]);
 
 
   return (
@@ -63,7 +42,6 @@ const StoriesList = ({ onClose, handleAddStory, handleDeleteStory }) => {
         <div className="story-wrapper">
             <SingleStory
                 onNextStory={handleNextStory}
-                onDeleteStory={myHandleDeleteStory}
                 handleAddNewStoryClick={handleAddNewStoryClick}
                 onClose={onClose}
             />

@@ -47,7 +47,6 @@ export default function StoriesContainer() {
                     file={file} 
                     filePreview={filePreview} 
                     onClose={closeModal}
-                    onStoryAdded={() => {}}
                 />
             );
         }
@@ -60,7 +59,6 @@ export default function StoriesContainer() {
                 <StoriesList
                     onClose={closeModal}
                     handleAddStory={handleAddStory}
-                    handleDeleteStory={() => {}}
                 />
             );
         } else {   
