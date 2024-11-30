@@ -9,7 +9,7 @@ export const getChatsAPI = async () => {
 
     try {
         const chats = await axios.get("http://localhost:5000/api/chats", {
-            withCredentials: true, // Ensure credentials are included
+            withCredentials: true, 
         });
 
         // const chats = await axiosInstance.get('/chats');
