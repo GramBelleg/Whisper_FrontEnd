@@ -6,7 +6,7 @@ import { downloadBlob, uploadBlob } from "@/services/blobs/blob";
 import useAuth from "@/hooks/useAuth";
 
 const userSocket = new UserSocket();
-const userId = whoAmI.id;
+const userId = whoAmI.userId;
 
 export const updateBio = async (bio) => {
     try {

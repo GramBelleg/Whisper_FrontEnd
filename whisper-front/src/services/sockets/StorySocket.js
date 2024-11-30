@@ -28,8 +28,16 @@ class StorySocket extends Socket {
         this.socket.on('story', callback); 
     }
 
+    onReceiveDeleteStory(callback) {
+        this.socket.on('deleteStory', callback);
+    }
+
     offReceiveStory(callback) {
         // this.socket.off('receive', callback);
+    }
+
+    offRecieveDeleteStory(callback) {
+        // this.socket.off('deleteStory', callback);
     }
 
     disconnect() {
