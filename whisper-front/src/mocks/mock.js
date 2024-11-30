@@ -15,6 +15,11 @@ export const initializeMock = () => {
     mock.onPost('/api/media/write').reply(200, uploadLink);
     mock.onPost('/api/media/read').reply(200, downloadLink);
 
+    mock.onPost('/api/stickers').reply(200, {
+        stickers: ["11732368155588.string"]
+    });
+    
+
     mock.onGet(blockedUsersAPI.index).reply(200,blockedUsers);
     mock.onPut(blockedUsersAPI.update).reply(config => {
         const { users, blocked } = JSON.parse(config.data);

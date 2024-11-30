@@ -11,28 +11,6 @@ const CustomStickersPicker = ({ handleStickerClick }) => {
             try {
                 const fetchedStickers = await getStickers();
                 setStickers(fetchedStickers)
-                setStickers([
-                    'https://cdn-icons-png.flaticon.com/512/616/616489.png',
-                    'https://cdn-icons-png.flaticon.com/512/742/742751.png',
-                    'https://cdn-icons-png.flaticon.com/512/845/845646.png',
-                    'https://cdn-icons-png.flaticon.com/512/953/953930.png',
-                    'https://cdn-icons-png.flaticon.com/512/1303/1303064.png',
-                    'https://cdn-icons-png.flaticon.com/512/984/984196.png',
-                    'https://cdn-icons-png.flaticon.com/512/1048/1048952.png',
-                    'https://cdn-icons-png.flaticon.com/512/906/906349.png',
-                    'https://cdn-icons-png.flaticon.com/512/435/435060.png',
-                    'https://cdn-icons-png.flaticon.com/512/3610/3610866.png',
-                    'https://cdn-icons-png.flaticon.com/512/616/616489.png',
-                    'https://cdn-icons-png.flaticon.com/512/742/742751.png',
-                    'https://cdn-icons-png.flaticon.com/512/845/845646.png',
-                    'https://cdn-icons-png.flaticon.com/512/953/953930.png',
-                    'https://cdn-icons-png.flaticon.com/512/1303/1303064.png',
-                    'https://cdn-icons-png.flaticon.com/512/984/984196.png',
-                    'https://cdn-icons-png.flaticon.com/512/1048/1048952.png',
-                    'https://cdn-icons-png.flaticon.com/512/906/906349.png',
-                    'https://cdn-icons-png.flaticon.com/512/435/435060.png',
-                    'https://cdn-icons-png.flaticon.com/512/3610/3610866.png'
-                ])
                 setLoading(false)
             } catch (error) {
                 console.error('Error fetching stickers:', error)
@@ -44,18 +22,18 @@ const CustomStickersPicker = ({ handleStickerClick }) => {
     }, [])
 
     return (
-        <div className='p-2'>
+        <div className='p-2' id="stickers-picker" data-testid="stickers-picker">
             {loading ? (
                 <p className='text-gray-400 text-center'>Loading stickers...</p>
             ) : stickers.length > 0 ? (
                 <div className='grid grid-cols-3 p-4 gap-4'>
-                    {stickers.map((stickerUrl, index) => (
+                    {stickers.map((sticker, index) => (
                         <img
                             key={index}
-                            src={stickerUrl}
+                            src={sticker.imageUrl}
                             alt={`Sticker ${index + 1}`}
                             className='w-16 h-16 rounded-lg cursor-pointer hover:scale-105 transform transition'
-                            onClick={() => handleStickerClick(stickerUrl)}
+                            onClick={() => handleStickerClick(sticker.blobName,sticker.imageUrl)}
                         />
                     ))}
                 </div>
