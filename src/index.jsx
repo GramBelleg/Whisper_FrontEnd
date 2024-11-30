@@ -9,20 +9,21 @@ import {AuthProvider} from './contexts/AuthContext.jsx';
 import { GoogleOAuthProvider } from '@react-oauth/google';
 import { ProfileSettingsProvider } from './contexts/ProfileSettingsContext.jsx'
 import {  WhisperDBProvider } from './contexts/WhisperDBContext.jsx'
+import { StoriesProvider } from './contexts/StoryContext.jsx'
 
 
 
 createRoot(document.getElementById('root')).render(
-    <StrictMode>
         <ProfileSettingsProvider>
-        <AuthProvider>
-            <GoogleOAuthProvider clientId={import.meta.env.VITE_APP_GOOGLE_CLIENT_ID}>
-                {console.log(import.meta.env.VITE_APP_GOOGLE_CLIENT_ID)}
-                <WhisperDBProvider>
-                    <App />
-                </WhisperDBProvider>
-            </GoogleOAuthProvider>
-        </AuthProvider>
+            <AuthProvider>
+                <GoogleOAuthProvider clientId={import.meta.env.VITE_APP_GOOGLE_CLIENT_ID}>
+                    {console.log(import.meta.env.VITE_APP_GOOGLE_CLIENT_ID)}
+                    <WhisperDBProvider>
+                        <StoriesProvider> 
+                            <App />
+                        </StoriesProvider>
+                    </WhisperDBProvider>
+                </GoogleOAuthProvider>
+            </AuthProvider>
         </ProfileSettingsProvider>
-    </StrictMode>   
 )

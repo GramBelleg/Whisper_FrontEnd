@@ -91,14 +91,14 @@ const ChatMessage = ({ message, onDelete, onReply }) => {
 
     return (
         <div
-            className={`message shadow ${message.senderId === whoAmI.id ? 'sender' : 'reciever'}`}
+            className={`message shadow ${message.senderId === whoAmI.userId ? 'sender' : 'reciever'}`}
             onContextMenu={toggleMenu} // Right-click or long-press to open menu
         >
             {renderMessageContent}
 
             <div className='message-info'>
                 <span className='time'>{messageTime}</span>
-                {message.senderId === whoAmI.id && (
+                {message.senderId === whoAmI.userId && (
                     <span className='message-status'>
                         {message.state === 0 && <SentTicks width='12px' />}
                         {message.state === 1 && <DeliveredTicks width='12px' />}

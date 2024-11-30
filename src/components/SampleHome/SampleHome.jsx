@@ -8,6 +8,7 @@ import { ChatProvider } from '@/contexts/ChatContext'
 import { SidebarProvider } from '@/contexts/SidebarContext'
 import Sidebar from '../Sidebar/Sidebar'
 import { useWhisperDB, WhisperDBProvider } from '@/contexts/WhisperDBContext'
+import { StoriesProvider } from '@/contexts/StoryContext'
 
 const SampleHome = () => {
 
@@ -15,7 +16,8 @@ const SampleHome = () => {
     
     return (
         <ChatProvider>
-            <ModalProvider>
+            <StoriesProvider>
+                <ModalProvider>
                     <div className='sampleHome'>
                         <SidebarProvider>
                             <div className='buttons-bar-container'>
@@ -27,7 +29,8 @@ const SampleHome = () => {
                             <SingleChatSection />
                         </div>
                     </div>
-            </ModalProvider>
+                </ModalProvider>
+            </StoriesProvider>
         </ChatProvider>
     )
 }

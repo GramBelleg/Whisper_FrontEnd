@@ -17,21 +17,18 @@ const StoriesTab = ({
     showRightArrow,
     scrollLeft,
     scrollRight,
-    handleMyStoryClick,
-    myStoriesLength,
+    handleStoryClick,
 }) => {
 
     const { openModal, closeModal } = useModal();
     const [firstError, setFirstError] = useState(true);
+    const fileInputRef = useRef(null);
     
     useEffect(() => {
-      console.log("hello from Stories tab")
-    }, [myStoriesLength])
-    // Reference to the hidden file input element
-    const fileInputRef = useRef(null);
+
+    }, [whoAmI.hasStory])
 
     if (loading) {
-        
         return <div>Loading...</div>;
     }
     
@@ -44,33 +41,30 @@ const StoriesTab = ({
                   appearFor={3000}
                   />
             );
-
-            setTimeout(() => {
-
-            }, 3000)
+            setTimeout(() => {}, 3000)
             setFirstError(false);
         }
       }
 
-    // Function to trigger the file input click
     const handlePlusIconClick = () => {
         if (fileInputRef.current) {
             fileInputRef.current.click();
         }
     };
 
-    // Function to handle file selection
     const handleFileChange = (e) => {
+      console.log("File input changed"); // Debugging log
       const file = e.target.files[0];
+      
       if (file && (file.type.startsWith("image/") || file.type.startsWith("video/"))) {
-
-          const filePreview = URL.createObjectURL(file);
-          // Add the new story to the myStories mock -> TODO: call API
-          handleMyStoryClick(file, filePreview);
+        const filePreview = URL.createObjectURL(file);
+        console.log("Selected file:", file); // Debugging log for the selected file
+        handleStoryClick(whoAmI, file, filePreview);
+      } else {
+        console.log("No valid file selected");
       }
-  };
-
-  
+    };
+    
 
     return (
         <div className="stories-container">
@@ -80,7 +74,7 @@ const StoriesTab = ({
                     {showLeftArrow && (
                       <LeftArrow onClick={scrollLeft} className="arrow-button prev" />
                     )}
-                    <li key={1} className="story-item" onClick={() => handleMyStoryClick()}>
+                    <li key={1} className="story-item" onClick={() => handleStoryClick(whoAmI)}>
                       <div className="profile-picture-container">
                         <div className={`profile-picture ${false ? '' : 'unseen'}`}>
                           <img
@@ -88,29 +82,33 @@ const StoriesTab = ({
                             alt={`${whoAmI.name}'s profile`}
                           />
                         </div>
-                        {myStoriesLength === 0 && (
+                        {!whoAmI.hasStory && (
                           <div className="plus-icon-container" onClick={handlePlusIconClick}>
                             <FontAwesomeIcon icon={faPlus} className="plus-icon" />
                           </div>
                         )}
                       </div>
-                      <span className="story-user">{whoAmI.name}</span>
+                      <span className="story-user">{whoAmI.userName}</span>
                     </li>
 
-                    {stories?.map((story, index) => (
-                      <li
-                        key={index + 2}
-                        className="story-item"
-                      >
-                        <div className={`profile-picture ${false ? '' : 'unseen'}`}>
-                          <img
-                            src={story.profilePic}
-                            alt={`${story.userName}'s profile`}
-                          />
-                        </div>
-                        <span className="story-user">{story.userName}</span>
-                      </li>
-                    ))}
+                    {stories?.map((story) =>
+                      story.userId !== whoAmI.userId && (
+                        <li
+                          key={story.userId} 
+                          className="story-item"
+                          onClick={() => handleStoryClick(story)}
+                        >
+                          <div className={`profile-picture unseen`}>
+                            <img
+                              src={story.profilePic}
+                              alt={`${story.userName}'s profile`}
+                            />
+                          </div>
+                          <span className="story-user">{story.userName}</span>
+                        </li>
+                     )
+                    )}
+
                     {showRightArrow && (
                       <RightArrow onClick={scrollRight} className="arrow-button next" />
                     )}
@@ -123,7 +121,7 @@ const StoriesTab = ({
             type="file"
             ref={fileInputRef}
             style={{ display: 'none' }}
-            onChange={handleFileChange}
+            onChange={handleFileChange} 
           />
         </div>
     );

@@ -1,5 +1,4 @@
 import { createContext, useContext, useEffect, useRef, useState } from 'react';
-import { socket } from '@/services/messagingservice/sockets/sockets'
 import { whoAmI } from '@/services/chatservice/whoAmI';
 import { mapMessage } from '@/services/chatservice/getMessagesForChat';
 import MessagingSocket from '@/services/sockets/MessagingSocket';
@@ -14,7 +13,7 @@ export const ChatProvider = ({ children }) => {
     const [pinnedMessages, setPinnedMessages] = useState([]);
     const [parentMessage, setParentMessage] = useState(null);
     const [sending, setSending] = useState(false);
-    const messagesSocket = new MessagingSocket(socket);
+    const messagesSocket = new MessagingSocket();
     const { db } = useWhisperDB();
     const currentChatRef = useRef(currentChat);
     const [messageReceived, setMessageReceived] = useState(false);
@@ -88,11 +87,9 @@ export const ChatProvider = ({ children }) => {
             //newMessage.blobName = attachmentPayload.blobName;
             // TODO: handle this for media and extension
         }
-
-
         const newMessageForBackend = { ...newMessage };
        
-        newMessage.senderId = whoAmI.id,
+        newMessage.senderId = whoAmI.userId,
         newMessage.deliveredAt = '';
         newMessage.readAt = '';
         newMessage.deleted = false;

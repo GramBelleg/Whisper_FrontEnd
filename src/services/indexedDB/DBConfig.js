@@ -5,7 +5,7 @@ export const DB_CONFIG = {
         chats: {
             name: 'chats',
             keyPath: 'id',
-            indexes:[]
+            indexes: []
         },
         messages: {
             name: 'messages',
@@ -14,17 +14,26 @@ export const DB_CONFIG = {
                 { name: 'chatId', keyPath: 'chatId', options: { unique: false } }
             ]
         },
-        pinnedmessages : {
-            name : 'pinnedmessages',
-            keyPath : 'messageId',
-            indexes : [
+        pinnedmessages: {
+            name: 'pinnedmessages',
+            keyPath: 'messageId',
+            indexes: [
                 { name: 'chatId', keyPath: 'chatId', options: { unique: false } }
             ]
         },
         stories: {
             name: 'stories',
-            keyPath: 'id',
-            indexes: []
+            keyPath: 'id', 
+            indexes: [
+                { name: 'userId', keyPath: 'userId', options: { unique: false } }, 
+            ]
+        },
+        stories_temp: {
+            name: 'stories_temp',
+            keyPath: 'userId', 
+            indexes: [
+                { name: 'userId', keyPath: 'userId', options: { unique: true } }
+            ]
         }
     }
 };

@@ -14,6 +14,7 @@ import LoadingData from './components/LoadingData/LoadingData';
 import { getChatsCleaned } from './services/chatservice/getChats';
 import { useWhisperDB } from './contexts/WhisperDBContext';
 import { getMessagesForChatCleaned, getPinnedMessagesForChat } from './services/chatservice/getMessagesForChat';
+import { getUsersWithStoriesCleaned } from './services/storiesservice/getStories';
 
 function App() {
 
@@ -69,6 +70,21 @@ function App() {
             console.log(error);
         }
     }
+
+    const loadStories = async () => {
+        try {
+            let data = await getUsersWithStoriesCleaned();
+            data = data.map(item => {
+                const { id, ...rest } = item;
+                return { userId: id, ...rest };
+            });
+            console.log("data", data)
+            await db.insertStories(data);
+        } catch (error) {
+            console.log(error);
+        }
+    };
+    
       
     useEffect(() => {
         try { 
@@ -76,6 +92,7 @@ function App() {
                 loadChats();
                 loadMessages();
                 loadPinnedMessages();
+                loadStories();
                 setLoading(false);
             }
         } catch (error) {

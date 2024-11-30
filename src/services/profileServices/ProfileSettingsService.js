@@ -7,8 +7,7 @@ import useAuth from "@/hooks/useAuth";
 import { useEffect } from "react";
 
 const userSocket = new UserSocket();
-const userId = whoAmI.id;
- 
+const userId = whoAmI.userId;
 
 export const updateBio = async (bio) => {
     try {

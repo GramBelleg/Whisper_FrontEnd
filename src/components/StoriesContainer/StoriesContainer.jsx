@@ -1,19 +1,17 @@
 import StoriesTab from './StoriesTab';
 import React, { useRef, useState, useEffect } from "react";
-import useFetch from '../../services/useFetch';
 import { useModal } from '@/contexts/ModalContext';
-import { getMyStories, getUsersWithStoriesCleaned } from '@/services/storiesservice/getStories';
-import MyStoriesList from '../MyStoriesList/MyStoriesList';
+import StoriesList from '../StoriesList/StoriesList';
 import AddNewStoryModal from '../AddNewStoryModal/AddNewStoryModal';
+import { useStories } from '@/contexts/StoryContext';
+import { whoAmI } from '@/services/chatservice/whoAmI';
 
 export default function StoriesContainer() {
     const scrollContainerRef = useRef(null);
     const [showLeftArrow, setShowLeftArrow] = useState(false);
     const [showRightArrow, setShowRightArrow] = useState(true);
-    const [myStories, setMyStories] = useState([]);
-    const [userStories, setUserStories] = useState([])
-
     const { openModal, closeModal } = useModal();
+    const { selectUser, stories, storiesTab } = useStories();
 
     const handleScroll = () => {
         if (scrollContainerRef.current) {
@@ -22,22 +20,6 @@ export default function StoriesContainer() {
             setShowRightArrow(scrollLeft < scrollWidth - clientWidth - 1);
         }
     };
-
-    const fetchMyStories = async () => {
-        try {
-            const data = await getMyStories();
-            console.log(data);
-            setMyStories(data);
-        } catch (error) {
-            console.log(error);
-        }
-    };
-
-    useEffect(() => {
-        fetchMyStories();
-        getStories();
-    }, []);
-
 
     useEffect(() => {
         const scrollContainer = scrollContainerRef.current;
@@ -66,48 +48,41 @@ export default function StoriesContainer() {
                     file={file} 
                     filePreview={filePreview} 
                     onClose={closeModal}
-                    onStoryAdded={fetchMyStories}
-                />)
+                />
+            );
         }
     }
-    const handleMyStoryClick = (file, filePreview) => {
-        if (myStories.length > 0) {
-            openModal(<MyStoriesList 
-                        incomingStories={myStories} 
-                        onClose={closeModal} 
+
+    const handleStoryClick = (user, file = null, filePreview = null) => {
+        if (!file) {   
+            selectUser(user);
+            console.log(whoAmI)
+            if (whoAmI.hasStory) {
+                openModal(
+                    <StoriesList
+                        onClose={closeModal}
                         handleAddStory={handleAddStory}
-                        handleDeleteStory={fetchMyStories}
-                    />);
+                    />
+                );
+            }
         } else {   
             handleAddStory(file, filePreview);
-            
         }
     };
 
+    useEffect(() => {}, [stories, storiesTab]);
    
-    // const { data, error, loading } = useFetch('/stories'); TODO: handle others stories
-
-    const getStories = async () => {
-        try {
-            const data = await getUsersWithStoriesCleaned();
-            setUserStories(data);
-            console.log(data)
-        } catch (error) {
-
-        }
-    }
     return (
             <StoriesTab
-                error={new Error("")}
+                error={null}
                 loading={false}
-                stories={userStories}
+                stories={storiesTab}
                 showLeftArrow={showLeftArrow}
                 showRightArrow={showRightArrow}
                 scrollContainerRef={scrollContainerRef}
                 scrollLeft={scrollLeft}
                 scrollRight={scrollRight}
-                handleMyStoryClick={handleMyStoryClick}
-                myStoriesLength={myStories?.length}
+                handleStoryClick={handleStoryClick}
             />
     );
 }

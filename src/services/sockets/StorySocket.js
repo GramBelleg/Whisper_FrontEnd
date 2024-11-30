@@ -8,7 +8,7 @@ class StorySocket extends Socket {
 
         if (StorySocket.instance) {
             return StorySocket.instance; // Return the existing instance
-        }
+        } 
 
         super();
 
@@ -16,20 +16,44 @@ class StorySocket extends Socket {
     }
 
     sendData(data) {
+        console.log("Sending data: ", data);
         this.socket.emit('story', data);
     }
 
     deleteData(data) {
-        console.log("hello ", data)
         this.socket.emit("deleteStory", { storyId : data })
     }
 
-    onReceiveMessage(callback) {
-        //this.socket.on('receive', callback);
+    likeStory(data) {
+        this.socket.emit("likeStory", data)
     }
 
-    offReceiveMessage(callback) {
-        //this.socket.off('receive', callback);
+    viewStory(data) {
+        this.socket.emit("viewStory", data)
+    }
+
+    onReceiveLikeStory(callback) {
+        this.socket.on('likeStory', callback); 
+    }
+
+    onReceiveViewStory(callback) {
+        this.socket.on('viewStory', callback); 
+    }
+
+    onReceiveStory(callback) {
+        this.socket.on('story', callback); 
+    }
+
+    onReceiveDeleteStory(callback) {
+        this.socket.on('deleteStory', callback);
+    }
+
+    offReceiveStory(callback) {
+        // this.socket.off('receive', callback);
+    }
+
+    offRecieveDeleteStory(callback) {
+        // this.socket.off('deleteStory', callback);
     }
 
     disconnect() {

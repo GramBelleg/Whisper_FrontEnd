@@ -5,5 +5,6 @@ export let whoAmI =  {
     storyPrivacy: "Everyone",
     pfpPrivacy: "Everyone",
     lastSeenPrivacy: "Everyone",
-    readReceipts: true
+    readReceipts: true,
+    hasStory: true
 };
