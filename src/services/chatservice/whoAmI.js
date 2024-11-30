@@ -6,5 +6,7 @@ export let whoAmI =  {
     pfpPrivacy: "Everyone",
     lastSeenPrivacy: "Everyone",
     readReceipts: true,
-    hasStory: true
+    hasStory: true,
+    autoDownloadSize: 2045800
 };
+

@@ -1,7 +1,9 @@
 import './SingleChatSection.css'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import { faEllipsisV, faPhone, faSearch } from '@fortawesome/free-solid-svg-icons'
+import { faEllipsisV, faMicrophone, faMicrophoneAlt, faPaperclip, faPhone, faSearch, faSmile, faPaperPlane, faImage, faFile, faTimes, faCircleNotch, faMusic } from '@fortawesome/free-solid-svg-icons'
 import SingleChatMessagesList from '../SingleChatMessagesList/SingleChatMessagesList'
+import { messageTypes } from '../../services/sendTypeEnum';
+import { whoAmI } from '../../services/chatservice/whoAmI'
 import ChatActions from '../ChatActions/ChatActions'
 import { useChat } from '@/contexts/ChatContext'
 import NoChatOpened from '../NoChatOpened/NoChatOpened'
@@ -11,6 +13,7 @@ import { useEffect } from 'react'
 
 const SingleChatSection = () => {
     const { currentChat, pinnedMessages } = useChat();
+    
 
     if (!currentChat) {
         return (<NoChatOpened />);

@@ -11,8 +11,6 @@ import { useWhisperDB, WhisperDBProvider } from '@/contexts/WhisperDBContext'
 import { StoriesProvider } from '@/contexts/StoryContext'
 
 const SampleHome = () => {
-
-    
     
     return (
         <ChatProvider>
