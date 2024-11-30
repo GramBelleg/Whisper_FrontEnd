@@ -7,7 +7,6 @@ import { uploadBlob } from "@/services/blobs/blob";
 import { useWhisperDB } from "./WhisperDBContext";
 import { whoAmI } from "@/services/chatservice/whoAmI";
 
-
 export const StoryContext = createContext();
 
 export const StoriesProvider = ({ children }) => {
@@ -23,7 +22,7 @@ export const StoriesProvider = ({ children }) => {
     const [url, setUrl] = useState(null);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
-    const { db } = useWhisperDB();      
+    const { db } = useWhisperDB();   
 
     const selectUser = (user) => {
         setCurrentUser(user);
@@ -50,15 +49,17 @@ export const StoriesProvider = ({ children }) => {
         }
     }
 
-    const loadUserStories = async () => {
+    const loadUserStories = async (id = null) => {
         let data;
+        let userId = id || currentUser.id;
         try {
             try {
-                data = await db.getUserStories(currentUser.id);
+                
+                data = await db.getUserStories(userId);
             } catch (error) {
                 console.log(error);
-                data = await getStories(currentUser.id);
-                await db.insertUserStories(data, currentUser.id);
+                data = await getStories(userId);
+                await db.insertUserStories(data, userId);
             } 
             console.log(data)
             setStories([...data]);
@@ -75,9 +76,8 @@ export const StoriesProvider = ({ children }) => {
             if (!userHasStories) {
                 await db.postUserStories(storyData);
             }
-
             if (storyData.userId === whoAmI.id) {
-                //loadUserStories();
+                loadUserStories(whoAmI.id);
             }
         } catch (error) {
             console.log(error);
@@ -130,7 +130,6 @@ export const StoriesProvider = ({ children }) => {
             currentStoryRef.current = currentStory;
             setLoading(true);
             setError(null);
-            console.log("aywa")
             try {
                 fetchStoryUrl();
             } catch (error) {
