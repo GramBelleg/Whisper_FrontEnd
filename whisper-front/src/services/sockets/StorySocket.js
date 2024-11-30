@@ -24,6 +24,22 @@ class StorySocket extends Socket {
         this.socket.emit("deleteStory", { storyId : data })
     }
 
+    likeStory(data) {
+        this.socket.emit("likeStory", data)
+    }
+
+    viewStory(data) {
+        this.socket.emit("viewStory", data)
+    }
+
+    onReceiveLikeStory(callback) {
+        this.socket.on('likeStory', callback); 
+    }
+
+    onReceiveViewStory(callback) {
+        this.socket.on('viewStory', callback); 
+    }
+
     onReceiveStory(callback) {
         this.socket.on('story', callback); 
     }

@@ -131,7 +131,11 @@ class WhisperDB {
                 const tx = this.db.transaction('pinnedmessages', 'readwrite');
                 const store = tx.objectStore('pinnedmessages');
                 messages.forEach(message => { 
-                    store.add({...message, chatId: chatId})
+                    store.add({
+                        content: message.content, 
+                        chatId: chatId,
+                        messageId: message.id
+                    })
                 });
 
                 await tx.complete;
@@ -833,7 +837,8 @@ class WhisperDB {
                     request.onsuccess = () => resolve(request.result); 
                     request.onerror = () => reject(request.error); 
                 });
-                if (story && story.likes) {
+                console.log(story)
+                if (story && story.likes != null) {
                     return true;
                 }
                 return false
@@ -845,7 +850,7 @@ class WhisperDB {
         }
     }
 
-    async loadLikes(storyId, likes) {
+    async iLiked(storyId, liked) {
         if (this.db != null) {
             try {
                 const tx = this.db.transaction('stories', 'readwrite'); 
@@ -857,7 +862,117 @@ class WhisperDB {
                 });
 
                 if (story) {
-                    story.likes = likes;
+                    story.liked = liked;
+                    console.log("Likes Date ", Date.now(), " ", story, liked, " " , story.liked)
+                    const request2 = store.put(story);
+                    await new Promise((resolve, reject) => {
+                        request2.onsuccess = () => resolve(request2.result);
+                        request2.onerror = () => reject(request2.error);
+                    });
+                }
+                
+
+            } catch (error) {
+                console.log(error);
+            }
+        } else {
+            throw new Error("Database connection is not initialized.");
+        }
+    }
+
+    async iViewed(storyId, viewed) {
+        if (this.db != null) {
+            try {
+                const tx = this.db.transaction('stories', 'readwrite'); 
+                const store = tx.objectStore('stories'); 
+                const request = store.get(storyId); 
+                const story = await new Promise((resolve, reject) => {
+                    request.onsuccess = () => resolve(request.result); 
+                    request.onerror = () => reject(request.error); 
+                });
+
+                if (story) {
+                    story.viewed = viewed;
+                    console.log("Views Date ", Date.now(), " ", story, viewed, " " , story.viewed)
+                    const request2 = store.put(story);
+                    await new Promise((resolve, reject) => {
+                        request2.onsuccess = () => resolve(request2.result);
+                        request2.onerror = () => reject(request2.error);
+                    });
+                }
+                
+
+            } catch (error) {
+                console.log(error);
+            }
+        } else {
+            throw new Error("Database connection is not initialized.");
+        }
+    }
+
+    async isViewed(storyId) {
+        if (this.db != null) {
+            try {
+                const tx = this.db.transaction('stories', 'readwrite'); 
+                const store = tx.objectStore('stories'); 
+                const request = store.get(storyId); 
+                const story = await new Promise((resolve, reject) => {
+                    request.onsuccess = () => resolve(request.result); 
+                    request.onerror = () => reject(request.error); 
+                });
+                if (story) {
+                    return story.viewed;
+                }
+                return false;
+
+            } catch (error) {
+               throw error;
+            }
+        } else {
+            throw new Error("Database connection is not initialized.");
+        }
+    }
+
+    async isLiked(storyId) {
+        if (this.db != null) {
+            try {
+                const tx = this.db.transaction('stories', 'readwrite'); 
+                const store = tx.objectStore('stories'); 
+                const request = store.get(storyId); 
+                const story = await new Promise((resolve, reject) => {
+                    request.onsuccess = () => resolve(request.result); 
+                    request.onerror = () => reject(request.error); 
+                });
+                if (story) {
+                    return story.liked;
+                }
+                return false;
+
+            } catch (error) {
+               throw error;
+            }
+        } else {
+            throw new Error("Database connection is not initialized.");
+        }
+    }
+
+    async loadLikes(storyId, likes, increment = false) {
+        if (this.db != null) {
+            try {
+                const tx = this.db.transaction('stories', 'readwrite'); 
+                const store = tx.objectStore('stories'); 
+                const request = store.get(storyId); 
+                const story = await new Promise((resolve, reject) => {
+                    request.onsuccess = () => resolve(request.result); 
+                    request.onerror = () => reject(request.error); 
+                });
+                if (story) {
+                    if (increment) {
+                        story.likes++;
+                    } else {
+                        story.likes = likes;
+                    }
+
                 }
                 const request2 = store.put(story);
                 await new Promise((resolve, reject) => {
@@ -873,7 +988,7 @@ class WhisperDB {
         }
     }
 
-    async loadViews(storyId, views) {
+    async loadViews(storyId, views, increment = false) {
         if (this.db != null) {
             try {
                 const tx = this.db.transaction('stories', 'readwrite'); 
@@ -885,7 +1000,11 @@ class WhisperDB {
                 });
 
                 if (story) {
-                    story.views = views;
+                    if (increment) {
+                        story.views++;
+                    } else {
+                        story.views = views;
+                    }
                 }
                 const request2 = store.put(story);
                 await new Promise((resolve, reject) => {
