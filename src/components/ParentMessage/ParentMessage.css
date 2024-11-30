@@ -1,0 +1,33 @@
+.parent-message-icon, .clear-parent-message {
+    font-size: 24px;
+    color: var(--accent-color);
+}
+
+.clear-parent-message {
+    cursor: pointer;
+}
+
+.parent-message {
+    display: flex;
+    flex-direction: column;
+    padding: 5px 10px;
+    background-color: rgba(var(--accent-color-rgb),0.15);
+    border-left: 2px solid var(--accent-color);
+    border-radius: 4px;
+    font-size: 16px;
+    color: #b2b2b3;
+    flex-grow: 1;
+    text-align: left;
+}
+
+.parent-message .header {
+    font-weight: 600;
+    color: var(--accent-color) !important;
+}
+
+.parent-message .details {
+    overflow: hidden;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+    max-width: 400px;
+}

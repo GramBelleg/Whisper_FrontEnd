@@ -6,7 +6,7 @@ import "./ReadTicks.css"
 
 const ReadTicks = () => {
     return ( 
-        <div className="read-ticks" width='100%' height='100%'>
+        <div className="read-ticks" data-testid="read-icon" width='100%' height='100%'>
             <FontAwesomeIcon icon={faCheckDouble} className="read-icon"/>
         </div>
     );

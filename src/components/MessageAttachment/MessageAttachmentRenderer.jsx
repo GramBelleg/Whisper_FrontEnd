@@ -1,10 +1,9 @@
-import React, { useState, useEffect, useRef } from 'react';
-import axiosInstance from '../../services/axiosInstance';
+import { useState, useEffect, useRef } from 'react';
 import useFetch from '../../services/useFetch';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faCircleNotch } from '@fortawesome/free-solid-svg-icons';
 
-const MessageAttachmentRenderer = ({ myMessage, onUpdateLink }) => {
+const MessageAttachmentRenderer = ({ myMessage }) => {
   const [objectUrl, setObjectUrl] = useState(null);
   const [error, setError] = useState(null);
   const videoRef = useRef(null);
@@ -22,9 +21,7 @@ const MessageAttachmentRenderer = ({ myMessage, onUpdateLink }) => {
     const downloadAttachment = async () => {
       console.log('Starting download for message:', myMessage.time);
       
-      if (myMessage.objectLink) {
-        console.log('Using existing objectLink:', myMessage.objectLink);
-        setObjectUrl(myMessage.objectLink);
+      if (objectUrl) {
         setIsLoading(false);
         return;
       }
@@ -50,7 +47,6 @@ const MessageAttachmentRenderer = ({ myMessage, onUpdateLink }) => {
           
           console.log("Created new object URL for message:", myMessage.id, newObjectUrl);
           setObjectUrl(newObjectUrl);
-          onUpdateLink(newObjectUrl);
           setIsLoading(false);
         } catch (error) {
           console.error("Download error:", error);
