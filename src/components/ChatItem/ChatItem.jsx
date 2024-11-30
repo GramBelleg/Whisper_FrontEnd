@@ -1,12 +1,6 @@
-import React, { useMemo, useState, useEffect, useRef } from "react";
-
-// Import Utility Functions
+import { useState, useEffect, useRef } from "react";
 import { checkDisplayTime } from "../../services/chatservice/checkDisplayTime";
 import { handleNoUserImage } from "../../services/chatservice/addDefaultImage";
-import { mapMessageState } from "../../services/chatservice/mapMessageState";
-
-// Import Components
-import noUser from "../../assets/images/no-user.png";
 import NotificationBell from "../NotificationBell/NotificationBell";
 import ReadTicks from "../ReadTicks/ReadTicks";
 import SentTicks from "../SentTicks/SentTicks";
@@ -14,22 +8,24 @@ import DeliveredTicks from "../DeliveredTicks/DeliveredTicks";
 import LastMessage from "../LastMessage/LastMessage";
 import UnRead from "../UnRead/UnRead";
 import Info from "../Info/Info";
-
 import "./ChatItem.css";
 import { whoAmI } from "../../services/chatservice/whoAmI";
 import PendingSend from "../PendingSend/PendingSend";
+import { useChat } from "@/contexts/ChatContext";
+import { muteChat, unMuteChat } from "@/services/chatservice/muteUnmuteChat";
+import { useWhisperDB } from "@/contexts/WhisperDBContext";
 
 
-const ChatItem = ({ index, standaloneChat, chooseChat }) => {
+const ChatItem = ({ index, standaloneChat, setAction }) => {
+
+    const { db } = useWhisperDB();
+    const { selectChat } = useChat();
 
     const maxLength = (
-        
         (standaloneChat.muted) ? 33 : 
-        (standaloneChat.sender === whoAmI.name) ? 30 : 15
+        (standaloneChat.name === whoAmI.name) ? 30 : 15
     )
     
-    // Use memo helps validate the chat  on every render
-
     // Track overflow of text
     const [isOverflowing, setIsOverflowing] = useState(false); 
 
@@ -37,14 +33,15 @@ const ChatItem = ({ index, standaloneChat, chooseChat }) => {
     const userNameRef = useRef(null);
     
     const trimName = (name) => {
-        return name.length > maxLength ? `${name.slice(0, maxLength - 3)}...` : name;
+        if(name) 
+            return name.length > maxLength ? `${name.slice(0, maxLength - 3)}...` : name;
+        return ''
     }
 
     // The local obhect of the chat
     const [myChat, setMyChat] = useState({
         id: -1,
         senderId: -1,
-        sender:'',
         type: "",
         unreadMessageCount: 0,
         lastMessageId: -1,
@@ -52,13 +49,16 @@ const ChatItem = ({ index, standaloneChat, chooseChat }) => {
         name:"",
         lastSeen: "",
         muted: false,
-        messageState:"",
+        media: false,
+        messageState:-1,
         messageTime:"",
         messageType:"",
         tagged: false,
         group: false,
         story: false,
-        profilePic:''
+        othersId: -1,
+        profilePic: '',
+        drafted:false
     });
 
     // Function to handle clicks and call chooseChat
@@ -66,46 +66,79 @@ const ChatItem = ({ index, standaloneChat, chooseChat }) => {
         // Check if the click is on the Info component
         const infoElement = e.target.closest('.info'); // Assuming .info-component is the class for the Info component
         if (!infoElement) {
-            chooseChat(myChat.id); // Call chooseChat if not clicking on Info
+            selectChat(myChat);
         }
     };
 
-    // Use Effect that renders on change in the coming object
+    const handleMute = async (duration = 0) => {
+        try {
+            await muteChat(standaloneChat.id, {
+                type: standaloneChat.type,
+                isMuted: true,
+                duration: duration
+            });
+
+            try {
+                await db.muteNotifications(standaloneChat.id);
+            } catch (error) {
+                console.error(error);
+            }
+            setAction(true);
+        } catch (error) {
+            console.log(error);
+        }
+    }
+
+    const handleUnMute = async (duration = 0) => {
+        try {
+            await unMuteChat(standaloneChat.id, {
+                type: standaloneChat.type,
+                isMuted: false,
+                duration: duration
+            });
+
+            try {
+                await db.unMuteNotifications(standaloneChat.id);
+            } catch (error) {
+                console.error(error);
+            }
+            setAction(true);
+        } catch (error) {
+            console.log(error);
+        }
+    }
+
+
     useEffect(() => {
-        // Update chat state from standaloneChat
         setMyChat((prevChat) => ({
             ...prevChat,
             ...standaloneChat,
-            messageState: mapMessageState(standaloneChat.messageState),
             messageTime: checkDisplayTime(standaloneChat.messageTime),
             name: trimName(standaloneChat.name)
         }));
-        console.log(standaloneChat.profilePic)
 
-        // Check for overflow when the name changes
         const checkOverflow = () => {
             if (userNameRef.current) {
                 const { scrollWidth, clientWidth } = userNameRef.current;
                 setIsOverflowing(scrollWidth > clientWidth); // Update overflow state
             }
         };
-        console.log("chat ", myChat);
 
-        checkOverflow(); // Initial check
-        window.addEventListener("resize", checkOverflow); // Check on resize
+        checkOverflow(); 
+        window.addEventListener("resize", checkOverflow); 
 
         return () => {
-            window.removeEventListener("resize", checkOverflow); // Cleanup
+            window.removeEventListener("resize", checkOverflow); 
         };
-    }, [standaloneChat, myChat.name]); // Dependencies
+    }, [standaloneChat]); 
 
     return ( 
-        <div className="single-chat" onClick={handleClick}>
+        <div data-testid="chat-item" className="single-chat" onClick={handleClick}>
             {(
                 <div className="single-chat-content">
                     <div className={`profile-pic-wrapper ${myChat.story ? 'has-story' : ''}`}>
                         <img 
-                            src={myChat.profilePic || noUser}
+                            src={myChat.profilePic}
                             className={`profile-pic`} // Add the conditional class
                             onError={(e) => handleNoUserImage(e)}
                         />
@@ -129,23 +162,11 @@ const ChatItem = ({ index, standaloneChat, chooseChat }) => {
                             <div className="ticks-info">
                                 <div className="tick">
                                 {
-                                        myChat.messageState === 0  && (
-                                            <SentTicks/>
-                                        ) 
-                                        || 
-                                        myChat.messageState ==  1 && (
-                                            <DeliveredTicks/>
-                                        )
-                                        || 
-                                        myChat.messageState ==  2 && (
-                                            <ReadTicks/>
-                                        )
-                                        || 
-                                        myChat.messageState ==  4 && (
-                                            <PendingSend/>
-                                        )
-                                        
-                                    } 
+                                        ( myChat.messageState && myChat.messageState === 0 ) && <SentTicks data-testid="sent-tick"/> || 
+                                        ( myChat.messageState && myChat.messageState === 1 ) && <DeliveredTicks data-testid="delivered-tick"/> || 
+                                        ( myChat.messageState && myChat.messageState === 2 ) && <ReadTicks data-testid="read-tick"/> || 
+                                        ( myChat.messageState && myChat.messageState === 4 ) && <PendingSend data-testid="pending-tick"/>  
+                                } 
                                 </div>
                                 <div className="message-time">
                                     <span className={myChat.unreadMessageCount ? 'unread-time' : ''}>
@@ -155,9 +176,15 @@ const ChatItem = ({ index, standaloneChat, chooseChat }) => {
                             </div>
                         </div>
                         <div className="messaging-info">
-                            <LastMessage sender={myChat.sender} messageType={myChat.messageType} message={myChat.lastMessage} index={index} messageState={myChat.messageState}/>
+                            { myChat.lastMessage && <LastMessage myChat={myChat} index={index}/>}
                             { (myChat.unreadMessageCount || myChat.tagged) && <UnRead unReadMessages={myChat.unreadMessageCount} tag={myChat.tagged}/>}
-                            <Info index={index} group={myChat.group}/>
+                            <Info 
+                                index={index} 
+                                group={myChat.group} 
+                                muted={myChat.muted}
+                                onMute={handleMute}
+                                onUnMute={handleUnMute}
+                            />
                         </div>
                     </div>
                 </div>

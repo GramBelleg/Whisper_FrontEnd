@@ -1,69 +1,76 @@
-# Getting Started with Create React App
+# Whisper - Frontend
 
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
+Welcome to our **Whisper App**! This project aims to provide a user-friendly, feature-rich messaging platform that enables users to connect, communicate, and customize their experience with ease. Below, you’ll find an overview of our progress and the core features we’ve implemented.
 
-## Available Scripts
+## 🚀 Project Overview
 
-In the project directory, you can run:
+Our app is designed to offer a seamless communication experience, with features that include secure login options, extensive profile customization, privacy settings, and versatile messaging capabilities. We are actively developing and expanding the feature set to create a complete messaging solution.
 
-### `npm dev`
+## 🔒 Authentication
 
-Runs the app in the development mode.\
-Open [http://localhost:5173](http://localhost:5173) to view it in your browser.
+We’ve implemented a secure and flexible authentication system with multiple login options:
+- **Standard Login**: Users can register and log in with traditional email/password credentials.
+- **OAuth Login**: Login options with:
+  - Google
+  - Facebook
+  - GitHub
 
-The page will reload when you make changes.\
-You may also see any lint errors in the console.
+These integrations allow for a streamlined login experience, making it easy for users to get started.
 
-### `npm test`
+## 👤 Profile Management
 
-Launches the test runner in the interactive watch mode.\
-See the section about [running tests](https://facebook.github.io/create-react-app/docs/running-tests) for more information.
+Our app offers comprehensive profile management features, allowing users to personalize their accounts fully:
+- **Profile Settings**:
+  - **Bio**: Users can add a brief bio about themselves.
+  - **Profile Picture**: Easy upload and update of profile pictures.
+  - **Name**: Customizable display name.
+  
+- **Privacy Settings**:
+  - **Block/Unblock Users**: Users can control their connections and manage who can contact them.
+  - **Visibility Settings**: Adjust profile visibility according to user preferences.
+  
+- **Stories**:
+  - **Set/Remove Stories**: Users can share temporary updates with their contacts.
 
-### `npm run build`
+## 💬 Messaging Features
 
-Builds the app for production to the `build` folder.\
-It correctly bundles React in production mode and optimizes the build for the best performance.
+We’ve begun implementing the core messaging capabilities, including:
+- **Text Messaging**: Exchange text messages with contacts.
+- **Media Sharing**:
+  - **Audio**: Send and receive audio messages.
+  - **Video**: Share videos with contacts.
+  - **Images**: Send and view image attachments.
 
-The build is minified and the filenames include the hashes.\
-Your app is ready to be deployed!
+Our team is actively working on expanding messaging features to enhance user interaction and engagement further.
 
-See the section about [deployment](https://facebook.github.io/create-react-app/docs/deployment) for more information.
+## 📈 Roadmap
 
-## Learn More
+Here’s what’s coming next in our development pipeline:
+- **Enhanced Messaging Features**: Delivery/read receipts, message editing, and deleting.
+- **Group Chat Support**: Create and manage group conversations.
+- **End-to-End Encryption**: Ensure secure communication across all messages and calls.
 
-You can learn more in the [Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started).
+## 📦 Tech Stack
 
-To learn React, check out the [React documentation](https://reactjs.org/).
+This project utilizes a modern stack to ensure scalability, performance, and ease of maintenance:
+- **Frontend**: [JavaScript, React, Vite, CSS, Tailwind, Vitest]
 
-### Code Splitting
+## 🛠️ Getting Started
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/code-splitting](https://facebook.github.io/create-react-app/docs/code-splitting)
+To get started with the project, follow these steps:
 
-### Analyzing the Bundle Size
+1. **Clone the repository**:
+   ```bash
+   git clone https://github.com/yourusername/yourproject.git
+   cd yourproject
+    ```
+2. **Install dependencies**:
+    ```bash
+   npm install
+   ```
+3. **Start the application**:
+    ```bash
+    npm run dev
+    ```
+    ## Don't forget to run start the backend
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size](https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size)
-
-### Making a Progressive Web App
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app](https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app)
-
-### Advanced Configuration
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/advanced-configuration](https://facebook.github.io/create-react-app/docs/advanced-configuration)
-
-### Deployment
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/deployment](https://facebook.github.io/create-react-app/docs/deployment)
-
-### `npm run build` fails to minify
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify](https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify)
-
-
-## `npm run test_ui`
-
-Opens interactive ui showing all the testcases
-
-## `npm run format`
-
-Formats the project files maintaining the Code style standards

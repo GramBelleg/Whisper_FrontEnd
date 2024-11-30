@@ -1,76 +1,67 @@
-// This page Contains Stories and the chats
-// It renders both stories page and chats page
-
-import useFetch from "../../services/useFetch";
 import ChatList from "../ChatList/ChatList";
 import "./ChatPage.css";
 import StoriesContainer from "../StoriesContainer/StoriesContainer";
 import SearchBar from "../SearchBar/SearchBar";
-import React, { useState, useEffect, useRef } from 'react';
+import { useState, useEffect } from 'react';
 import AddNewButton from "../AddNewButton/AddNewButton";
+import { useChat } from "@/contexts/ChatContext";
+import { useWhisperDB } from "@/contexts/WhisperDBContext";
+import { useModal } from "@/contexts/ModalContext";
+import ErrorMesssage from "../ErrorMessage/ErrorMessage";
 
-const ChatPage = ({ chatList, chooseChat }) => {
-
-    
-    const [sidebarWidth, setSidebarWidth] = useState(100); 
-    const sidebarRef = useRef(null);
-    const isResizing = useRef(false);
-
-    const startResizing = (e) => {
-        isResizing.current = true;
-    };
-
-    const stopResizing = () => {
-        isResizing.current = false;
-    };
-
-    const resize = (e) => {
-        if (isResizing.current) {
-            const newWidth = (e.clientX / window.innerWidth) * 100; 
-            if (newWidth >= 20 && newWidth <= 45) {
-                setSidebarWidth(newWidth);
-            }
-        }
-    };
+const ChatPage = () => {
+    const { messageReceived, messages, selectChat } = useChat();
+    const [chatList, setChatList] = useState([]);
+    const { db } = useWhisperDB();
+    const { openModal, closeModal } = useModal();
+    const [action, setAction] = useState(null);
 
     const handleAddNewClick = () => {
         console.log('Add new clicked');
     };
 
+    const loadChats = async () => {
+        try {
+            let allChats = await db.getChats();
+            setChatList(allChats);
+        } catch (error) {
+            openModal(
+                <ErrorMesssage
+                  errorMessage={error.message}
+                  appearFor={3000}
+                  onClose={closeModal}
+                />
+            )
+        }
+    }
 
     useEffect(() => {
-        const handleMouseUp = stopResizing;
-        const handleMouseMove = resize;
+        if (db) {
+            loadChats();
+        }
+    }, [db]);
 
-        document.addEventListener('mousemove', handleMouseMove);
-        document.addEventListener('mouseup', handleMouseUp);
+    useEffect(() => {
+        if (action) {
+            loadChats();
+            setAction(false);
+        }
+    }, [action]);
 
-        return () => {
-            document.removeEventListener('mousemove', handleMouseMove);
-            document.removeEventListener('mouseup', handleMouseUp);
-        };
-    }, []);
-    return ( 
-        // <div className="chat-page">
-            <div
-            className="sidebar"
-            ref={sidebarRef}
-            style={{ width: `${sidebarWidth}%` }}
-        >
+    useEffect(() => { loadChats() }, [messages, messageReceived]);
+    
+    return (
+        <div className="chat-page">
             <div>
-                { true && <SearchBar />}
+                <SearchBar />
             </div>
             <div className="sidebar__stories">
-                { true && <StoriesContainer /> }
+                <StoriesContainer />
             </div>
             <div className="sidebar__other-content">
-                {chatList &&  <ChatList chatList={chatList} chooseChat={chooseChat}/>}
+                {chatList && chatList.length > 0 &&  <ChatList chatList={chatList} chooseChat={selectChat} setAction={setAction}/>}
                 <AddNewButton onClick={handleAddNewClick} />
             </div>
-            <div
-                className="sidebar__resizer"
-                onMouseDown={startResizing}
-            />
         </div>
     )
 }

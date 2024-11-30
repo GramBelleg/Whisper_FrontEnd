@@ -8,7 +8,7 @@ import { faBan } from  '@fortawesome/free-solid-svg-icons';
 import { whoAmI } from "../../services/chatservice/whoAmI";
 import { useEffect, useState } from "react";
 
-const DeltedMessage = ({sender}) => {
+const DeletedMessage = ({sender}) => {
 
     const [user, setUser] = useState("You");
 
@@ -29,4 +29,4 @@ const DeltedMessage = ({sender}) => {
     );
 }
  
-export default DeltedMessage;
+export default DeletedMessage;

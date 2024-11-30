@@ -6,7 +6,7 @@ import "./DeliveredTicks.css";
 
 const DeliveredTicks = () => {
     return ( 
-        <div className="delivered-ticks">
+        <div className="delivered-ticks" data-testid="delivered-icon">
             <FontAwesomeIcon icon={faCheckDouble} className="delivered-icon"/>
         </div>
     );

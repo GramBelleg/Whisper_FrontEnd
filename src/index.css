@@ -1,0 +1,33 @@
+@import url('https://fonts.googleapis.com/css2?family=ABeeZee&display=swap');
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  /* Primary Colors */
+  --primary-color: #8d6aee;
+
+  /* Secondary Colors */
+  --secondary-color: #162698;
+  --secondary-dark: #0a254a;
+
+  /* Highlight Colors */
+  --highlight: #4cb9cf;
+
+  /* Neutral Colors */
+  --light: #fbfbfb;
+  --dark: #0a122f;
+}
+
+body {
+  margin: 0;
+  font-family: 'ABeeZee', sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  background-color: var(--dark);
+}
+
+code {
+  font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New',
+    monospace;
+}

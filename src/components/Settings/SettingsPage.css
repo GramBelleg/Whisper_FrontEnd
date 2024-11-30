@@ -1,0 +1,85 @@
+.settings {
+    padding: 1rem 0;
+    color: var(--text-color);
+    overflow-y: auto;
+    height: 100%;
+}
+  
+.settings h1 {
+    color: var(--text-color);
+    font-size: 1.2rem;
+    font-weight: regular;
+    margin-left: 0.5rem;
+}
+  
+.settings .header {
+    padding: 0 2rem;
+}
+
+.settings .back-icon {
+    font-size: 28px;
+}
+
+.profile-info-container {
+    display: flex;
+    flex-direction: column;
+    gap: 0.25rem;
+}
+
+.settings .profile-info {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    padding: 0.75rem 1.5rem;
+}
+
+.settings .profile-info .details {
+    display: flex;
+    flex-direction: column;
+    gap: 0.25rem;
+    flex-grow: 1;
+    text-align: left;
+}
+
+.settings .profile-info .detail-title {
+    color: #ffffff;
+    font-size: 1rem;
+}
+
+.settings .profile-info .detail-subtitle {
+    color: #9ca3af;
+    font-size: 0.875rem;
+}
+
+.settings .separator {
+    height: 10px;
+    background-color: var(--secondary-color);
+    margin: 1rem 0;
+}
+
+.settings .subtitle {
+    color: var(--accent-color);
+    padding: 0 1rem;
+    font-size: 1.125rem;
+    text-align: left;
+    margin-bottom: 1rem;
+}
+
+.settings .list-container {
+    padding: 0 0.5rem;
+    margin: 1rem 0;
+}
+
+.settings .item {
+    display: flex;
+    cursor: pointer;
+    gap: 1rem;
+    text-align: left;
+    align-items: center;
+    border-radius: 8px;
+    padding: 1rem 1.5rem;
+}
+
+.settings .item:hover {
+    background-color: var(--secondary-color);
+}
