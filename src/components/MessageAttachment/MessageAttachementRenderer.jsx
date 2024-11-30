@@ -1,5 +1,4 @@
 import React, { useState, useEffect, useRef } from 'react';
-import axiosInstance from '../../services/axiosInstance';
 import useFetch from '../../services/useFetch';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faCircleNotch, faPlay, faPause, faVolumeUp, faCircleArrowDown } from '@fortawesome/free-solid-svg-icons';
@@ -7,67 +6,68 @@ import { downloadAttachment } from './fileServices';
 import { whoAmI } from '../../services/chatservice/whoAmI';
 
 const MessageAttachmentRenderer = ({ myMessage, onUpdateLink }) => {
-  const [objectUrl, setObjectUrl] = useState(null);
-  const [error, setError] = useState(null);
-  const videoRef = useRef(null);
-  const audioRef = useRef(null);
-  const [isLoading, setIsLoading] = useState(true);
-  const [isPlaying, setIsPlaying] = useState(false);
-  const [duration, setDuration] = useState(0);
-  const [currentTime, setCurrentTime] = useState(0);
-  const { data: downloadData, error: errorDownload, loading: loadingDownload } = useFetch('/downloadAttachment');
-  const [autoDownload, setAutoDownload] = useState(false);
-  useEffect(() => {
-    console.log('Message changed:', myMessage);
-    setAutoDownload(false);
-    setObjectUrl(null);
-    setIsLoading(true);
-    setError(null);
-  }, [myMessage.time]);
+    const [objectUrl, setObjectUrl] = useState(null);
+    const [error, setError] = useState(null);
+    const videoRef = useRef(null);
+    const audioRef = useRef(null);
+    const [isLoading, setIsLoading] = useState(true);
+    const [isPlaying, setIsPlaying] = useState(false);
+    const [duration, setDuration] = useState(0);
+    const [currentTime, setCurrentTime] = useState(0);
+    const { data: downloadData, error: errorDownload, loading: loadingDownload } = useFetch('/downloadAttachment');
+    const [autoDownload, setAutoDownload] = useState(false);
+    
+    useEffect(() => {
+      console.log('Message changed:', myMessage);
+      setAutoDownload(false);
+      setObjectUrl(null);
+      setIsLoading(true);
+      setError(null);
+    }, [myMessage.time]);
 
-  useEffect(() => {
-    const fetchData = async () => {
-      try {
-        if (myMessage.objectLink) {
-          console.log('Using existing objectLink:', myMessage.objectLink);
-          setObjectUrl(myMessage.objectLink);
-          setAutoDownload(true);
-          setIsLoading(false);
-          return;
-        }
-        // If file type is not 0, handle size check and download
-        if (myMessage.fileType !== 0 && !autoDownload) {
-          const fileSize = myMessage.size;
-          console.log(fileSize);
-          if (fileSize < whoAmI.autoDownloadSize) {
+    useEffect(() => {
+      const fetchData = async () => {
+        try {
+          if (myMessage.objectLink) {
+            console.log('Using existing objectLink:', myMessage.objectLink);
+            setObjectUrl(myMessage.objectLink);
+            setAutoDownload(true);
+            setIsLoading(false);
+            return;
+          }
+          // If file type is not 0, handle size check and download
+          if (myMessage.fileType !== 0 && !autoDownload) {
+            const fileSize = myMessage.size;
+            console.log(fileSize);
+            if (fileSize < whoAmI.autoDownloadSize) {
+              const newObjectUrl = await downloadAttachment(downloadData, myMessage);
+              setObjectUrl(newObjectUrl);
+              onUpdateLink(newObjectUrl);
+              setIsLoading(false);
+              setAutoDownload(true);
+              setIsLoading(false);
+            } else {
+              setAutoDownload(false);
+              setIsLoading(false);
+            }
+          } else {
             const newObjectUrl = await downloadAttachment(downloadData, myMessage);
+            setAutoDownload(true);
             setObjectUrl(newObjectUrl);
             onUpdateLink(newObjectUrl);
             setIsLoading(false);
-            setAutoDownload(true);
-            setIsLoading(false);
-          } else {
-            setAutoDownload(false);
-            setIsLoading(false);
           }
-        } else {
-          const newObjectUrl = await downloadAttachment(downloadData, myMessage);
-          setAutoDownload(true);
-          setObjectUrl(newObjectUrl);
-          onUpdateLink(newObjectUrl);
+        } catch (error) {
+          setError("Error fetching attachment data.");
           setIsLoading(false);
         }
-      } catch (error) {
-        setError("Error fetching attachment data.");
-        setIsLoading(false);
-      }
-    };
-  
-    if (myMessage && isLoading && downloadData) {
-      fetchData();
-    }
+      };
     
-  }, [myMessage, autoDownload, isLoading, downloadData, loadingDownload]);
+      if (myMessage && isLoading && downloadData) {
+        fetchData();
+      }
+      
+    }, [myMessage, autoDownload, isLoading, downloadData, loadingDownload]);
 
   const formatTime = (timeInSeconds) => {
     const minutes = Math.floor(timeInSeconds / 60);
