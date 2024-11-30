@@ -34,7 +34,7 @@ pipeline {
             steps {
                 sh """
                 echo "******* testing ********" 
-                docker run --rm -v "$JOB_PATH:/app" -w /app node:18 /bin/bash -c "npm test" > testsLogs.txt
+                docker run --rm -v "$JOB_PATH:/app" -w /app node:18 /bin/bash -c "npx vitest run" > testsLogs.txt
                 """
             }
         }
