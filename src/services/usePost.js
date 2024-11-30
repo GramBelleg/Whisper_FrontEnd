@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react'
-import axiosInstance from '../services/axiosInstance';
+import axiosInstance from './axiosInstance';
 
 const usePost = (url, item) => {
   const [data, setData] = useState(null)

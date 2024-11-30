@@ -1,9 +1,9 @@
 // This is just for testing
 import { useState } from 'react'
 import ChatPage from '../ChatPage/ChatPage'
-import '../SampleHome/SampleHome.css'
+import './SampleHome.css'
 import SingleChatSection from '../SingleChatSection/SingleChatSection'
-import "../SampleHome/SampleHome.css"
+import "./SampleHome.css"
 import ButtonsBar from "../ButtonsBar/ButtonsBar";
 import useFetch from "../../services/useFetch";
 import NoChatOpened from '../NoChatOpened/NoChatOpened'
