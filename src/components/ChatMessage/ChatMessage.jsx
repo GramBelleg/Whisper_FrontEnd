@@ -11,8 +11,9 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faReply, faShare, faTrash, faThumbtack, faThumbtackSlash } from '@fortawesome/free-solid-svg-icons'
 import { useModal } from '@/contexts/ModalContext'
 import ForwardMessageModal from '../Modals/ForwardMessageModal/ForwardMessageModal'
-import MessageAttachmentRenderer from '../MessageAttachment/MessageAttachmentRenderer';
 import { useChat } from '@/contexts/ChatContext'
+import MessageAttachmentRenderer from '../MessageAttachment/MessageAttachementRenderer'
+
 
 const ChatMessage = ({ message, onDelete, onReply }) => {
     const [isMenuOpen, setIsMenuOpen] = useState(false) // Track menu state
@@ -76,7 +77,7 @@ const ChatMessage = ({ message, onDelete, onReply }) => {
             case messageTypes.TEXT:
                 return (
                     <div className="message-text" style={{ whiteSpace: 'pre-line' }}>
-                      {message.file && <MessageAttachmentRenderer myMessage={message}  />}
+                      {message.media && <MessageAttachmentRenderer myMessage={message}  />}
                       {message.content}
                   </div>  
                   );
