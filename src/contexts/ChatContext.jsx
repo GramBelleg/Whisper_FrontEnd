@@ -72,21 +72,41 @@ export const ChatProvider = ({ children }) => {
             expiresAfter: 5,
             type:type.toUpperCase(),
             sentAt : new Date().toISOString(),
-            media: "",
-            // extension:"",
             parentMessageId: null,
             forwardedFromUserId: null,
             mentions:[],
             isSecret: false,
-            isAnnouncement: false,            
+            isAnnouncement: false,
+            file: null,
+            media: null,
+            objectLink: "",
+            fileType: attachmentType,
+            size: null,
+            extension: null,
+            autoDownload: null,
+            fileName: null,            
         }
 
         if (attachmentPayload !== null) {
-            //newMessage.file = attachmentPayload.file;
             //newMessage.fileType = attachmentPayload.type;
             //newMessage.blobName = attachmentPayload.blobName;
-            // TODO: handle this for media and extension
+            newMessage.file = attachmentPayload.file;
+            newMessage.fileName = attachmentPayload.name;
+            newMessage.extension = attachmentPayload.type;
+            newMessage.size = attachmentPayload.size;
         }
+
+        removeAttachment();
+        /*if (true) { // TODO: handle upload
+            let blob = await uploadFile(tempMessageObject,uploadData);
+            if (blob) {
+                tempMessageObject.media = blob.blobName;
+            }
+        }
+
+        if (errorUpload) {
+            console.log(errorUpload)
+        }*/
         const newMessageForBackend = { ...newMessage };
        
         newMessage.senderId = whoAmI.userId,
