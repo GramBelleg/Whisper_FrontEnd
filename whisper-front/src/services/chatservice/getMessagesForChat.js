@@ -1,12 +1,11 @@
 import axios from "axios"
-import axiosInstance from "../axiosInstance";
 import noUser from "../../assets/images/no-user.png";
 
 
 export const getMessagesForChatFromAPI = async (id) => {
     try {
         //const  response = await axiosInstance.get(`/chatMessages/${id}`);
-        const response = await axios.get(`http://localhost:5000/api/messages/${id}/getMessages`, 
+        const response = await axios.get(`http://localhost:5000/api/messages/${id}`, 
             {withCredentials: true}
         );
 
