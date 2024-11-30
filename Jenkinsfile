@@ -33,7 +33,8 @@ pipeline {
         stage('testing') {
             steps {
                 sh """
-                echo "******* testing ********" > testsLogs.txt
+                echo "******* testing ********" 
+                docker run --rm -v "$JOB_PATH:/app" -w /app node:18 /bin/bash -c "npx vitest run" > testsLogs.txt
                 """
             }
         }
