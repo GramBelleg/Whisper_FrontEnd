@@ -1,8 +1,8 @@
 // This is just for testing
-import '../SampleHome/SampleHome.css'
+import './SampleHome.css'
 import SingleChatSection from '../SingleChatSection/SingleChatSection'
 import ButtonsBar from '../ButtonsBar/ButtonsBar'
-import '../SampleHome/SampleHome.css'
+import './SampleHome.css'
 import { ModalProvider } from '@/contexts/ModalContext'
 import { ChatProvider } from '@/contexts/ChatContext'
 import { SidebarProvider } from '@/contexts/SidebarContext'
