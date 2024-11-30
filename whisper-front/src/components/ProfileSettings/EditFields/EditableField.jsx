@@ -13,7 +13,11 @@ const EditableField = ({ initialText, onSave, id, fieldName, error, clearError }
     }
 
     const handleInputChange = (e) => {
-        setText(e.target.value)
+        const inputValue = e.target.value;
+        
+        if (fieldName !== 'Bio' || inputValue.length <= 300) {
+            setText(inputValue);
+        }
     }
 
     const handleBlur = (e) => {
