@@ -9,7 +9,8 @@ import { useStories } from "@/contexts/StoryContext";
 import { whoAmI } from "@/services/chatservice/whoAmI";
 
 const SingleStory = ({ onNextStory, handleAddNewStoryClick, onClose }) => {
-    const { loading, error, url, currentStory, currentUser, selectUser, isDeleteing, handleDeleteStory } = useStories();
+    const { loading, error, url, currentStory, currentUser, 
+            isDeleteing, handleDeleteStory, sendLikeStory  } = useStories();
     const [dropdownVisible, setDropdownVisible] = useState(false);
     const [visibilityDropDownVisible, setVisibilityDropDownVisible] = useState(false);
     const [storyVisibility, setStoryVisibility] = useState("Everyone");
@@ -56,7 +57,6 @@ const SingleStory = ({ onNextStory, handleAddNewStoryClick, onClose }) => {
         setVisibilityDropDownVisible(false);
         setRemainingTime(20000);
         startInterval();
-        console.log(currentStory)
         storyVisibilityChangedRef.current = false;
         dropdownRef.current = null;
         videoRef.current = null;
@@ -66,13 +66,11 @@ const SingleStory = ({ onNextStory, handleAddNewStoryClick, onClose }) => {
         };
     }, [currentStory]);
 
-    useEffect(() => {console.log(currentUser)}, [currentUser])
+    useEffect(() => {
+    }, [currentUser])
 
-    /*useEffect(() => {
-        intervalRef.current = null;
-        startTimeRef.current = Date.now();
-        startInterval();
-    }, [url])*/
+    useEffect(() => {
+    }, [currentUser, currentStory?.liked])
 
     useEffect(() => {
         if (error) {
@@ -149,13 +147,15 @@ const SingleStory = ({ onNextStory, handleAddNewStoryClick, onClose }) => {
             );
         }
 
+        
+
         if (currentStory && currentStory?.type.startsWith("image/")) {
             return (
                 <img
                     src={url}
                     alt="Story content"
                     className="w-full h-full object-contain"
-                    onError={() => setError("Failed to load image")}
+                    onError={() => console.log("Failed to load image")}
                 />
             );
         }
@@ -224,16 +224,16 @@ const SingleStory = ({ onNextStory, handleAddNewStoryClick, onClose }) => {
     
             {renderContent()}
             <div className="story-content">
-                <div className={`likes ${false ? 'liked' : ''}`}>
-                    <FontAwesomeIcon icon={faHeart} className="h-6 w-6" />
+                <div className={`likes ${currentStory?.liked ? 'liked' : ''}`}>
+                    <FontAwesomeIcon icon={faHeart} className="h-6 w-6" onClick={currentStory && !currentStory.liked ? sendLikeStory : () => {console.log("ho")}}/>
                     <span className="likes-count">{currentStory?.likes}</span>
                 </div>
 
                 {
                     currentStory?.userId === whoAmI.userId && (
                     <div className="views">
-                        <FontAwesomeIcon icon={faEye} className="h-6 w-6" />
-                        <span className="views-count">{currentStory?.likes}</span>
+                        <FontAwesomeIcon icon={faEye} className="h-6 w-6"/>
+                        <span className="views-count">{currentStory?.views}</span>
                     </div>
                 )}
                 <div className="story-content-text">
