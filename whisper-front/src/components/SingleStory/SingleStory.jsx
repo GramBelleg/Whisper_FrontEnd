@@ -1,25 +1,26 @@
 import { useEffect, useRef, useState } from "react";
 import "./SingleStory.css";
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faEllipsisV, faEye } from "@fortawesome/free-solid-svg-icons";
+import { faEllipsisV, faEye, faPause, faPlay, faHeart } from "@fortawesome/free-solid-svg-icons";
 import { useModal } from "@/contexts/ModalContext";
 import ErrorMesssage from "../ErrorMessage/ErrorMessage";
 import { setStoryPrivacySettings } from "@/services/storiesservice/setStoryVisibility";
 import { useStories } from "@/contexts/StoryContext";
 import { whoAmI } from "@/services/chatservice/whoAmI";
 
-const SingleStory = ({ onNextStory, onDeleteStory, handleAddNewStoryClick, onClose }) => {
-    const { loading, error, url, currentStory, currentUser, selectUser } = useStories();
+const SingleStory = ({ onNextStory, handleAddNewStoryClick, onClose }) => {
+    const { loading, error, url, currentStory, currentUser, selectUser, isDeleteing, handleDeleteStory } = useStories();
     const [dropdownVisible, setDropdownVisible] = useState(false);
     const [visibilityDropDownVisible, setVisibilityDropDownVisible] = useState(false);
-    const [remainingTime, setRemainingTime] = useState(20000); // 20 seconds
     const [storyVisibility, setStoryVisibility] = useState("Everyone");
+    const [isPaused, setIsPaused] = useState(false);
     const storyVisibilityChangedRef = useRef(false);
     const videoRef = useRef();
     const intervalRef = useRef(null);
     const startTimeRef = useRef(Date.now());
     const dropdownRef = useRef(null);
     const { openModal, closeModal } = useModal();
+    const [remainingTime, setRemainingTime] = useState(20000);
 
     const handleClickOutside = (event) => {
         if (
@@ -30,6 +31,7 @@ const SingleStory = ({ onNextStory, onDeleteStory, handleAddNewStoryClick, onClo
             setDropdownVisible(false);
             setVisibilityDropDownVisible(false);
             startInterval(); 
+            setRemainingTime(20000);
             
             if(storyVisibilityChangedRef.current === true) {
                 try {
@@ -52,6 +54,8 @@ const SingleStory = ({ onNextStory, onDeleteStory, handleAddNewStoryClick, onClo
         document.addEventListener("mousedown", handleClickOutside);
         setDropdownVisible(false);
         setVisibilityDropDownVisible(false);
+        setRemainingTime(20000);
+        startInterval();
         console.log(currentStory)
         storyVisibilityChangedRef.current = false;
         dropdownRef.current = null;
@@ -64,11 +68,11 @@ const SingleStory = ({ onNextStory, onDeleteStory, handleAddNewStoryClick, onClo
 
     useEffect(() => {console.log(currentUser)}, [currentUser])
 
-    useEffect(() => {
+    /*useEffect(() => {
         intervalRef.current = null;
         startTimeRef.current = Date.now();
         startInterval();
-    }, [url])
+    }, [url])*/
 
     useEffect(() => {
         if (error) {
@@ -83,21 +87,28 @@ const SingleStory = ({ onNextStory, onDeleteStory, handleAddNewStoryClick, onClo
         }
     }, [error])
 
-    const handleDeleteStory = () => {
-        onDeleteStory(intervalRef);
+    useEffect(() => {}, [isDeleteing]);
+    
+
+    const localHandleDeleteStory = () => {
+        clearTimeout(intervalRef.current);
+        handleDeleteStory();
     }
 
     const startInterval = () => {
         intervalRef.current = setTimeout(() => {
             onNextStory(); 
         }, remainingTime);
+
         startTimeRef.current = Date.now();
+        setIsPaused(false);
     };
 
     const pauseInterval = () => {
         clearTimeout(intervalRef.current);
         const elapsedTime = Date.now() - startTimeRef.current;
         setRemainingTime((prev) => prev - elapsedTime);
+        setIsPaused(true);
     };
 
     const handleDropdownToggle = () => {
@@ -114,7 +125,6 @@ const SingleStory = ({ onNextStory, onDeleteStory, handleAddNewStoryClick, onClo
     const handleEditVisibility = () => {
         setDropdownVisible(false);
         setVisibilityDropDownVisible(true);
-        
     };
 
     const handleVisibilityChange = (value) => {
@@ -122,8 +132,9 @@ const SingleStory = ({ onNextStory, onDeleteStory, handleAddNewStoryClick, onClo
         storyVisibilityChangedRef.current = true
     }
 
+
     const renderContent = () => {
-        if (loading) {
+        if (loading || isDeleteing) {
             return (
                 <div className="flex items-center justify-center w-full h-full">
                     <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-white" />
@@ -166,10 +177,14 @@ const SingleStory = ({ onNextStory, onDeleteStory, handleAddNewStoryClick, onClo
         }
     };
 
-  return (
+    return (
         <>
-            {
-                currentUser?.id === whoAmI.id && (
+            <div className="story-controls">
+                <button onClick={isPaused ? startInterval : pauseInterval} className="control-button" aria-label="Pause">
+                    <FontAwesomeIcon icon={isPaused ? faPlay : faPause} className="h-8 w-8"/>
+                </button>
+        
+                {currentUser?.userId === whoAmI.userId && (
                     <div className="dropdown-container">
                         <button onClick={handleDropdownToggle} className="three-dots-button" aria-label="Options">
                             <FontAwesomeIcon icon={faEllipsisV} className="h-8 w-8" />
@@ -177,17 +192,19 @@ const SingleStory = ({ onNextStory, onDeleteStory, handleAddNewStoryClick, onClo
                         {dropdownVisible && (
                             <div className="dropdown-menu">
                                 <button onClick={handleAddNewStoryClick} className="dropdown-item add">Add</button>
-                                <button onClick={handleDeleteStory} className="dropdown-item delete">Delete</button>
+                                <button onClick={localHandleDeleteStory} className="dropdown-item delete">Delete</button>
                                 <div className="edit-visibility-within-story">
                                     <FontAwesomeIcon icon={faEye} />
-                                <button onClick={handleEditVisibility} className="dropdown-item visibility">
-                                    Who Can See My Story?
-                                </button>
+                                    <button onClick={handleEditVisibility} className="dropdown-item visibility">
+                                        Who Can See My Story?
+                                    </button>
                                 </div>
                             </div>
                         )}
                     </div>
-            )}
+                )}
+            </div>
+    
             {visibilityDropDownVisible && (
                 <div className="within-story-visibility" ref={dropdownRef}>
                     <label>
@@ -204,12 +221,27 @@ const SingleStory = ({ onNextStory, onDeleteStory, handleAddNewStoryClick, onClo
                     </label>
                 </div>
             )}
+    
             {renderContent()}
-            <div className="story-content-text">
-                {currentStory?.content}
+            <div className="story-content">
+                <div className={`likes ${false ? 'liked' : ''}`}>
+                    <FontAwesomeIcon icon={faHeart} className="h-6 w-6" />
+                    <span className="likes-count">{currentStory?.likes}</span>
+                </div>
+
+                {
+                    currentStory?.userId === whoAmI.userId && (
+                    <div className="views">
+                        <FontAwesomeIcon icon={faEye} className="h-6 w-6" />
+                        <span className="views-count">{currentStory?.likes}</span>
+                    </div>
+                )}
+                <div className="story-content-text">
+                    {currentStory?.content}
+                </div>
             </div>
         </>
-    );
+    );    
 };
 
 export default SingleStory;

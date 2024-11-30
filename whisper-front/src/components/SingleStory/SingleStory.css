@@ -1,3 +1,15 @@
+.story-controls {
+    display: flex;
+
+}
+.control-button {
+    color: var(--accent-color);
+    position: absolute;
+    top: 14px;
+    right: 48px;
+    display: inline-block;
+    z-index: 11;
+}
 
 .story-content-text {
     width: 100%;
@@ -138,4 +150,33 @@
     padding: 10px;
     border-radius: 5px;
     transition: all  0.3s ease;
+}
+
+.story-content {
+    display: flex;
+}
+
+.likes, .views {
+    position: absolute;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+}
+
+.likes {
+    top: 92%;
+    left: 90%;
+    color: white;
+}
+.views {
+    top: 92%;
+    left: 85%;
+    color: white;
+}
+
+
+
+.likes.liked {
+    color: var(--accent-color);
 }
