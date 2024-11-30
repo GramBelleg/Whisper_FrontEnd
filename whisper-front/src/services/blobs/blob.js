@@ -1,3 +1,5 @@
+import axiosInstance from "../axiosInstance";
+
 // get the data from the url
 const getDownloadData =  async () => {
 
@@ -74,8 +76,8 @@ export const getBlobUrl = async (blobName) => {
 
     if (blobName) {
         try {
-            const response = await axiosInstance.get(`/api/media/read`, {
-                params: { blobName },
+            const response = await axiosInstance.post(`/api/media/read`, {
+                blobName ,
             });
 
             if (response.status !== 200 || !response.data.presignedUrl) {
