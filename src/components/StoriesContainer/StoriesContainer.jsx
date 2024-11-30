@@ -56,8 +56,7 @@ export default function StoriesContainer() {
     const handleStoryClick = (user, file = null, filePreview = null) => {
         if (!file) {   
             selectUser(user);
-            console.log(whoAmI)
-            if (whoAmI.hasStory) {
+            if ((user.userId === whoAmI.userId && whoAmI.hasStory) || (user.userId !== whoAmI.userId) ) {
                 openModal(
                     <StoriesList
                         onClose={closeModal}
