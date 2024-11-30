@@ -13,9 +13,6 @@ class WhisperDB {
     }
 
     async init() {
-        if (this.db) {
-            this.delete();
-        }
         return new Promise((resolve, reject) => {
             const request = indexedDB.open(DB_CONFIG.name, DB_CONFIG.version);
 
@@ -729,10 +726,13 @@ class WhisperDB {
                     request.onsuccess = () => resolve(request.result); 
                     request.onerror = () => reject(request.error); 
                 });
-                
+
                 await tx.complete;
-                console.log(story);
-                return true;    
+                if (story) {
+                    return true
+                }
+                
+                return false;    
             } catch (error) {
                 return false;
             }
@@ -777,7 +777,7 @@ class WhisperDB {
                 });
 
             } catch (error) {
-                throw new Error("Failed to put story into indexed db: " + error.message);
+                throw new Error("Failed to post story into indexed db: " + error.message);
             }
         } else {
             throw new Error("Database connection is not initialized.");
