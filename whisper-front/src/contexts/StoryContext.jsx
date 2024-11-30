@@ -19,6 +19,8 @@ export const StoriesProvider = ({ children }) => {
     const [storiesTab, setStoriesTab] = useState([])
     const [ isUploading, setIsUploading] = useState(false);
     const [ isDeleteing, setIsDeleteing] = useState(false);
+    const [changedLikes, setChangedLikes] = useState(false);
+    const [changedViews, setChangedViews] = useState(false);
     const storiesSocket = new StorySocket();
     const currentUserRef = useRef();
     const currentStoryRef = useRef();
@@ -30,6 +32,12 @@ export const StoriesProvider = ({ children }) => {
     const selectUser = (user) => {
         setCurrentUser(user);
     };
+
+    const closeStories = () => {
+        setCurrentStory(null);
+        setCurrentIndex(null);
+        setStories([]);
+    }
 
     const selectStory = (next) => {
         if (stories) {
@@ -56,14 +64,17 @@ export const StoriesProvider = ({ children }) => {
         let data;
         let userId = id || currentUser.userId;
         try {
-            try {  
-                data = await db.getUserStories(userId);
-                if (data.length === 0) {
+            try { 
+                const hasStories = await db.userHasStories(userId);
+                if (hasStories) {
+                    data = await db.getUserStories(userId);
+                } else {
                     throw new Error('No stories found');
                 }
             } catch (error) {
                 console.log(error);
                 data = await getStories(userId);
+                console.log(data)
                 await db.insertUserStories(data, userId);
             } 
             
@@ -76,7 +87,15 @@ export const StoriesProvider = ({ children }) => {
 
     const handleRecieveStory = async (storyData) => {
         try {
-            await db.postStory(storyData);
+            const {  iLiked, likes, iViewed, views } = await getStoryLikesAndViews(storyData.id);
+
+            await db.postStory({...storyData,
+                likes: likes,
+                views: views,
+                liked: iLiked,
+                viewed: iViewed
+            });
+            console.log(views)
             const userHasStories = await db.userHasStories(storyData.userId);
             if (!userHasStories) {
                 const data = await getUserInfo(storyData.userId);
@@ -129,7 +148,41 @@ export const StoriesProvider = ({ children }) => {
         } finally {
             setIsDeleteing(false);
         }
-    }   
+    } 
+    
+    const handleRecieveLikeStory = async (storyData) => {
+        try {
+            await db.loadLikes(storyData.storyId, 0, true);
+            if (storyData.userId === whoAmI.userId ) {
+                await db.iLiked(storyData.storyId, true);
+            }
+        } catch (error) {
+            console.log(error);
+        } 
+    }
+
+    const handleRecieveViewStory = async (storyData) => {
+        try {
+            setChangedViews(true);
+            console.log(stories)
+            if (storyData.userId === whoAmI.userId ) {
+                try {
+                    if (db) {
+                        await db.iViewed(storyData.storyId, true);
+                    }
+                    if (db) {
+                        await db.loadViews(storyData.storyId, 0, true);
+                    }
+                } catch (error) {
+                    throw error;
+                }
+            }
+        } catch (error) {
+            console.log(error);
+        } finally {
+            setChangedViews(false);
+        }
+    }
 
     const fetchStoryUrl = async () => {
         try {
@@ -147,29 +200,20 @@ export const StoriesProvider = ({ children }) => {
         }
     };
 
-    const getLikesAndViews = async () => {
+
+    const reloadSingleStory = async (storyId) => {
         try {
-            if(currentStory) {  
-                try {
-                    const loaded = await db.likesLoaded(currentStory.id);
-                    if (!loaded) {
-                        const { likes, views } = await getStoryLikesAndViews(currentStory.id);
-                        await db.loadLikes(currentStory.id, likes);
-                        await db.loadViews(currentStory.id, views);
-                    }
-                } catch (error) {
-                    console.log(error)
-                }
-            }
-            else {
-                throw new Error("Story is not loaded");
+            const story = await db.getStory(storyId);
+            if (story) {
+                setCurrentStory(story);
             }
         } catch (error) {
-            console.log(error.message);
+            console.log(error);
         }
     }
 
     const uploadStory = async (file, newStory) => {
+        
         setIsUploading(true);
         try {
             const blobName = await uploadBlob(file, uploadLink);
@@ -183,11 +227,60 @@ export const StoriesProvider = ({ children }) => {
         } 
     }
 
+    const sendLikeStory = async () => {
+        console.log(stories)
+        try {
+            if(currentStory) {
+                let liked = true;
+                try {
+                    liked = await db.isLiked(currentStory.id);
+                    if (!liked) {
+                        storiesSocket.likeStory({
+                            storyId: currentStory.id,
+                            userName: whoAmI.userName,
+                            profilePic: whoAmI.profilePic,
+                            liked: true
+                        });
+                    }
+                } catch (error) {
+                    throw error;
+                }
+            }
+        } catch (error) {
+            console.log(error)
+        }
+    }
+
+    const sendViewStory = async () => {
+        console.log("eh", stories)
+        try {
+            if(currentStory) {
+                let viewed = true;
+                try {
+                    viewed = await db.isViewed(currentStory.id);
+                    if (!viewed) {
+                        storiesSocket.viewStory({
+                            storyId: currentStory.id,
+                            userName: whoAmI.userName,
+                            profilePic: whoAmI.profilePic,
+                        });
+                    }
+                } catch (error) {
+                    throw error;
+                }
+                
+            }
+        } catch (error) {
+            console.log(error)
+        }
+    }
+
     useEffect(() => {
         if (currentUser) {
             console.log(currentUser)
             loadUserStories();
         } else {
+            console.log("no user")
             setStories([]);
         }
         currentUserRef.current = currentUser;
@@ -199,8 +292,12 @@ export const StoriesProvider = ({ children }) => {
             setLoading(true);
             setError(null);
             try {
-                getLikesAndViews();
-                fetchStoryUrl();
+                try {
+                    fetchStoryUrl();
+                } catch (error) {
+                    throw error;
+                }
+                sendViewStory();
             } catch (error) {
                 setError(error);
             } finally {
@@ -212,12 +309,14 @@ export const StoriesProvider = ({ children }) => {
     useEffect(() => {
         if(storiesSocket) {
             storiesSocket.onReceiveStory(handleRecieveStory);
-            storiesSocket.onReceiveDeleteStory(handleReceiveDeleteStory)
+            storiesSocket.onReceiveDeleteStory(handleReceiveDeleteStory);
+            storiesSocket.onReceiveLikeStory(handleRecieveLikeStory);
+            storiesSocket.onReceiveViewStory(handleRecieveViewStory);
         }
     }, [storiesSocket]);
-
+    
     useEffect(() => {
-        console.log(stories)
+        console.log("hey", stories)
         if (stories) {
             setCurrentIndex(0);
             setCurrentStory(stories[0]);
@@ -250,10 +349,15 @@ export const StoriesProvider = ({ children }) => {
                 isUploading,
                 isDeleteing,
                 storiesTab,
+                changedLikes,
+                changedViews,
                 selectUser,
                 fetchStoryUrl,
+                sendLikeStory,
+                sendViewStory,
                 uploadStory,
                 handleDeleteStory,
+                
                 storiesSocket,
                 selectStory
             }}

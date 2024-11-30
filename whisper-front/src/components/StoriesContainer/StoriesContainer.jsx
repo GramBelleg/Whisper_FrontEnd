@@ -4,6 +4,7 @@ import { useModal } from '@/contexts/ModalContext';
 import StoriesList from '../StoriesList/StoriesList';
 import AddNewStoryModal from '../AddNewStoryModal/AddNewStoryModal';
 import { useStories } from '@/contexts/StoryContext';
+import { whoAmI } from '@/services/chatservice/whoAmI';
 
 export default function StoriesContainer() {
     const scrollContainerRef = useRef(null);
@@ -55,12 +56,15 @@ export default function StoriesContainer() {
     const handleStoryClick = (user, file = null, filePreview = null) => {
         if (!file) {   
             selectUser(user);
-            openModal(
-                <StoriesList
-                    onClose={closeModal}
-                    handleAddStory={handleAddStory}
-                />
-            );
+            console.log(whoAmI)
+            if (whoAmI.hasStory) {
+                openModal(
+                    <StoriesList
+                        onClose={closeModal}
+                        handleAddStory={handleAddStory}
+                    />
+                );
+            }
         } else {   
             handleAddStory(file, filePreview);
         }

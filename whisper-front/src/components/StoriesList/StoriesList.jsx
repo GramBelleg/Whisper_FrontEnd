@@ -6,7 +6,7 @@ import './StoriesList.css';
 import { useStories } from '@/contexts/StoryContext';
 
 const StoriesList = ({ onClose, handleAddStory }) => {
-    const { stories, selectStory, currentIndex } = useStories();
+    const { stories, selectStory, currentIndex, closeStories } = useStories();
     const fileInputRef = useRef(null);
     
 
