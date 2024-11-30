@@ -88,7 +88,7 @@ export const ChatProvider = ({ children }) => {
         }
         const newMessageForBackend = { ...newMessage };
        
-        newMessage.senderId = whoAmI.id,
+        newMessage.senderId = whoAmI.userId,
         newMessage.deliveredAt = '';
         newMessage.readAt = '';
         newMessage.deleted = false;
