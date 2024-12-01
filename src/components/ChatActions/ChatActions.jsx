@@ -2,7 +2,7 @@ import './ChatActions.css'
 import { formatDuration } from '@/utils/formatDuration'
 import ChatTextingActions from '../ChatTextingActions/ChatTextingActions'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import { faCircleNotch, faFile, faImage, faMicrophoneAlt, faPaperclip, faPaperPlane, faTimes, faTrashAlt } from '@fortawesome/free-solid-svg-icons'
+import { faCircleNotch, faFile, faImage, faMicrophoneAlt, faMusic, faPaperclip, faPaperPlane, faTimes, faTrashAlt } from '@fortawesome/free-solid-svg-icons'
 import { useEffect, useMemo, useRef, useState } from 'react'
 import useVoiceRecorder from '@/hooks/useVoiceRecorder'
 import { messageTypes } from '@/services/sendTypeEnum'
@@ -17,6 +17,7 @@ import UnifiedPicker from '../UnifiedPicker/UnifiedPicker'
 import { draftMessage } from '@/services/chatservice/draftMessage'
 import { useWhisperDB } from '@/contexts/WhisperDBContext'
 import ErrorMesssage from '../ErrorMessage/ErrorMessage'
+import { getFileExtension } from '@/utils/getFileExtension'
 
 const ChatActions = () => {
     const [textMessage, setTextMessage] = useState('')
@@ -44,7 +45,7 @@ const ChatActions = () => {
         sendMessage(messageTypes.IMAGE, url)
     }
     const { currentChat } = useChat();
-    const { db } = useWhisperDB();
+    const { dbRef } = useWhisperDB();
     const [ chatId, setChatId ] = useState(-1);
 
     const toggleAttachMenu = () => {
@@ -167,9 +168,10 @@ const ChatActions = () => {
             sendMessage({
                 type: messageTypes.TEXT,
                 content: textMessage,
-                file: attachmentPayload ? attachmentPayload.file : null,
+                // attachmentType: attachmentPayload ? attachmentPayload.type : null,
+                attachmentName: attachmentPayload ? attachmentPayload.file.name : null,
                 media: attachmentPayload ? attachmentPayload.blobName : null,
-                extension: attachmentPayload ? attachmentPayload.type : null,
+                extension: attachmentPayload ? getFileExtension(attachmentPayload.file.name) : null,
                 size: attachmentPayload ? attachmentPayload.file.size : null
             })
             setTextMessage('')

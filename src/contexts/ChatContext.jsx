@@ -98,12 +98,12 @@ export const ChatProvider = ({ children }) => {
             mentions:[],
             isSecret: false,
             isAnnouncement: false,
-            file: null,
-            objectLink: "",
+            // file: null,
+            // objectLink: "",
             // fileType: attachmentType,
             size: null,
-            autoDownload: null,
-            fileName: null, 
+            // autoDownload: null,
+            // fileName: null, 
             ...data          
         }
 
@@ -137,7 +137,7 @@ export const ChatProvider = ({ children }) => {
         setSending(false);
         setMessages((prevMessages) => {
             if (prevMessages) {
-                return [newMessage, ...prevMessages];
+                return [{id: Date.now(), ...newMessage}, ...prevMessages];
             }
             return [newMessage];
         });
