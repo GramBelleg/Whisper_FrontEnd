@@ -40,19 +40,19 @@ const SettingsContainer = () => {
                 <div className='profile-info'>
                     <FontAwesomeIcon icon={faPhone} className='text-xl' />
                     <div className='details'>
-                        <span className='detail-title'>{user.phone ? user.phone : 'No phone number'}</span>
+                        <span className='detail-title'>{user.phoneNumber ? user.phoneNumber : 'No phone number'}</span>
                         <span className='detail-subtitle'>Phone</span>
                     </div>
-                    <CopyButton content={user.phone ? user.phone : 'No phone number'} />
+                    <CopyButton content={user.phoneNumber ? user.phoneNumber : 'No phone number'} />
                 </div>
 
                 <div className='profile-info'>
                     <FontAwesomeIcon icon={faAt} className='text-xl' />
                     <div className='details'>
-                        <span className='detail-title'>{user.username ? user.username : 'No username'}</span>
+                        <span className='detail-title'>{user.userName ? user.userName: 'No username'}</span>
                         <span className='detail-subtitle'>Username</span>
                     </div>
-                    <CopyButton content={user.username ? user.username : 'No username'} />
+                    <CopyButton content={user.userName ? user.userName : 'No username'} />
                 </div>
 
                 <div className='profile-info'>
