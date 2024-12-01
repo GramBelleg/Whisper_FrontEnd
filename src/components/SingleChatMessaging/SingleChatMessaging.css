@@ -1,0 +1,22 @@
+
+.message-input {
+    background-color: var(--primary-color);
+    color: var(--text-color);
+    border: none;
+    padding: 5px 15px;
+    outline: none;
+    resize: none;
+    font-size: 16px;
+    flex-grow: 1;
+}
+
+.message-input::placeholder {
+    color: var(--text-color);
+}
+
+
+
+.emojis-container{
+    color: var(--accent-color);
+    font-size: 24px;
+}
