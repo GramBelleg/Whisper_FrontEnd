@@ -23,8 +23,17 @@ export const getMessageInfo = async (messsageId, userId) => {
             }
             let deliveredTime = null;
             let readTime = null;
-            const delivered = (data.deliveredUsers?.filter((singleUser) => singleUser.user.id === userId))?.length > 0;
-            const read = (data.readUsers?.filter((singleUser) => singleUser.user.id === userId))?.length;
+            let delivered = false;
+            if (data && data.deliveredUsers) {
+                const filtered = data.deliveredUsers.filter((singleUser) => singleUser.user.id === userId);
+                delivered = filtered.length > 0;
+            }
+            let read = false;
+            if (data && data.readUsers) {
+                const filtered = data.readUsers.filter((singleUser) => singleUser.user.id === userId)
+                read = filtered.length > 0;
+            }
+            
             if (delivered) {
                 deliveredTime = data.deliveredUsers[0].delivered;
             }

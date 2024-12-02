@@ -68,11 +68,12 @@ export const getMessagesForChatCleaned = async (id) => {
 
         const messages = await getMessagesForChatFromAPI(id);
         const myMessages = []
-        console.log(messages.messages)
 
-        messages?.messages?.map((message) => {
-            myMessages.push(mapMessage(message));
-        });
+        if (messages && messages.messages) {
+            messages.messages.map((message) => {
+                myMessages.push(mapMessage(message));
+            });
+        }
 
         return myMessages;
 

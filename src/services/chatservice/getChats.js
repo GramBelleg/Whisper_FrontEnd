@@ -57,19 +57,19 @@ export const mapMessageState = ( read, delivered ) => {
                 type: chat.type, 
                 lastMessage: chat.lastMessage ? chat.lastMessage.content: null, 
                 drafted: chat.lastMessage ? chat.lastMessage.drafted : false,
-                messageTime: chat.lastMessage ? chat.lastMessage.sentAt?.slice(0, 19).replace("T", " "): null,  
+                messageTime: chat.lastMessage && chat.lastMessage.sentAt ? chat.lastMessage.sentAt.slice(0, 19).replace("T", " ") : null,
                 // forwarded: false, // TODO: to be removed
-                senderId: chat.lastMessage? chat.lastMessage.sender.id : null,  
-                messageType: chat.lastMessage? chat.lastMessage.type : null, 
+                senderId: chat.lastMessage ? chat.lastMessage.sender.id : null,  
+                messageType: chat.lastMessage ? chat.lastMessage.type : null, 
                 messageState: mapMessageState(chat.lastMessage? chat.lastMessage.read : false, chat.lastMessage? chat.lastMessage.delivered : false), 
-                lastMessageId: chat.lastMessage? chat.lastMessage.id: null,  // WHY?
+                lastMessageId: chat.lastMessage ? chat.lastMessage.id: null,  // WHY?
                 media: (chat.lastMessage && chat.lastMessage.media) ?  chat.lastMessage.media : '',  // TODO: to be removed
                 story: chat.hasStory !== null ?  chat.hasStory: false, 
                 muted: chat.isMuted !== null ?  chat.isMuted: false, 
                 profilePic: noUser, // TODO
                 unreadMessageCount: chat.unreadMessageCount, 
                 sender : chat.lastMessage ? chat.lastMessage.sender.userName: null, 
-                lastSeen: chat.lastSeen?.slice(0, 19).replace("T", " "), 
+                lastSeen: chat.lastSeen ? chat.lastSeen.slice(0, 19).replace("T", " ") : null, 
                 status: chat.status, 
             };
 

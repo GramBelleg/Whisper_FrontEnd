@@ -109,14 +109,10 @@ export const sendUpdateCode = async (email) => {
       const { presignedUrl, blobName } = blobResponse.data;
       const newUrl = presignedUrl.replace('https://whisperblob.blob.core.windows.net', 'api');
   
-      // Upload the blob
       await uploadBlob(file, { presignedUrl: newUrl, blobName });
-      console.log('File uploaded successfully');
   
-      // Update the user's profile picture
       userSocket.emitPFP({userID, profilePic:blobName});
   
-      // Generate Object URL for the file
       const objectUrl = URL.createObjectURL(file); // Use the original `file` object
       console.log('Profile picture updated successfully, Object URL created:', objectUrl);
   
@@ -124,8 +120,13 @@ export const sendUpdateCode = async (email) => {
   
     } catch (error) {
       console.error('Error updating profile picture:', error);
-      throw new Error(
-        error.response?.data?.message || 'An error occurred while updating the profile picture'
+      throw new Error(() => {
+        if (error.response && error.response.data && error.response.data.message) {
+          return error.response.data.message
+        } else {
+          return 'An error occurred while updating the profile picture';
+        }
+      }
       );
     }
   };
@@ -140,8 +141,13 @@ export const sendUpdateCode = async (email) => {
   
     } catch (error) {
       console.error('Error retrieving profile picture:', error);
-      throw new Error(
-        error.response?.data?.message || 'An error occurred while retrieving the profile picture'
+      throw new Error( () => {
+        if (error.response && error.response.data && error.response.data.message) {
+          return error.response.data.message
+        } else {
+          return 'An error occurred while updating the profile picture';
+        }
+      }
       );
     }
   };
@@ -192,7 +198,13 @@ export const sendUpdateCode = async (email) => {
 
     } catch (error) {
         console.error("Error fetching profile picture:", error);
-        throw new Error(error.response?.data?.message || "An error occurred while fetching the profile picture");
+        throw new Error(() => {
+          if (error.response && error.response.data && error.response.data.message) {
+            return error.response.data.message
+          } else {
+            return 'An error occurred while updating the profile picture';
+          }
+        });
     }
 };
 
@@ -204,6 +216,12 @@ export const sendUpdateCode = async (email) => {
    
     } catch (error) {
       console.error("Error deleting profile picture:", error);
-      throw new Error(error.response?.data?.message || "An error occurred while deleting the profile picture");
+      throw new Error(() => {
+        if (error.response && error.response.data && error.response.data.message) {
+          return error.response.data.message
+        } else {
+          return 'An error occurred while updating the profile picture';
+        }
+      });
     }
   };

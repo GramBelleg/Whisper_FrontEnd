@@ -68,9 +68,11 @@ class WhisperDB {
                     autoIncrement: storeConfig.autoIncrement
                 });
 
-                storeConfig.indexes?.forEach(index => {
-                    store.createIndex(index.name, index.keyPath, index.options);
-                });
+                if (storeConfig.indexes) {
+                    storeConfig.indexes.forEach(index => {
+                        store.createIndex(index.name, index.keyPath, index.options);
+                    });
+                }
             }
         });
     }

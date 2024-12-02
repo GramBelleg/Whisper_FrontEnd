@@ -63,7 +63,13 @@ export const verify = async (code,email) => {
     return {data: response.data, success: true};
   } catch (error) {
     console.log("verify error", error);
-    throw new Error(error.response?.data?.message || "An error occurred");
+    throw new Error(() => {
+      if (error.response && error.response.data && error.response.data.message) {
+        return error.response.data.message
+      } else {
+        return 'An error occurred';
+      }
+    });
   }
 };
 
@@ -76,7 +82,13 @@ export const resendCode = async (email) => {
     return response.data;
   } catch (error) {
     console.log("resend code error", error);
-    throw new Error(error.response?.data?.message || "An error occurred");
+    throw new Error(() => {
+      if (error.response && error.response.data && error.response.data.message) {
+        return error.response.data.message
+      } else {
+        return 'An error occurred';
+      }
+    });
   }
 }
 
@@ -90,7 +102,13 @@ export const login = async (credentials) => {
     return response.data;
   } catch (error) {
     console.log("login error", error);
-    throw new Error(error.response?.data?.message || "An error occurred");
+    throw new Error(() => {
+      if (error.response && error.response.data && error.response.data.message) {
+        return error.response.data.message
+      } else {
+        return 'An error occurred';
+      }
+    });
   }
 };
 
@@ -102,7 +120,13 @@ export const forgotPassword = async (email) => {
     console.log(response.data);
     return response.data;
   } catch (error) {
-    throw new Error(error.response?.data?.message || "An error occurred");
+    throw new Error(() => {
+      if (error.response && error.response.data && error.response.data.message) {
+        return error.response.data.message
+      } else {
+        return 'An error occurred';
+      }
+    });
   }
 };
 
@@ -113,7 +137,13 @@ export const resetPassword = async (userData) => {
     return response.data;
   } catch (error) {
     console.log("reset password error", error);
-    throw new Error(error.response?.data?.message || "An error occurred");
+    throw new Error(() => {
+      if (error.response && error.response.data && error.response.data.message) {
+        return error.response.data.message
+      } else {
+        return 'An error occurred';
+      }
+    });
   }
 };
 
@@ -141,7 +171,13 @@ export const logout = async (token) => {
     return response.data;
   } catch (error) {
     console.log("logout error", error);
-    throw new Error(error.response?.data?.message || "An error occurred");
+    throw new Error(() => {
+      if (error.response && error.response.data && error.response.data.message) {
+        return error.response.data.message
+      } else {
+        return 'An error occurred';
+      }
+    });
   }
 };
 export const logoutAll = async (token) => {
@@ -157,6 +193,12 @@ export const logoutAll = async (token) => {
   }
   catch (error) {
     console.log("logout all error", error);
-    throw new Error(error.response?.data?.message || "An error occurred");
+    throw new Error(() => {
+      if (error.response && error.response.data && error.response.data.message) {
+        return error.response.data.message
+      } else {
+        return 'An error occurred';
+      }
+    });
   }
 }
