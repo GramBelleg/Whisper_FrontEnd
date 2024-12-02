@@ -154,15 +154,14 @@ export const ChatProvider = ({ children }) => {
     const pinMessage = (messsageId, durtaion = 0) => {
         messagesSocket.pinMessage({
             chatId: currentChat.id,
-            messageId: messsageId,
-            duration: durtaion
+            id: messsageId,
         })
     }
 
     const unPinMessage = (messsageId) => {
         messagesSocket.unPinMessage({
             chatId: currentChat.id,
-            messageId: messsageId
+            id: messsageId
         })
     }
 
@@ -172,7 +171,7 @@ export const ChatProvider = ({ children }) => {
             const myMessageData = {
                 ...messageData
             }
-
+            
             await dbRef.current.insertMessageWrapper({ ...mapMessage(myMessageData), drafted: false })
             setMessageReceived(true)
             setAction(true)
@@ -226,16 +225,17 @@ export const ChatProvider = ({ children }) => {
 
     const handlePinMessage = async (pinData) => {
         try {
+            console.log(pinData)
             const activeChat = currentChatRef.current
             const messagesForChat = await dbRef.current.getMessagesForChat(pinData.chatId)
-            const messageToPin = messagesForChat.find((message) => message.id === pinData.pinnedMessage)
+            const messageToPin = messagesForChat.find((message) => message.id === pinData.id)
 
             if (!messageToPin) {
-                throw new Error(`Message with id ${pinData.pinnedMessage} not found in chat ${pinData.chatId}`)
+                throw new Error(`Message with id ${pinData.id} not found in chat ${pinData.chatId}`)
             }
 
             await dbRef.current.pinMessage({ ...pinData, content: messageToPin.content })
-            await dbRef.current.updateMessagesForPinned(pinData.pinnedMessage)
+            await dbRef.current.updateMessagesForPinned(pinData.id)
 
             loadMessages(activeChat.id)
             loadPinnedMessages(activeChat.id)
@@ -248,10 +248,10 @@ export const ChatProvider = ({ children }) => {
         try {
             const activeChat = currentChatRef.current
             const messagesForChat = await dbRef.current.getMessagesForChat(pinData.chatId)
-            const messageToPin = messagesForChat.find((message) => message.id === pinData.unpinnedMessage)
+            const messageToPin = messagesForChat.find((message) => message.id === pinData.id)
 
             if (!messageToPin) {
-                throw new Error(`Message with id ${pinData.unpinnedMessage} not found in chat ${pinData.chatId}`)
+                throw new Error(`Message with id ${pinData.id} not found in chat ${pinData.chatId}`)
             }
             try {
                 await dbRef.current.unPinMessage(messageToPin.id)
