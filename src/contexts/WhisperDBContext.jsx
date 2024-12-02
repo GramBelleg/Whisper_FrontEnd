@@ -14,7 +14,7 @@ export const WhisperDBProvider = ({ children }) => {
             
         try {
             if(dbRef.current === null) { 
-                const whisperDB = new WhisperDB();
+                const whisperDB = WhisperDB.getInstance();
                 await whisperDB.init();
                 dbRef.current = whisperDB;
                 console.log('Database initialized');

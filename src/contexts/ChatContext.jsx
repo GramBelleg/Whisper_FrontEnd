@@ -184,7 +184,7 @@ export const ChatProvider = ({ children }) => {
                 ...messageData,
             }
 
-            await dbRef.current.insertMessage({ ...mapMessage(myMessageData), drafted: false});
+            await dbRef.current.insertMessageWrapper({ ...mapMessage(myMessageData), drafted: false});
             setMessageReceived(true);
             setAction(true);
             
