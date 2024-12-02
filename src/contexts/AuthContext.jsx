@@ -37,8 +37,6 @@ export const AuthProvider = ({ children }) => {
                         }
                     })
 
-                    console.log('Fetched user')
-                    console.log(response.data)
                     Object.assign(whoAmI, response.data ? response.data : {})
                     if (whoAmI && whoAmI.id) {
                         whoAmI.userId = whoAmI.id

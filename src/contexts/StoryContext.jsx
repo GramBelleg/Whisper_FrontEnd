@@ -48,7 +48,7 @@ export const StoriesProvider = ({ children }) => {
     }
 
     const localGetStories = async () => {
-        if (dbRef) {
+        if (dbRef && dbRef.current) {
             try {
                 const data = await dbRef.current.getStories()
                 setStoriesTab([...data])
@@ -317,7 +317,6 @@ export const StoriesProvider = ({ children }) => {
 
     useEffect(() => {
         if (currentIndex > -1 && stories) {
-            console.log(currentIndex)
             setCurrentStory(stories[currentIndex])
         }
     }, [currentIndex])

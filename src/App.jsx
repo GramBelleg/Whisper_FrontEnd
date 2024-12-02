@@ -38,7 +38,6 @@ function App() {
         const loadChats = async () => {
             let allChats = await getChatsCleaned()
             await dbRef.current.insertChats(allChats)
-            console.log(allChats)
         }
 
         const loadMessages = async () => {

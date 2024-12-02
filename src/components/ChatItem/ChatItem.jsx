@@ -17,7 +17,7 @@ import { useWhisperDB } from '@/contexts/WhisperDBContext'
 
 const ChatItem = ({ index, standaloneChat }) => {
     const { dbRef } = useWhisperDB()
-    const { selectChat, action, setActionExposed } = useChat()
+    const { selectChat, action, setActionExposed, messageDelivered } = useChat()
 
     const maxLength = standaloneChat.muted ? 33 : standaloneChat.name === whoAmI.name ? 30 : 15
 
@@ -101,7 +101,6 @@ const ChatItem = ({ index, standaloneChat }) => {
     }
 
     useEffect(() => {
-        console.log(standaloneChat)
         setMyChat((prevChat) => ({
             ...prevChat,
             ...standaloneChat,
@@ -123,7 +122,7 @@ const ChatItem = ({ index, standaloneChat }) => {
         }
     }, [standaloneChat])
 
-    useEffect(() => {}, [action])
+    useEffect(() => {}, [action, messageDelivered])
 
     return (
         <div data-testid='chat-item' className='single-chat' onClick={handleClick}>
