@@ -1,4 +1,5 @@
-export const blockedUsers = [
+export const blockedUsers = {
+    "users" : [
     {
         userId: 1,
         userName: 'User 1',
@@ -11,8 +12,9 @@ export const blockedUsers = [
     },
 
     {
-        userId: 1,
-        userName: 'User 2',
-        profilePic: 'https://ui-avatars.com/api/?name=John+Doe'
-    }
+        "userId": 1,
+        "userName": "User 2",
+        "profilePic": "https://ui-avatars.com/api/?name=John+Doe"
+    },
 ]
+};
