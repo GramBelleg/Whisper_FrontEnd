@@ -33,7 +33,7 @@ const CustomStickersPicker = ({ handleStickerClick }) => {
                             src={sticker.imageUrl}
                             alt={`Sticker ${index + 1}`}
                             className='w-16 h-16 rounded-lg cursor-pointer hover:scale-105 transform transition'
-                            onClick={() => handleStickerClick(sticker.blobName,sticker.imageUrl)}
+                            onClick={() => handleStickerClick(sticker.blobName,sticker.imageUrl,sticker.file)}
                         />
                     ))}
                 </div>

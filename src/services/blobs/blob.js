@@ -72,17 +72,18 @@ export const uploadBlob = async (file, data) => {
 export const getBlobUrl = async (blobName) => {
     let error = '';
     let imageUrl = '';
-    let blob = '';
+    let blob = null;
 
     if (blobName) {
         try {
             const response = await axiosInstance.post(`/api/media/read`, {
-                blobName ,
+                blobName,
             });
 
             if (response.status !== 200 || !response.data.presignedUrl) {
                 throw new Error("Error fetching presigned URL");
             }
+
             const presignedUrl = response.data.presignedUrl;
             const blobResponse = await fetch(presignedUrl);
             if (!blobResponse.ok) {
@@ -90,14 +91,13 @@ export const getBlobUrl = async (blobName) => {
             }
 
             blob = await blobResponse.blob();
-
             imageUrl = URL.createObjectURL(blob);
         } catch (err) {
-            error = err;
+            error = err.message;
             console.error("Error getting blob URL:", error);
         }
     } else {
-        error = new Error("No blob name provided");
+        error = "No blob name provided";
         console.error("Error:", error);
     }
 
