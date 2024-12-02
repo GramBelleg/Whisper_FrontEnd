@@ -293,7 +293,7 @@ export const StoriesProvider = ({ children }) => {
             setError(null);
             try {
                 fetchStoryUrl();
-                //sendViewStory(); 
+                sendViewStory(); 
             } catch (error) {
                 setError(error);
             } finally {

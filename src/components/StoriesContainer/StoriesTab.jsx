@@ -24,9 +24,7 @@ const StoriesTab = ({
     const [firstError, setFirstError] = useState(true);
     const fileInputRef = useRef(null);
     
-    useEffect(() => {
-
-    }, [whoAmI.hasStory])
+    useEffect(() => {console.log(whoAmI.hasStory)}, [whoAmI.hasStory])
 
     if (loading) {
         return <div>Loading...</div>;
@@ -53,12 +51,10 @@ const StoriesTab = ({
     };
 
     const handleFileChange = (e) => {
-      console.log("File input changed"); // Debugging log
       const file = e.target.files[0];
       
       if (file && (file.type.startsWith("image/") || file.type.startsWith("video/"))) {
         const filePreview = URL.createObjectURL(file);
-        console.log("Selected file:", file); // Debugging log for the selected file
         handleStoryClick(whoAmI, file, filePreview);
       } else {
         console.log("No valid file selected");
