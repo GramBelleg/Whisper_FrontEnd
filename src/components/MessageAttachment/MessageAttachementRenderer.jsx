@@ -28,19 +28,15 @@ const MessageAttachmentRenderer = ({ myMessage }) => {
     useEffect(() => {
       const fetchData = async () => {
         try {
-          console.log(objectUrl);
           if (myMessage.objectLink) {
-            console.log('Using existing objectLink:', myMessage.objectLink);
             setAttachmentUrl(myMessage.objectLink);
             setAutoDownload(true);
             setIsLoading(false);
             return;
           }
-          console.log(myMessage);
           // If file type is not 0, handle size check and download
           if (parseInt(myMessage.attachmentType) !== 0 && !autoDownload) {
             const fileSize = myMessage.size;
-            console.log(fileSize);
             if (fileSize < whoAmI.autoDownloadSize) {
               let presignedUrl = await readMedia(myMessage.media);
               const newObjectUrl = await downloadAttachment(presignedUrl, myMessage);
