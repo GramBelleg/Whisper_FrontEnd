@@ -15,7 +15,7 @@ import { getChatsCleaned } from './services/chatservice/getChats';
 import { useWhisperDB } from './contexts/WhisperDBContext';
 import { getMessagesForChatCleaned, getPinnedMessagesForChat } from './services/chatservice/getMessagesForChat';
 import { getUsersWithStoriesCleaned } from './services/storiesservice/getStories';
-
+import { whoAmI } from './services/chatservice/whoAmI';
 
 function App() {
 
@@ -26,26 +26,20 @@ function App() {
     if(import.meta.env.VITE_APP_USE_MOCKS === 'true') {
         initializeMock();
     }
-
-    
-  
-    
       
     useEffect(() => {
 
         const init = async () => {
             await initDB();
             await loadChats();
-            loadMessages();
-            loadPinnedMessages();
-            loadStories();
+            await loadMessages();
+            await loadPinnedMessages();
+            await loadStories();
         }
-
-       
         
         const loadChats = async () => {
             let allChats = await getChatsCleaned();
-            dbRef.current.insertChats(allChats);
+            await dbRef.current.insertChats(allChats);
             console.log(allChats)
         }
     
@@ -107,6 +101,7 @@ function App() {
             setLoading(false);
         }
     },[dbRef, initDB]);
+
 
     return (
         <div className="App">
