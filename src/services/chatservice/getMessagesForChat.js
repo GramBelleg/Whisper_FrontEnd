@@ -84,7 +84,6 @@ export const getPinnedMessagesForChat = async (id) => {
         } else {
             throw new Error('No pinned messages found')
         }
-        console.log(pinnedMessages)
 
         return pinnedMessages
     } catch (error) {

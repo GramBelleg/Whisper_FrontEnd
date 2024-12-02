@@ -35,6 +35,14 @@ export class MessagesStore extends BaseStore {
     async insertMessage(message) {
         return this._executeTransaction('readwrite', async (store) => {
             try {
+                const check = store.get(message.id);
+                const res = await new Promise((resolve, reject) => {
+                    check.onsuccess = () => resolve()
+                    check.onerror = () => reject(check.error)
+                })
+                if (res) {
+                    return
+                }
                 const messageRequest = store.add(message)
                 await new Promise((resolve, reject) => {
                     messageRequest.onsuccess = () => resolve()
@@ -43,7 +51,7 @@ export class MessagesStore extends BaseStore {
 
                 console.log('Message inserted and chat updated successfully.')
             } catch (error) {
-                console.error('Failed to insert message or update chat:', error)
+                console.error('Failed to insert messag:', error)
                 throw new Error('Failed to insert message or update chat: ' + error.message)
             }
         })

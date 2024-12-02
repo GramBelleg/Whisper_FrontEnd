@@ -21,6 +21,24 @@ class MessagingSocket extends Socket {
         this.socket.emit('editMessage', data)
     }
 
+    sendDeliverMessage(data) {
+        console.log(data)
+        this.socket.emit('deliverMessage', data)
+    }
+
+    onDeliverMessage(callback) {
+        this.socket.on('deliverMessage', callback)
+    }
+
+    readAllMessages(data) {
+        console.log(data)
+        this.socket.emit('readAllMessages', data);
+    }
+
+    onReadMessage(callback) {
+        this.socket.on('readMessage', callback)
+    }
+
     pinMessage(data) {
         this.socket.emit('pinMessage', data)
     }

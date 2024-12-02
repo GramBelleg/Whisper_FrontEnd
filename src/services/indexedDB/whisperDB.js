@@ -168,9 +168,17 @@ class WhisperDB {
         }
     }
 
-    async updateUnReadMessagesCount(chatId, count) {
+    async updateLastMessage(chatId, data) {
         if (this._chats !== null) {
-            return this._chats.updateUnReadMessagesCount(chatId, count)
+            return this._chats.updateLastMessage(chatId, data)
+        } else {
+            throw new Error('Messages store is not initiaslized.')
+        }
+    }
+
+    async updateUnreadCount(chatId, increment = false) {
+        if (this._chats !== null) {
+            return this._chats.updateUnreadCount(chatId, increment)
         } else {
             throw new Error('Chats store is not initiaslized.')
         }
@@ -425,8 +433,16 @@ class WhisperDB {
     }
 
     async insertMessageWrapper(message) {
-        this.insertMessage(message)
-        this.insertMessageInChat(message)
+        try {
+            await this.insertMessage(message)
+        } catch (error) {
+            console.log(error)
+        }
+        try {
+            return await this.insertMessageInChat(message)
+        } catch (error) {
+            console.log(error)
+        }
     }
 }
 

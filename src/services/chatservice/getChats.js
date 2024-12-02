@@ -12,10 +12,6 @@ export const getChatsAPI = async (filters = {}) => {
             params: filters
         })
 
-        // const chats = await axiosInstance.get('/chats');
-
-        console.log(chats)
-
         return chats.data
     } catch (error) {
         console.log('Error ', error.message)
@@ -70,6 +66,9 @@ export const getChatsCleaned = async (filters = {}) => {
                 sender: chat.lastMessage ? chat.lastMessage.sender.userName : null,
                 lastSeen: chat.lastSeen ? chat.lastSeen.slice(0, 19).replace('T', ' ') : null,
                 status: chat.status
+                /*
+                    
+                */
             }
 
             myChats.push(flattenedChat)

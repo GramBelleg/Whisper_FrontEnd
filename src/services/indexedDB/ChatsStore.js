@@ -84,6 +84,31 @@ export class ChatsStore extends BaseStore {
         })
     }
 
+    async updateLastMessage(chatId, data) {
+        return this._executeTransaction('readwrite', async (store) => {
+            try {
+                const chatRequest = store.get(chatId)
+                const chat = await new Promise((resolve, reject) => {
+                    chatRequest.onsuccess = () => resolve(chatRequest.result)
+                    chatRequest.onerror = () => reject(chatRequest.error)
+                })
+                if (chat) {
+                    const newChat = {
+                        ...chat,
+                        messageState: data.state
+                    };
+                    const updateRequest = store.put(newChat)
+                    await new Promise((resolve, reject) => {
+                        updateRequest.onsuccess = () => resolve()
+                        updateRequest.onerror = () => reject(updateRequest.error)
+                    })
+                } else {
+                    throw new Error(`Chat with id ${chatId} not found`)
+                }
+            } catch (error) {}
+        })
+    }
+
     async getChats() {
         return this._executeTransaction('readwrite', async (store) => {
             try {
@@ -211,30 +236,6 @@ export class ChatsStore extends BaseStore {
             } catch (error) {
                 throw new Error('Failed to update message as unmuted: ' + error.message)
             }
-        })
-    }
-
-    async updateUnReadMessagesCount(chatId, count) {
-        return this._executeTransaction('readwrite', async (store) => {
-            try {
-                const request = store.get(chatId)
-                const existingChat = await new Promise((resolve, reject) => {
-                    request.onsuccess = () => resolve(request.result)
-                    request.onerror = () => reject(request.error)
-                })
-
-                if (existingChat) {
-                    if (count) existingChat.unreadMessageCount += 1
-                    else existingChat.unreadMessageCount = 0
-
-                    const updateRequest = store.put(existingChat)
-                    await new Promise((resolve, reject) => {
-                        updateRequest.onsuccess = () => resolve()
-                        updateRequest.onerror = () => reject(updateRequest.error)
-                    })
-                    console.log(`chat with id ${chatId} was successfully updated to correct unread count.`)
-                }
-            } catch (error) {}
         })
     }
 }
