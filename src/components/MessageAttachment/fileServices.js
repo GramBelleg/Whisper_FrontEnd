@@ -11,7 +11,10 @@ export const downloadAttachment = async (presignedUrl, myMessage) => {
         console.log(myMessage.extension);
         const finalBlob = new Blob([blob], { type: myMessage.extension });
         const newObjectUrl = URL.createObjectURL(finalBlob);
-        return newObjectUrl;
+        return {
+          objectUrl: newObjectUrl,
+          blob: finalBlob,
+        };
 
       } catch (error) {
         console.error("Download error:", error);
