@@ -3,7 +3,6 @@ import { whoAmI } from '@/services/chatservice/whoAmI';
 import { mapMessage } from '@/services/chatservice/getMessagesForChat';
 import MessagingSocket from '@/services/sockets/MessagingSocket';
 import { useWhisperDB } from './WhisperDBContext';
-import { handleSearchChat } from '@/services/chatservice/searchChat';
 
 export const ChatContext = createContext();
 
@@ -77,26 +76,22 @@ export const ChatProvider = ({ children }) => {
             mentions:[],
             isSecret: false,
             isAnnouncement: false,
-            file: null,
             media: null,
-            objectLink: "",
-            fileType: attachmentType,
-            size: null,
+            //objectLink: "", //
+            //fileType: null, //
+            //size: null, //
             extension: null,
-            autoDownload: null,
-            fileName: null,            
+            //fileName: null,            
         }
 
         if (attachmentPayload !== null) {
-            //newMessage.fileType = attachmentPayload.type;
+            newMessage.fileType = attachmentPayload.type;
             //newMessage.blobName = attachmentPayload.blobName;
-            newMessage.file = attachmentPayload.file;
             newMessage.fileName = attachmentPayload.name;
             newMessage.extension = attachmentPayload.type;
             newMessage.size = attachmentPayload.size;
         }
 
-        removeAttachment();
         /*if (true) { // TODO: handle upload
             let blob = await uploadFile(tempMessageObject,uploadData);
             if (blob) {
@@ -116,7 +111,9 @@ export const ChatProvider = ({ children }) => {
         newMessage.sender = whoAmI.name;
         newMessage.state = 4;
         newMessage.time = new Date();
-
+        newMessage.file = (attachmentPayload && attachmentPayload.file) ? attachmentPayload.file: null;
+        newMessage.autoDownload = null;
+        newMessage.fileType = null;
     
         messagesSocket.sendData(newMessageForBackend);
         setSending(false);
