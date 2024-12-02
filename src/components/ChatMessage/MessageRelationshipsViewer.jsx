@@ -1,4 +1,5 @@
 import NoProfile from '@/assets/images/no-profile.svg?react'
+import { messageTypes } from '@/services/sendTypeEnum'
 
 const MessageRelationshipsViewer = ({ message }) => {
     if (message.forwarded && message.forwardedFrom) {
@@ -22,7 +23,13 @@ const MessageRelationshipsViewer = ({ message }) => {
             <div className='mb-2 hover:bg-opacity-30 cursor-pointer flex flex-col rounded-lg p-1 border-l-4 border-white bg-white bg-opacity-20 text-left'>
                 <span className='relationship-text'>{message.parentMessage.senderName}</span>
                 <div className='relationship-info'>
-                    <span className='relationship-name'>{message.parentMessage.content}</span>
+                    {message.parentMessage.type == messageTypes.TEXT ? (
+                        <span className='relationship-name'>{message.parentMessage.content}</span>
+                    ) : (
+                        <span className='relationship-name'>
+                            {message.parentMessage.type.charAt(0).toUpperCase() + message.parentMessage.type.slice(1).toLowerCase()}
+                        </span>
+                    )}
                 </div>
             </div>
         )

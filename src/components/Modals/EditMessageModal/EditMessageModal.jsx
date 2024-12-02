@@ -20,7 +20,7 @@ const EditMessageModal = ({ message }) => {
     return (
         <div className='edit-message-modal'>
             <div className='header'>
-                <span className='close-icon'>
+                <span className='close-icon' data-testid="close-icon">
                     <FontAwesomeIcon icon={faTimes} onClick={closeModal} />
                 </span>
                 <h3>Edit Message</h3>
@@ -31,8 +31,8 @@ const EditMessageModal = ({ message }) => {
             </div>
 
             <div className='edit-message-actions'>
-                <ChatTextingActions textMessage={textMessage} setTextMessage={setTextMessage} triggerSendMessage={handleEdit} />
-                <div className='flex justify-center items-center rounded-full edit-button' onClick={handleEdit}>
+                <ChatTextingActions data-testid="chat-texting-actions" textMessage={textMessage} setTextMessage={setTextMessage} triggerSendMessage={handleEdit} />
+                <div className='flex justify-center items-center rounded-full edit-button' data-testid="send-button" onClick={handleEdit}>
                     <FontAwesomeIcon icon={faCheck} />
                 </div>
             </div>
