@@ -147,13 +147,6 @@ const ChatActions = () => {
                 extension: attachmentPayload ? attachmentPayload.extension : null,
                 size: attachmentPayload ? attachmentPayload.file.size : null
             })
-            // if(attachmentPayload) {
-            //     const finalBlob = new Blob([attachmentPayload.file], { type: attachmentPayload.extension });
-            //     const newObjectUrl = URL.createObjectURL(finalBlob);
-            //     await dbRef.current.updateMessage(myMessage.id, { 
-            //         objectLink: newObjectUrl,
-            //     });
-            // }
             setTextMessage('')
         }
     }
@@ -161,19 +154,27 @@ const ChatActions = () => {
     useEffect(() => {
         const myUnDraftMessage = async () => {
             if (textMessage === null || textMessage.length === 0) {
+                let lastMessage;
                 try {
-                    await unDraftMessage(chatId);
+                    lastMessage = await dbRef.current.getDraftedMessage(chatId);
                 } catch (error) {
-                    console.log(error);
-                }   
-
-                try {
-                    await dbRef.current.unDraftMessage(chatId);
-                } catch (error) {
-                    console.log(error);
+                    console.error(error);
                 }
+                if (lastMessage) {
+                    try {
+                        await unDraftMessage(chatId);
+                    } catch (error) {
+                        console.log(error);
+                    }   
 
-                setActionExposed(true);
+                    try {
+                        await dbRef.current.unDraftMessage(chatId);
+                    } catch (error) {
+                        console.log(error);
+                    }
+
+                    setActionExposed(true);
+                }
             }
         }
         const setMessageByDrafted = async () => {
