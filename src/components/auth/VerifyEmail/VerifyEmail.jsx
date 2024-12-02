@@ -7,7 +7,7 @@ import ErrorMessage from '@/components/common/ErrorMessage';
 const VerifyEmail = ({ code, loading, handleChange, handleSubmit, error, codeError, resendCode, backToSignUp, canResend, timer }) => {
   return (
     <div className="flex flex-col justify-center items-center min-h-screen p-4">
-      <div className="w-full max-w-md mx-auto flex flex-col items-center justify-between h-[300px] p-4 bg-white rounded-lg shadow-md">
+      <div className="w-full max-w-md mx-auto flex flex-col items-center justify-between p-4 bg-white rounded-lg shadow-md">
         <h1 className="text-xl font-semibold text-center text-primary mb-4">
           Account Verification
         </h1>

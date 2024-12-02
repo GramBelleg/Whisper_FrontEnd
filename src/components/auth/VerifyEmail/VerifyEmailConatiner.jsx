@@ -7,7 +7,7 @@ const VerifyEmailContainer = () => {
     const [code, setCode] = useState('');
     const [codeError, setCodeError] = useState(''); // State for code validation error
     const { handleVerify, handleResendCode, handleBackToSignUp, loading, error } = useAuth();
-    const { timer, canResend, resetTimer } = useResendTimer(0, "lastVerifyTime");
+    const { timer, canResend, resetTimer } = useResendTimer(60, "lastVerifyTime");
 
     useEffect(() => {
         const lastResetTime = sessionStorage.getItem("lastVerifyTime");
@@ -46,6 +46,7 @@ const VerifyEmailContainer = () => {
 
     const backToSignUp = async () => {
         handleBackToSignUp();
+        sessionStorage.removeItem("lastVerifyTime");
     };
 
     return (
