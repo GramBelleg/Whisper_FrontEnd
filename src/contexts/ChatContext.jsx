@@ -18,7 +18,7 @@ export const ChatProvider = ({ children }) => {
     const currentChatRef = useRef(currentChat)
     const [messageReceived, setMessageReceived] = useState(false)
     const [action, setAction] = useState(false)
-    const [messageDelivered, setMessageDelivered] = useState(false);
+    const [messageDelivered, setMessageDelivered] = useState(false)
 
     const setActionExposed = (actionIn) => {
         setAction(actionIn)
@@ -58,7 +58,7 @@ export const ChatProvider = ({ children }) => {
     useEffect(() => {
         if (currentChat) {
             try {
-                messagesSocket.readAllMessages(currentChat.id);
+                messagesSocket.readAllMessages(currentChat.id)
             } catch (error) {
                 console.log(error)
             }
@@ -160,7 +160,7 @@ export const ChatProvider = ({ children }) => {
     const pinMessage = (messsageId, durtaion = 0) => {
         messagesSocket.pinMessage({
             chatId: currentChat.id,
-            id: messsageId,
+            id: messsageId
         })
     }
 
@@ -184,13 +184,13 @@ export const ChatProvider = ({ children }) => {
             } catch (error) {
                 console.error(error)
             }
-    
+
             try {
                 if (messageData.sender.id !== whoAmI.userId) {
                     messagesSocket.sendDeliverMessage({
                         messageId: messageData.id,
                         chatId: messageData.chatId
-                    });
+                    })
                 }
             } catch (error) {
                 console.error(error)
@@ -198,18 +198,18 @@ export const ChatProvider = ({ children }) => {
             if (activeChat && activeChat.id === myMessageData.chatId) {
                 try {
                     await loadMessages(activeChat.id)
-                    messagesSocket.readAllMessages(activeChat.id);
+                    messagesSocket.readAllMessages(activeChat.id)
                 } catch (error) {
                     console.log(error)
                 }
-            }  else {
+            } else {
                 if (messageData.sender.id !== whoAmI.userId) {
                     try {
                         await dbRef.current.updateUnreadCount(myMessageData.chatId, true)
                     } catch (error) {
                         console.error(error)
                     }
-                } 
+                }
             }
             setMessageReceived(false)
         } catch (error) {
@@ -220,8 +220,8 @@ export const ChatProvider = ({ children }) => {
     const handleDeliverMessage = async (data) => {
         try {
             const activeChat = currentChatRef.current
-            console.log(activeChat, " ", data)
-            const localMessageIds = data.messageIds;
+            console.log(activeChat, ' ', data)
+            const localMessageIds = data.messageIds
             localMessageIds.map(async (messageId) => {
                 try {
                     await dbRef.current.updateMessage(messageId, {
@@ -234,11 +234,11 @@ export const ChatProvider = ({ children }) => {
             try {
                 await dbRef.current.updateLastMessage(data.chatId, {
                     state: 1
-                });
+                })
             } catch (error) {
-                console.log(error);
+                console.log(error)
             }
-            
+
             if (activeChat && activeChat.id === data.chatId) {
                 await loadMessages(activeChat.id)
             } else {
@@ -252,7 +252,7 @@ export const ChatProvider = ({ children }) => {
     const handleReadMessage = async (data) => {
         try {
             const activeChat = currentChatRef.current
-            const localMessageIds = data.messageIds;
+            const localMessageIds = data.messageIds
             localMessageIds.map(async (messageId) => {
                 await dbRef.current.updateMessage(messageId, {
                     state: 2
@@ -261,17 +261,14 @@ export const ChatProvider = ({ children }) => {
             try {
                 await dbRef.current.updateLastMessage(data.chatId, {
                     state: 2
-                });
+                })
             } catch (error) {
-                console.log(error);
+                console.log(error)
             }
             if (activeChat && activeChat.id === data.chatId) {
                 await loadMessages(activeChat.id)
-                
             }
-        } catch (error) {
-            
-        }
+        } catch (error) {}
     }
     const handleReceiveEditMessage = async (messageData) => {
         try {
@@ -292,7 +289,7 @@ export const ChatProvider = ({ children }) => {
                     return message
                 })
             })
-            setMessageDelivered(true);
+            setMessageDelivered(true)
         } catch (error) {
             console.error(error)
         }
@@ -379,7 +376,7 @@ export const ChatProvider = ({ children }) => {
 
     useEffect(() => {
         if (messageDelivered) {
-            setMessageDelivered(false);
+            setMessageDelivered(false)
         }
     }, [messageDelivered])
 

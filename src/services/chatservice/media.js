@@ -2,9 +2,13 @@ import axiosInstance from '../axiosInstance'
 
 export const uploadMedia = async (fileData) => {
     try {
-        const uploadCredentials = await axiosInstance.post('/api/media/write', {
-            fileExtension: fileData.extension
-        },{withCredentials:true})
+        const uploadCredentials = await axiosInstance.post(
+            '/api/media/write',
+            {
+                fileExtension: fileData.extension
+            },
+            { withCredentials: true }
+        )
 
         const { presignedUrl, blobName } = uploadCredentials.data
 
@@ -30,7 +34,7 @@ export const uploadMedia = async (fileData) => {
 
 export const readMedia = async (blobName) => {
     try {
-        const downloadData = await axiosInstance.post('/api/media/read', { blobName },{withCredentials:true})
+        const downloadData = await axiosInstance.post('/api/media/read', { blobName }, { withCredentials: true })
         console.log(blobName, ' ', downloadData)
         return downloadData.data.presignedUrl
     } catch (err) {

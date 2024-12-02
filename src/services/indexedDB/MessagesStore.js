@@ -35,7 +35,7 @@ export class MessagesStore extends BaseStore {
     async insertMessage(message) {
         return this._executeTransaction('readwrite', async (store) => {
             try {
-                const check = store.get(message.id);
+                const check = store.get(message.id)
                 const res = await new Promise((resolve, reject) => {
                     check.onsuccess = () => resolve()
                     check.onerror = () => reject(check.error)

@@ -71,9 +71,13 @@ export const getBlobUrl = async (blobName) => {
 
     if (blobName) {
         try {
-            const response = await axiosInstance.post(`/api/media/read`, {
-                blobName
-            },{withCredentials:true})
+            const response = await axiosInstance.post(
+                `/api/media/read`,
+                {
+                    blobName
+                },
+                { withCredentials: true }
+            )
 
             if (response.status !== 200 || !response.data.presignedUrl) {
                 throw new Error('Error fetching presigned URL')

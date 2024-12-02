@@ -15,14 +15,12 @@ import {
 import useAuth from './useAuth'
 import UserSocket from '@/services/sockets/UserSocket'
 
-
 export const useProfileSettings = () => {
     const { profilePic, setProfilePic } = useProfileContext()
     const [errors, setErrors] = useState({ bio: null, name: null, userName: null, profilePic: null })
     const { handleUpdateUser, user } = useAuth()
     const [loading, setLoading] = useState(false)
     const userSocket = new UserSocket()
-
 
     const fetchProfilePic = async () => {
         try {

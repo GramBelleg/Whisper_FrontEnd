@@ -32,7 +32,7 @@ class MessagingSocket extends Socket {
 
     readAllMessages(data) {
         console.log(data)
-        this.socket.emit('readAllMessages', data);
+        this.socket.emit('readAllMessages', data)
     }
 
     onReadMessage(callback) {

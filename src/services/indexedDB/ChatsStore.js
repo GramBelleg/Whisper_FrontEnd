@@ -96,7 +96,7 @@ export class ChatsStore extends BaseStore {
                     const newChat = {
                         ...chat,
                         messageState: data.state
-                    };
+                    }
                     const updateRequest = store.put(newChat)
                     await new Promise((resolve, reject) => {
                         updateRequest.onsuccess = () => resolve()
