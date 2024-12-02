@@ -144,3 +144,19 @@ export const logout = async (token) => {
     throw new Error(error.response?.data?.message || "An error occurred");
   }
 };
+export const logoutAll = async (token) => {
+  try {
+    const response = await axiosInstance.get("/api/user/logoutAll",{
+      headers: {
+        'Authorization': `Bearer ${token}`,
+      },
+      withCredentials: true,
+    });
+    console.log("logout all",response.data);
+    return response.data;
+  }
+  catch (error) {
+    console.log("logout all error", error);
+    throw new Error(error.response?.data?.message || "An error occurred");
+  }
+}

@@ -17,11 +17,20 @@ const ResetPasswordContainer = ({email,handleClose}) => {
     const res=await handleReset({email: email,
       password:values.password,
       confirmPassword:values.confirmPassword,
-      code:values.resetCode});
+      code:values.resetCode,
+      logoutCheck:values.logoutCheck
+    });
     actions.resetForm();
     if(res.success){
-        alert("Password reset successfully")
-    }
+      alert("Password reset successfully")
+      if(values.logoutCheck){
+          navigate("/login")
+      }
+      else
+      {
+        navigate("/chats")
+      }
+  }
   };
 
   const formik = useFormik({
@@ -30,6 +39,7 @@ const ResetPasswordContainer = ({email,handleClose}) => {
       password: "",
       confirmPassword: "",
       resetCode: "",
+      logoutCheck: false,
     },
     validationSchema: resetSchema,
     onSubmit,
