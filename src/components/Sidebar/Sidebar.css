@@ -6,6 +6,12 @@
     background-color: #0a122f;
     border-right: 3px solid #8d6aee;
     position: relative;
+    overflow-y: scroll;
+    scrollbar-width: none;
+}
+
+.sidebar::-webkit-scrollbar {
+    display: none; 
 }
 
 .sidebar__resizer {
