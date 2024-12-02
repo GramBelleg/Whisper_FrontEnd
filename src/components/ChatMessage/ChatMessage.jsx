@@ -119,7 +119,7 @@ const ChatMessage = ({ message, hideActions }) => {
                 <div className='message-info'>
                     {message.edited ? <span className='text-sm opacity-60'>edited</span> : null}
                     <span className='time opacity-60'>{messageTime}</span>
-                    {message.senderId === whoAmI.id && (
+                    {message.senderId === whoAmI.userId && (
                         <span className='message-status'>
                             {message.state === 0 && <SentTicks width='12px' />}
                             {message.state === 1 && <DeliveredTicks width='12px' />}
