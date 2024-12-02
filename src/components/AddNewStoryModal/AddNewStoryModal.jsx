@@ -4,8 +4,6 @@ import { useEffect, useRef, useState } from "react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faTimes, faPaperPlane } from "@fortawesome/free-solid-svg-icons";
 import { useStories } from "@/contexts/StoryContext";
-import { downloadLink, uploadLink } from "@/mocks/mockData";
-
 
 const AddNewStoryModal = ({ file, filePreview, onClose }) => {
     const textareaRef = useRef(null);
@@ -33,10 +31,9 @@ const AddNewStoryModal = ({ file, filePreview, onClose }) => {
         try {
             const newStory = {
                 "content": storyText,
-                "media": downloadLink.presignedUrl,
+                "media": null,
                 "type": fileType,
             }
-            console.log(newStory)
             await uploadStory(file, newStory);
         } catch (error) {
             console.log(error);

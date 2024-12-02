@@ -9,7 +9,7 @@ import { useStories } from "@/contexts/StoryContext";
 import { whoAmI } from "@/services/chatservice/whoAmI";
 
 const SingleStory = ({ onNextStory, handleAddNewStoryClick, onClose }) => {
-    const { loading, error, url, currentStory, currentUser, 
+    const { loading, error, currentStory, currentUser, 
             isDeleteing, handleDeleteStory, sendLikeStory  } = useStories();
     const [dropdownVisible, setDropdownVisible] = useState(false);
     const [visibilityDropDownVisible, setVisibilityDropDownVisible] = useState(false);
@@ -64,13 +64,13 @@ const SingleStory = ({ onNextStory, handleAddNewStoryClick, onClose }) => {
             clearTimeout(intervalRef.current);
             document.removeEventListener("mousedown", handleClickOutside);
         };
-    }, [currentStory]);
+    }, [currentStory, currentStory?.url]);
 
     useEffect(() => {
     }, [currentUser])
 
     useEffect(() => {
-    }, [currentUser, currentStory?.liked])
+    }, [currentUser, currentStory?.liked, currentStory?.url])
 
     useEffect(() => {
         if (error) {
@@ -149,17 +149,17 @@ const SingleStory = ({ onNextStory, handleAddNewStoryClick, onClose }) => {
 
         
 
-        if (currentStory && currentStory?.type.startsWith("image/")) {
+        if (currentStory && currentStory.url && currentStory?.type.startsWith("image/")) {
             return (
                 <img
-                    src={url}
+                    src={currentStory.url}
                     alt="Story content"
                     className="w-full h-full object-contain"
                     onError={() => console.log("Failed to load image")}
                 />
             );
         }
-        if (currentStory && currentStory?.type.startsWith("video/")) {
+        if (currentStory && currentStory.url && currentStory?.type.startsWith("video/")) {
             return (
                 <video
                     ref={videoRef}
@@ -167,7 +167,7 @@ const SingleStory = ({ onNextStory, handleAddNewStoryClick, onClose }) => {
                     className="w-full h-full object-contain"
                 >
                 <source
-                    src={url}
+                    src={currentStory.url}
                     type={currentStory.type}
                     onError={() => setError("Failed to load video")}
                 />
