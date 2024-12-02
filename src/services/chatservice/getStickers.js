@@ -13,8 +13,16 @@ export const getStickers = async () => {
         const fetchedStickers = await Promise.all(
             blobNames.map(async (blobName) => {
                 try {
-                    const { imageUrl } = await getBlobUrl(blobName);
-                    return {blobName,imageUrl};
+                    const { blob, imageUrl, error } = await getBlobUrl(blobName);
+
+                    if (error) {
+                        console.error(`Skipping sticker for ${blobName} due to error: ${error}`);
+                        return null;
+                    }
+
+                    const file = new File([blob], blobName, { type: "image/sticker" });
+
+                    return { blobName, imageUrl, file };
                 } catch (error) {
                     console.error(`Error fetching sticker for ${blobName}:`, error);
                     return null;
@@ -28,3 +36,4 @@ export const getStickers = async () => {
         return [];
     }
 };
+

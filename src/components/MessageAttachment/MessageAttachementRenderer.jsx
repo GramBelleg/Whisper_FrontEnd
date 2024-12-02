@@ -28,6 +28,10 @@ const MessageAttachmentRenderer = ({ myMessage }) => {
     useEffect(() => {
       const fetchData = async () => {
         try {
+          if(myMessage.blobData) {
+            const newObjectUrl = URL.createObjectURL(myMessage.blobData);
+            myMessage.objectLink = newObjectUrl;
+          }
           if (myMessage.objectLink) {
             setAttachmentUrl(myMessage.objectLink);
             setAutoDownload(true);
@@ -39,10 +43,11 @@ const MessageAttachmentRenderer = ({ myMessage }) => {
             const fileSize = myMessage.size / 1024 / 1024;
             if (fileSize < whoAmI.autoDownloadSize) {
               let presignedUrl = await readMedia(myMessage.media);
-              const newObjectUrl = await downloadAttachment(presignedUrl, myMessage);
+              const attachment = await downloadAttachment(presignedUrl, myMessage);
+              const newObjectUrl = attachment.objectUrl;
               setAttachmentUrl(newObjectUrl);
               await dbRef.current.updateMessage(myMessage.id, { 
-                objectLink: newObjectUrl,
+                blobData: attachment.blob,
             });
               setIsLoading(false);
               setAutoDownload(true);
@@ -53,11 +58,12 @@ const MessageAttachmentRenderer = ({ myMessage }) => {
             }
           } else {
             let presignedUrl = await readMedia(myMessage.media);
-            const newObjectUrl = await downloadAttachment(presignedUrl, myMessage);
+            const attachment = await downloadAttachment(presignedUrl, myMessage);
+            const newObjectUrl = attachment.objectUrl;
             setAutoDownload(true);
             setAttachmentUrl(newObjectUrl);
             await dbRef.current.updateMessage(myMessage.id, { 
-              objectLink: newObjectUrl,
+              blobData: attachment.blob,
           });
 
             setIsLoading(false);
