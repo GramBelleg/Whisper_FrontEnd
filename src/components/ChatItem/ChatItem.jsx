@@ -124,7 +124,6 @@ const ChatItem = ({ index, standaloneChat }) => {
 
         checkOverflow(); 
         window.addEventListener("resize", checkOverflow); 
-        console.log(standaloneChat)
         return () => {
             window.removeEventListener("resize", checkOverflow); 
         };
@@ -161,11 +160,11 @@ const ChatItem = ({ index, standaloneChat }) => {
                             </div>
                             <div className="ticks-info">
                                 <div className="tick">
-                                {
-                                        ( myChat.messageState && myChat.messageState === 0 ) && <SentTicks data-testid="sent-tick"/> || 
-                                        ( myChat.messageState && myChat.messageState === 1 ) && <DeliveredTicks data-testid="delivered-tick"/> || 
-                                        ( myChat.messageState && myChat.messageState === 2 ) && <ReadTicks data-testid="read-tick"/> || 
-                                        ( myChat.messageState && myChat.messageState === 4 ) && <PendingSend data-testid="pending-tick"/>  
+                                {   
+                                        ( myChat.messageState != null && myChat.messageState === 0 ) && <SentTicks data-testid="sent-tick"/> || 
+                                        ( myChat.messageState != null && myChat.messageState === 1 ) && <DeliveredTicks data-testid="delivered-tick"/> || 
+                                        ( myChat.messageState != null && myChat.messageState === 2 ) && <ReadTicks data-testid="read-tick"/> || 
+                                        ( myChat.messageState != null && myChat.messageState === 4 ) && <PendingSend data-testid="pending-tick"/>  
                                 } 
                                 </div>
                                 <div className="message-time">

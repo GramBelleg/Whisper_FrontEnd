@@ -66,11 +66,9 @@ export const StoriesProvider = ({ children }) => {
         let userId = id || currentUser.userId;
         try {
             try { 
-                console.log("e7m");
                 const hasStories = await dbRef.current.userHasStories(userId);
                 if (hasStories) {
                     data = await dbRef.current.getUserStories(userId);
-                    console.log("e7m", DataTransferItemList);
                 } else {
                     throw new Error('No stories found');
                 }
@@ -80,7 +78,6 @@ export const StoriesProvider = ({ children }) => {
                 console.log(data)
                 await dbRef.current.insertUserStories(data, userId);
             } 
-            console.log("e7m");
             setStories([...data]);
         } catch (error) {
             setStories([]);

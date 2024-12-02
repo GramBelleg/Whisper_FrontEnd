@@ -74,7 +74,6 @@ function App() {
                     const { id, ...rest } = item;
                     return { userId: id, ...rest };
                 });
-                console.log("data", data)
                 await dbRef.current.insertStories(data);
             } catch (error) {
                 console.log(error);

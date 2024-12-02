@@ -55,7 +55,6 @@ const Info = ({ index, group, onMute, onUnMute, muted }) => {
             }
             setMuteDuration(null);
         }
-        console.log(muteDuration)
 
        
     }, [clicked, muteDuration])

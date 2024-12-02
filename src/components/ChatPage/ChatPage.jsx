@@ -24,7 +24,6 @@ const ChatPage = () => {
         try {
             let allChats = await dbRef.current.getChats();
             setChatList(allChats);
-            console.log(allChats)
         } catch (error) {
             openModal(
                 <ErrorMesssage

@@ -9,6 +9,7 @@ const SingleChatMessagesList = () => {
     const { messages, updateParentMessage } = useChat();
 
     useEffect(() => {
+        console.log(messages)
     }, [messages]);
 
     return (
