@@ -9,7 +9,7 @@ const CustomStickersPicker = ({ handleStickerClick }) => {
     useEffect(() => {
         const fetchStickers = async () => {
             try {
-                const fetchedStickers = await getStickers();
+                const fetchedStickers = await getStickers()
                 setStickers(fetchedStickers)
                 setLoading(false)
             } catch (error) {
@@ -22,7 +22,7 @@ const CustomStickersPicker = ({ handleStickerClick }) => {
     }, [])
 
     return (
-        <div className='p-2' id="stickers-picker" data-testid="stickers-picker">
+        <div className='p-2' id='stickers-picker' data-testid='stickers-picker'>
             {loading ? (
                 <p className='text-gray-400 text-center'>Loading stickers...</p>
             ) : stickers.length > 0 ? (
@@ -33,7 +33,7 @@ const CustomStickersPicker = ({ handleStickerClick }) => {
                             src={sticker.imageUrl}
                             alt={`Sticker ${index + 1}`}
                             className='w-16 h-16 rounded-lg cursor-pointer hover:scale-105 transform transition'
-                            onClick={() => handleStickerClick(sticker.blobName,sticker.imageUrl,sticker.file)}
+                            onClick={() => handleStickerClick(sticker.blobName, sticker.imageUrl, sticker.file)}
                         />
                     ))}
                 </div>

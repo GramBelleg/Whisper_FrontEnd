@@ -18,17 +18,16 @@ import parentRelationshipTypes from '@/services/chatservice/parentRelationshipTy
 import MessageAttachmentRenderer from '../MessageAttachment/MessageAttachementRenderer'
 import MessageInfo from '../MessageInfo/MessageInfo'
 
-
 const ChatMessage = ({ message, hideActions }) => {
     const [isMenuOpen, setIsMenuOpen] = useState(false) // Track menu state
     const [menuPosition, setMenuPosition] = useState({ x: 0, y: 0 })
     const [objectLink, setObjectLink] = useState(null)
     const { openModal, openConfirmationModal } = useModal()
     const menuOverlayGutter = 40
-    const { pinMessage, unPinMessage, deleteMessage, updateParentMessage } = useChat();
+    const { pinMessage, unPinMessage, deleteMessage, updateParentMessage } = useChat()
 
     const toggleMenu = (e) => {
-        if (hideActions) return;
+        if (hideActions) return
         e.preventDefault() // Prevent default behavior (for long-press or right-click)
         setMenuPosition({ x: e.clientX, y: e.clientY }) // Set the position of the menu
         setIsMenuOpen(!isMenuOpen) // Toggle menu visibility
@@ -42,7 +41,7 @@ const ChatMessage = ({ message, hideActions }) => {
     }
 
     const handleReply = () => {
-        updateParentMessage(message, parentRelationshipTypes.REPLY);
+        updateParentMessage(message, parentRelationshipTypes.REPLY)
         setIsMenuOpen(false)
     }
 
@@ -52,16 +51,16 @@ const ChatMessage = ({ message, hideActions }) => {
     }
 
     const handleMessageInfo = () => {
-        openModal(<MessageInfo message={message}/>)
+        openModal(<MessageInfo message={message} />)
     }
-    
+
     const handleEdit = () => {
         openModal(<EditMessageModal message={message} />)
         setIsMenuOpen(false)
     }
 
     const handlePin = () => {
-        pinMessage(message.id);
+        pinMessage(message.id)
     }
 
     const handleUnPin = () => {
@@ -70,33 +69,30 @@ const ChatMessage = ({ message, hideActions }) => {
 
     const updateObjectLink = (objectLink) => {
         setObjectLink(objectLink)
-      };
+    }
 
     const messageTime = useMemo(() => {
         // Assuming message.time is "2024-11-01 18:24:00"
-        const date = new Date(message.time);
-        let hours = date.getHours();
-        let minutes = date.getMinutes();
-        
+        const date = new Date(message.time)
+        let hours = date.getHours()
+        let minutes = date.getMinutes()
+
         // If minutes are 0, display as "00" instead
-        minutes = minutes === 0 ? '00' : minutes.toString().padStart(2, '0');
-        
+        minutes = minutes === 0 ? '00' : minutes.toString().padStart(2, '0')
 
         // Format time as HH:MM
-        return `${hours}:${minutes}`;
-
+        return `${hours}:${minutes}`
     }, [message.time])
-
 
     const renderMessageContent = useMemo(() => {
         switch (message.type) {
             case messageTypes.TEXT:
                 return (
-                    <div className="message-text" style={{ whiteSpace: 'pre-line' }}>
-                      {message.media && <MessageAttachmentRenderer myMessage={message}  />}
-                      {message.content}
-                    </div>  
-                  );
+                    <div className='message-text' style={{ whiteSpace: 'pre-line' }}>
+                        {message.media && <MessageAttachmentRenderer myMessage={message} />}
+                        {message.content}
+                    </div>
+                )
             case messageTypes.AUDIO:
                 return <AudioVoiceMessage blobName={message.media} />
             case messageTypes.IMAGE:
@@ -105,7 +101,7 @@ const ChatMessage = ({ message, hideActions }) => {
                 return null
         }
     }, [message])
-    
+
     return (
         <div
             className={`message shadow ${message.senderId === whoAmI.userId ? 'sender' : 'reciever'}`}
@@ -132,42 +128,48 @@ const ChatMessage = ({ message, hideActions }) => {
 
             {isMenuOpen && (
                 <div
-                    className='message-actions-overlay' onMouseLeave={() => setIsMenuOpen(false)}
-                    style={{ top: menuPosition.y - menuOverlayGutter, left: menuPosition.x - menuOverlayGutter, padding: `${menuOverlayGutter}px` }}
+                    className='message-actions-overlay'
+                    onMouseLeave={() => setIsMenuOpen(false)}
+                    style={{
+                        top: menuPosition.y - menuOverlayGutter,
+                        left: menuPosition.x - menuOverlayGutter,
+                        padding: `${menuOverlayGutter}px`
+                    }}
                 >
                     <div className='message-actions-menu shadow-lg'>
                         <button onClick={handleReply}>
-                            <FontAwesomeIcon style={{height:'18px'}}  icon={faReply} />
+                            <FontAwesomeIcon style={{ height: '18px' }} icon={faReply} />
                             <span>Reply</span>
                         </button>
-                        {message.content.length ?  <button onClick={handleEdit}>
-                            <FontAwesomeIcon style={{height:'18px'}} icon={faEdit} />
-                            <span>Edit</span>
-                        </button> : null}
+                        {message.content.length ? (
+                            <button onClick={handleEdit}>
+                                <FontAwesomeIcon style={{ height: '18px' }} icon={faEdit} />
+                                <span>Edit</span>
+                            </button>
+                        ) : null}
                         <button onClick={handleForward}>
-                            <FontAwesomeIcon style={{height:'18px'}} icon={faShare} />
+                            <FontAwesomeIcon style={{ height: '18px' }} icon={faShare} />
                             <span>Forward</span>
                         </button>
-                        {
-                            message.senderId === whoAmI.userId && 
+                        {message.senderId === whoAmI.userId && (
                             <button onClick={handleMessageInfo}>
                                 <FontAwesomeIcon height={18} icon={faCircleInfo} />
                                 <span>Info</span>
                             </button>
-                        }
-                        {
-                            !message.pinned ?
+                        )}
+                        {!message.pinned ? (
                             <button onClick={handlePin}>
-                                <FontAwesomeIcon style={{height:'18px'}} icon={faThumbtack} />
+                                <FontAwesomeIcon style={{ height: '18px' }} icon={faThumbtack} />
                                 <span>Pin</span>
-                            </button> :
+                            </button>
+                        ) : (
                             <button onClick={handleUnPin}>
-                                <FontAwesomeIcon style={{height:'18px'}} icon={faThumbtackSlash} />
+                                <FontAwesomeIcon style={{ height: '18px' }} icon={faThumbtackSlash} />
                                 <span>UnPin</span>
                             </button>
-                        }
+                        )}
                         <button className='danger' onClick={handleDelete}>
-                            <FontAwesomeIcon style={{height:'18px'}} icon={faTrash} />
+                            <FontAwesomeIcon style={{ height: '18px' }} icon={faTrash} />
                             <span>Delete</span>
                         </button>
                     </div>

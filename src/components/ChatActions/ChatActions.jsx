@@ -2,7 +2,17 @@ import './ChatActions.css'
 import { formatDuration } from '@/utils/formatDuration'
 import ChatTextingActions from '../ChatTextingActions/ChatTextingActions'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import { faCircleNotch, faFile, faImage, faMicrophoneAlt, faMusic, faPaperclip, faPaperPlane, faTimes, faTrashAlt } from '@fortawesome/free-solid-svg-icons'
+import {
+    faCircleNotch,
+    faFile,
+    faImage,
+    faMicrophoneAlt,
+    faMusic,
+    faPaperclip,
+    faPaperPlane,
+    faTimes,
+    faTrashAlt
+} from '@fortawesome/free-solid-svg-icons'
 import { useEffect, useMemo, useRef, useState } from 'react'
 import useVoiceRecorder from '@/hooks/useVoiceRecorder'
 import { messageTypes } from '@/services/sendTypeEnum'
@@ -23,89 +33,88 @@ const ChatActions = () => {
     const { isRecording, duration, startRecording, stopRecording, discardRecording } = useVoiceRecorder()
     const { sendMessage, sending, parentMessage, setActionExposed } = useChat()
 
-    const [attachedFile, setAttachedFile] = useState(null);
-    const [showAttachMenu, setShowAttachMenu] = useState(false);
-    const fileInputRef = useRef(null);
-    const imageInputRef = useRef(null);
-    const audioInputRef = useRef(null);
-    const [attachmentType, setAttachmentType] = useState(-1);
+    const [attachedFile, setAttachedFile] = useState(null)
+    const [showAttachMenu, setShowAttachMenu] = useState(false)
+    const fileInputRef = useRef(null)
+    const imageInputRef = useRef(null)
+    const audioInputRef = useRef(null)
+    const [attachmentType, setAttachmentType] = useState(-1)
     const isTyping = useMemo(() => textMessage.length > 0, [textMessage])
 
-    const showSendIcon = useMemo(() => (parentMessage && parentMessage.relationship === parentRelationshipTypes.FORWARD) || isTyping || isRecording, [parentMessage, isTyping, isRecording])
-    const { openModal, closeModal } = useModal();
-    const [uploadingAttachment, setUploadingAttachment] = useState(false);
+    const showSendIcon = useMemo(
+        () => (parentMessage && parentMessage.relationship === parentRelationshipTypes.FORWARD) || isTyping || isRecording,
+        [parentMessage, isTyping, isRecording]
+    )
+    const { openModal, closeModal } = useModal()
+    const [uploadingAttachment, setUploadingAttachment] = useState(false)
 
     const handleGifAttach = (gifFile) => {
-        setAttachedFile(gifFile);
-        setAttachmentType(1);
+        setAttachedFile(gifFile)
+        setAttachmentType(1)
     }
 
-    const handleStickerAttach = async (blobName,url,file) => {
-        setAttachedFile(file);
-        setAttachmentType(1);
+    const handleStickerAttach = async (blobName, url, file) => {
+        setAttachedFile(file)
+        setAttachmentType(1)
     }
 
-    const { currentChat } = useChat();
-    const { dbRef } = useWhisperDB();
-    const [ chatId, setChatId ] = useState(-1);
+    const { currentChat } = useChat()
+    const { dbRef } = useWhisperDB()
+    const [chatId, setChatId] = useState(-1)
 
     const toggleAttachMenu = () => {
-        setShowAttachMenu(!showAttachMenu);
+        setShowAttachMenu(!showAttachMenu)
     }
 
     const handleFileAttach = () => {
-        fileInputRef.current.click();
+        fileInputRef.current.click()
         setAttachmentType(0)
-        setShowAttachMenu(false);
+        setShowAttachMenu(false)
     }
     const handleImageAttach = () => {
-        imageInputRef.current.click();
+        imageInputRef.current.click()
         setAttachmentType(1)
-        setShowAttachMenu(false);
+        setShowAttachMenu(false)
     }
 
     const formatFileName = (fileName, length) => {
         if (fileName.length > 20) {
-            return `${fileName.slice(0, length)}...`; 
+            return `${fileName.slice(0, length)}...`
         }
-        return fileName; 
-    };
+        return fileName
+    }
     const validFile = (file) => {
         if (file.size > 50 * 1024 * 1024) {
-            return false;
+            return false
         }
-        return true;
+        return true
     }
-    
+
     const handleFileChange = (e) => {
         if (e.target.files[0]) {
-            if(validFile(e.target.files[0]))
-                setAttachedFile(e.target.files[0]);
-            else
-            openModal(
-                <ErrorMesssage errorMessage={"Maximum upload size is 50 mb"} onClose={closeModal} appearFor={2000}/>
-            );
+            if (validFile(e.target.files[0])) setAttachedFile(e.target.files[0])
+            else openModal(<ErrorMesssage errorMessage={'Maximum upload size is 50 mb'} onClose={closeModal} appearFor={2000} />)
         }
     }
 
     const removeAttachment = () => {
-        setAttachedFile(null);
+        setAttachedFile(null)
         if (fileInputRef.current) {
-            fileInputRef.current.value = '';
+            fileInputRef.current.value = ''
         }
         if (imageInputRef.current) {
-            imageInputRef.current.value = '';
+            imageInputRef.current.value = ''
         }
         if (audioInputRef.current) {
-            audioInputRef.current.value = '';
+            audioInputRef.current.value = ''
         }
         setAttachmentType(-1)
     }
 
     const handleAudioAttach = () => {
-        audioInputRef.current.click();
+        audioInputRef.current.click()
         setAttachmentType(2)
-        setShowAttachMenu(false);
+        setShowAttachMenu(false)
     }
 
     const triggerSendMessage = async () => {
@@ -114,7 +123,7 @@ const ChatActions = () => {
                 const blobName = await uploadMedia({
                     extension: 'wav',
                     file: audioBlob
-                });
+                })
                 sendMessage({
                     type: messageTypes.AUDIO,
                     content: '',
@@ -124,26 +133,25 @@ const ChatActions = () => {
             })
             return
         } else if (textMessage.trim() || attachedFile !== null) {
-            let attachmentPayload = null;
+            let attachmentPayload = null
             if (attachedFile !== null) {
                 attachmentPayload = {
                     type: attachmentType,
                     file: attachedFile,
                     extension: attachedFile.type
                 }
-                removeAttachment();
-                setUploadingAttachment(true);
-                let blobName = await uploadMedia(attachmentPayload);
-                setUploadingAttachment(false);
+                removeAttachment()
+                setUploadingAttachment(true)
+                let blobName = await uploadMedia(attachmentPayload)
+                setUploadingAttachment(false)
                 if (blobName) {
-                    attachmentPayload.blobName = blobName;
+                    attachmentPayload.blobName = blobName
                 }
-                
             }
             sendMessage({
                 type: messageTypes.TEXT,
                 content: textMessage,
-                attachmentType: attachmentPayload? (attachmentPayload.type).toString(): null,
+                attachmentType: attachmentPayload ? attachmentPayload.type.toString() : null,
                 attachmentName: attachmentPayload ? attachmentPayload.file.name : null,
                 media: attachmentPayload ? attachmentPayload.blobName : null,
                 extension: attachmentPayload ? attachmentPayload.extension : null,
@@ -156,79 +164,78 @@ const ChatActions = () => {
     useEffect(() => {
         const myUnDraftMessage = async () => {
             if (textMessage === null || textMessage.length === 0) {
-                let lastMessage;
+                let lastMessage
                 try {
-                    lastMessage = await dbRef.current.getDraftedMessage(chatId);
+                    lastMessage = await dbRef.current.getDraftedMessage(chatId)
                 } catch (error) {
-                    console.error(error);
+                    console.error(error)
                 }
                 if (lastMessage) {
                     try {
-                        await unDraftMessage(chatId);
+                        await unDraftMessage(chatId)
                     } catch (error) {
-                        console.log(error);
-                    }   
-
-                    try {
-                        await dbRef.current.unDraftMessage(chatId);
-                    } catch (error) {
-                        console.log(error);
+                        console.log(error)
                     }
 
-                    setActionExposed(true);
+                    try {
+                        await dbRef.current.unDraftMessage(chatId)
+                    } catch (error) {
+                        console.log(error)
+                    }
+
+                    setActionExposed(true)
                 }
             }
         }
         const setMessageByDrafted = async () => {
             try {
                 if (currentChat) {
-                    const lastMessage = await dbRef.current.getDraftedMessage(currentChat.id);
+                    const lastMessage = await dbRef.current.getDraftedMessage(currentChat.id)
                     if (lastMessage) {
-                        setTextMessage(lastMessage);
+                        setTextMessage(lastMessage)
                     } else {
-                        setTextMessage('');
+                        setTextMessage('')
                     }
                 }
             } catch (error) {
-                console.log(error);
-                setTextMessage('');
+                console.log(error)
+                setTextMessage('')
             }
         }
 
         const setDraftedMessage = async () => {
-            if (textMessage && textMessage.length > 0 && currentChat && chatId !== currentChat.id ) {
+            if (textMessage && textMessage.length > 0 && currentChat && chatId !== currentChat.id) {
                 try {
-                    const draftTime = new Date().toISOString();
+                    const draftTime = new Date().toISOString()
                     const draftedMessage = {
                         draftContent: textMessage,
                         draftTime: draftTime,
                         draftParentMessageId: null // TODO: Amr
-                    };
-                    
-                    try {
-                        await draftMessage(chatId,draftedMessage);
-                    } catch (error) {
-                        console.log(error);
                     }
 
                     try {
-                        await dbRef.current.insertDraftedMessage(chatId, draftedMessage);
+                        await draftMessage(chatId, draftedMessage)
                     } catch (error) {
-                        console.log(error);
+                        console.log(error)
+                    }
+
+                    try {
+                        await dbRef.current.insertDraftedMessage(chatId, draftedMessage)
+                    } catch (error) {
+                        console.log(error)
                     }
                     setActionExposed(true)
                 } catch (error) {
-                    console.log(error.message);
+                    console.log(error.message)
                 }
             }
             if (currentChat) {
-                setChatId(currentChat.id);
+                setChatId(currentChat.id)
             }
         }
-        myUnDraftMessage();
-        setDraftedMessage();
-        setMessageByDrafted();
-
+        myUnDraftMessage()
+        setDraftedMessage()
+        setMessageByDrafted()
     }, [currentChat])
 
     return (
@@ -236,16 +243,11 @@ const ChatActions = () => {
             <div className='input-container shadow transition-all duration-300'>
                 <ParentMessage />
                 <div className='actions-row'>
-                {
-                    (sending || uploadingAttachment ) && (
-                        <FontAwesomeIcon icon={faCircleNotch} spin />
-                    )
-                }
-                {
-                    attachedFile && (
-                        <div className="attachment-preview" data-testid="attachment-preview">
-                            <span>{formatFileName(attachedFile.name,10)}</span>
-                            <button onClick={removeAttachment} className="remove-attachment"  data-testid="remove-attachment-button">
+                    {(sending || uploadingAttachment) && <FontAwesomeIcon icon={faCircleNotch} spin />}
+                    {attachedFile && (
+                        <div className='attachment-preview' data-testid='attachment-preview'>
+                            <span>{formatFileName(attachedFile.name, 10)}</span>
+                            <button onClick={removeAttachment} className='remove-attachment' data-testid='remove-attachment-button'>
                                 <FontAwesomeIcon icon={faTimes} />
                             </button>
                         </div>
@@ -256,37 +258,33 @@ const ChatActions = () => {
                             setTextMessage={setTextMessage}
                             triggerSendMessage={triggerSendMessage}
                         />
-                        <input 
-                            type="file" 
+                        <input
+                            type='file'
                             onChange={handleFileChange}
-                            style={{ display: 'none' }} 
-                            id="file-input" 
+                            style={{ display: 'none' }}
+                            id='file-input'
                             ref={fileInputRef}
-                            data-testid="input-file"
+                            data-testid='input-file'
                         />
-                        <input 
-                            type="file" 
-                            accept="image/*,video/*" 
+                        <input
+                            type='file'
+                            accept='image/*,video/*'
                             onChange={handleFileChange}
-                            style={{ display: 'none' }} 
-                            id="image-input" 
+                            style={{ display: 'none' }}
+                            id='image-input'
                             ref={imageInputRef}
-                            data-testid="input-image"
+                            data-testid='input-image'
                         />
-                        <input 
-                            type="file" 
-                            accept="audio/mpeg,audio/wav" 
+                        <input
+                            type='file'
+                            accept='audio/mpeg,audio/wav'
                             onChange={handleFileChange}
-                            style={{ display: 'none' }} 
-                            id="audio-input" 
+                            style={{ display: 'none' }}
+                            id='audio-input'
                             ref={audioInputRef}
-                            data-testid="input-audio"
+                            data-testid='input-audio'
                         />
-                        <UnifiedPicker
-                            onGifSelect={handleGifAttach}
-                            onStickerSelect={handleStickerAttach}
-                        />
-
+                        <UnifiedPicker onGifSelect={handleGifAttach} onStickerSelect={handleStickerAttach} />
                     </div>
 
                     {isRecording ? (
@@ -296,22 +294,24 @@ const ChatActions = () => {
                         </div>
                     ) : (
                         <div className='attachements-container relative'>
-                                <FontAwesomeIcon icon={faPaperclip} onClick={toggleAttachMenu} data-testid="attach-icon"/>
-                                {
-                                    showAttachMenu && (
-                                        <div className="attach-menu absolute bottom-full left-0 bg-white shadow-md rounded-md p-2" data-testid="attach-menu">
-                                            <button onClick={handleFileAttach} className="block w-full text-left py-1 px-2 hover:bg-gray-100">
-                                                <FontAwesomeIcon icon={faFile} className="mr-2" data-testid="attach-file" />
-                                            </button>
-                                            <button onClick={handleImageAttach} className="block w-full text-left py-1 px-2 hover:bg-gray-100">
-                                                <FontAwesomeIcon icon={faImage} className="mr-2" data-testid="attach-image" />
-                                            </button>
-                                            <button onClick={handleAudioAttach} className="block w-full text-left py-1 px-2 hover:bg-gray-100">
-                                                <FontAwesomeIcon icon={faMusic} className="mr-2" data-testid="attach-audio"/>
-                                            </button>
-                                        </div>
-                                )}
-                            </div>
+                            <FontAwesomeIcon icon={faPaperclip} onClick={toggleAttachMenu} data-testid='attach-icon' />
+                            {showAttachMenu && (
+                                <div
+                                    className='attach-menu absolute bottom-full left-0 bg-white shadow-md rounded-md p-2'
+                                    data-testid='attach-menu'
+                                >
+                                    <button onClick={handleFileAttach} className='block w-full text-left py-1 px-2 hover:bg-gray-100'>
+                                        <FontAwesomeIcon icon={faFile} className='mr-2' data-testid='attach-file' />
+                                    </button>
+                                    <button onClick={handleImageAttach} className='block w-full text-left py-1 px-2 hover:bg-gray-100'>
+                                        <FontAwesomeIcon icon={faImage} className='mr-2' data-testid='attach-image' />
+                                    </button>
+                                    <button onClick={handleAudioAttach} className='block w-full text-left py-1 px-2 hover:bg-gray-100'>
+                                        <FontAwesomeIcon icon={faMusic} className='mr-2' data-testid='attach-audio' />
+                                    </button>
+                                </div>
+                            )}
+                        </div>
                     )}
                 </div>
             </div>

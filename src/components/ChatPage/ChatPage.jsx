@@ -1,62 +1,55 @@
-import ChatList from "../ChatList/ChatList";
-import "./ChatPage.css";
-import StoriesContainer from "../StoriesContainer/StoriesContainer";
-import SearchBar from "../SearchBar/SearchBar";
-import { useState, useEffect, useCallback } from 'react';
-import AddNewButton from "../AddNewButton/AddNewButton";
-import { useChat } from "@/contexts/ChatContext";
-import { useWhisperDB } from "@/contexts/WhisperDBContext";
-import { useModal } from "@/contexts/ModalContext";
-import ErrorMesssage from "../ErrorMessage/ErrorMessage";
+import ChatList from '../ChatList/ChatList'
+import './ChatPage.css'
+import StoriesContainer from '../StoriesContainer/StoriesContainer'
+import SearchBar from '../SearchBar/SearchBar'
+import { useState, useEffect, useCallback } from 'react'
+import AddNewButton from '../AddNewButton/AddNewButton'
+import { useChat } from '@/contexts/ChatContext'
+import { useWhisperDB } from '@/contexts/WhisperDBContext'
+import { useModal } from '@/contexts/ModalContext'
+import ErrorMesssage from '../ErrorMessage/ErrorMessage'
 
 const ChatPage = () => {
-    const { selectChat, action } = useChat();
-    const [chatList, setChatList] = useState([]);
-    const { dbRef } = useWhisperDB();
-    const { openModal, closeModal } = useModal();
+    const { selectChat, action } = useChat()
+    const [chatList, setChatList] = useState([])
+    const { dbRef } = useWhisperDB()
+    const { openModal, closeModal } = useModal()
 
     const handleAddNewClick = () => {
-        console.log('Add new clicked');
-    };
+        console.log('Add new clicked')
+    }
 
-    
     const loadChats = useCallback(async () => {
         try {
-            let allChats = await dbRef.current.getChats();
-            setChatList(allChats);
+            let allChats = await dbRef.current.getChats()
+            setChatList(allChats)
         } catch (error) {
-            openModal(
-                <ErrorMesssage
-                  errorMessage={error.message}
-                  appearFor={3000}
-                  onClose={closeModal}
-                />
-            )
+            openModal(<ErrorMesssage errorMessage={error.message} appearFor={3000} onClose={closeModal} />)
         }
-    }, [dbRef, openModal, closeModal]);
+    }, [dbRef, openModal, closeModal])
 
     useEffect(() => {
         if (dbRef.current) {
-            loadChats();
+            loadChats()
         }
     }, [dbRef, loadChats])
 
     useEffect(() => {
         if (action) {
-            loadChats();
+            loadChats()
         }
     }, [action, loadChats])
-    
+
     return (
-        <div className="chat-page">
+        <div className='chat-page'>
             <div>
                 <SearchBar />
             </div>
-            <div className="sidebar__stories">
+            <div className='sidebar__stories'>
                 <StoriesContainer />
             </div>
-            <div className="sidebar__other-content">
-                {chatList && chatList.length > 0 &&  <ChatList chatList={chatList} chooseChat={selectChat}/>}
+            <div className='sidebar__other-content'>
+                {chatList && chatList.length > 0 && <ChatList chatList={chatList} chooseChat={selectChat} />}
                 <AddNewButton onClick={handleAddNewClick} />
             </div>
         </div>

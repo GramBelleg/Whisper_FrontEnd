@@ -1,37 +1,36 @@
-import { useEffect, useRef } from "react";
-import "./ChatTextingActions.css";
-import CustomEmojisPicker from '../CustomEmojisPicker/CustomEmojisPicker';
+import { useEffect, useRef } from 'react'
+import './ChatTextingActions.css'
+import CustomEmojisPicker from '../CustomEmojisPicker/CustomEmojisPicker'
 
 const ChatTextingActions = ({ textMessage, setTextMessage, triggerSendMessage }) => {
-    const textareaRef = useRef(null);
-    
+    const textareaRef = useRef(null)
 
     const handleKeyPress = (e) => {
         if (e.key === 'Enter' && !e.shiftKey) {
-            e.preventDefault(); // Prevents new line from being added
-            triggerSendMessage();
+            e.preventDefault() // Prevents new line from being added
+            triggerSendMessage()
         }
-    };
+    }
 
     const handleEmojiClick = (emojiObject) => {
-        setTextMessage((prevMessage) => prevMessage + emojiObject.emoji);
-    };
+        setTextMessage((prevMessage) => prevMessage + emojiObject.emoji)
+    }
 
     const updateNewMessage = (event) => {
-        textareaRef.current.style.height = 'auto';
-        event.target.style.height = `${event.target.scrollHeight}px`;
+        textareaRef.current.style.height = 'auto'
+        event.target.style.height = `${event.target.scrollHeight}px`
 
         if (event.target.scrollHeight <= 200) {
-            const value = event.target.value;
-            setTextMessage(value);
+            const value = event.target.value
+            setTextMessage(value)
         }
-    };
+    }
 
     useEffect(() => {
         if (textMessage.length === 0) {
-            textareaRef.current.style.height = 'auto';
+            textareaRef.current.style.height = 'auto'
         }
-    }, [textMessage]);
+    }, [textMessage])
 
     return (
         <>
@@ -49,7 +48,7 @@ const ChatTextingActions = ({ textMessage, setTextMessage, triggerSendMessage })
                 rows={1}
             />
         </>
-    );
-};
+    )
+}
 
-export default ChatTextingActions;
+export default ChatTextingActions

@@ -1,20 +1,20 @@
-import "./LoadingData.css";
-import whisper_logo from "/assets/images/whisper_logo.png"; // Adjust path as needed
+import './LoadingData.css'
+import whisper_logo from '/assets/images/whisper_logo.png' // Adjust path as needed
 
 const LoadingData = () => {
     return (
-        <div className="loading-container">
-            <div className="loading-logo">
+        <div className='loading-container'>
+            <div className='loading-logo'>
                 <img
                     src={whisper_logo} // Placeholder logo
-                    alt="Whisper Logo"
+                    alt='Whisper Logo'
                 />
             </div>
-            <div className="loading-bar">
-                <div className="progress"></div>
+            <div className='loading-bar'>
+                <div className='progress'></div>
             </div>
         </div>
-    );
-};
+    )
+}
 
-export default LoadingData;
+export default LoadingData

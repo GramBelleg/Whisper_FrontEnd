@@ -13,10 +13,10 @@ const EditableField = ({ initialText, onSave, id, fieldName, error, clearError }
     }
 
     const handleInputChange = (e) => {
-        const inputValue = e.target.value;
-        
+        const inputValue = e.target.value
+
         if (fieldName !== 'Bio' || inputValue.length <= 300) {
-            setText(inputValue);
+            setText(inputValue)
         }
     }
 
