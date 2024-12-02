@@ -8,7 +8,8 @@ class Socket {
         if (!Socket.socketInstance) {
             // Create the shared socket connection only once
             Socket.socketInstance = io(this.serverUrl, {
-                withCredentials: true
+                withCredentials: true,
+                transports: ['websocket'],
             })
             console.log('Socket connection established')
         }
