@@ -59,7 +59,7 @@ export const useProfileSettings = () => {
                 console.log('Resolved profile picture URL:', updatedPFP)
 
                 setProfilePic(updatedPFP)
-                whoAmI.profilePic = updatedPFP;
+                whoAmI.profilePic = updatedPFP
             } catch (error) {
                 console.error('Error in onPFPUpdate:', error)
             }
