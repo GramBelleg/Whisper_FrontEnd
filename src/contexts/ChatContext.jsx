@@ -98,31 +98,16 @@ export const ChatProvider = ({ children }) => {
             mentions:[],
             isSecret: false,
             isAnnouncement: false,
-            // file: null,
-            // objectLink: "",
-            // fileType: attachmentType,
             size: null,
-            // autoDownload: null,
-            // fileName: null, 
             ...data          
         }
 
         if(parentMessage && parentMessage.relationship === parentRelationshipTypes.REPLY) {
             newMessage.parentMessageId = parentMessage.id;      
         }
-        /*if (true) { // TODO: handle upload
-            let blob = await uploadFile(tempMessageObject,uploadData);
-            if (blob) {
-                tempMessageObject.media = blob.blobName;
-            }
-        }
-
-        if (errorUpload) {
-            console.log(errorUpload)
-        }*/
+        
         const newMessageForBackend = { ...newMessage };
 
-        console.log("newMessageForBackend",newMessageForBackend);
        
         newMessage.senderId = whoAmI.userId,
         newMessage.deliveredAt = '';
@@ -131,19 +116,23 @@ export const ChatProvider = ({ children }) => {
         newMessage.sender = whoAmI.name;
         newMessage.state = 4;
         newMessage.time = new Date();
-        newMessage.file = (attachmentPayload && attachmentPayload.file) ? attachmentPayload.file: null;
-        newMessage.autoDownload = null;
-        newMessage.fileType = null;
-    
-        messagesSocket.sendData(newMessageForBackend);
-        setSending(false);
-        setMessages((prevMessages) => {
-            if (prevMessages) {
-                return [{id: Date.now(), ...newMessage}, ...prevMessages];
-            }
-            return [newMessage];
-        });
-        setParentMessage(null);
+
+        try {
+            messagesSocket.sendData(newMessageForBackend);
+            setMessages((prevMessages) => {
+                if (prevMessages) {
+                    return [{id: Date.now(), ...newMessage}, ...prevMessages];
+                }
+                return [newMessage];
+            });
+            setParentMessage(null);
+        } catch (error) {
+            console.error(error);
+        } finally {
+            setSending(false);
+        }
+        
+        
     };
 
     const updateParentMessage = (message, relationship) => {

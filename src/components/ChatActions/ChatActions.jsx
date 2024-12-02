@@ -34,6 +34,7 @@ const ChatActions = () => {
 
     const showSendIcon = useMemo(() => (parentMessage && parentMessage.relationship === parentRelationshipTypes.FORWARD) || isTyping || isRecording, [parentMessage, isTyping, isRecording])
     const { openModal, closeModal } = useModal();
+    const [uploadingAttachment, setUploadingAttachment] = useState(false);
 
     const handleGifAttach = (gifFile) => {
         setAttachedFile(gifFile);
@@ -146,7 +147,7 @@ const ChatActions = () => {
                 })
             })
             return
-        } else if (textMessage.trim()) {
+        } else if (textMessage.trim() || attachedFile !== null) {
             let attachmentPayload = null;
             if (attachedFile !== null) {
                 attachmentPayload = {
@@ -155,10 +156,11 @@ const ChatActions = () => {
                     extension: attachedFile.type
                 }
                 removeAttachment();
+                setUploadingAttachment(true);
                 let blobName = await uploadMedia(attachmentPayload);
+                setUploadingAttachment(false);
                 if (blobName) {
                     attachmentPayload.blobName = blobName;
-                    console.log("Attachment uploaded successfully");
                 }
                 
             }
@@ -166,13 +168,10 @@ const ChatActions = () => {
                 type: messageTypes.TEXT,
                 content: textMessage,
                 attachmentType: toString(attachmentType),
-                // attachmentType: attachmentPayload ? attachmentPayload.type : null,
                 attachmentName: attachmentPayload ? attachmentPayload.file.name : null,
                 media: attachmentPayload ? attachmentPayload.blobName : null,
-                // extension: attachmentPayload ? getFileExtension(attachmentPayload.file.name) : null,
                 extension: attachmentPayload ? attachmentPayload.extension : null,
                 size: attachmentPayload ? attachmentPayload.file.size : null
-                
             })
             setTextMessage('')
         }
@@ -231,7 +230,7 @@ const ChatActions = () => {
                 <ParentMessage />
                 <div className='actions-row'>
                 {
-                    sending && (
+                    (sending || uploadingAttachment ) && (
                         <FontAwesomeIcon icon={faCircleNotch} spin />
                     )
                 }

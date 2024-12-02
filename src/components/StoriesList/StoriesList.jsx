@@ -6,7 +6,7 @@ import './StoriesList.css';
 import { useStories } from '@/contexts/StoryContext';
 
 const StoriesList = ({ onClose, handleAddStory }) => {
-    const { stories, selectStory, currentIndex, closeStories } = useStories();
+    const { stories, selectStory, currentIndex } = useStories();
     const fileInputRef = useRef(null);
     
 
@@ -32,9 +32,7 @@ const StoriesList = ({ onClose, handleAddStory }) => {
         }
     };
 
-    useEffect(() => {
-        
-    }, [stories, currentIndex]);
+    useEffect(() => {},[stories])
 
 
   return (
