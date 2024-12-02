@@ -62,7 +62,7 @@ const ChatItem = ({ index, standaloneChat }) => {
     // Function to handle clicks and call chooseChat
     const handleClick = (e) => {
         // Check if the click is on the Info component
-        const infoElement = e.target.closest('.info'); // Assuming .info-component is the class for the Info component
+        const infoElement = e.target.closest('.info'); 
         if (!infoElement) {
             selectChat(myChat);
         }
@@ -108,6 +108,7 @@ const ChatItem = ({ index, standaloneChat }) => {
 
 
     useEffect(() => {
+        console.log(standaloneChat)
         setMyChat((prevChat) => ({
             ...prevChat,
             ...standaloneChat,
@@ -153,7 +154,7 @@ const ChatItem = ({ index, standaloneChat }) => {
                                     {myChat.name}
                                 </p>
                                 {myChat.muted && (
-                                    <div className="muted-bell">
+                                    <div className="muted-bell" data-testid="notification-bell">
                                         <NotificationBell />
                                     </div>
                                 )}
