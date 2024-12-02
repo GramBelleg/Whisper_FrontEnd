@@ -44,7 +44,7 @@ const useVoiceRecorder = () => {
           const audioBlob = new Blob(audioChunks.current, { type: 'audio/wav' });
           const url = URL.createObjectURL(audioBlob);
           setAudioUrl(url);
-          resolve(url);
+          resolve(audioBlob);
         };
       });
 
@@ -54,9 +54,9 @@ const useVoiceRecorder = () => {
         clearInterval(intervalRef.current);
       }
   
-      audioBlobPromise.then(url => {
+      audioBlobPromise.then(blob => {
         if (callback) {
-          callback(url);
+          callback(blob);
         }
       });
     }

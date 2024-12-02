@@ -17,7 +17,7 @@ const ParentMessage = () => {
             </div>
             <div className='parent-message'>
                 <span className='header'>
-                    {parentMessage.relationship === parentRelationshipTypes.REPLY ? `Reply to ${parentMessage.sender.name}` : 'Forwarded Message'}
+                    {parentMessage.relationship === parentRelationshipTypes.REPLY ? `Reply to ${parentMessage.sender}` : 'Forwarded Message'}
                 </span>
                 <ParentMessageDetails message={parentMessage} />
             </div>

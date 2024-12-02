@@ -27,7 +27,7 @@ export const StoriesProvider = ({ children }) => {
     const [url, setUrl] = useState(null);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
-    const { db } = useWhisperDB();   
+    const { dbRef } = useWhisperDB();   
 
     const selectUser = (user) => {
         setCurrentUser(user);
@@ -50,9 +50,9 @@ export const StoriesProvider = ({ children }) => {
     };
 
     const localGetStories = async () => {
-        if (db) {
+        if (dbRef) {
             try {
-                const data = await db.getStories();
+                const data = await dbRef.current.getStories();
                 setStoriesTab(data);
             } catch (error) {
                 console.log(error);
@@ -65,9 +65,9 @@ export const StoriesProvider = ({ children }) => {
         let userId = id || currentUser.userId;
         try {
             try { 
-                const hasStories = await db.userHasStories(userId);
+                const hasStories = await dbRef.current.userHasStories(userId);
                 if (hasStories) {
-                    data = await db.getUserStories(userId);
+                    data = await dbRef.current.getUserStories(userId);
                 } else {
                     throw new Error('No stories found');
                 }
@@ -75,7 +75,7 @@ export const StoriesProvider = ({ children }) => {
                 console.log(error);
                 data = await getStories(userId);
                 console.log(data)
-                await db.insertUserStories(data, userId);
+                await dbRef.current.insertUserStories(data, userId);
             } 
             
             setStories([...data]);
@@ -89,17 +89,17 @@ export const StoriesProvider = ({ children }) => {
         try {
             const {  iLiked, likes, iViewed, views } = await getStoryLikesAndViews(storyData.id);
 
-            await db.postStory({...storyData,
+            await dbRef.current.postStory({...storyData,
                 likes: likes,
                 views: views,
                 liked: iLiked,
                 viewed: iViewed
             });
             console.log(views)
-            const userHasStories = await db.userHasStories(storyData.userId);
+            const userHasStories = await dbRef.current.userHasStories(storyData.userId);
             if (!userHasStories) {
                 const data = await getUserInfo(storyData.userId);
-                await db.postUserStories(storyData, data);
+                await dbRef.current.postUserStories(storyData, data);
                 localGetStories();
             }
             if (storyData.userId === whoAmI.userId) {
@@ -115,11 +115,11 @@ export const StoriesProvider = ({ children }) => {
 
     const handleReceiveDeleteStory = async (storyData) => {
         try {
-            await db.deleteStory(storyData.storyId);
+            await dbRef.current.deleteStory(storyData.storyId);
             try {
-                const localStories = await db.getUserStories(storyData.userId);
+                const localStories = await dbRef.current.getUserStories(storyData.userId);
                 if (localStories.length === 0) {
-                    await db.deleteUserFromStories(storyData.userId);
+                    await dbRef.current.deleteUserFromStories(storyData.userId);
                     localGetStories();
                     if (whoAmI.userId === storyData.userId) {
                         whoAmI.hasStory = false;
@@ -152,9 +152,9 @@ export const StoriesProvider = ({ children }) => {
     
     const handleRecieveLikeStory = async (storyData) => {
         try {
-            await db.loadLikes(storyData.storyId, 0, true);
+            await dbRef.current.loadLikes(storyData.storyId, 0, true);
             if (storyData.userId === whoAmI.userId ) {
-                await db.iLiked(storyData.storyId, true);
+                await dbRef.current.iLiked(storyData.storyId, true);
             }
         } catch (error) {
             console.log(error);
@@ -167,11 +167,11 @@ export const StoriesProvider = ({ children }) => {
             console.log(stories)
             if (storyData.userId === whoAmI.userId ) {
                 try {
-                    if (db) {
-                        await db.iViewed(storyData.storyId, true);
+                    if (dbRef) {
+                        await dbRef.current.iViewed(storyData.storyId, true);
                     }
-                    if (db) {
-                        await db.loadViews(storyData.storyId, 0, true);
+                    if (dbRef) {
+                        await dbRef.current.loadViews(storyData.storyId, 0, true);
                     }
                 } catch (error) {
                     throw error;
@@ -203,7 +203,7 @@ export const StoriesProvider = ({ children }) => {
 
     const reloadSingleStory = async (storyId) => {
         try {
-            const story = await db.getStory(storyId);
+            const story = await dbRef.current.getStory(storyId);
             if (story) {
                 setCurrentStory(story);
             }
@@ -233,7 +233,7 @@ export const StoriesProvider = ({ children }) => {
             if(currentStory) {
                 let liked = true;
                 try {
-                    liked = await db.isLiked(currentStory.id);
+                    liked = await dbRef.current.isLiked(currentStory.id);
                     if (!liked) {
                         storiesSocket.likeStory({
                             storyId: currentStory.id,
@@ -257,7 +257,7 @@ export const StoriesProvider = ({ children }) => {
             if(currentStory) {
                 let viewed = true;
                 try {
-                    viewed = await db.isViewed(currentStory.id);
+                    viewed = await dbRef.current.isViewed(currentStory.id);
                     if (!viewed) {
                         storiesSocket.viewStory({
                             storyId: currentStory.id,
@@ -327,7 +327,7 @@ export const StoriesProvider = ({ children }) => {
 
     useEffect(() => {
         localGetStories();
-    }, [db]);
+    }, [dbRef, localGetStories]);
 
     useEffect(() => {
         if (currentIndex > -1 && stories) {

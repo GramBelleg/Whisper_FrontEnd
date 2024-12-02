@@ -376,6 +376,64 @@ class WhisperDB {
         }
     }
 
+
+    
+    async updateMessage(id, data) {
+        if (this.db != null) {
+            try {
+                const tx = this.db.transaction('messages', 'readwrite');
+                const store = tx.objectStore('messages');
+                const request = store.get(id);
+    
+                const existingMessage = await new Promise((resolve, reject) => {
+                    request.onsuccess = () => resolve(request.result);
+                    request.onerror = () => reject(request.error);
+                });
+    
+                if (existingMessage) {
+                    const newMessage = { ...existingMessage, ...data };
+                    const updateRequest = store.put(newMessage);
+                    await new Promise((resolve, reject) => {
+                        updateRequest.onsuccess = () => resolve();
+                        updateRequest.onerror = () => reject(updateRequest.error);
+                    });
+    
+                    console.log(`Message with id ${id} was successfully updated.`);
+                } else {
+                    throw new Error(`Message with id ${id} not found.`);
+                }
+    
+                await tx.complete;
+            } catch (error) {
+                throw new Error("Failed to update message: " + error.message);
+            }
+        } else {
+            throw new Error("Database connection is not initialized.");
+        }
+    }
+
+    async deleteMessage(id) {
+        if (this.db != null) {
+            try {
+                const tx = this.db.transaction('messages', 'readwrite');
+                const store = tx.objectStore('messages');
+                const request = store.delete(id);
+    
+                await new Promise((resolve, reject) => {
+                    request.onsuccess = () => resolve();
+                    request.onerror = () => reject(request.error);
+                });
+    
+                await tx.complete;
+                console.log(`Message with id ${id} was successfully deleted.`);
+            } catch (error) {
+                throw new Error("Failed to delete message: " + error.message);
+            }
+        } else {
+            throw new Error("Database connection is not initialized.");
+        }
+    }
+
     async draftMessage(id) {
         if (this.db != null) {
             try {
@@ -563,7 +621,6 @@ class WhisperDB {
                         existingChat.unreadMessageCount += 1;
                     else 
                         existingChat.unreadMessageCount = 0;
-                    console.log(existingChat)
 
                     const updateRequest = store.put(existingChat);
                     await new Promise((resolve, reject) => {

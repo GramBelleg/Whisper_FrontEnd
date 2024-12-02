@@ -39,7 +39,8 @@ export const mapMessage = (message) => {
         time: message.time.slice(0, 19).replace("T", " "),  
         sentAt: message.sentAt.slice(0, 23).replace("T", " "),  // TODO: handle this
         state: mapMessageState(message.read, message.delivered),  // TODO: handle pending
-        forwarded : message.forwarded, 
+        forwarded : message.forwarded,
+        forwardedFrom: message.forwardedFrom,
         expiresAfter: message.expiresAfter, 
         pinned : message.pinned, 
         selfDestruct: message.selfDestruct, 
@@ -47,13 +48,7 @@ export const mapMessage = (message) => {
         edited: message.edited, 
         isSecret : message.isSecret, 
         isAnnouncement: message.isAnnouncement, 
-        parentMessageId: message.parentMessage? message.parentMessage.id : null,  
-        parentMessageSenderId: message.parentMessage? message.parentMessage.senderId: null,  
-        parentMessageContent: message.parentMessage? message.parentMessage.content: null,  
-        parentMessageMedia: message.parentMessage?  message.parentMessage.media: null,  
-        parentMessageSenderName: message.parentMessage?  message.parentMessage.senderName: null,  
-        parentMessageSenderProfilePic: message.parentMessage? message.parentMessage.senderProfilePic : null,  
-        
+        parentMessage: message.parentMessage,
         sender: message.sender.userName,
         senderId: message.sender.id, 
         profilePic: noUser,

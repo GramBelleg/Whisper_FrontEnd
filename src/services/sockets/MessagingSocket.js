@@ -16,9 +16,14 @@ class MessagingSocket extends Socket {
     }
 
     sendData(data) {
-        console.log("Sending data: ", data);
         this.socket.emit('message', data);
     }
+
+    updateData(data) {
+        this.socket.emit('editMessage', data);
+    }
+
+
 
     pinMessage(data) {
         this.socket.emit('pinMessage', data);
@@ -48,12 +53,32 @@ class MessagingSocket extends Socket {
         this.socket.on('message', callback);
     }
 
+    onReceiveEditMessage(callback) {
+        this.socket.on('editMessage', callback);
+    }
+
     offReceiveMessage(callback) {
         this.socket.off('message', callback);
+    }
+
+    offReceiveEditMessage(callback) {
+        this.socket.off('editMessage', callback);
     }
     
     deleteData(data) {
         //this.socket.emit("deleteStory",{storyId:data.id})
+    }
+
+    deleteMessage(data) {
+        this.socket.emit("deleteMessage",data)
+    }
+
+    onReceiveDeleteMessage(callback) {
+        this.socket.on('deleteMessage', callback);
+    }
+
+    offReceiveDeleteMessage(callback) {
+        this.socket.off('deleteMessage', callback);
     }
 
     disconnect() {

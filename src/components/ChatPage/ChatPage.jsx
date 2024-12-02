@@ -2,7 +2,7 @@ import ChatList from "../ChatList/ChatList";
 import "./ChatPage.css";
 import StoriesContainer from "../StoriesContainer/StoriesContainer";
 import SearchBar from "../SearchBar/SearchBar";
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import AddNewButton from "../AddNewButton/AddNewButton";
 import { useChat } from "@/contexts/ChatContext";
 import { useWhisperDB } from "@/contexts/WhisperDBContext";
@@ -12,7 +12,7 @@ import ErrorMesssage from "../ErrorMessage/ErrorMessage";
 const ChatPage = () => {
     const { messageReceived, messages, selectChat } = useChat();
     const [chatList, setChatList] = useState([]);
-    const { db } = useWhisperDB();
+    const { dbRef } = useWhisperDB();
     const { openModal, closeModal } = useModal();
     const [action, setAction] = useState(null);
 
@@ -20,9 +20,10 @@ const ChatPage = () => {
         console.log('Add new clicked');
     };
 
-    const loadChats = async () => {
+    
+    const loadChats = useCallback(async () => {
         try {
-            let allChats = await db.getChats();
+            let allChats = await dbRef.current.getChats();
             setChatList(allChats);
         } catch (error) {
             openModal(
@@ -33,22 +34,22 @@ const ChatPage = () => {
                 />
             )
         }
-    }
+    }, [dbRef, openModal, closeModal]);
 
     useEffect(() => {
-        if (db) {
+        
+
+        if (dbRef.current) {
             loadChats();
         }
-    }, [db]);
+    }, [dbRef, loadChats])
 
     useEffect(() => {
         if (action) {
             loadChats();
             setAction(false);
         }
-    }, [action]);
-
-    useEffect(() => { loadChats() }, [messages, messageReceived]);
+    }, [action, loadChats])
     
     return (
         <div className="chat-page">

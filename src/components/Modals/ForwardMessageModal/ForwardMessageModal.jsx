@@ -7,12 +7,23 @@ import ChatSelector from "@/components/ChatSelector/ChatSelector";
 import "./ForwardMessageModal.css";
 
 const ForwardMessageModal = ({ message }) => {
-  const { updateParentMessage, selectChat } = useChat();
+  const { selectChat, sendMessage } = useChat();
   const { closeModal } = useModal();
 
   const handleForward = (chat) => {
     selectChat(chat);
-    updateParentMessage(message, parentRelationshipTypes.FORWARD);
+    console.log('Forwarding message to chat:', chat);
+
+    sendMessage({
+      chatId: chat.id,
+      content: message.content,
+      type: message.type,
+      media: message.media,
+      extension: message.extension,
+      sentAt : new Date().toISOString(),
+      forwarded:true,
+      forwardedFromUserId: message.senderId,
+    });
     closeModal();
   };
   

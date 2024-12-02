@@ -2,12 +2,12 @@
 
 
 export const messageTypes = {
-    TEXT: 'text',
-    IMAGE: 'image',
-    VIDEO: 'video',
-    VOICE: 'voice',
-    AUDIO: 'audio',
-    SICKER:  'sicker',
+    TEXT: 'TEXT',
+    IMAGE: 'IMAGE',
+    VIDEO: 'VIDEO',
+    VOICE: 'VOICE',
+    AUDIO: 'AUDIO',
+    SICKER:  'SICKER',
     GIF: 'GIF'
 };
 

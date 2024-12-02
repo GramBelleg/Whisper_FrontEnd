@@ -10,7 +10,7 @@ import noUser from '../../assets/images/no-user.png'
 
 const BlockedUsers = () => {
 
-    const {data: blockedUsers, loading, error, refresh} = useFetch(blockedUsersAPI.index);
+    const {data: blockedData, loading, error, refresh} = useFetch(blockedUsersAPI.index);
 
     const {openModal, openConfirmationModal} = useModal();
     const { pop } = useStackedNavigation();
@@ -44,10 +44,10 @@ const BlockedUsers = () => {
                     <div className="loading">Loading chats...</div>
                 ) : error ? (
                     <div className="error">Failed to load</div>
-                ) : blockedUsers?.length === 0 ? (
+                ) : blockedData.users?.length === 0 ? (
                     <div className="no-results">No Users found</div>
                 ) : (
-                    blockedUsers.map((user, index) => (
+                    blockedData.users.map((user, index) => (
                         <div key={index} className="user-item" data-testid="user-item" onClick={() => {cancelBlockUser(user)}}>
                             <div className="user-avatar">
                                 <img

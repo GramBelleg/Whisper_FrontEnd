@@ -5,15 +5,16 @@ import { faPlay, faPause } from  '@fortawesome/free-solid-svg-icons';
 import { useRef, useEffect, useState } from 'react';
 import WaveSurfer from 'wavesurfer.js';
 import { formatDuration } from '@/utils/formatDuration';
+import { readMedia } from "@/services/chatservice/media";
 
-const AudioVoiceMessage = ({audioUrl}) => {
+const AudioVoiceMessage = ({blobName}) => {
   const waveformRef = useRef(null);
   const wavesurfer = useRef(null);
   const [isPlaying, setIsPlaying] = useState(false);
   const [currentTime, setCurrentTime] = useState(0);
   const [duration, setDuration] = useState(0);
 
-  useEffect(() => {
+  const loadAudio = async () => {
     if (waveformRef.current) {
       wavesurfer.current = WaveSurfer.create({
         container: waveformRef.current,
@@ -27,6 +28,8 @@ const AudioVoiceMessage = ({audioUrl}) => {
         width: 190,
         barGap: 2,
       });
+
+      const audioUrl = await readMedia(blobName);
 
       wavesurfer.current.load(audioUrl);
 
@@ -50,7 +53,10 @@ const AudioVoiceMessage = ({audioUrl}) => {
         }
       };
     }
-  }, [audioUrl]);
+  }
+  useEffect(() => {
+    loadAudio();
+  }, []);
 
   const togglePlayPause = () => {
     if (wavesurfer.current) {

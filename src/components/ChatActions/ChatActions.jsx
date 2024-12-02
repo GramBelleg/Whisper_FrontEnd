@@ -2,32 +2,38 @@ import './ChatActions.css'
 import { formatDuration } from '@/utils/formatDuration'
 import ChatTextingActions from '../ChatTextingActions/ChatTextingActions'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import { faCircleNotch, faFile, faImage, faMicrophoneAlt, faPaperclip, faPaperPlane, faTimes, faTrashAlt } from '@fortawesome/free-solid-svg-icons'
+import { faCircleNotch, faFile, faImage, faMicrophoneAlt, faMusic, faPaperclip, faPaperPlane, faTimes, faTrashAlt } from '@fortawesome/free-solid-svg-icons'
 import { useEffect, useMemo, useRef, useState } from 'react'
 import useVoiceRecorder from '@/hooks/useVoiceRecorder'
 import { messageTypes } from '@/services/sendTypeEnum'
-import ParentMessage from '../ParentMessage/ParentMessage'
 import { useChat } from '@/contexts/ChatContext'
+import { useModal } from '@/contexts/ModalContext'
 import useFetch from '@/services/useFetch'
+import parentRelationshipTypes from '@/services/chatservice/parentRelationshipTypes'
+import ParentMessage from '../ParentMessage/ParentMessage'
+import { uploadMedia } from '@/services/chatservice/media'
 import CustomStickersPicker from '../CustomStickersPicker/CustomStickersPicker'
 import UnifiedPicker from '../UnifiedPicker/UnifiedPicker'
 import { draftMessage } from '@/services/chatservice/draftMessage'
 import { useWhisperDB } from '@/contexts/WhisperDBContext'
 import { useModal } from '@/contexts/ModalContext'
+import ErrorMesssage from '../ErrorMessage/ErrorMessage'
+import { getFileExtension } from '@/utils/getFileExtension'
 
 const ChatActions = () => {
     const [textMessage, setTextMessage] = useState('')
     const { isRecording, duration, startRecording, stopRecording, discardRecording } = useVoiceRecorder()
-    const { sendMessage, sending } = useChat()
+    const { sendMessage, sending, parentMessage } = useChat()
+
     const [attachedFile, setAttachedFile] = useState(null);
     const [showAttachMenu, setShowAttachMenu] = useState(false);
     const fileInputRef = useRef(null);
     const imageInputRef = useRef(null);
     const audioInputRef = useRef(null);
     const [attachmentType, setAttachmentType] = useState(-1);
-    const { data: uploadData, error:errorUpload, loading: loadingUpload } = useFetch('/uploadAttachment');
     const isTyping = useMemo(() => textMessage.length > 0, [textMessage])
-    const showSendIcon = useMemo(() => isTyping || isRecording, [isTyping, isRecording])
+
+    const showSendIcon = useMemo(() => (parentMessage && parentMessage.relationship === parentRelationshipTypes.FORWARD) || isTyping || isRecording, [parentMessage, isTyping, isRecording])
     const { openModal, closeModal } = useModal();
 
     const handleGifAttach = (gifFile) => {
@@ -39,7 +45,7 @@ const ChatActions = () => {
         sendMessage(messageTypes.IMAGE, url)
     }
     const { currentChat } = useChat();
-    const { db } = useWhisperDB();
+    const { dbRef } = useWhisperDB();
     const [ chatId, setChatId ] = useState(-1);
 
     const toggleAttachMenu = () => {
@@ -128,8 +134,17 @@ const ChatActions = () => {
 
     const triggerSendMessage = async () => {
         if (isRecording) {
-            stopRecording((audioURL) => {
-                sendMessage(messageTypes.AUDIO, audioURL)
+            stopRecording(async (audioBlob) => {
+                const blobName = await uploadMedia({
+                    extension: 'wav',
+                    file: audioBlob
+                });
+                sendMessage({
+                    type: messageTypes.AUDIO,
+                    content: '',
+                    media: blobName,
+                    extension: 'wav'
+                })
             })
             return
         } else if (textMessage.trim()) {
@@ -137,20 +152,29 @@ const ChatActions = () => {
             if (attachedFile !== null) {
                 attachmentPayload = {
                     type: attachmentType,
-                    file: attachedFile
+                    file: attachedFile,
+                    extension: attachedFile.type
                 }
                 removeAttachment();
-                if (uploadData) {
-                    let blob = await uploadFile(uploadData);
-                    if (blob) {
-                        attachmentPayload.blobName = blob.blobName;
-                    }
+                let blobName = await uploadMedia(attachmentPayload);
+                if (blobName) {
+                    attachmentPayload.blobName = blobName;
+                    console.log("Attachment uploaded successfully");
                 }
-                if (errorUpload) {
-                    console.log(errorUpload)
-                }
+                
             }
-            sendMessage(messageTypes.TEXT, textMessage, attachmentPayload)
+            sendMessage({
+                type: messageTypes.TEXT,
+                content: textMessage,
+                attachmentType: toString(attachmentType),
+                // attachmentType: attachmentPayload ? attachmentPayload.type : null,
+                attachmentName: attachmentPayload ? attachmentPayload.file.name : null,
+                media: attachmentPayload ? attachmentPayload.blobName : null,
+                // extension: attachmentPayload ? getFileExtension(attachmentPayload.file.name) : null,
+                extension: attachmentPayload ? attachmentPayload.extension : null,
+                size: attachmentPayload ? attachmentPayload.file.size : null
+                
+            })
             setTextMessage('')
         }
     }
@@ -159,7 +183,7 @@ const ChatActions = () => {
         const setMessageByDrafted = async () => {
             try {
                 if (currentChat) {
-                    const lastMessage = await db.getDraftedMessage(currentChat.id);
+                    const lastMessage = await dbRef.current.getDraftedMessage(currentChat.id);
                     if (lastMessage) {
                         setTextMessage(lastMessage);
                     } else {
@@ -187,7 +211,7 @@ const ChatActions = () => {
 
                     console.log("Drafting message")
                    
-                    await db.insertDraftedMessage(draftedMessage);
+                    await dbRef.current.insertDraftedMessage(draftedMessage);
                 } catch (error) {
                     console.log(error.message);
                 }
