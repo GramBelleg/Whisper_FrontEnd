@@ -223,7 +223,7 @@ class WhisperDB {
                 if (chat && chat.drafted)
                     return chat.lastMessage;
                 else 
-                    throw new Error("Chat not found.");
+                    return null;
             } catch (error) {
                 throw new Error("Failed to get message from indexed db: " + error.message);
             }
@@ -284,13 +284,12 @@ class WhisperDB {
         }
     }
 
-    async insertDraftedMessage(draftedMessage) {
+    async insertDraftedMessage(chatId, draftedMessage) {
         if (this.db) {
             try {
                 const tx = this.db.transaction('chats', 'readwrite'); // Include both stores in the transaction
                 const chatStore = tx.objectStore('chats');
-
-                const chatRequest = chatStore.get(draftedMessage.chatId);
+                const chatRequest = chatStore.get(chatId);
                 const chat = await new Promise((resolve, reject) => {
                     chatRequest.onsuccess = () => resolve(chatRequest.result);
                     chatRequest.onerror = () => reject(chatRequest.error);
@@ -305,7 +304,6 @@ class WhisperDB {
                     chat.messageState = null;
                     chat.media = null;
                     chat.drafted = true;
-                    
     
                     const updateRequest = chatStore.put(chat);
                     await new Promise((resolve, reject) => {
@@ -313,7 +311,7 @@ class WhisperDB {
                         updateRequest.onerror = () => reject(updateRequest.error);
                     });
 
-                    
+                    await tx.complete;
                 } else {
                     throw new Error(`Chat with id ${message.chatId} not found`);
                 }
@@ -434,33 +432,33 @@ class WhisperDB {
         }
     }
 
-    async draftMessage(id) {
+    async unDraftMessage(chatId) {
         if (this.db != null) {
             try {
-                const tx = this.db.transaction('messages', 'readwrite');
-                const store = tx.objectStore('messages');
-                console.log(id)
-                const request = store.get(id);
+                const tx = this.db.transaction('chats', 'readwrite');
+                const store = tx.objectStore('chats');
+                console.log(chatId)
+                const request = store.get(chatId);
     
-                const existingMessage = await new Promise((resolve, reject) => {
+                const chat = await new Promise((resolve, reject) => {
                     request.onsuccess = () => resolve(request.result);
                     request.onerror = () => reject(request.error);
                 });
     
-                if (existingMessage) {
-                    existingMessage.drafted = true;
-                    const updateRequest = store.put(existingMessage);
+                if (chat) {
+                    chat.drafted = false;
+                    chat.lastMessage = "";
+                    const updateRequest = store.put(chat);
                     await new Promise((resolve, reject) => {
                         updateRequest.onsuccess = () => resolve();
                         updateRequest.onerror = () => reject(updateRequest.error);
                     });
     
-                    console.log(`message with id ${id} was successfully updated to muted.`);
+                    console.log(`chat with id ${chatId} was successfully updated to undrafted.`);
                 } else {
-                    throw new Error(`Message with id ${id} not found.`);
+                    throw new Error(`Message with id ${chatId} not found.`);
                 }
     
-                await tx.complete;
             } catch (error) {
                 throw new Error("Failed to update message as muted: " + error.message);
             }
