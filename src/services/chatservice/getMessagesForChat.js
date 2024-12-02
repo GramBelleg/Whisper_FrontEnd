@@ -52,7 +52,10 @@ export const mapMessage = (message) => {
         sender: message.sender.userName,
         senderId: message.sender.id, 
         profilePic: noUser,
-        
+        attachmentType: message.attachmentType,
+        size: message.size,
+        attachmentName: message.attachmentName,
+
         // TODO: See comments
     }
 

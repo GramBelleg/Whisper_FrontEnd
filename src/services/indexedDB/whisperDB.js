@@ -262,7 +262,11 @@ class WhisperDB {
                         chat.messageState = message.state;
                         chat.media = message.media ? message.media : null;
                         chat.drafted = false;
-        
+                        chat.attachmentName = message.attachmentName ? message.attachmentName : null;
+                        chat.attachmentType = message.attachmentType ? message.attachmentType : null;
+                        chat.size = message.size ? message.size : null;
+                        chat.objectLink = message.objectLink ? message.objectLink : null;
+                        chat.extension = message.extension ? message.extension : null;
                         const updateRequest = chatStore.put(chat);
                         await new Promise((resolve, reject) => {
                             updateRequest.onsuccess = () => resolve();
