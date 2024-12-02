@@ -59,8 +59,8 @@ describe("CustomStickersPicker", () => {
 
   it("calls handleStickerClick when a sticker is clicked", async () => {
     const mockStickers = [
-      { imageUrl: "sticker1.png", blobName: "sticker1" },
-      { imageUrl: "sticker2.png", blobName: "sticker2" },
+      { imageUrl: "sticker1.png", blobName: "sticker1" ,file: null},
+      { imageUrl: "sticker2.png", blobName: "sticker2",file: null },
     ];
     const mockHandleStickerClick = vi.fn();
     getStickers.mockResolvedValue(mockStickers);
@@ -71,10 +71,10 @@ describe("CustomStickersPicker", () => {
       expect(screen.queryByText("Loading stickers...")).not.toBeInTheDocument();
     });
 
-    const stickerImages = screen.getAllByRole("img");
+    const stickerImages = screen.getAllByTestId(/sticker-/i);
     fireEvent.click(stickerImages[0]);
 
     expect(mockHandleStickerClick).toHaveBeenCalledTimes(1);
-    expect(mockHandleStickerClick).toHaveBeenCalledWith("sticker1", "sticker1.png");
+    expect(mockHandleStickerClick).toHaveBeenCalledWith("sticker1", "sticker1.png",null);
   });
 });
