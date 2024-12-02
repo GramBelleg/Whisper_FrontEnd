@@ -12,15 +12,14 @@ export const fetchBlockedUsers = async () => {
 }
 
 export const setBlockedStateForUser = async (userId, blockState) => {
-    return await axiosInstance
-        .put(
-            blockedUsersAPI.update,
-            {
-                users: [userId],
-                blocked: blockState
-            },
-            {
-                withCredentials: true
-            }
-        );
+    return await axiosInstance.put(
+        blockedUsersAPI.update,
+        {
+            users: [userId],
+            blocked: blockState
+        },
+        {
+            withCredentials: true
+        }
+    )
 }

@@ -1,26 +1,25 @@
-import axios from "axios"
-import { whoAmI } from "../chatservice/whoAmI";
+import axios from 'axios'
+import { whoAmI } from '../chatservice/whoAmI'
 
-let myStories = [];
+let myStories = []
 
 export const getStoriesAPI = async (id) => {
     try {
-        
-        const response = await axios.get(`http://localhost:5000/api/user/story/${id}`,{
+        const response = await axios.get(`http://localhost:5000/api/user/story/${id}`, {
             withCredentials: true
-        });
-            
-        return response.data;
+        })
+
+        return response.data
     } catch (error) {
-        console.error(error);
-        throw error;
+        console.error(error)
+        throw error
     }
-};
+}
 
 export const getStories = async (id) => {
     try {
-        const response = await getStoriesAPI(id);
-        const tempStories = response.stories;
+        const response = await getStoriesAPI(id)
+        const tempStories = response.stories
 
         const myStories = await Promise.all(
             tempStories.map(async (story) => {
@@ -30,64 +29,62 @@ export const getStories = async (id) => {
                     media: story.media,
                     type: story.type,
                     likes: story.likes,
-                    date: story.date.slice(0, 19).replace("T", " "),
-                    privacy: story.privacy,
-                };
-
-                try {
-                    const { iLiked, likes, iViewed, views } = await getStoryLikesAndViews(story.id);
-                    flattenedStory.liked = iLiked;
-                    flattenedStory.viewed = iViewed;
-                    flattenedStory.likes = likes;
-                    flattenedStory.views = views;
-                } catch (error) {
-                    console.error(`Error fetching likes and views for story ID ${story.id}:`, error);
+                    date: story.date.slice(0, 19).replace('T', ' '),
+                    privacy: story.privacy
                 }
 
-                return flattenedStory;
-            })
-        );
+                try {
+                    const { iLiked, likes, iViewed, views } = await getStoryLikesAndViews(story.id)
+                    flattenedStory.liked = iLiked
+                    flattenedStory.viewed = iViewed
+                    flattenedStory.likes = likes
+                    flattenedStory.views = views
+                } catch (error) {
+                    console.error(`Error fetching likes and views for story ID ${story.id}:`, error)
+                }
 
-        return myStories;
+                return flattenedStory
+            })
+        )
+
+        return myStories
     } catch (error) {
-        console.error(error);
-        return [];
+        console.error(error)
+        return []
     }
-};
+}
 
 export const getUsersWithStoriesAPI = async () => {
-
     try {
         //const stories = await axiosInstance.get("/stories");
-        const stories = await axios.get(`http://localhost:5000/api/user/story`,{
+        const stories = await axios.get(`http://localhost:5000/api/user/story`, {
             withCredentials: true
-        });
+        })
 
-        return stories.data;
+        return stories.data
     } catch (error) {
-        console.log("Error ", error.message)
+        console.log('Error ', error.message)
     }
 }
 
 export const getUsersWithStoriesCleaned = async () => {
     try {
-        const stories = await getUsersWithStoriesAPI();
+        const stories = await getUsersWithStoriesAPI()
         myStories = []
-        whoAmI.hasStory = false;
+        whoAmI.hasStory = false
         stories.users.users.map((story) => {
             if (story.id === whoAmI.userId) {
-                whoAmI.hasStory= true;
+                whoAmI.hasStory = true
             }
             const flattenedStory = {
                 id: story.id,
                 userName: story.userName,
                 profilePic: story.profilePic
-            };
-            myStories.push(flattenedStory);
-        });
-        return myStories;
-        
+            }
+            myStories.push(flattenedStory)
+        })
+        return myStories
     } catch (error) {
-        console.log("Error " ,error.message);
+        console.log('Error ', error.message)
     }
 }

@@ -1,40 +1,39 @@
-import axiosInstance from "../axiosInstance";
+import axiosInstance from '../axiosInstance'
 
 export const uploadMedia = async (fileData) => {
     try {
-
-        const uploadCredentials = await axiosInstance.post("/api/media/write", { 
+        const uploadCredentials = await axiosInstance.post('/api/media/write', {
             fileExtension: fileData.extension
-         });
+        })
 
-        const { presignedUrl, blobName } = uploadCredentials.data;
+        const { presignedUrl, blobName } = uploadCredentials.data
 
-        const blob = new Blob([fileData.file]);
+        const blob = new Blob([fileData.file])
         const uploadResponse = await fetch(presignedUrl, {
-            method: "PUT",
+            method: 'PUT',
             body: blob,
             headers: {
-                "x-ms-blob-type": "BlockBlob",
-            },
-        });
+                'x-ms-blob-type': 'BlockBlob'
+            }
+        })
 
         if (!uploadResponse.ok) {
-            console.log("Error uploading file");
-            return null;
+            console.log('Error uploading file')
+            return null
         }
 
-        return blobName;
+        return blobName
     } catch (err) {
-        console.error("Upload error:", err);
+        console.error('Upload error:', err)
     }
 }
 
 export const readMedia = async (blobName) => {
     try {
-        const downloadData = await axiosInstance.post("/api/media/read", { blobName });
-        console.log(blobName, " ", downloadData)
-        return downloadData.data.presignedUrl;
+        const downloadData = await axiosInstance.post('/api/media/read', { blobName })
+        console.log(blobName, ' ', downloadData)
+        return downloadData.data.presignedUrl
     } catch (err) {
-        console.error("Download error:", err);
+        console.error('Download error:', err)
     }
 }
