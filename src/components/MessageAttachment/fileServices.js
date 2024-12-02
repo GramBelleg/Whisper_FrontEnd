@@ -1,15 +1,15 @@
-export const downloadAttachment = async (downloadData, myMessage) => {
+export const downloadAttachment = async (presignedUrl, myMessage) => {
 
-    if (downloadData) {
+    if (presignedUrl) {
       try {
-        const presignedUrl = downloadData.presignedUrl;
         const response = await fetch(presignedUrl);
         if (!response.ok) {
           throw new Error("Error downloading file");
         }
 
         const blob = await response.blob();
-        const finalBlob = new Blob([blob], { type: myMessage.file.type });
+        console.log(myMessage.extension);
+        const finalBlob = new Blob([blob], { type: myMessage.extension });
         const newObjectUrl = URL.createObjectURL(finalBlob);
         return newObjectUrl;
 

@@ -100,7 +100,7 @@ const ChatMessage = ({ message, hideActions }) => {
                 return null
         }
     }, [message])
-
+    
     return (
         <div
             className={`message shadow ${message.senderId === whoAmI.userId ? 'sender' : 'reciever'}`}

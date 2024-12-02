@@ -4,9 +4,10 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faCircleNotch, faPlay, faPause, faVolumeUp, faCircleArrowDown } from '@fortawesome/free-solid-svg-icons';
 import { downloadAttachment } from './fileServices';
 import { whoAmI } from '../../services/chatservice/whoAmI';
-
-const MessageAttachmentRenderer = ({ myMessage, onUpdateLink }) => {
-    const [objectUrl, setObjectUrl] = useState(null);
+import { readMedia } from '@/services/chatservice/media'
+import { useChat } from '@/contexts/ChatContext';
+import { useWhisperDB } from '@/contexts/WhisperDBContext';
+const MessageAttachmentRenderer = ({ myMessage }) => {
     const [error, setError] = useState(null);
     const videoRef = useRef(null);
     const audioRef = useRef(null);
@@ -14,13 +15,12 @@ const MessageAttachmentRenderer = ({ myMessage, onUpdateLink }) => {
     const [isPlaying, setIsPlaying] = useState(false);
     const [duration, setDuration] = useState(0);
     const [currentTime, setCurrentTime] = useState(0);
-    const { data: downloadData, error: errorDownload, loading: loadingDownload } = useFetch('/downloadAttachment');
     const [autoDownload, setAutoDownload] = useState(false);
-    
+    const [ objectUrl, setAttachmentUrl ] = useState(null);
+    const { dbRef } = useWhisperDB();
     useEffect(() => {
-      console.log('Message changed:', myMessage);
       setAutoDownload(false);
-      setObjectUrl(null);
+      setAttachmentUrl(null);
       setIsLoading(true);
       setError(null);
     }, [myMessage.time]);
@@ -28,21 +28,26 @@ const MessageAttachmentRenderer = ({ myMessage, onUpdateLink }) => {
     useEffect(() => {
       const fetchData = async () => {
         try {
+          console.log(objectUrl);
           if (myMessage.objectLink) {
             console.log('Using existing objectLink:', myMessage.objectLink);
-            setObjectUrl(myMessage.objectLink);
+            setAttachmentUrl(myMessage.objectLink);
             setAutoDownload(true);
             setIsLoading(false);
             return;
           }
+          console.log(myMessage);
           // If file type is not 0, handle size check and download
-          if (myMessage.fileType !== 0 && !autoDownload) {
+          if (parseInt(myMessage.attachmentType) !== 0 && !autoDownload) {
             const fileSize = myMessage.size;
             console.log(fileSize);
             if (fileSize < whoAmI.autoDownloadSize) {
-              const newObjectUrl = await downloadAttachment(downloadData, myMessage);
-              setObjectUrl(newObjectUrl);
-              onUpdateLink(newObjectUrl);
+              let presignedUrl = await readMedia(myMessage.media);
+              const newObjectUrl = await downloadAttachment(presignedUrl, myMessage);
+              setAttachmentUrl(newObjectUrl);
+              await dbRef.current.updateMessage(myMessage.id, { 
+                objectLink: newObjectUrl,
+            });
               setIsLoading(false);
               setAutoDownload(true);
               setIsLoading(false);
@@ -51,24 +56,30 @@ const MessageAttachmentRenderer = ({ myMessage, onUpdateLink }) => {
               setIsLoading(false);
             }
           } else {
-            const newObjectUrl = await downloadAttachment(downloadData, myMessage);
+            let presignedUrl = await readMedia(myMessage.media);
+            const newObjectUrl = await downloadAttachment(presignedUrl, myMessage);
             setAutoDownload(true);
-            setObjectUrl(newObjectUrl);
-            onUpdateLink(newObjectUrl);
+            setAttachmentUrl(newObjectUrl);
+            await dbRef.current.updateMessage(myMessage.id, { 
+              objectLink: newObjectUrl,
+          });
+
             setIsLoading(false);
           }
         } catch (error) {
+          console.error('Error fetching data:', error);
           setError("Error fetching attachment data.");
           setIsLoading(false);
         }
       };
     
-      if (myMessage && isLoading && downloadData) {
+      if (myMessage && isLoading) {
         fetchData();
       }
       
-    }, [myMessage, autoDownload, isLoading, downloadData, loadingDownload]);
-
+    }, [myMessage, autoDownload, isLoading]); // may add objectUrl to dependencies
+    useEffect(() => {
+    }, [dbRef]);// may add objectUrl to dependencies
   const formatTime = (timeInSeconds) => {
     const minutes = Math.floor(timeInSeconds / 60);
     const seconds = Math.floor(timeInSeconds % 60);
@@ -115,11 +126,10 @@ const MessageAttachmentRenderer = ({ myMessage, onUpdateLink }) => {
   };
 
   const renderAttachment = () => {
-    console.log('Rendering attachment for message:', myMessage.id, 'objectUrl:', objectUrl);
     const fileType = myMessage.extension;
 
     if (!myMessage.media) return <p>No attachment available</p>;
-    if (isLoading || !downloadData) {
+    if (isLoading) {
       return (
         <div>
           <FontAwesomeIcon icon={faCircleNotch} spin size="2x" />
@@ -142,7 +152,7 @@ const MessageAttachmentRenderer = ({ myMessage, onUpdateLink }) => {
     if (!objectUrl) return <p>no url found attachment</p>;
 
     // Audio
-    if (myMessage.fileType === 2) {
+    if (parseInt(myMessage.attachmentType) === 2) {
       return (
         <div className="audio-player bg-gray-100 p-4 rounded-lg w-full max-w-sm">
           <audio
@@ -178,16 +188,16 @@ const MessageAttachmentRenderer = ({ myMessage, onUpdateLink }) => {
             />
           </div>
           <div className="text-sm text-gray-500 mt-2">
-            {myMessage.fileName}
+            {myMessage.attachmentName}
           </div>
         </div>
       );
     }
     
-    if (myMessage.fileType === 0 || (fileType && ((!fileType.startsWith("image/") && !fileType.startsWith("video/"))))) {
+    if (parseInt(myMessage.attachmentType) === 0 || (fileType && ((!fileType.startsWith("image/") && !fileType.startsWith("video/"))))) {
       return (
-        <a href={objectUrl} download={myMessage.fileName} className="file-attachment" data-testid="download-link">
-          {myMessage.fileName}
+        <a href={objectUrl} download={myMessage.attachmentName} className="file-attachment" data-testid="download-link">
+          {myMessage.attachmentName}
         </a>
       );
     }

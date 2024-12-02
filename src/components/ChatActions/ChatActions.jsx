@@ -30,7 +30,6 @@ const ChatActions = () => {
     const imageInputRef = useRef(null);
     const audioInputRef = useRef(null);
     const [attachmentType, setAttachmentType] = useState(-1);
-    const { data: uploadData, error:errorUpload, loading: loadingUpload } = useFetch('/uploadAttachment');
     const isTyping = useMemo(() => textMessage.length > 0, [textMessage])
 
     const showSendIcon = useMemo(() => (parentMessage && parentMessage.relationship === parentRelationshipTypes.FORWARD) || isTyping || isRecording, [parentMessage, isTyping, isRecording])
@@ -152,27 +151,28 @@ const ChatActions = () => {
             if (attachedFile !== null) {
                 attachmentPayload = {
                     type: attachmentType,
-                    file: attachedFile
+                    file: attachedFile,
+                    extension: attachedFile.type
                 }
                 removeAttachment();
-                if (uploadData) {
-                    let blob = await uploadFile(uploadData);
-                    if (blob) {
-                        attachmentPayload.blobName = blob.blobName;
-                    }
+                let blobName = await uploadMedia(attachmentPayload);
+                if (blobName) {
+                    attachmentPayload.blobName = blobName;
+                    console.log("Attachment uploaded successfully");
                 }
-                if (errorUpload) {
-                    console.log(errorUpload)
-                }
+                
             }
             sendMessage({
                 type: messageTypes.TEXT,
                 content: textMessage,
+                attachmentType: toString(attachmentType),
                 // attachmentType: attachmentPayload ? attachmentPayload.type : null,
                 attachmentName: attachmentPayload ? attachmentPayload.file.name : null,
                 media: attachmentPayload ? attachmentPayload.blobName : null,
-                extension: attachmentPayload ? getFileExtension(attachmentPayload.file.name) : null,
+                // extension: attachmentPayload ? getFileExtension(attachmentPayload.file.name) : null,
+                extension: attachmentPayload ? attachmentPayload.extension : null,
                 size: attachmentPayload ? attachmentPayload.file.size : null
+                
             })
             setTextMessage('')
         }

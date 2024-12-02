@@ -621,7 +621,6 @@ class WhisperDB {
                         existingChat.unreadMessageCount += 1;
                     else 
                         existingChat.unreadMessageCount = 0;
-                    console.log(existingChat)
 
                     const updateRequest = store.put(existingChat);
                     await new Promise((resolve, reject) => {
