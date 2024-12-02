@@ -16,20 +16,18 @@ import { muteChat, unMuteChat } from "@/services/chatservice/muteUnmuteChat";
 import { useWhisperDB } from "@/contexts/WhisperDBContext";
 
 
-const ChatItem = ({ index, standaloneChat, setAction }) => {
+const ChatItem = ({ index, standaloneChat }) => {
 
     const { dbRef } = useWhisperDB();
-    const { selectChat } = useChat();
+    const { selectChat, action, setActionExposed } = useChat();
 
     const maxLength = (
         (standaloneChat.muted) ? 33 : 
         (standaloneChat.name === whoAmI.name) ? 30 : 15
     )
     
-    // Track overflow of text
     const [isOverflowing, setIsOverflowing] = useState(false); 
 
-    // Create a ref for the user name
     const userNameRef = useRef(null);
     
     const trimName = (name) => {
@@ -83,7 +81,7 @@ const ChatItem = ({ index, standaloneChat, setAction }) => {
             } catch (error) {
                 console.error(error);
             }
-            setAction(true);
+            setActionExposed(true);
         } catch (error) {
             console.log(error);
         }
@@ -102,7 +100,7 @@ const ChatItem = ({ index, standaloneChat, setAction }) => {
             } catch (error) {
                 console.error(error);
             }
-            setAction(true);
+            setActionExposed(true);
         } catch (error) {
             console.log(error);
         }
@@ -126,12 +124,14 @@ const ChatItem = ({ index, standaloneChat, setAction }) => {
 
         checkOverflow(); 
         window.addEventListener("resize", checkOverflow); 
-
+        console.log(standaloneChat)
         return () => {
             window.removeEventListener("resize", checkOverflow); 
         };
     }, [standaloneChat]); 
 
+    useEffect(() => {}, [action])
+ 
     return ( 
         <div data-testid="chat-item" className="single-chat" onClick={handleClick}>
             {(

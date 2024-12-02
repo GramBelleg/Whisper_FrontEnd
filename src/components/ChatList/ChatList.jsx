@@ -6,7 +6,7 @@ import { useEffect, useState } from "react";
 import ChatItem from "../ChatItem/ChatItem";
 import "./ChatList.css"
 
-const ChatList = ({ chatList, setAction }) => {
+const ChatList = ({ chatList }) => {
 
     const [hoveredIndex, setHoveredIndex] = useState(null); 
 
@@ -21,7 +21,7 @@ const ChatList = ({ chatList, setAction }) => {
                             onMouseEnter={() => {setHoveredIndex(index)}}
                             onMouseLeave={() => setHoveredIndex(null)}
                         >
-                            <ChatItem index={index === hoveredIndex} standaloneChat={element} setAction={setAction}/>
+                            <ChatItem index={index === hoveredIndex} standaloneChat={element}/>
                         </div>
                     );  
                     

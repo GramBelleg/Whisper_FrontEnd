@@ -14,7 +14,7 @@ import ParentMessage from '../ParentMessage/ParentMessage'
 import { uploadMedia } from '@/services/chatservice/media'
 import CustomStickersPicker from '../CustomStickersPicker/CustomStickersPicker'
 import UnifiedPicker from '../UnifiedPicker/UnifiedPicker'
-import { draftMessage } from '@/services/chatservice/draftMessage'
+import { draftMessage, unDraftMessage } from '@/services/chatservice/draftMessage'
 import { useWhisperDB } from '@/contexts/WhisperDBContext'
 import ErrorMesssage from '../ErrorMessage/ErrorMessage'
 import { getFileExtension } from '@/utils/getFileExtension'
@@ -22,7 +22,7 @@ import { getFileExtension } from '@/utils/getFileExtension'
 const ChatActions = () => {
     const [textMessage, setTextMessage] = useState('')
     const { isRecording, duration, startRecording, stopRecording, discardRecording } = useVoiceRecorder()
-    const { sendMessage, sending, parentMessage } = useChat()
+    const { sendMessage, sending, parentMessage, setActionExposed } = useChat()
 
     const [attachedFile, setAttachedFile] = useState(null);
     const [showAttachMenu, setShowAttachMenu] = useState(false);
@@ -61,31 +61,6 @@ const ChatActions = () => {
         imageInputRef.current.click();
         setAttachmentType(1)
         setShowAttachMenu(false);
-    }
-
-
-    const uploadFile = async (tempMessageObject, data) => {
-        let presignedUrl = data.presignedUrl;
-        let blobName = data.blobName;
-        let blob = new Blob([tempMessageObject.file]);
-        const uploadResponse = await fetch(presignedUrl, {
-            method: "PUT",
-            body: blob,
-            headers: {
-                "x-ms-blob-type": "BlockBlob", 
-            },
-        });
-
-        if (!uploadResponse.ok) {
-            console.log("Error uploading file");
-            return null;
-        }
-        else {
-            console.log(`file uploaded successfully`);
-            tempMessageObject.blobName = blobName;
-            return { blobName };
-        }
-        
     }
 
     const formatFileName = (fileName, length) => {
@@ -178,6 +153,23 @@ const ChatActions = () => {
     }
 
     useEffect(() => {
+        const myUnDraftMessage = async () => {
+            if (textMessage === null || textMessage.length === 0) {
+                try {
+                    await unDraftMessage(chatId);
+                } catch (error) {
+                    console.log(error);
+                }   
+
+                try {
+                    await dbRef.current.unDraftMessage(chatId);
+                } catch (error) {
+                    console.log(error);
+                }
+
+                setActionExposed(true);
+            }
+        }
         const setMessageByDrafted = async () => {
             try {
                 if (currentChat) {
@@ -195,21 +187,27 @@ const ChatActions = () => {
         }
 
         const setDraftedMessage = async () => {
-            if (textMessage && textMessage.length > 0) {
+            if (textMessage && textMessage.length > 0 && currentChat && chatId !== currentChat.id ) {
                 try {
                     const draftTime = new Date().toISOString();
                     const draftedMessage = {
-                        chatId: chatId,
                         draftContent: textMessage,
-                        draftTime: draftTime
+                        draftTime: draftTime,
+                        draftParentMessageId: null // TODO: Amr
                     };
                     
+                    try {
+                        await draftMessage(chatId,draftedMessage);
+                    } catch (error) {
+                        console.log(error);
+                    }
 
-                    //await draftMessage(draftedMessage);
-
-                    console.log("Drafting message")
-                   
-                    await dbRef.current.insertDraftedMessage(draftedMessage);
+                    try {
+                        await dbRef.current.insertDraftedMessage(chatId, draftedMessage);
+                    } catch (error) {
+                        console.log(error);
+                    }
+                    setActionExposed(true)
                 } catch (error) {
                     console.log(error.message);
                 }
@@ -218,7 +216,7 @@ const ChatActions = () => {
                 setChatId(currentChat.id);
             }
         }
-        
+        myUnDraftMessage();
         setDraftedMessage();
         setMessageByDrafted();
 

@@ -10,11 +10,10 @@ import { useModal } from "@/contexts/ModalContext";
 import ErrorMesssage from "../ErrorMessage/ErrorMessage";
 
 const ChatPage = () => {
-    const { messageReceived, messages, selectChat } = useChat();
+    const { selectChat, action } = useChat();
     const [chatList, setChatList] = useState([]);
     const { dbRef } = useWhisperDB();
     const { openModal, closeModal } = useModal();
-    const [action, setAction] = useState(null);
 
     const handleAddNewClick = () => {
         console.log('Add new clicked');
@@ -25,6 +24,7 @@ const ChatPage = () => {
         try {
             let allChats = await dbRef.current.getChats();
             setChatList(allChats);
+            console.log(allChats)
         } catch (error) {
             openModal(
                 <ErrorMesssage
@@ -37,8 +37,6 @@ const ChatPage = () => {
     }, [dbRef, openModal, closeModal]);
 
     useEffect(() => {
-        
-
         if (dbRef.current) {
             loadChats();
         }
@@ -47,7 +45,6 @@ const ChatPage = () => {
     useEffect(() => {
         if (action) {
             loadChats();
-            setAction(false);
         }
     }, [action, loadChats])
     
@@ -60,7 +57,7 @@ const ChatPage = () => {
                 <StoriesContainer />
             </div>
             <div className="sidebar__other-content">
-                {chatList && chatList.length > 0 &&  <ChatList chatList={chatList} chooseChat={selectChat} setAction={setAction}/>}
+                {chatList && chatList.length > 0 &&  <ChatList chatList={chatList} chooseChat={selectChat}/>}
                 <AddNewButton onClick={handleAddNewClick} />
             </div>
         </div>

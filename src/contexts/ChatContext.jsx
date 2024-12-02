@@ -4,9 +4,6 @@ import { mapMessage } from '@/services/chatservice/getMessagesForChat';
 import MessagingSocket from '@/services/sockets/MessagingSocket';
 import { useWhisperDB } from './WhisperDBContext';
 import parentRelationshipTypes from '@/services/chatservice/parentRelationshipTypes';
-import { messageTypes } from '@/services/sendTypeEnum';
-import { data } from 'autoprefixer';
-import { handleSearchChat } from '@/services/chatservice/searchChat';
 
 export const ChatContext = createContext();
 
@@ -20,6 +17,11 @@ export const ChatProvider = ({ children }) => {
     const { dbRef } = useWhisperDB();
     const currentChatRef = useRef(currentChat);
     const [messageReceived, setMessageReceived] = useState(false);
+    const [action, setAction] = useState(false);
+
+    const setActionExposed = (actionIn) => {
+        setAction(actionIn);
+    }
 
     const selectChat = (chat) => {
         setcurrentChat(chat);
@@ -54,7 +56,6 @@ export const ChatProvider = ({ children }) => {
 
     useEffect(() => {
         if (currentChat) {
-            // TODO: handle with back
             loadMessages(currentChat.id);
             clearUnreadMessages(currentChat.id);
             loadPinnedMessages(currentChat.id);
@@ -126,6 +127,7 @@ export const ChatProvider = ({ children }) => {
                 return [newMessage];
             });
             setParentMessage(null);
+            
         } catch (error) {
             console.error(error);
         } finally {
@@ -184,6 +186,7 @@ export const ChatProvider = ({ children }) => {
 
             await dbRef.current.insertMessage({ ...mapMessage(myMessageData), drafted: false});
             setMessageReceived(true);
+            setAction(true);
             
             if (activeChat && activeChat.id === myMessageData.chatId) {
                 loadMessages(activeChat.id); 
@@ -192,7 +195,6 @@ export const ChatProvider = ({ children }) => {
                 await dbRef.current.updateUnReadMessagesCount(myMessageData.chatId, 1);
             }
             setMessageReceived(false);
-
         } catch (error) {
             console.error(error);
         }
@@ -226,7 +228,6 @@ export const ChatProvider = ({ children }) => {
 
     const handleReceiveDeleteMessage = async (deletedData) => {
         try {
-            // we only delete one message at a time no bulk deletes
             await dbRef.current.deleteMessage(deletedData.messages[0]);
 
             setMessages((prevMessages) => {
@@ -300,8 +301,12 @@ export const ChatProvider = ({ children }) => {
         }
     }, [messagesSocket]);
 
+    useEffect(() => {}, [messages, pinnedMessages]);
     useEffect(() => {
-    }, [messages, pinnedMessages]);
+        if (action) {
+            setAction(false);
+        }
+    }, [action])
 
     return (
         <ChatContext.Provider
@@ -311,6 +316,8 @@ export const ChatProvider = ({ children }) => {
                 messages,
                 messageReceived,
                 pinnedMessages,
+                action,
+                setActionExposed,
                 pinMessage,
                 unPinMessage,
                 sendMessage,
