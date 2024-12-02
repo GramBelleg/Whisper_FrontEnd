@@ -13,7 +13,7 @@ export class StoriesTempStore extends BaseStore {
                 stories.forEach(story => { 
                     store.add(story)
                 });
-                ;
+                
                 console.log('stories inserted successfully!');
             }
             catch (error) {
@@ -30,7 +30,7 @@ export class StoriesTempStore extends BaseStore {
                     request.onsuccess = () => resolve(request.result);
                     request.onerror = () => reject(request.error);
                     });
-                ;
+                
                 return stories;
             }
             catch (error) {
@@ -63,7 +63,6 @@ export class StoriesTempStore extends BaseStore {
                     request.onerror = () => reject(request.error); 
                 });
 
-                ;
                 if (story) {
                     return true
                 }

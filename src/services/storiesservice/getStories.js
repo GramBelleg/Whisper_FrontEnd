@@ -62,7 +62,6 @@ export const getUsersWithStoriesAPI = async () => {
         const stories = await axios.get(`http://localhost:5000/api/user/story`,{
             withCredentials: true
         });
-        console.log(stories.data);
 
         return stories.data;
     } catch (error) {
@@ -77,7 +76,7 @@ export const getUsersWithStoriesCleaned = async () => {
         whoAmI.hasStory = false;
         stories.users.users.map((story) => {
             if (story.id === whoAmI.userId) {
-                whoAmI.hasStory= false;
+                whoAmI.hasStory= true;
             }
             const flattenedStory = {
                 id: story.id,
