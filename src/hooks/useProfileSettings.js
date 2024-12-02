@@ -14,6 +14,7 @@ import {
 } from '@/services/profileServices/ProfileSettingsService'
 import useAuth from './useAuth'
 import UserSocket from '@/services/sockets/UserSocket'
+import { whoAmI } from '@/services/chatservice/whoAmI'
 
 export const useProfileSettings = () => {
     const { profilePic, setProfilePic } = useProfileContext()
@@ -58,6 +59,7 @@ export const useProfileSettings = () => {
                 console.log('Resolved profile picture URL:', updatedPFP)
 
                 setProfilePic(updatedPFP)
+                whoAmI.profilePic = updatedPFP;
             } catch (error) {
                 console.error('Error in onPFPUpdate:', error)
             }

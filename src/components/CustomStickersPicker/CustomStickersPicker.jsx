@@ -30,6 +30,8 @@ const CustomStickersPicker = ({ handleStickerClick }) => {
                     {stickers.map((sticker, index) => (
                         <img
                             key={index}
+                            id={sticker.blobName}
+                            data-testid={`sticker-${sticker.blobName}`}
                             src={sticker.imageUrl}
                             alt={`Sticker ${index + 1}`}
                             className='w-16 h-16 rounded-lg cursor-pointer hover:scale-105 transform transition'
