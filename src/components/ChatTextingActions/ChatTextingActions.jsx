@@ -43,6 +43,7 @@ const ChatTextingActions = ({ textMessage, setTextMessage, triggerSendMessage })
                 value={textMessage}
                 onInput={updateNewMessage}
                 onKeyDown={handleKeyPress}
+                data-testid='text-input'
                 className='message-input'
                 placeholder='Message Here'
                 rows={1}
