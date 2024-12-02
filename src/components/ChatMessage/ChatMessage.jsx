@@ -6,13 +6,14 @@ import PendingSend from '../PendingSend/PendingSend'
 import { whoAmI } from '../../services/chatservice/whoAmI'
 import AudioVoiceMessage from '../AudioVoiceMessage/AudioVoiceMessage'
 import { messageTypes } from '@/services/sendTypeEnum'
-import { useMemo, useState } from 'react'
+import { useEffect, useMemo, useState } from 'react'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import { faReply, faShare, faTrash, faThumbtack, faThumbtackSlash } from '@fortawesome/free-solid-svg-icons'
+import { faReply, faShare, faTrash, faThumbtack, faThumbtackSlash, faCircleInfo } from '@fortawesome/free-solid-svg-icons'
 import { useModal } from '@/contexts/ModalContext'
 import ForwardMessageModal from '../Modals/ForwardMessageModal/ForwardMessageModal'
 import { useChat } from '@/contexts/ChatContext'
 import MessageAttachmentRenderer from '../MessageAttachment/MessageAttachementRenderer'
+import MessageInfo from '../MessageInfo/MessageInfo'
 
 
 const ChatMessage = ({ message, onDelete, onReply }) => {
@@ -41,6 +42,11 @@ const ChatMessage = ({ message, onDelete, onReply }) => {
 
     const handleForward = () => {
         openModal(<ForwardMessageModal message={message} />)
+        setIsMenuOpen(false)
+    }
+
+    const handleMessageInfo = () => {
+        openModal(<MessageInfo message={message}/>)
         setIsMenuOpen(false)
     }
 
@@ -79,7 +85,7 @@ const ChatMessage = ({ message, onDelete, onReply }) => {
                     <div className="message-text" style={{ whiteSpace: 'pre-line' }}>
                       {message.media && <MessageAttachmentRenderer myMessage={message}  />}
                       {message.content}
-                  </div>  
+                    </div>  
                   );
             case messageTypes.AUDIO:
                 return <AudioVoiceMessage audioUrl={message.content} />
@@ -123,6 +129,13 @@ const ChatMessage = ({ message, onDelete, onReply }) => {
                             <FontAwesomeIcon height={18} icon={faShare} />
                             <span>Forward</span>
                         </button>
+                        {
+                            message.senderId === whoAmI.userId && 
+                            <button onClick={handleMessageInfo}>
+                                <FontAwesomeIcon height={18} icon={faCircleInfo} />
+                                <span>Info</span>
+                            </button>
+                        }
                         {
                             !message.pinned ?
                             <button onClick={handlePin}>
