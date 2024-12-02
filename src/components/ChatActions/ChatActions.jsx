@@ -18,7 +18,6 @@ import { draftMessage, unDraftMessage } from '@/services/chatservice/draftMessag
 import { useWhisperDB } from '@/contexts/WhisperDBContext'
 import ErrorMesssage from '../ErrorMessage/ErrorMessage'
 import { getFileExtension } from '@/utils/getFileExtension'
-
 const ChatActions = () => {
     const [textMessage, setTextMessage] = useState('')
     const { isRecording, duration, startRecording, stopRecording, discardRecording } = useVoiceRecorder()
@@ -142,12 +141,19 @@ const ChatActions = () => {
             sendMessage({
                 type: messageTypes.TEXT,
                 content: textMessage,
-                attachmentType: toString(attachmentType),
+                attachmentType: attachmentPayload? (attachmentPayload.type).toString(): null,
                 attachmentName: attachmentPayload ? attachmentPayload.file.name : null,
                 media: attachmentPayload ? attachmentPayload.blobName : null,
                 extension: attachmentPayload ? attachmentPayload.extension : null,
                 size: attachmentPayload ? attachmentPayload.file.size : null
             })
+            // if(attachmentPayload) {
+            //     const finalBlob = new Blob([attachmentPayload.file], { type: attachmentPayload.extension });
+            //     const newObjectUrl = URL.createObjectURL(finalBlob);
+            //     await dbRef.current.updateMessage(myMessage.id, { 
+            //         objectLink: newObjectUrl,
+            //     });
+            // }
             setTextMessage('')
         }
     }

@@ -11,7 +11,6 @@ export class ChatsStore extends BaseStore {
         return this._executeTransaction('readwrite', async (store) => {
             try {
                 chats.forEach(chat => store.add(chat));
-                ;
                 console.log('Chats inserted successfully!');
             } catch (error) {
                 console.error('Error inserting chats:', error);
@@ -37,6 +36,11 @@ export class ChatsStore extends BaseStore {
                     chat.messageState = message.state;
                     chat.media = message.media ? message.media : null;
                     chat.drafted = false;
+                    chat.attachmentName = message.attachmentName ? message.attachmentName : null;
+                    chat.attachmentType = message.attachmentType ? message.attachmentType : null;
+                    chat.size = message.size ? message.size : null;
+                    chat.objectLink = message.objectLink ? message.objectLink : null;
+                    chat.extension = message.extension ? message.extension : null;
 
                     const updateRequest = store.put(chat);
                     await new Promise((resolve, reject) => {

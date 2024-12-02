@@ -1,7 +1,7 @@
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import './SettingsPage.css'
 import NoProfile from '@/assets/images/no-profile.svg?react'
-import { faAt, faEnvelope, faEye, faLock, faPencil, faPhone } from '@fortawesome/free-solid-svg-icons'
+import { faAt, faDatabase, faEnvelope, faEye, faLock, faPencil, faPhone } from '@fortawesome/free-solid-svg-icons'
 import { useStackedNavigation } from '@/contexts/StackedNavigationContext/StackedNavigationContext'
 import { useProfileSettings } from '@/hooks/useProfileSettings'
 import ProfileStacked from '../ProfileSettings/ProfileStacked'
@@ -9,6 +9,7 @@ import useAuth from '@/hooks/useAuth'
 import CopyButton from '../CopyButton/CopyButton'
 import VisibilitySettings from '../VisibiltySettings/VisibilitySettings'
 import BlockedUsers from '../BlockedUsers/BlockedUsers'
+import StorageSettings from '../StorageSettings/StorageSettings'
 
 const SettingsContainer = () => {
     const { user } = useAuth()
@@ -74,11 +75,19 @@ const SettingsContainer = () => {
                     <FontAwesomeIcon icon={faEye} className='list-item-icon' />
                     <span>Visibility Settings</span>
                 </div>
-
                 <div className='item' onClick={() => { push(<BlockedUsers/>) }}>
                     <FontAwesomeIcon icon={faLock} className='list-item-icon' />
                     <span>Blocked Users</span>
                 </div>
+            </div>
+
+            <div className='separator'></div>
+            <div className='list-container'>
+                <h2 className='subtitle'>Data & Storage</h2>
+                <div className='item' onClick={() => { push(<StorageSettings/>) }}>
+                        <FontAwesomeIcon icon={faDatabase} className='list-item-icon' />
+                        <span>Storage Settings</span>
+                    </div>
             </div>
         </div>
     )
