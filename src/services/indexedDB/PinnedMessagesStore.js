@@ -10,8 +10,6 @@ export class PinnedMessagesStore extends BaseStore {
     async insertPinnedMessages(chatId, messages) {
         return this._executeTransaction('readwrite', async (store) => {
             try {
-                const tx = this.db.transaction('pinnedmessages', 'readwrite')
-                const store = tx.objectStore('pinnedmessages')
                 messages.forEach((message) => {
                     store.add({
                         content: message.content,
@@ -30,7 +28,7 @@ export class PinnedMessagesStore extends BaseStore {
         return this._executeTransaction('readwrite', async (store) => {
             try {
                 const messageRequest = store.add({
-                    messageId: message.pinnedMessage,
+                    messageId: message.id,
                     chatId: message.chatId,
                     content: message.content
                 })
