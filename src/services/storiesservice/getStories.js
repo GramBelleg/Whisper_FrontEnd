@@ -13,6 +13,7 @@ export const getStoriesAPI = async (id) => {
         return response.data;
     } catch (error) {
         console.error(error);
+        throw error;
     }
 };
 
@@ -50,6 +51,7 @@ export const getStories = async (id) => {
         return myStories;
     } catch (error) {
         console.error(error);
+        return [];
     }
 };
 

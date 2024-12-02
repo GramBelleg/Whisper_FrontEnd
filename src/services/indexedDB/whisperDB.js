@@ -738,14 +738,16 @@ class WhisperDB {
             try {
                 const tx = this.db.transaction('stories', 'readwrite');
                 const store = tx.objectStore('stories');
-                console.log(stories);
-                stories.forEach(story => { 
-                    store.add({
-                        ...story,
-                        userId: userId,
-                    });
-                });
                 await tx.complete;
+                console.log(stories);
+                if (stories) {
+                    stories.forEach(story => { 
+                        store.add({
+                            ...story,
+                            userId: userId,
+                        });
+                    });
+                }
                 console.log('stories inserted successfully!');
             }
             catch (error) {
@@ -852,11 +854,39 @@ class WhisperDB {
             try {
                 const tx = this.db.transaction('stories', 'readwrite');
                 const store = tx.objectStore('stories');
+                console.log(story)
                 const request = store.add(story);
                 await new Promise((resolve, reject) => {
                     request.onsuccess = () => resolve(request.result);
                     request.onerror = () => reject(request.error);
                 });
+
+            } catch (error) {
+                throw new Error("Failed to post story into indexed db: " + error.message);
+            }
+        } else {
+            throw new Error("Database connection is not initialized.");
+        }
+    }
+
+    async addStoryUrl(storyId, url) {
+        if (this.db != null) {
+            try {
+                const tx = this.db.transaction('stories', 'readwrite');
+                const store = tx.objectStore('stories');
+                const request = store.get(storyId);
+                let story = await new Promise((resolve, reject) => {
+                    request.onsuccess = () => resolve(request.result);
+                    request.onerror = () => reject(request.error);
+                });
+                if (story) {
+                    story.url = url;
+                    const request2 = store.put(story);
+                    await new Promise((resolve, reject) => {
+                        request2.onsuccess = () => resolve(request2.result);
+                        request2.onerror = () => reject(request2.error);
+                    });
+                }
 
             } catch (error) {
                 throw new Error("Failed to post story into indexed db: " + error.message);
@@ -894,7 +924,6 @@ class WhisperDB {
                     request.onsuccess = () => resolve(request.result); 
                     request.onerror = () => reject(request.error); 
                 });
-                console.log(story)
                 if (story && story.likes != null) {
                     return true;
                 }
@@ -920,7 +949,6 @@ class WhisperDB {
 
                 if (story) {
                     story.liked = liked;
-                    console.log("Likes Date ", Date.now(), " ", story, liked, " " , story.liked)
                     const request2 = store.put(story);
                     await new Promise((resolve, reject) => {
                         request2.onsuccess = () => resolve(request2.result);
@@ -950,7 +978,6 @@ class WhisperDB {
 
                 if (story) {
                     story.viewed = viewed;
-                    console.log("Views Date ", Date.now(), " ", story, viewed, " " , story.viewed)
                     const request2 = store.put(story);
                     await new Promise((resolve, reject) => {
                         request2.onsuccess = () => resolve(request2.result);

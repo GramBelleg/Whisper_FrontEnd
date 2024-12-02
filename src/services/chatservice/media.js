@@ -32,6 +32,7 @@ export const uploadMedia = async (fileData) => {
 export const readMedia = async (blobName) => {
     try {
         const downloadData = await axiosInstance.post("/api/media/read", { blobName });
+        console.log(blobName, " ", downloadData)
         return downloadData.data.presignedUrl;
     } catch (err) {
         console.error("Download error:", err);
