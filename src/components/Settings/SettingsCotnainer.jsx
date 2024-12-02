@@ -50,7 +50,7 @@ const SettingsContainer = () => {
                 <div className='profile-info'>
                     <FontAwesomeIcon icon={faAt} className='text-xl' />
                     <div className='details'>
-                        <span className='detail-title'>{user.userName ? user.userName: 'No username'}</span>
+                        <span className='detail-title'>{user.userName ? user.userName : 'No username'}</span>
                         <span className='detail-subtitle'>Username</span>
                     </div>
                     <CopyButton content={user.userName ? user.userName : 'No username'} />
@@ -70,12 +70,22 @@ const SettingsContainer = () => {
 
             <div className='list-container'>
                 <h2 className='subtitle'>Privacy Settings</h2>
-                
-                <div className='item' onClick={() => { push(<VisibilitySettings/>) }}>
+
+                <div
+                    className='item'
+                    onClick={() => {
+                        push(<VisibilitySettings />)
+                    }}
+                >
                     <FontAwesomeIcon icon={faEye} className='list-item-icon' />
                     <span>Visibility Settings</span>
                 </div>
-                <div className='item' onClick={() => { push(<BlockedUsers/>) }}>
+                <div
+                    className='item'
+                    onClick={() => {
+                        push(<BlockedUsers />)
+                    }}
+                >
                     <FontAwesomeIcon icon={faLock} className='list-item-icon' />
                     <span>Blocked Users</span>
                 </div>
@@ -84,10 +94,15 @@ const SettingsContainer = () => {
             <div className='separator'></div>
             <div className='list-container'>
                 <h2 className='subtitle'>Data & Storage</h2>
-                <div className='item' onClick={() => { push(<StorageSettings/>) }}>
-                        <FontAwesomeIcon icon={faDatabase} className='list-item-icon' />
-                        <span>Storage Settings</span>
-                    </div>
+                <div
+                    className='item'
+                    onClick={() => {
+                        push(<StorageSettings />)
+                    }}
+                >
+                    <FontAwesomeIcon icon={faDatabase} className='list-item-icon' />
+                    <span>Storage Settings</span>
+                </div>
             </div>
         </div>
     )

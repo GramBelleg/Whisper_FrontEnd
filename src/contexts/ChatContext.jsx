@@ -1,310 +1,291 @@
-import { createContext, useContext, useEffect, useRef, useState } from 'react';
-import { whoAmI } from '@/services/chatservice/whoAmI';
-import { mapMessage } from '@/services/chatservice/getMessagesForChat';
-import MessagingSocket from '@/services/sockets/MessagingSocket';
-import { useWhisperDB } from './WhisperDBContext';
-import parentRelationshipTypes from '@/services/chatservice/parentRelationshipTypes';
+import { createContext, useContext, useEffect, useRef, useState } from 'react'
+import { whoAmI } from '@/services/chatservice/whoAmI'
+import { mapMessage } from '@/services/chatservice/getMessagesForChat'
+import MessagingSocket from '@/services/sockets/MessagingSocket'
+import { useWhisperDB } from './WhisperDBContext'
+import parentRelationshipTypes from '@/services/chatservice/parentRelationshipTypes'
 
-export const ChatContext = createContext();
+export const ChatContext = createContext()
 
 export const ChatProvider = ({ children }) => {
-    const [currentChat, setcurrentChat] = useState(null);
-    const [messages, setMessages] = useState([]);
-    const [pinnedMessages, setPinnedMessages] = useState([]);
-    const [parentMessage, setParentMessage] = useState(null);
-    const [sending, setSending] = useState(false);
-    const messagesSocket = new MessagingSocket();
-    const { dbRef } = useWhisperDB();
-    const currentChatRef = useRef(currentChat);
-    const [messageReceived, setMessageReceived] = useState(false);
-    const [action, setAction] = useState(false);
+    const [currentChat, setcurrentChat] = useState(null)
+    const [messages, setMessages] = useState([])
+    const [pinnedMessages, setPinnedMessages] = useState([])
+    const [parentMessage, setParentMessage] = useState(null)
+    const [sending, setSending] = useState(false)
+    const messagesSocket = new MessagingSocket()
+    const { dbRef } = useWhisperDB()
+    const currentChatRef = useRef(currentChat)
+    const [messageReceived, setMessageReceived] = useState(false)
+    const [action, setAction] = useState(false)
 
     const setActionExposed = (actionIn) => {
-        setAction(actionIn);
+        setAction(actionIn)
     }
 
     const selectChat = (chat) => {
-        setcurrentChat(chat);
-        setParentMessage(null);
-    };
+        setcurrentChat(chat)
+        setParentMessage(null)
+    }
 
     const loadMessages = async (id) => {
         try {
-            const myMessages = await dbRef.current.getMessagesForChat(id);
-            setMessages(myMessages);
+            const myMessages = await dbRef.current.getMessagesForChat(id)
+            setMessages(myMessages)
         } catch (error) {
-            console.log(error);
+            console.log(error)
         }
     }
 
     const loadPinnedMessages = async (id) => {
         try {
-            const myPinnedMessages = await dbRef.current.getPinnedMessagesForChat(id);
-            setPinnedMessages(myPinnedMessages);
+            const myPinnedMessages = await dbRef.current.getPinnedMessagesForChat(id)
+            setPinnedMessages(myPinnedMessages)
         } catch (error) {
-            console.log(error);
+            console.log(error)
         }
     }
 
     const clearUnreadMessages = async (id) => {
         try {
-            await dbRef.current.updateUnReadMessagesCount(id, 0);
+            await dbRef.current.updateUnReadMessagesCount(id, 0)
         } catch (error) {
-            console.log(error.message);
+            console.log(error.message)
         }
     }
 
     useEffect(() => {
         if (currentChat) {
-            loadMessages(currentChat.id);
-            clearUnreadMessages(currentChat.id);
-            loadPinnedMessages(currentChat.id);
+            loadMessages(currentChat.id)
+            clearUnreadMessages(currentChat.id)
+            loadPinnedMessages(currentChat.id)
         } else {
-            setMessages([]);
-            setPinnedMessages([]);
+            setMessages([])
+            setPinnedMessages([])
         }
-        currentChatRef.current = currentChat;
-    }, [currentChat]);
-
+        currentChatRef.current = currentChat
+    }, [currentChat])
 
     const updateMessage = async (messageId, content) => {
-        
-        messagesSocket.updateData({ 
+        messagesSocket.updateData({
             chatId: currentChat.id,
             messageId: messageId,
             content: content
-         });
+        })
     }
 
-
     const deleteMessage = async (messageId) => {
-        messagesSocket.deleteMessage({ 
+        messagesSocket.deleteMessage({
             chatId: currentChat.id,
-            messages: [messageId],
-         });
+            messages: [messageId]
+        })
     }
 
     const sendMessage = async (data) => {
-        setSending(true);
+        setSending(true)
         const newMessage = {
             chatId: currentChat.id,
             forwarded: false,
             selfDestruct: true,
             expiresAfter: 5,
-            sentAt : new Date().toISOString(),
-            media: "",
-            extension:"",
+            sentAt: new Date().toISOString(),
+            media: '',
+            extension: '',
             parentMessageId: null,
             forwardedFromUserId: null,
-            mentions:[],
+            mentions: [],
             isSecret: false,
             isAnnouncement: false,
             size: null,
-            ...data          
+            ...data
         }
 
-        if(parentMessage && parentMessage.relationship === parentRelationshipTypes.REPLY) {
-            newMessage.parentMessageId = parentMessage.id;      
+        if (parentMessage && parentMessage.relationship === parentRelationshipTypes.REPLY) {
+            newMessage.parentMessageId = parentMessage.id
         }
-        
-        const newMessageForBackend = { ...newMessage };
 
-       
-        newMessage.senderId = whoAmI.userId,
-        newMessage.deliveredAt = '';
-        newMessage.readAt = '';
-        newMessage.deleted = false;
-        newMessage.sender = whoAmI.name;
-        newMessage.state = 4;
-        newMessage.time = new Date();
+        const newMessageForBackend = { ...newMessage }
+
+        ;(newMessage.senderId = whoAmI.userId), (newMessage.deliveredAt = '')
+        newMessage.readAt = ''
+        newMessage.deleted = false
+        newMessage.sender = whoAmI.name
+        newMessage.state = 4
+        newMessage.time = new Date()
 
         try {
-            messagesSocket.sendData(newMessageForBackend);
+            messagesSocket.sendData(newMessageForBackend)
             setMessages((prevMessages) => {
                 if (prevMessages) {
-                    return [{id: Date.now(), ...newMessage}, ...prevMessages];
+                    return [{ id: Date.now(), ...newMessage }, ...prevMessages]
                 }
-                return [newMessage];
-            });
-            setParentMessage(null);
-            
+                return [newMessage]
+            })
+            setParentMessage(null)
         } catch (error) {
-            console.error(error);
+            console.error(error)
         } finally {
-            setSending(false);
+            setSending(false)
         }
-        
-        
-    };
+    }
 
     const updateParentMessage = (message, relationship) => {
-        setParentMessage({ relationship, ...message });
-    };
+        setParentMessage({ relationship, ...message })
+    }
 
     const clearParentMessage = () => {
-        setParentMessage(null);
-    };
-    
+        setParentMessage(null)
+    }
+
     const searchChat = async (query) => {
         try {
             if (currentChat) {
                 const response = await dbRef.current.getMessagesForChat(currentChat.id)
-                const filteredMessages = response.filter((message) =>
-                    message.content.toLowerCase().includes(query.toLowerCase())
-                );
-                return filteredMessages;
-            }
-            else {
-                throw new Error('No chat selected');
+                const filteredMessages = response.filter((message) => message.content.toLowerCase().includes(query.toLowerCase()))
+                return filteredMessages
+            } else {
+                throw new Error('No chat selected')
             }
         } catch (error) {
-            console.error(error);
+            console.error(error)
         }
-    } 
-    
+    }
+
     const pinMessage = (messsageId, durtaion = 0) => {
         messagesSocket.pinMessage({
             chatId: currentChat.id,
             messageId: messsageId,
-            duration: durtaion,
-        });
+            duration: durtaion
+        })
     }
 
     const unPinMessage = (messsageId) => {
         messagesSocket.unPinMessage({
             chatId: currentChat.id,
-            messageId: messsageId,
-        });
+            messageId: messsageId
+        })
     }
 
     const handleReceiveMessage = async (messageData) => {
         try {
-            const activeChat = currentChatRef.current; 
+            const activeChat = currentChatRef.current
             const myMessageData = {
-                ...messageData,
+                ...messageData
             }
 
-            await dbRef.current.insertMessageWrapper({ ...mapMessage(myMessageData), drafted: false});
-            setMessageReceived(true);
-            setAction(true);
-            
+            await dbRef.current.insertMessageWrapper({ ...mapMessage(myMessageData), drafted: false })
+            setMessageReceived(true)
+            setAction(true)
+
             if (activeChat && activeChat.id === myMessageData.chatId) {
-                loadMessages(activeChat.id); 
-            } 
-            else {
-                await dbRef.current.updateUnReadMessagesCount(myMessageData.chatId, 1);
+                loadMessages(activeChat.id)
+            } else {
+                await dbRef.current.updateUnReadMessagesCount(myMessageData.chatId, 1)
             }
-            setMessageReceived(false);
+            setMessageReceived(false)
         } catch (error) {
-            console.error(error);
+            console.error(error)
         }
-    };
+    }
 
     const handleReceiveEditMessage = async (messageData) => {
         try {
-
-            await dbRef.current.updateMessage(messageData.messageId, { 
+            await dbRef.current.updateMessage(messageData.messageId, {
                 content: messageData.content,
-                 edited: true 
-            });
+                edited: true
+            })
 
             setMessages((prevMessages) => {
                 return prevMessages.map((message) => {
                     if (message.id === messageData.messageId) {
                         return {
-                            ...message, 
-                            content: messageData.content, 
+                            ...message,
+                            content: messageData.content,
                             edited: true
-                        };
+                        }
                     }
-                    return message;
-                });
-            });
-
+                    return message
+                })
+            })
         } catch (error) {
-            console.error(error);
+            console.error(error)
         }
-    };
+    }
 
     const handleReceiveDeleteMessage = async (deletedData) => {
         try {
-            await dbRef.current.deleteMessage(deletedData.messages[0]);
+            await dbRef.current.deleteMessage(deletedData.messages[0])
 
             setMessages((prevMessages) => {
-                return prevMessages.filter((message) => message.id != deletedData.messages[0]);
-            });
-
+                return prevMessages.filter((message) => message.id != deletedData.messages[0])
+            })
         } catch (error) {
-            console.error(error);
+            console.error(error)
         }
-    };
+    }
 
     const handlePinMessage = async (pinData) => {
         try {
-            const activeChat = currentChatRef.current; 
-            const messagesForChat = await dbRef.current.getMessagesForChat(pinData.chatId);
-            const messageToPin = messagesForChat.find(
-                (message) => message.id === pinData.pinnedMessage
-            );
+            const activeChat = currentChatRef.current
+            const messagesForChat = await dbRef.current.getMessagesForChat(pinData.chatId)
+            const messageToPin = messagesForChat.find((message) => message.id === pinData.pinnedMessage)
 
             if (!messageToPin) {
-                throw new Error(`Message with id ${pinData.pinnedMessage} not found in chat ${pinData.chatId}`);
-            }   
+                throw new Error(`Message with id ${pinData.pinnedMessage} not found in chat ${pinData.chatId}`)
+            }
 
-            await dbRef.current.pinMessage({...pinData, content: messageToPin.content});
-            await dbRef.current.updateMessagesForPinned(pinData.pinnedMessage);
+            await dbRef.current.pinMessage({ ...pinData, content: messageToPin.content })
+            await dbRef.current.updateMessagesForPinned(pinData.pinnedMessage)
 
-            loadMessages(activeChat.id);
-            loadPinnedMessages(activeChat.id);
+            loadMessages(activeChat.id)
+            loadPinnedMessages(activeChat.id)
         } catch (error) {
-            console.error(error);
+            console.error(error)
         }
     }
 
     const handleUnpinMessage = async (pinData) => {
         try {
-            const activeChat = currentChatRef.current; 
-            const messagesForChat = await dbRef.current.getMessagesForChat(pinData.chatId);
-            const messageToPin = messagesForChat.find(
-                (message) => message.id === pinData.unpinnedMessage
-            );
+            const activeChat = currentChatRef.current
+            const messagesForChat = await dbRef.current.getMessagesForChat(pinData.chatId)
+            const messageToPin = messagesForChat.find((message) => message.id === pinData.unpinnedMessage)
 
             if (!messageToPin) {
-                throw new Error(`Message with id ${pinData.unpinnedMessage} not found in chat ${pinData.chatId}`);
-            } 
+                throw new Error(`Message with id ${pinData.unpinnedMessage} not found in chat ${pinData.chatId}`)
+            }
             try {
-                await dbRef.current.unPinMessage(messageToPin.id);
-            } catch(error) {
-                throw error;
+                await dbRef.current.unPinMessage(messageToPin.id)
+            } catch (error) {
+                throw error
             }
 
             try {
-                await dbRef.current.updateMessagesForUnPinned(messageToPin.id);
-            } catch(error) {
-                throw error;
-            }   
+                await dbRef.current.updateMessagesForUnPinned(messageToPin.id)
+            } catch (error) {
+                throw error
+            }
 
-            loadMessages(activeChat.id);
-            loadPinnedMessages(activeChat.id);
+            loadMessages(activeChat.id)
+            loadPinnedMessages(activeChat.id)
         } catch (error) {
-            console.error(error);
+            console.error(error)
         }
     }
 
     useEffect(() => {
-        if(messagesSocket) {
-            messagesSocket.onReceiveMessage(handleReceiveMessage);
-            messagesSocket.onReceiveEditMessage(handleReceiveEditMessage);
-            messagesSocket.onReceiveDeleteMessage(handleReceiveDeleteMessage);
-            messagesSocket.onPinMessage(handlePinMessage);
-            messagesSocket.onUnPinMessage(handleUnpinMessage);
+        if (messagesSocket) {
+            messagesSocket.onReceiveMessage(handleReceiveMessage)
+            messagesSocket.onReceiveEditMessage(handleReceiveEditMessage)
+            messagesSocket.onReceiveDeleteMessage(handleReceiveDeleteMessage)
+            messagesSocket.onPinMessage(handlePinMessage)
+            messagesSocket.onUnPinMessage(handleUnpinMessage)
         }
-    }, [messagesSocket]);
+    }, [messagesSocket])
 
-    useEffect(() => {}, [messages, pinnedMessages]);
+    useEffect(() => {}, [messages, pinnedMessages])
     useEffect(() => {
         if (action) {
-            setAction(false);
+            setAction(false)
         }
     }, [action])
 
@@ -332,10 +313,10 @@ export const ChatProvider = ({ children }) => {
         >
             {children}
         </ChatContext.Provider>
-    );
-};
+    )
+}
 
 // Create a custom hook to use the chat context
 export const useChat = () => {
-    return useContext(ChatContext);
-};
+    return useContext(ChatContext)
+}

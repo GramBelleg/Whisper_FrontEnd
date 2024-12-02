@@ -10,30 +10,22 @@ export const DB_CONFIG = {
         messages: {
             name: 'messages',
             keyPath: 'id',
-            indexes: [
-                { name: 'chatId', keyPath: 'chatId', options: { unique: false } }
-            ]
+            indexes: [{ name: 'chatId', keyPath: 'chatId', options: { unique: false } }]
         },
         pinnedmessages: {
             name: 'pinnedmessages',
             keyPath: 'messageId',
-            indexes: [
-                { name: 'chatId', keyPath: 'chatId', options: { unique: false } }
-            ]
+            indexes: [{ name: 'chatId', keyPath: 'chatId', options: { unique: false } }]
         },
         stories: {
             name: 'stories',
-            keyPath: 'id', 
-            indexes: [
-                { name: 'userId', keyPath: 'userId', options: { unique: false } }, 
-            ]
+            keyPath: 'id',
+            indexes: [{ name: 'userId', keyPath: 'userId', options: { unique: false } }]
         },
         stories_temp: {
             name: 'stories_temp',
-            keyPath: 'userId', 
-            indexes: [
-                { name: 'userId', keyPath: 'userId', options: { unique: true } }
-            ]
+            keyPath: 'userId',
+            indexes: [{ name: 'userId', keyPath: 'userId', options: { unique: true } }]
         }
     }
-};
+}

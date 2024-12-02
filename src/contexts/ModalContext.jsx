@@ -94,11 +94,8 @@ export function ModalProvider({ children }) {
                         className='modal-content relative bg-light rounded-lg shadow-lg p-6 w-full max-w-sm sm:max-w-md md:max-w-lg lg:max-w-xl z-10'
                         onClick={(e) => e.stopPropagation()}
                     >
+                        <div className='p-4 text-2xl'>{confirmationContent}</div>
 
-                      <div className='p-4 text-2xl'> 
-                        {confirmationContent}
-                      </div>
-                        
                         <div className='mt-4 flex justify-center space-x-3'>
                             <button
                                 onClick={confirmAction}

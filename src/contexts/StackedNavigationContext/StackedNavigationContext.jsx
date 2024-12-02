@@ -1,31 +1,31 @@
-import { createContext, useState, useContext } from 'react';
-import { TransitionGroup, CSSTransition } from 'react-transition-group';
-import './StackedNavigation.css';
+import { createContext, useState, useContext } from 'react'
+import { TransitionGroup, CSSTransition } from 'react-transition-group'
+import './StackedNavigation.css'
 
-const StackedNavigationContext = createContext();
+const StackedNavigationContext = createContext()
 
 export const useStackedNavigation = () => {
-    return useContext(StackedNavigationContext);
-};
+    return useContext(StackedNavigationContext)
+}
 
 export const StackedNavigationProvider = ({ children }) => {
-    const [stack, setStack] = useState([]);
+    const [stack, setStack] = useState([])
 
     const push = (component) => {
-        setStack((prevStack) => [...prevStack, component]);
-    };
+        setStack((prevStack) => [...prevStack, component])
+    }
 
     const pop = () => {
-        if (stack.length === 0) return;
+        if (stack.length === 0) return
 
-        setStack((prevStack) => prevStack.slice(0, -1));
-    };
+        setStack((prevStack) => prevStack.slice(0, -1))
+    }
 
     const value = {
         push,
         pop,
         stack
-    };
+    }
 
     return (
         <StackedNavigationContext.Provider value={value}>
@@ -35,10 +35,10 @@ export const StackedNavigationProvider = ({ children }) => {
                     {stack.map((Component, index) => (
                         <CSSTransition
                             key={index}
-                            classNames="stacked-component"
+                            classNames='stacked-component'
                             timeout={300} // Match this with your CSS animation duration
                         >
-                            <div className="stacked-component" style={{ zIndex: index + 1 }}>
+                            <div className='stacked-component' style={{ zIndex: index + 1 }}>
                                 {Component}
                             </div>
                         </CSSTransition>
@@ -46,5 +46,5 @@ export const StackedNavigationProvider = ({ children }) => {
                 </TransitionGroup>
             </div>
         </StackedNavigationContext.Provider>
-    );
-};
+    )
+}

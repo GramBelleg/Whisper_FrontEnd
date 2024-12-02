@@ -34,18 +34,14 @@ const UnifiedPicker = ({ onGifSelect, onStickerSelect }) => {
             />
             {showPicker && (
                 <div className='absolute bottom-12 left-0 bg-gray-800 text-white rounded-lg shadow-lg w-80'>
-                    <div
-                        className={
-                            activeTab === 'Stickers' ? 'max-h-96 overflow-y-auto' : ''
-                        }
-                    >
+                    <div className={activeTab === 'Stickers' ? 'max-h-96 overflow-y-auto' : ''}>
                         {activeTab === 'GIF' && <CustomGifPicker onGifSelect={onGifSelect} />}
                         {activeTab === 'Stickers' && <CustomStickersPicker handleStickerClick={onStickerSelect} />}
                     </div>
                     <div className='flex justify-center align-center items-center mb-4'>
                         <button
-                            id="button-gif"
-                            data-testid="button-gif"
+                            id='button-gif'
+                            data-testid='button-gif'
                             className={`flex-1 py-2 mx-2 text-center text-sm rounded-lg ${
                                 activeTab === 'GIF' ? 'bg-indigo-500 text-white' : 'bg-gray-700 hover:bg-gray-600'
                             }`}
@@ -54,8 +50,8 @@ const UnifiedPicker = ({ onGifSelect, onStickerSelect }) => {
                             GIF
                         </button>
                         <button
-                            id="button-stickers"
-                            data-testid="button-stickers"
+                            id='button-stickers'
+                            data-testid='button-stickers'
                             className={`flex-1 py-2 mx-2 text-center text-sm rounded-lg ${
                                 activeTab === 'Stickers' ? 'bg-indigo-500 text-white' : 'bg-gray-700 hover:bg-gray-600'
                             }`}

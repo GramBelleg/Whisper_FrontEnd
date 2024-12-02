@@ -65,13 +65,13 @@ const SignupForm = ({
                         inputClass='phone-input'
                         style={{}}
                         inputStyle={{ height: '3rem' }}
-                        id="phoneNumber"
+                        id='phoneNumber'
                     />
-                    { touched.phoneNumber && <ErrorMessage error={errors.phoneNumber} id="error-phoneNumber" />}
+                    {touched.phoneNumber && <ErrorMessage error={errors.phoneNumber} id='error-phoneNumber' />}
                 </div>
                 <div>
-                    <ReCAPATCHA sitekey={import.meta.env.VITE_APP_SITE_KEY} onChange={handleCaptchaChange} id="recaptcha"/>
-                    <ErrorMessage error={errors.captcha} id="error-recaptcha" />
+                    <ReCAPATCHA sitekey={import.meta.env.VITE_APP_SITE_KEY} onChange={handleCaptchaChange} id='recaptcha' />
+                    <ErrorMessage error={errors.captcha} id='error-recaptcha' />
                 </div>
                 <div>
                     <CustomButton
@@ -82,7 +82,7 @@ const SignupForm = ({
                         disabled={isSubmitting || loading}
                     />
                 </div>
-                <ErrorMessage error={error} id="error-signup" />
+                <ErrorMessage error={error} id='error-signup' />
             </form>
             <div className='w-full border-t border-gray-200 mt-8 pt-6'>
                 <GoogleButton
@@ -97,7 +97,7 @@ const SignupForm = ({
 
                 <p className='text-light text-sm opacity-80 hover:opacity-100 transition duration-300'>
                     already a member?{' '}
-                    <a href='/login' className='text-primary hover:underline' id="login-switch">
+                    <a href='/login' className='text-primary hover:underline' id='login-switch'>
                         Log in
                     </a>
                 </p>

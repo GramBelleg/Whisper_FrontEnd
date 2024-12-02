@@ -1,30 +1,21 @@
-import axios from "axios";
+import axios from 'axios'
 
 export const muteChat = async (chatId, muteObject) => {
     try {
-        const response = await axios.post(
-            `http://localhost:5000/api/chats/${chatId}/muteChat`, 
-            muteObject, 
-            { withCredentials: true } 
-        );
+        const response = await axios.post(`http://localhost:5000/api/chats/${chatId}/muteChat`, muteObject, { withCredentials: true })
 
-        return response.data;
+        return response.data
     } catch (error) {
-        throw error;
+        throw error
     }
 }
 
-
 export const unMuteChat = async (chatId, muteObject) => {
     try {
-        const response = await axios.post(
-            `http://localhost:5000/api/chats/${chatId}/muteChat`, 
-            muteObject, 
-            { withCredentials: true } 
-        );
+        const response = await axios.post(`http://localhost:5000/api/chats/${chatId}/muteChat`, muteObject, { withCredentials: true })
 
-        return response.data;
+        return response.data
     } catch (error) {
-        throw error;
+        throw error
     }
 }

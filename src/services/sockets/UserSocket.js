@@ -1,44 +1,46 @@
-import { io } from 'socket.io-client';
-import Socket from './Socket';
+import { io } from 'socket.io-client'
+import Socket from './Socket'
 
 class UserSocket extends Socket {
-  static instance;
+    static instance
 
-  constructor() {
-    if (UserSocket.instance) {
-      console.log("Returning existing instance of UserSocket");
-      return UserSocket.instance;
+    constructor() {
+        if (UserSocket.instance) {
+            console.log('Returning existing instance of UserSocket')
+            return UserSocket.instance
+        }
+        super()
+        this.socket.on('connect', () => {
+            console.log(`Connected to ${this.serverUrl}`)
+        })
+
+        UserSocket.instance = this
     }
-    super();
-    this.socket.on("connect", () => {
-      console.log(`Connected to ${this.serverUrl}`);
-    });
 
-    UserSocket.instance = this;
-  }
+    onPFP(callback) {
+        console.log("Listening for 'pfp' events")
+        this.socket.on('pfp', (data) => {
+            console.log("Received 'pfp' eventttt data:", data)
+            callback(data)
+        })
+    }
 
-  onPFP(callback) {
-    console.log("Listening for 'pfp' events");
-    this.socket.on("pfp", (data)=>{
-      console.log("Received 'pfp' eventttt data:", data);
-      callback(data)
-    });
-  }
+    offPFP(callback) {
+        console.log("Removing listener for 'pfp' events")
+        this.socket.off('pfp', (data) => {
+            callback(data)
+        })
+    }
 
-  offPFP(callback) {
-    console.log("Removing listener for 'pfp' events");
-    this.socket.off("pfp", (data)=>{callback(data)});
-  }
+    emitPFP(data) {
+        console.log("Emitting 'pfp' event with data:", data)
+        this.socket.emit('pfp', data)
+    }
 
-  emitPFP(data) {
-    console.log("Emitting 'pfp' event with data:", data);
-    this.socket.emit("pfp", data);
-  }
-
-  disconnect() {
-    console.log(`Disconnecting from ${this.serverUrl}`);
-    this.socket.disconnect();
-  }
+    disconnect() {
+        console.log(`Disconnecting from ${this.serverUrl}`)
+        this.socket.disconnect()
+    }
 }
 
-export default UserSocket; 
+export default UserSocket

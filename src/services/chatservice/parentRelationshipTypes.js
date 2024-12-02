@@ -1,4 +1,4 @@
 export default {
-    REPLY: "reply",
-    FORWARD: "forward"
+    REPLY: 'reply',
+    FORWARD: 'forward'
 }

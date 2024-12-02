@@ -119,4 +119,4 @@ const EditablePhoneField = ({ initialPhone, onSave, id, fieldName, error, clearE
     )
 }
 
-export default EditablePhoneField;
+export default EditablePhoneField

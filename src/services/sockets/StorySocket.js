@@ -1,51 +1,49 @@
-import Socket from './Socket.js';
+import Socket from './Socket.js'
 
 class StorySocket extends Socket {
-
-    static instance;
+    static instance
 
     constructor() {
-
         if (StorySocket.instance) {
-            return StorySocket.instance; // Return the existing instance
-        } 
+            return StorySocket.instance // Return the existing instance
+        }
 
-        super();
+        super()
 
-        StorySocket.instance = this;
+        StorySocket.instance = this
     }
 
     sendData(data) {
-        console.log("Sending data: ", data);
-        this.socket.emit('story', data);
+        console.log('Sending data: ', data)
+        this.socket.emit('story', data)
     }
 
     deleteData(data) {
-        this.socket.emit("deleteStory", { storyId : data })
+        this.socket.emit('deleteStory', { storyId: data })
     }
 
     likeStory(data) {
-        this.socket.emit("likeStory", data)
+        this.socket.emit('likeStory', data)
     }
 
     viewStory(data) {
-        this.socket.emit("viewStory", data)
+        this.socket.emit('viewStory', data)
     }
 
     onReceiveLikeStory(callback) {
-        this.socket.on('likeStory', callback); 
+        this.socket.on('likeStory', callback)
     }
 
     onReceiveViewStory(callback) {
-        this.socket.on('viewStory', callback); 
+        this.socket.on('viewStory', callback)
     }
 
     onReceiveStory(callback) {
-        this.socket.on('story', callback); 
+        this.socket.on('story', callback)
     }
 
     onReceiveDeleteStory(callback) {
-        this.socket.on('deleteStory', callback);
+        this.socket.on('deleteStory', callback)
     }
 
     offReceiveStory(callback) {
@@ -57,9 +55,9 @@ class StorySocket extends Socket {
     }
 
     disconnect() {
-        console.log(`Disconnecting from ${this.serverUrl}`);
-        this.socket.disconnect();
+        console.log(`Disconnecting from ${this.serverUrl}`)
+        this.socket.disconnect()
     }
 }
 
-export default StorySocket;
+export default StorySocket

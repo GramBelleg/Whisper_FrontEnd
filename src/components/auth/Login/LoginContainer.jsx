@@ -1,38 +1,35 @@
-import loginSchema from "../../../utils/loginSchema";
-import LoginForm from "./LoginForm";
-import {useFormik} from "formik";
-import useAuth from '../../../hooks/useAuth';
-import { useNavigate } from "react-router-dom";
-import { useEffect } from "react";
+import loginSchema from '../../../utils/loginSchema'
+import LoginForm from './LoginForm'
+import { useFormik } from 'formik'
+import useAuth from '../../../hooks/useAuth'
+import { useNavigate } from 'react-router-dom'
+import { useEffect } from 'react'
 
-   
 const LoginContainer = () => {
-
-    const {handleLogin,loading,error,clearError}=useAuth();
-    const navigate = useNavigate();
+    const { handleLogin, loading, error, clearError } = useAuth()
+    const navigate = useNavigate()
 
     useEffect(() => {
-        clearError(); 
-    }, []);
+        clearError()
+    }, [])
 
-    const onSubmit =async (values,actions) => {
-        const res=await handleLogin(values);
-        actions.resetForm();
+    const onSubmit = async (values, actions) => {
+        const res = await handleLogin(values)
+        actions.resetForm()
         if (res.success) {
-            navigate('/chats');
+            navigate('/chats')
         }
-    
-      };
-    const formik= useFormik({
+    }
+    const formik = useFormik({
         initialValues: {
             email: '',
             password: ''
         },
         validationSchema: loginSchema,
-        onSubmit,
-    });
+        onSubmit
+    })
     return (
-        <LoginForm 
+        <LoginForm
             handleChange={formik.handleChange}
             handleSubmit={formik.handleSubmit}
             handleBlur={formik.handleBlur}
@@ -42,8 +39,8 @@ const LoginContainer = () => {
             isSubmitting={formik.isSubmitting}
             loading={loading}
             error={error}
-         />
-    );
-};
+        />
+    )
+}
 
-export default LoginContainer;
+export default LoginContainer
