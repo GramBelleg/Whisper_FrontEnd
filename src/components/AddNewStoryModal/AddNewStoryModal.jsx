@@ -79,11 +79,10 @@ const AddNewStoryModal = ({ file, filePreview, onClose }) => {
             file && (
                 <div className="add-new-story-modal">
                     <FontAwesomeIcon className="cancel-modal" icon={faTimes} onClick={() => onClose()} />
-                    
-                    {fileType ? (
+                    {fileType.split('/').slice(0)[0] === "image" ? (
                         <img className="story-preview" src={filePreview} alt="Story Preview" style={{ maxWidth: '100%', height: 'auto' }} />
                     ) : (
-                        <video className="story-preview" controls src={filePreview} style={{ maxWidth: '100%', height: 'auto' }} />
+                        <video className="story-preview" controls src={filePreview} data-testid="story-preview-video" style={{ maxWidth: '100%', height: 'auto' }} />
                     )}
                 
                     <div className="story-data">
