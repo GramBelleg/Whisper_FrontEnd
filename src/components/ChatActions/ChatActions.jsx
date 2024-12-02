@@ -40,9 +40,11 @@ const ChatActions = () => {
         setAttachmentType(1);
     }
 
-    const handleStickerAttach = (url) => {
-        sendMessage(messageTypes.IMAGE, url)
+    const handleStickerAttach = async (blobName,url,file) => {
+        setAttachedFile(file);
+        setAttachmentType(1);
     }
+
     const { currentChat } = useChat();
     const { dbRef } = useWhisperDB();
     const [ chatId, setChatId ] = useState(-1);
