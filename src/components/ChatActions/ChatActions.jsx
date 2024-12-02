@@ -16,7 +16,6 @@ import CustomStickersPicker from '../CustomStickersPicker/CustomStickersPicker'
 import UnifiedPicker from '../UnifiedPicker/UnifiedPicker'
 import { draftMessage } from '@/services/chatservice/draftMessage'
 import { useWhisperDB } from '@/contexts/WhisperDBContext'
-import { useModal } from '@/contexts/ModalContext'
 import ErrorMesssage from '../ErrorMessage/ErrorMessage'
 import { getFileExtension } from '@/utils/getFileExtension'
 
