@@ -1,5 +1,6 @@
 import axios from 'axios'
 import { whoAmI } from '../chatservice/whoAmI'
+import { getStoryLikesAndViews } from './getLikesAndViews'
 
 let myStories = []
 
@@ -11,6 +12,7 @@ export const getStoriesAPI = async (id) => {
                 Authorization: `Bearer ${token}` // Use the appropriate scheme (Bearer, Basic, etc.)
             },
             withCredentials: true
+            
         })
 
         return response.data
@@ -48,6 +50,7 @@ export const getStories = async (id) => {
                 }
 
                 return flattenedStory
+        
             })
         )
 
