@@ -72,5 +72,9 @@ To get started with the project, follow these steps:
     ```bash
     npm run dev
     ```
+4. **run the tests**:
+    ```bash
+    npx vitest run
+    ```
     ## Don't forget to run start the backend
 
