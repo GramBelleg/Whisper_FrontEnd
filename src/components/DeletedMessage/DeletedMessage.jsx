@@ -1,32 +1,29 @@
 // This renders sent or recieved stickers
 // It is used by the last message
 
+import './DeletedMessage.css'
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
+import { faBan } from '@fortawesome/free-solid-svg-icons'
+import { whoAmI } from '../../services/chatservice/whoAmI'
+import { useEffect, useState } from 'react'
 
-import "./DeletedMessage.css";
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faBan } from  '@fortawesome/free-solid-svg-icons';
-import { whoAmI } from "../../services/chatservice/whoAmI";
-import { useEffect, useState } from "react";
-
-const DeltedMessage = ({sender}) => {
-
-    const [user, setUser] = useState("You");
+const DeletedMessage = ({ sender }) => {
+    const [user, setUser] = useState('You')
 
     useEffect(() => {
         if (whoAmI.name === sender) {
-            setUser("You");
+            setUser('You')
+        } else {
+            setUser(sender)
         }
-        else {
-            setUser(sender);   
-        }
-    },[sender])
+    }, [sender])
 
-    return ( 
-        <div className="deleted-message">
-            <FontAwesomeIcon icon={faBan} className="deleted-icon"/>
-            <span className="deleted-text"> {user} deleted this message</span>
+    return (
+        <div className='deleted-message'>
+            <FontAwesomeIcon icon={faBan} className='deleted-icon' />
+            <span className='deleted-text'> {user} deleted this message</span>
         </div>
-    );
+    )
 }
- 
-export default DeltedMessage;
+
+export default DeletedMessage

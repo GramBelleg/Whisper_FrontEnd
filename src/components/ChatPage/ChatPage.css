@@ -1,32 +1,15 @@
-
-.sidebar {
+.chat-page {
     display: flex;
     flex-direction: column;
     height: 100%;
     width: 100%;
-    min-width: 80%;
-    max-width: 100%;
-    background-color: #0A122F;
-    border-right: 3px solid #8D6AEE;
-    position: relative;
-  }
-  
-  .sidebar__stories {
+}
+
+.chat-page-stories {
     flex: 0 0 20px;
-  }
-  
-  .sidebar__other-content {
+}
+
+.chat-page-other-content {
     width: 100%;
     height: 80%;
-  }
-  
-  .sidebar__resizer {
-    width: 5px;
-    height: 100%;
-    background: #8D6AEE;
-    position: absolute;
-    right: -5px;
-    top: 0;
-    cursor: col-resize;
-    z-index: 1;
-  }
+}

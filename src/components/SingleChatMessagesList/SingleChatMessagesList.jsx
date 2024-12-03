@@ -1,25 +1,23 @@
+import ChatMessage from '../ChatMessage/ChatMessage'
+import parentRelationshipTypes from '../../services/chatservice/parentRelationshipTypes'
+import { useChat } from '@/contexts/ChatContext'
+import './SingleChatMessagesList.css'
+import { useEffect } from 'react'
 
-import { useState } from "react";
-import useFetch from "../../services/useFetch";
-import ChattingTextMessage from "../ChattingTextMessage/ChattingTextMessage";
-import "./SingleChatMessagesList.css"
+const SingleChatMessagesList = () => {
+    const { messages, updateParentMessage } = useChat()
 
+    useEffect(() => {
+        console.log(messages)
+    }, [messages])
 
-const SingleChatMessagesList = ({ user, messages }) => {
-
-    
-    // TODO: the user should have the name of the other side I am contacting
-    
-    return ( 
-        <div className="single-chat-messages-list">
-            {
-                messages?.map((message, index) => (
-                        <ChattingTextMessage key={index} message={message}/>
-                    )
-                )
-            }
+    return (
+        <div className='single-chat-messages-list'>
+            {messages?.map((message) => (
+                <ChatMessage key={message.id} message={message} />
+            ))}
         </div>
-    );
+    )
 }
- 
-export default SingleChatMessagesList;
+
+export default SingleChatMessagesList

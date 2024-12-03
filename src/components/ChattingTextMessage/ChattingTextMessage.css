@@ -1,6 +1,5 @@
 
 .message {
-    
     display: flex;
     justify-content: space-between;
     gap: 0.5rem;
@@ -15,12 +14,14 @@
 
 .message.sender {
     align-self: flex-end;
+    text-align: right;
     border-bottom-right-radius: 0;
     background-color: var(--accent-color);
 }
 
 .message.reciever {
     align-self: flex-start;
+    text-align: left;
     border-bottom-left-radius: 0;
     background-color: var(--primary-color);
 }
@@ -35,6 +36,50 @@
 .message-status,
 .message .time {
     font-size: 12px;
+}
+
+
+.message-actions-overlay {
+    position: fixed;
+    z-index: 99999;
+}
+
+.message-actions-menu {
+    position: fixed;
+    background-color: var(--primary-color);
+    color: var(--accent-color);
+    box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
+    z-index: 99999;
+    padding: 5px;
+    border-radius: 4px;
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+}
+
+.message-actions-menu button {
+    padding: 5px 20px;
+    border: none;
+    background: none;
+    border-radius: 4px;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    cursor: pointer;
+    transition: all 0.3s;
+}
+
+.message-actions-menu button.danger {
+    color: var(--danger-color);
+}
+
+.message-actions-menu button:hover {
+    background-color: var(--accent-color);
+    color: var(--text-color);
+}
+
+.message-actions-menu button.danger:hover {
+    background-color: var(--danger-color);
 }
 
 .message-content {
@@ -68,4 +113,3 @@
     text-decoration: none;
     font-weight: 500;
   }
-  
