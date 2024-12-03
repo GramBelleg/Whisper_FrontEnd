@@ -14,8 +14,7 @@ import { StoriesProvider } from './contexts/StoryContext.jsx'
 createRoot(document.getElementById('root')).render(
     <ProfileSettingsProvider>
         <AuthProvider>
-            <GoogleOAuthProvider clientId={import.meta.env.VITE_APP_GOOGLE_CLIENT_ID}>
-                {console.log(import.meta.env.VITE_APP_GOOGLE_CLIENT_ID)}
+            <GoogleOAuthProvider clientId="17818726142-7fd5nu3iima7cf78kb1abf3shfuo4vqh.apps.googleusercontent.com">
                 <WhisperDBProvider>
                     <StoriesProvider>
                         <App />

@@ -6,7 +6,7 @@ import useAuth from '@/hooks/useAuth'
 const GithubButton = ({ classStyle }) => {
     const { loading } = useAuth()
     const handleGitAuth = () => {
-        const clientId = import.meta.env.VITE_APP_GITHUB_CLIENT_ID
+        const clientId = "Ov23liOieVLBmo4slZZJ"
         const redirectUri = 'http://localhost:5173/github-callback'
         const scope = 'user:email'
 

@@ -70,7 +70,7 @@ const SignupForm = ({
                     {touched.phoneNumber && <ErrorMessage error={errors.phoneNumber} id='error-phoneNumber' />}
                 </div>
                 <div>
-                    <ReCAPATCHA sitekey={import.meta.env.VITE_APP_SITE_KEY} onChange={handleCaptchaChange} id='recaptcha' />
+                    <ReCAPATCHA sitekey="6LfwglwqAAAAAE0fN5qlj8ItyBHvbbeBSzF359tk" onChange={handleCaptchaChange} id='recaptcha' />
                     <ErrorMessage error={errors.captcha} id='error-recaptcha' />
                 </div>
                 <div>

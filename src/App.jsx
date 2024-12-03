@@ -22,9 +22,9 @@ function App() {
     const [loading, setLoading] = useState(true)
     const { dbRef, initDB } = useWhisperDB()
 
-    if (import.meta.env.VITE_APP_USE_MOCKS === 'true') {
+    /*if (import.meta.env.VITE_APP_USE_MOCKS === 'true') {
         initializeMock()
-    }
+    }*/
 
     useEffect(() => {
         const init = async () => {

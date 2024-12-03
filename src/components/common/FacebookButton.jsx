@@ -5,7 +5,7 @@ import useAuth from '../../hooks/useAuth'
 
 const FacebookButton = ({ classStyle }) => {
     const handleFacebookAuth = () => {
-        const clientId = import.meta.env.VITE_APP_FACEBOOK_CLIENT_ID
+        const clientId = "986736350138154"
         const redirectUri = encodeURIComponent('http://localhost:5173/facebook-callback')
         const scope = 'public_profile,email'
 
