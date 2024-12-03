@@ -1,137 +1,139 @@
-import { createContext, useContext, useEffect, useRef, useState } from "react";
-import StorySocket from "@/services/sockets/StorySocket";
-import { getStories } from "@/services/storiesservice/getStories";
-import { downloadBlob } from "@/services/blobs/blob";
-import { downloadLink, uploadLink } from "@/mocks/mockData";
-import { uploadBlob } from "@/services/blobs/blob";
-import { useWhisperDB } from "./WhisperDBContext";
-import { whoAmI } from "@/services/chatservice/whoAmI";
-import { getUserInfo } from "@/services/userservices/getUserInfo";
-import {  getStoryLikesAndViews } from "@/services/storiesservice/getLikesAndViews";
+import { createContext, useContext, useEffect, useRef, useState } from 'react'
+import StorySocket from '@/services/sockets/StorySocket'
+import { getStories } from '@/services/storiesservice/getStories'
+import { downloadBlob } from '@/services/blobs/blob'
+import { downloadLink, uploadLink } from '@/mocks/mockData'
+import { uploadBlob } from '@/services/blobs/blob'
+import { useWhisperDB } from './WhisperDBContext'
+import { whoAmI } from '@/services/chatservice/whoAmI'
+import { getUserInfo } from '@/services/userservices/getUserInfo'
+import { getStoryLikesAndViews } from '@/services/storiesservice/getLikesAndViews'
+import { readMedia, uploadMedia } from '@/services/chatservice/media'
 
-export const StoryContext = createContext();
+export const StoryContext = createContext()
 
 export const StoriesProvider = ({ children }) => {
-    const [ currentUser, setCurrentUser ] = useState(null);
-    const [ currentStory, setCurrentStory ] = useState(null);
-    const [currentIndex, setCurrentIndex] = useState(null);
-    const [ stories, setStories ] = useState([]);
+    const [currentUser, setCurrentUser] = useState(null)
+    const [currentStory, setCurrentStory] = useState(null)
+    const [currentIndex, setCurrentIndex] = useState(null)
+    const [stories, setStories] = useState([])
     const [storiesTab, setStoriesTab] = useState([])
-    const [ isUploading, setIsUploading] = useState(false);
-    const [ isDeleteing, setIsDeleteing] = useState(false);
-    const [changedLikes, setChangedLikes] = useState(false);
-    const [changedViews, setChangedViews] = useState(false);
-    const storiesSocket = new StorySocket();
-    const currentUserRef = useRef();
-    const currentStoryRef = useRef();
-    const [url, setUrl] = useState(null);
-    const [loading, setLoading] = useState(true);
-    const [error, setError] = useState(null);
-    const { db } = useWhisperDB();   
+    const [isUploading, setIsUploading] = useState(false)
+    const [isDeleteing, setIsDeleteing] = useState(false)
+    const [changedLikes, setChangedLikes] = useState(false)
+    const [changedViews, setChangedViews] = useState(false)
+    const storiesSocket = new StorySocket()
+    const currentUserRef = useRef()
+    const currentStoryRef = useRef()
+    const [loading, setLoading] = useState(true)
+    const [error, setError] = useState(null)
+    const { dbRef } = useWhisperDB()
 
     const selectUser = (user) => {
-        setCurrentUser(user);
-    };
+        setCurrentUser(user)
+    }
 
     const closeStories = () => {
-        setCurrentStory(null);
-        setCurrentIndex(null);
-        setStories([]);
+        setCurrentStory(null)
+        setCurrentIndex(null)
+        setStories([])
     }
 
     const selectStory = (next) => {
         if (stories) {
             setCurrentIndex((prevIndex) =>
-                    next
-                        ? (prevIndex < stories.length - 1 ? prevIndex + 1 : 0)
-                        : (prevIndex > 0 ? prevIndex - 1 : stories.length - 1)
-            );
+                next ? (prevIndex < stories.length - 1 ? prevIndex + 1 : 0) : prevIndex > 0 ? prevIndex - 1 : stories.length - 1
+            )
         }
-    };
+    }
 
     const localGetStories = async () => {
-        if (db) {
+        if (dbRef && dbRef.current) {
             try {
-                const data = await db.getStories();
-                setStoriesTab(data);
+                const data = await dbRef.current.getStories()
+                setStoriesTab([...data])
             } catch (error) {
-                console.log(error);
+                setStoriesTab([])
+                console.log(error)
             }
         }
     }
 
     const loadUserStories = async (id = null) => {
-        let data;
-        let userId = id || currentUser.userId;
+        let data
+        let userId = id || currentUser.userId
         try {
-            try { 
-                const hasStories = await db.userHasStories(userId);
+            try {
+                const hasStories = await dbRef.current.userHasStories(userId)
                 if (hasStories) {
-                    data = await db.getUserStories(userId);
+                    data = await dbRef.current.getUserStories(userId)
                 } else {
-                    throw new Error('No stories found');
+                    throw new Error('No stories found')
                 }
             } catch (error) {
-                console.log(error);
-                data = await getStories(userId);
+                console.log(error)
+                data = await getStories(userId)
                 console.log(data)
-                await db.insertUserStories(data, userId);
-            } 
-            
-            setStories([...data]);
+                await dbRef.current.insertUserStories(data, userId)
+            }
+            setStories([...data])
         } catch (error) {
-            setStories([]);
-            console.log(error);
+            setStories([])
+            console.log(error)
         }
-    };
+    }
 
     const handleRecieveStory = async (storyData) => {
         try {
-            const {  iLiked, likes, iViewed, views } = await getStoryLikesAndViews(storyData.id);
-
-            await db.postStory({...storyData,
-                likes: likes,
-                views: views,
-                liked: iLiked,
-                viewed: iViewed
-            });
-            console.log(views)
-            const userHasStories = await db.userHasStories(storyData.userId);
+            const { iLiked, likes, iViewed, views } = await getStoryLikesAndViews(storyData.id)
+            try {
+                await dbRef.current.postStory({ ...storyData, likes: likes, views: views, liked: iLiked, viewed: iViewed })
+            } catch (error) {
+                console.log(error)
+            }
+            const userHasStories = await dbRef.current.userHasStories(storyData.userId)
             if (!userHasStories) {
-                const data = await getUserInfo(storyData.userId);
-                await db.postUserStories(storyData, data);
-                localGetStories();
+                const data = await getUserInfo(storyData.userId)
+                await dbRef.current.postUserStories(storyData, data)
+                localGetStories()
             }
             if (storyData.userId === whoAmI.userId) {
-                loadUserStories(whoAmI.userId);
-                whoAmI.hasStory = true;
+                loadUserStories(whoAmI.userId)
+                whoAmI.hasStory = true
             }
         } catch (error) {
-            console.log(error);
+            console.log(error)
         } finally {
-            setIsUploading(false);
-        }   
+            setIsUploading(false)
+        }
     }
 
     const handleReceiveDeleteStory = async (storyData) => {
         try {
-            await db.deleteStory(storyData.storyId);
             try {
-                const localStories = await db.getUserStories(storyData.userId);
+                await dbRef.current.deleteStory(storyData.storyId)
+            } catch (error) {
+                console.log(error)
+            }
+            try {
+                const localStories = await dbRef.current.getUserStories(storyData.userId)
                 if (localStories.length === 0) {
-                    await db.deleteUserFromStories(storyData.userId);
-                    localGetStories();
+                    try {
+                        await dbRef.current.deleteUserFromStories(storyData.userId)
+                    } catch (error) {
+                        console.log(error)
+                    }
+                    localGetStories()
                     if (whoAmI.userId === storyData.userId) {
-                        whoAmI.hasStory = false;
+                        whoAmI.hasStory = false
                     }
                 }
             } catch (error) {
-                console.log(error.message);
+                console.log(error.message)
             }
             if (stories && whoAmI.userId === storyData.userId) {
-                loadUserStories(whoAmI.userId);
+                loadUserStories(whoAmI.userId)
             }
-    
         } catch (error) {
             console.log(error.message)
         }
@@ -139,111 +141,90 @@ export const StoriesProvider = ({ children }) => {
 
     const handleDeleteStory = async () => {
         try {
-            setIsDeleteing(true);
+            setIsDeleteing(true)
             if (stories) {
-                storiesSocket.deleteData(stories[currentIndex].id);
+                storiesSocket.deleteData(stories[currentIndex].id)
             }
         } catch (error) {
             console.log(error.message)
         } finally {
-            setIsDeleteing(false);
+            setIsDeleteing(false)
         }
-    } 
-    
+    }
+
     const handleRecieveLikeStory = async (storyData) => {
         try {
-            await db.loadLikes(storyData.storyId, 0, true);
-            if (storyData.userId === whoAmI.userId ) {
-                await db.iLiked(storyData.storyId, true);
-            }
-        } catch (error) {
-            console.log(error);
-        } 
-    }
-
-    const handleRecieveViewStory = async (storyData) => {
-        try {
-            setChangedViews(true);
-            console.log(stories)
-            if (storyData.userId === whoAmI.userId ) {
-                try {
-                    if (db) {
-                        await db.iViewed(storyData.storyId, true);
-                    }
-                    if (db) {
-                        await db.loadViews(storyData.storyId, 0, true);
-                    }
-                } catch (error) {
-                    throw error;
-                }
-            }
-        } catch (error) {
-            console.log(error);
-        } finally {
-            setChangedViews(false);
-        }
-    }
-
-    const fetchStoryUrl = async () => {
-        try {
-            if(currentStory) {  
-                const { blob } = await downloadBlob({ "presignedUrl": currentStory.media });
-                const newBlob = new Blob([blob], { type: currentStory.type });
-                const objectUrl = URL.createObjectURL(newBlob);
-                setUrl(objectUrl);
-            }
-            else {
-                throw new Error("Story is not loaded");
+            await dbRef.current.loadLikes(storyData.storyId, 0, true)
+            if (storyData.userId === whoAmI.userId) {
+                await dbRef.current.iLiked(storyData.storyId, true)
             }
         } catch (error) {
             console.log(error)
         }
-    };
+    }
 
-
-    const reloadSingleStory = async (storyId) => {
+    const handleRecieveViewStory = async (storyData) => {
         try {
-            const story = await db.getStory(storyId);
-            if (story) {
-                setCurrentStory(story);
+            setChangedViews(true)
+
+            if (storyData.userId === whoAmI.userId) {
+                try {
+                    if (dbRef) {
+                        await dbRef.current.iViewed(storyData.storyId, true)
+                    }
+                    if (dbRef) {
+                        await dbRef.current.loadViews(storyData.storyId, 0, true)
+                    }
+                } catch (error) {
+                    throw error
+                }
             }
         } catch (error) {
-            console.log(error);
+            console.log(error)
+        } finally {
+            setChangedViews(false)
         }
     }
 
     const uploadStory = async (file, newStory) => {
-        
-        setIsUploading(true);
+        setIsUploading(true)
         try {
-            const blobName = await uploadBlob(file, uploadLink);
-            if(blobName) {
-                storiesSocket.sendData(newStory);
+            const blobName = await uploadMedia({
+                file: file,
+                extension: newStory.type
+            })
+            if (blobName) {
+                const storyToSend = {
+                    content: newStory.content,
+                    media: blobName,
+                    type: newStory.type
+                }
+                storiesSocket.sendData(storyToSend)
             }
         } catch (error) {
-            setIsUploading(false);
-            console.log(error);
-            setError(error.message);
-        } 
+            console.log(error)
+            setError(error.message)
+        } finally {
+            setIsUploading(false)
+        }
     }
 
     const sendLikeStory = async () => {
-        console.log(stories)
         try {
-            if(currentStory) {
-                let liked = true;
+            if (currentStory) {
+                let liked = true
                 try {
-                    liked = await db.isLiked(currentStory.id);
+                    liked = await dbRef.current.isLiked(currentStory.id)
                     if (!liked) {
                         storiesSocket.likeStory({
                             storyId: currentStory.id,
                             userName: whoAmI.userName,
                             profilePic: whoAmI.profilePic,
                             liked: true
-                        });
+                        })
                     }
                 } catch (error) {
-                    throw error;
+                    throw error
                 }
             }
         } catch (error) {
@@ -252,23 +233,21 @@ export const StoriesProvider = ({ children }) => {
     }
 
     const sendViewStory = async () => {
-        console.log("eh", stories)
         try {
-            if(currentStory) {
-                let viewed = true;
+            if (currentStory) {
+                let viewed = true
                 try {
-                    viewed = await db.isViewed(currentStory.id);
+                    viewed = await dbRef.current.isViewed(currentStory.id)
                     if (!viewed) {
                         storiesSocket.viewStory({
                             storyId: currentStory.id,
                             userName: whoAmI.userName,
-                            profilePic: whoAmI.profilePic,
-                        });
+                            profilePic: whoAmI.profilePic
+                        })
                     }
                 } catch (error) {
-                    throw error;
+                    throw error
                 }
-                
             }
         } catch (error) {
             console.log(error)
@@ -277,72 +256,77 @@ export const StoriesProvider = ({ children }) => {
 
     useEffect(() => {
         if (currentUser) {
-            console.log(currentUser)
-            loadUserStories();
+            loadUserStories()
         } else {
-            console.log("no user")
-            setStories([]);
+            setStories([])
         }
-        currentUserRef.current = currentUser;
-    }, [currentUser]);
+        currentUserRef.current = currentUser
+    }, [currentUser])
 
-    useEffect(() => { 
-        if (currentStory) {
-            currentStoryRef.current = currentStory;
-            setLoading(true);
-            setError(null);
+    useEffect(() => {
+        const fetchStoryUrl = async () => {
             try {
-                try {
-                    fetchStoryUrl();
-                } catch (error) {
-                    throw error;
+                if (currentStory && !currentStory.url) {
+                    const presignedUrl = await readMedia(currentStory.media)
+                    const { blob } = await downloadBlob({ presignedUrl: presignedUrl })
+                    const newBlob = new Blob([blob], { type: currentStory.type })
+                    const objectUrl = URL.createObjectURL(newBlob)
+                    await dbRef.current.addStoryUrl(currentStory.id, objectUrl)
+                    currentStory.url = objectUrl
                 }
-                sendViewStory();
             } catch (error) {
-                setError(error);
-            } finally {
-                setLoading(false);
+                console.log(error)
             }
         }
-    }, [currentStory]);
+        if (currentStory) {
+            currentStoryRef.current = currentStory
+            setLoading(true)
+            setError(null)
+            try {
+                fetchStoryUrl()
+                sendViewStory()
+            } catch (error) {
+                setError(error)
+            } finally {
+                setLoading(false)
+            }
+        }
+    }, [currentStory])
 
     useEffect(() => {
-        if(storiesSocket) {
-            storiesSocket.onReceiveStory(handleRecieveStory);
-            storiesSocket.onReceiveDeleteStory(handleReceiveDeleteStory);
-            storiesSocket.onReceiveLikeStory(handleRecieveLikeStory);
-            storiesSocket.onReceiveViewStory(handleRecieveViewStory);
+        if (storiesSocket) {
+            storiesSocket.onReceiveStory(handleRecieveStory)
+            storiesSocket.onReceiveDeleteStory(handleReceiveDeleteStory)
+            storiesSocket.onReceiveLikeStory(handleRecieveLikeStory)
+            storiesSocket.onReceiveViewStory(handleRecieveViewStory)
         }
-    }, [storiesSocket]);
-    
+    }, [storiesSocket])
+
     useEffect(() => {
-        console.log("hey", stories)
         if (stories) {
-            setCurrentIndex(0);
-            setCurrentStory(stories[0]);
+            setCurrentIndex(0)
+            setCurrentStory(stories[0])
         } else {
-            setCurrentStory(null);
+            setCurrentStory(null)
         }
     }, [stories])
 
     useEffect(() => {
-        localGetStories();
-    }, [db]);
+        localGetStories()
+    }, [dbRef])
 
     useEffect(() => {
         if (currentIndex > -1 && stories) {
-            console.log(currentIndex)
             setCurrentStory(stories[currentIndex])
         }
     }, [currentIndex])
-    
+
     return (
         <StoryContext.Provider
             value={{
                 stories,
                 currentIndex,
                 currentStory,
-                url,
                 loading,
                 error,
                 currentUser,
@@ -352,12 +336,10 @@ export const StoriesProvider = ({ children }) => {
                 changedLikes,
                 changedViews,
                 selectUser,
-                fetchStoryUrl,
                 sendLikeStory,
                 sendViewStory,
                 uploadStory,
                 handleDeleteStory,
-                
                 storiesSocket,
                 selectStory
             }}
@@ -368,5 +350,5 @@ export const StoriesProvider = ({ children }) => {
 }
 
 export const useStories = () => {
-    return useContext(StoryContext);
-};
+    return useContext(StoryContext)
+}

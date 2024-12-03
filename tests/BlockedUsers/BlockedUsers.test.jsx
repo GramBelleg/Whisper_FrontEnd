@@ -36,9 +36,9 @@ describe('BlockedUsers', () => {
     );
 
     expect(screen.getByText('Blocked Users')).toBeInTheDocument();
-    expect(screen.getAllByTestId('user-item')).toHaveLength(mockBlockedUsers.length);
-    expect(screen.getByAltText(mockBlockedUsers[0].userName)).toBeInTheDocument();
-    expect(screen.getByAltText(mockBlockedUsers[1].userName)).toBeInTheDocument();
+    expect(screen.getAllByTestId('user-item')).toHaveLength(mockBlockedUsers.users.length);
+    expect(screen.getByAltText(mockBlockedUsers.users[0].userName)).toBeInTheDocument();
+    expect(screen.getByAltText(mockBlockedUsers.users[1].userName)).toBeInTheDocument();
   });
 
   it('calls unblockUser when a user is confirmed to be unblocked', async () => {
@@ -62,7 +62,7 @@ describe('BlockedUsers', () => {
     fireEvent.click(screen.getByTestId('confirm-action-btn'));
 
     await waitFor(() => {
-      expect(setBlockedStateForUser).toHaveBeenCalledWith(mockBlockedUsers[0].userId, false);
+      expect(setBlockedStateForUser).toHaveBeenCalledWith(mockBlockedUsers.users[0].userId, false);
     });
   });
 

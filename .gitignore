@@ -4,7 +4,11 @@
 /node_modules
 /.pnp
 .pnp.js
-
+report
+eslint-report.json
+audit-report.json
+compare
+static-analysis-report.html
 # testing
 /coverage
 

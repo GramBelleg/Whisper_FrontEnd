@@ -1,58 +1,78 @@
-import MessagesStore from "./MessagesStore";
-import ChatsStore from "./ChatsStore";
-import StoriesStore from "./StoriesStore";
-import { DB_CONFIG } from "./DBConfig";
-import { whoAmI } from "../chatservice/whoAmI";
+import { MessagesStore } from './MessagesStore'
+import { ChatsStore } from './ChatsStore'
+import { StoriesStore } from './StoriesStore'
+import { StoriesTempStore } from './StoriesTempStore'
+import { PinnedMessagesStore } from './PinnedMessagesStore'
+
+import { DB_CONFIG } from './DBConfig'
+import { whoAmI } from '../chatservice/whoAmI'
 
 class WhisperDB {
     constructor() {
-        this.db = null;
-        this.chats = null;
-        this.messages = null;
-        this.stories = null;
+        if (WhisperDB.instance) {
+            return WhisperDB.instance
+        }
+
+        this._db = null
+        this._chats = null
+        this._messages = null
+        this._stories = null
+
+        WhisperDB.instance = this
+    }
+
+    static getInstance() {
+        if (!WhisperDB.instance) {
+            WhisperDB.instance = new WhisperDB()
+        }
+        return WhisperDB.instance
     }
 
     async init() {
         return new Promise((resolve, reject) => {
-            const request = indexedDB.open(DB_CONFIG.name, DB_CONFIG.version);
+            const request = indexedDB.open(DB_CONFIG.name, DB_CONFIG.version)
 
-            request.onerror = () => { 
-                console.error("Error opening database:", request.error);
-                reject(request.error);
+            request.onerror = () => {
+                console.error('Error opening database:', request.error)
+                reject(request.error)
             }
 
             request.onsuccess = () => {
-                this.db = request.result;
-                this.initializeStores();
-                resolve(this);
-            };
+                this.db = request.result
+                this._initializeStores()
+                resolve(this)
+            }
 
             request.onupgradeneeded = (event) => {
-                const db = event.target.result;
-                this.createStores(db);
-            };
-        });
+                const db = event.target.result
+                this._createStores(db)
+            }
+        })
     }
 
-    initializeStores() {
-        this.chats = new ChatsStore(this.db);
-        this.messages = new MessagesStore(this.db);
-        this.stories = new StoriesStore(this.db);
+    _initializeStores() {
+        this._chats = new ChatsStore(this.db)
+        this._messages = new MessagesStore(this.db)
+        this._stories = new StoriesStore(this.db)
+        this._stories_temp = new StoriesTempStore(this.db)
+        this._pinned_messages = new PinnedMessagesStore(this.db)
     }
 
-    createStores(db) {
-        Object.values(DB_CONFIG.stores).forEach(storeConfig => {
+    _createStores(db) {
+        Object.values(DB_CONFIG.stores).forEach((storeConfig) => {
             if (!db.objectStoreNames.contains(storeConfig.name)) {
                 const store = db.createObjectStore(storeConfig.name, {
                     keyPath: storeConfig.keyPath,
                     autoIncrement: storeConfig.autoIncrement
-                });
+                })
 
-                storeConfig.indexes?.forEach(index => {
-                    store.createIndex(index.name, index.keyPath, index.options);
-                });
+                if (storeConfig.indexes) {
+                    storeConfig.indexes.forEach((index) => {
+                        store.createIndex(index.name, index.keyPath, index.options)
+                    })
+                }
             }
-        });
+        })
     }
 
     /**
@@ -62,989 +82,368 @@ class WhisperDB {
     async delete() {
         return new Promise((resolve, reject) => {
             if (this.db) {
-                this.db.close(); // Close any open connections to the database
+                this.db.close() // Close any open connections to the database
             }
 
-            const deleteRequest = indexedDB.deleteDatabase(DB_CONFIG.name);
+            const deleteRequest = indexedDB.deleteDatabase(DB_CONFIG.name)
 
             deleteRequest.onsuccess = () => {
-                console.log(`Database "${DB_CONFIG.name}" deleted successfully.`);
-                resolve();
-            };
+                console.log(`Database "${DB_CONFIG.name}" deleted successfully.`)
+                resolve()
+            }
 
             deleteRequest.onerror = (event) => {
-                console.error(`Error deleting database "${DB_CONFIG.name}":`, event.target.error);
-                reject(event.target.error);
-            };
+                console.error(`Error deleting database "${DB_CONFIG.name}":`, event.target.error)
+                reject(event.target.error)
+            }
 
             deleteRequest.onblocked = () => {
-                console.warn(`Database deletion is blocked. Please close all other tabs using this database.`);
-                reject(new Error("Database deletion is blocked."));
-            };
-        });
+                console.warn(`Database deletion is blocked. Please close all other tabs using this database.`)
+                reject(new Error('Database deletion is blocked.'))
+            }
+        })
     }
 
     async insertChats(chats) {
-        if (this.db != null) {
-            try {
-                const tx = this.db.transaction('chats', 'readwrite');
-                const store = tx.objectStore('chats');
-        
-                chats.forEach(chat => store.add(chat));
-        
-                await tx.complete;
-                console.log('Chats inserted successfully!');
-            } catch (error) {
-                console.error('Error inserting chats:', error);
-            }
-        }
-        else {
-            throw new Error("Database is not initialized");
-        }
-    }
-
-    async insertMessages(messages) {
-        if (this.db != null) {
-            try {
-                const tx = this.db.transaction('messages', 'readwrite');
-                const store = tx.objectStore('messages');
-                messages.forEach(message => { 
-                    store.add(message)
-                });
-
-                await tx.complete;
-                
-                console.log('Messages inserted successfully!');
-            }
-            catch (error) {
-                console.error('Error inserting messages:', error);
-            }
-        }
-        else {
-            throw new Error("Database is not initialized");
-        }
-    }
-
-    async insertPinnedMessages(chatId, messages) {
-        if (this.db != null) {
-            try {
-                const tx = this.db.transaction('pinnedmessages', 'readwrite');
-                const store = tx.objectStore('pinnedmessages');
-                messages.forEach(message => { 
-                    store.add({
-                        content: message.content, 
-                        chatId: chatId,
-                        messageId: message.id
-                    })
-                });
-
-                await tx.complete;
-                
-                console.log('Pinned Messages inserted successfully!');
-            }
-            catch (error) {
-                console.error('Error inserting messages:', error);
-            }
-        }
-        else {
-            throw new Error("Database is not initialized");
-        }
-    }
-
-    async getMessagesForChat(chatId) {
-        if (this.db != null) {
-            try {
-                const tx = this.db.transaction('messages', 'readonly'); 
-                const store = tx.objectStore('messages'); 
-                const index = store.index('chatId');
-                const request = index.getAll(chatId); 
-                const messages = await new Promise((resolve, reject) => {
-                    request.onsuccess = () => resolve(request.result); 
-                    request.onerror = () => reject(request.error); 
-                });
-                return messages.reverse();
-            } catch (error) {
-                throw new Error("Failed to get messages from indexed db: " + error.message);
-            }
+        if (this._chats != null) {
+            return this._chats.insertChats(chats)
         } else {
-            throw new Error("Database connection is not initialized.");
+            throw new Error('Chats Store is not initialized')
         }
     }
 
-    async getPinnedMessagesForChat(chatId) {
-        if (this.db != null) {
-            try {
-                const tx = this.db.transaction('pinnedmessages', 'readonly'); 
-                const store = tx.objectStore('pinnedmessages'); 
-                const index = store.index('chatId');
-                const request = index.getAll(chatId); 
-                const messages = await new Promise((resolve, reject) => {
-                    request.onsuccess = () => resolve(request.result); 
-                    request.onerror = () => reject(request.error); 
-                });
-                return messages.reverse();
-            } catch (error) {
-                throw new Error("Failed to get messages from indexed db: " + error.message);
-            }
-        } else {
-            throw new Error("Database connection is not initialized.");
-        }
-    }
-    
     async getChats() {
-        if (this.db != null) {
-            try {
-                const tx = this.db.transaction('chats', 'readonly'); 
-                const store = tx.objectStore('chats'); 
-                const request = store.getAll(); 
-                const messages = await new Promise((resolve, reject) => {
-                    request.onsuccess = () => resolve(request.result); 
-                    request.onerror = () => reject(request.error); // Reject on error
-                });
-                return messages; 
-            } catch (error) {
-                throw new Error("Failed to get chats from indexed db: " + error.message);
-            }
+        if (this._chats !== null) {
+            return this._chats.getChats()
         } else {
-            throw new Error("Database connection is not initialized.");
+            throw new Error('Chats store is not initiaslized.')
         }
     }
 
     async getDraftedMessage(chatId) {
-        if (this.db != null) {
-            try {
-                const tx = this.db.transaction('chats', 'readonly');
-                const store = tx.objectStore('chats');
-                const request = store.get(chatId);
-                const chat = await new Promise((resolve, reject) => {
-                    request.onsuccess = () => resolve(request.result);
-                    request.onerror = () => reject(request.error);
-                });
-                if (chat && chat.drafted)
-                    return chat.lastMessage;
-                else 
-                    throw new Error("Chat not found.");
-            } catch (error) {
-                throw new Error("Failed to get message from indexed db: " + error.message);
-            }
+        if (this._chats != null) {
+            return this._chats.getDraftedMessage(chatId)
         } else {
-            throw new Error("Database connection is not initialized.");
+            throw new Error('Chats store is not initiaslized.')
         }
     }
 
-    async insertMessage(message) {
-        if (this.db != null) {
-            try {
-                const tx = this.db.transaction(['messages', 'chats'], 'readwrite'); // Include both stores in the transaction
-                const messageStore = tx.objectStore('messages');
-                const chatStore = tx.objectStore('chats');
-                const messageRequest = messageStore.add(message);
-    
-                await new Promise((resolve, reject) => {
-                    messageRequest.onsuccess = () => resolve();
-                    messageRequest.onerror = () => reject(messageRequest.error);
-                });
-                
-                const chatRequest = chatStore.get(message.chatId);
-                const chat = await new Promise((resolve, reject) => {
-                    chatRequest.onsuccess = () => resolve(chatRequest.result);
-                    chatRequest.onerror = () => reject(chatRequest.error);
-                });
-
-                if (chat) {
-                    if (message.senderId === whoAmI.userId || (chat.drafted === false && message.senderId !== whoAmI.userId)) {
-                        chat.lastMessageId = message.id;
-                        chat.lastMessage = message.content;
-                        chat.messageTime = message.time;
-                        chat.senderId = message.senderId;
-                        chat.sender = message.sender;
-                        chat.messageType = message.type;
-                        chat.messageState = message.state;
-                        chat.media = message.media ? message.media : null;
-                        chat.drafted = false;
-        
-                        const updateRequest = chatStore.put(chat);
-                        await new Promise((resolve, reject) => {
-                            updateRequest.onsuccess = () => resolve();
-                            updateRequest.onerror = () => reject(updateRequest.error);
-                        });
-                    }
-                } else {
-                    throw new Error(`Chat with id ${message.chatId} not found`);
-                }
-
-                await tx.complete; // Ensure the transaction completes successfully
-                console.log('Message inserted and chat updated successfully.');
-            } catch (error) {
-                console.error('Failed to insert message or update chat:', error);
-                throw new Error('Failed to insert message or update chat: ' + error.message);
-            }
+    async insertMessageInChat(message) {
+        if (this._chats !== null) {
+            return this._chats.insertMessageInChat(message)
         } else {
-            throw new Error('Database connection is not initialized.');
+            throw new Error('Chats store is not initiaslized.')
         }
     }
 
-    async insertDraftedMessage(draftedMessage) {
-        if (this.db) {
-            try {
-                const tx = this.db.transaction('chats', 'readwrite'); // Include both stores in the transaction
-                const chatStore = tx.objectStore('chats');
-
-                const chatRequest = chatStore.get(draftedMessage.chatId);
-                const chat = await new Promise((resolve, reject) => {
-                    chatRequest.onsuccess = () => resolve(chatRequest.result);
-                    chatRequest.onerror = () => reject(chatRequest.error);
-                });
-                if (chat) {
-                    chat.lastMessageId = null;
-                    chat.lastMessage = draftedMessage.draftContent;
-                    chat.messageTime = draftedMessage.draftTime;
-                    chat.senderId = null;
-                    chat.sender = null;
-                    chat.messageType = null;
-                    chat.messageState = null;
-                    chat.media = null;
-                    chat.drafted = true;
-                    
-    
-                    const updateRequest = chatStore.put(chat);
-                    await new Promise((resolve, reject) => {
-                        updateRequest.onsuccess = () => resolve();
-                        updateRequest.onerror = () => reject(updateRequest.error);
-                    });
-
-                    
-                } else {
-                    throw new Error(`Chat with id ${message.chatId} not found`);
-                }
-            } catch (error) {
-
-            }
+    async insertDraftedMessage(chatId, draftedMessage) {
+        if (this._chats !== null) {
+            return this._chats.insertDraftedMessage(chatId, draftedMessage)
         } else {
-            throw new Error('Database connection is not initialized.');
+            throw new Error('Chats store is not initiaslized.')
         }
     }
 
-    async pinMessage(message) {
-        if (this.db != null) {
-            try {
-                const tx = this.db.transaction(['pinnedmessages'], 'readwrite'); // Include both stores in the transaction
-                const pinnedMessagesStore = tx.objectStore('pinnedmessages');    
-                
-                const messageRequest = pinnedMessagesStore.add({
-                    messageId: message.pinnedMessage,
-                    chatId: message.chatId,
-                    content: message.content,
-                });
-    
-                await new Promise((resolve, reject) => {
-                    messageRequest.onsuccess = () => resolve();
-                    messageRequest.onerror = () => reject(messageRequest.error);
-                });
-
-                await tx.complete; 
-                console.log('Pinned Message inserted successfully.');
-            } catch (error) {
-                console.error('Failed to insert pinned message:', error);
-                throw new Error('Failed to insert pinned message: ' + error.message);
-            }
+    async unDraftMessage(chatId) {
+        if (this._chats !== null) {
+            return this._chats.unDraftMessage(chatId)
         } else {
-            throw new Error('Database connection is not initialized.');
-        }
-    }
-
-    async unPinMessage(messageId) {
-        if (this.db != null) {
-            try {
-                const tx = this.db.transaction(['pinnedmessages'], 'readwrite'); 
-                const pinnedMessagesStore = tx.objectStore('pinnedmessages');    
-                const messageRequest = pinnedMessagesStore.delete(messageId);
-    
-                await new Promise((resolve, reject) => {
-                    messageRequest.onsuccess = () => resolve();
-                    messageRequest.onerror = () => reject(messageRequest.error);
-                });
-
-                await tx.complete; 
-                console.log('Message unpinned from Indexed successfully.');
-            } catch (error) {
-                console.error('Failed to unpin message:', error);
-                throw new Error('Failed to unpin message: ' + error.message);
-            }
-        } else {
-            throw new Error('Database connection is not initialized.');
-        }
-    }
-
-    async draftMessage(id) {
-        if (this.db != null) {
-            try {
-                const tx = this.db.transaction('messages', 'readwrite');
-                const store = tx.objectStore('messages');
-                console.log(id)
-                const request = store.get(id);
-    
-                const existingMessage = await new Promise((resolve, reject) => {
-                    request.onsuccess = () => resolve(request.result);
-                    request.onerror = () => reject(request.error);
-                });
-    
-                if (existingMessage) {
-                    existingMessage.drafted = true;
-                    const updateRequest = store.put(existingMessage);
-                    await new Promise((resolve, reject) => {
-                        updateRequest.onsuccess = () => resolve();
-                        updateRequest.onerror = () => reject(updateRequest.error);
-                    });
-    
-                    console.log(`message with id ${id} was successfully updated to muted.`);
-                } else {
-                    throw new Error(`Message with id ${id} not found.`);
-                }
-    
-                await tx.complete;
-            } catch (error) {
-                throw new Error("Failed to update message as muted: " + error.message);
-            }
-        } else {
-            throw new Error('Database connection is not initialized.');
-        }
-    }
-
-    async updateMessagesForPinned(id) {
-        if (this.db != null) {
-            try {
-                const tx = this.db.transaction('messages', 'readwrite');
-                const store = tx.objectStore('messages');
-                const request = store.get(id);
-    
-                const existingMessage = await new Promise((resolve, reject) => {
-                    request.onsuccess = () => resolve(request.result);
-                    request.onerror = () => reject(request.error);
-                });
-    
-                if (existingMessage) {
-                    existingMessage.pinned = true;
-                    const updateRequest = store.put(existingMessage);
-                    await new Promise((resolve, reject) => {
-                        updateRequest.onsuccess = () => resolve();
-                        updateRequest.onerror = () => reject(updateRequest.error);
-                    });
-    
-                    console.log(`Message with id ${id} was successfully updated to pinned.`);
-                } else {
-                    throw new Error(`Message with id ${id} not found.`);
-                }
-    
-                await tx.complete;
-            } catch (error) {
-                throw new Error("Failed to update message as pinned: " + error.message);
-            }
-        } else {
-            throw new Error("Database connection is not initialized.");
-        }
-    }
-
-    async updateMessagesForUnPinned(id) {
-        if (this.db != null) {
-            try {
-                const tx = this.db.transaction('messages', 'readwrite');
-                const store = tx.objectStore('messages');
-                const request = store.get(id);
-    
-                const existingMessage = await new Promise((resolve, reject) => {
-                    request.onsuccess = () => resolve(request.result);
-                    request.onerror = () => reject(request.error);
-                });
-    
-                if (existingMessage) {
-                    existingMessage.pinned = false;
-                    const updateRequest = store.put(existingMessage);
-                    await new Promise((resolve, reject) => {
-                        updateRequest.onsuccess = () => resolve();
-                        updateRequest.onerror = () => reject(updateRequest.error);
-                    });
-                    console.log(`Message with id ${id} was successfully updated to unpinned.`);
-                } else {
-                    throw new Error(`Message with id ${id} not found.`);
-                }
-    
-                await tx.complete;
-            } catch (error) {
-                throw new Error("Failed to update message as unpinned: " + error.message);
-            }
-        } else {
-            throw new Error("Database connection is not initialized.");
+            throw new Error('Chats store is not initiaslized.')
         }
     }
 
     async muteNotifications(chatId) {
-        if (this.db != null) {
-            try {
-                const tx = this.db.transaction('chats', 'readwrite');
-                const store = tx.objectStore('chats');
-                console.log(chatId)
-                const request = store.get(chatId);
-    
-                const existingChat = await new Promise((resolve, reject) => {
-                    request.onsuccess = () => resolve(request.result);
-                    request.onerror = () => reject(request.error);
-                });
-    
-                if (existingChat) {
-                    existingChat.muted = true;
-                    const updateRequest = store.put(existingChat);
-                    await new Promise((resolve, reject) => {
-                        updateRequest.onsuccess = () => resolve();
-                        updateRequest.onerror = () => reject(updateRequest.error);
-                    });
-    
-                    console.log(`chat with id ${chatId} was successfully updated to muted.`);
-                } else {
-                    throw new Error(`Chat with id ${chatId} not found.`);
-                }
-    
-                await tx.complete;
-            } catch (error) {
-                throw new Error("Failed to update message as muted: " + error.message);
-            }
+        if (this._chats !== null) {
+            return this._chats.muteNotifications(chatId)
         } else {
-            throw new Error('Database connection is not initialized.');
+            throw new Error('Chats store is not initiaslized.')
         }
     }
 
     async unMuteNotifications(chatId) {
-        if (this.db != null) {
-            try {
-                const tx = this.db.transaction('chats', 'readwrite');
-                const store = tx.objectStore('chats');
-                const request = store.get(chatId);
-    
-                const existingChat = await new Promise((resolve, reject) => {
-                    request.onsuccess = () => resolve(request.result);
-                    request.onerror = () => reject(request.error);
-                });
-    
-                if (existingChat) {
-                    existingChat.muted = false;
-                    const updateRequest = store.put(existingChat);
-                    await new Promise((resolve, reject) => {
-                        updateRequest.onsuccess = () => resolve();
-                        updateRequest.onerror = () => reject(updateRequest.error);
-                    });
-                    console.log(`chat with id ${chatId} was successfully updated to unmuted.`);
-                } else {
-                    throw new Error(`Chat with id ${chatId} not found.`);
-                }
-    
-                await tx.complete;
-            } catch (error) {
-                throw new Error("Failed to update message as unmuted: " + error.message);
-            }
+        if (this._chats !== null) {
+            return this._chats.unMuteNotifications(chatId)
         } else {
-            throw new Error('Database connection is not initialized.');
+            throw new Error('Chats store is not initiaslized.')
         }
     }
 
-    async updateUnReadMessagesCount(chatId, count) {
-        if (this.db != null) {
-            try {
-                const tx = this.db.transaction('chats', 'readwrite');
-                const store = tx.objectStore('chats');
-                const request = store.get(chatId);
-                
-                const existingChat = await new Promise((resolve, reject) => {
-                    request.onsuccess = () => resolve(request.result);
-                    request.onerror = () => reject(request.error);
-                });
-
-                if (existingChat) {
-                    if (count)
-                        existingChat.unreadMessageCount += 1;
-                    else 
-                        existingChat.unreadMessageCount = 0;
-                    console.log(existingChat)
-
-                    const updateRequest = store.put(existingChat);
-                    await new Promise((resolve, reject) => {
-                        updateRequest.onsuccess = () => resolve();
-                        updateRequest.onerror = () => reject(updateRequest.error);
-                    });
-                    await tx.complete;
-                    console.log(`chat with id ${chatId} was successfully updated to correct unread count.`);
-                }
-            }
-            catch (error) {
-            }
-        } 
-        else {
-            throw new Error('Database connection is not initialized.');
+    async updateLastMessage(chatId, data) {
+        if (this._chats !== null) {
+            return this._chats.updateLastMessage(chatId, data)
+        } else {
+            throw new Error('Messages store is not initiaslized.')
         }
     }
 
-    async insertStories(stories) {
-        if (this.db != null) {
-            try {
-                const tx = this.db.transaction('stories_temp', 'readwrite');
-                const store = tx.objectStore('stories_temp');
-                stories.forEach(story => { 
-                    store.add(story)
-                });
-                await tx.complete;
-                console.log('stories inserted successfully!');
-            }
-            catch (error) {
-                console.error('Error inserting stories:', error);
-            }
-        }
-        else {
-            throw new Error("Database is not initialized");
+    async updateUnreadCount(chatId, increment = false) {
+        if (this._chats !== null) {
+            return this._chats.updateUnreadCount(chatId, increment)
+        } else {
+            throw new Error('Chats store is not initiaslized.')
         }
     }
 
-    async getStories() {
-        if (this.db != null) {
-            try {
-                const tx = this.db.transaction('stories_temp', 'readonly');
-                const store = tx.objectStore('stories_temp');
-                const request = store.getAll();
-                const stories = await new Promise((resolve, reject) => {
-                    request.onsuccess = () => resolve(request.result);
-                    request.onerror = () => reject(request.error);
-                    });
-                await tx.complete;
-                return stories;
-            }
-            catch (error) {
-                console.error('Error getting stories:', error);
-            }
-        }
-        else {
-            throw new Error("Database is not initialized");
+    async insertMessages(messages) {
+        if (this._messages !== null) {
+            return this._messages.insertMessages(messages)
+        } else {
+            throw new Error('Messages store is not initiaslized.')
         }
     }
 
-    async deleteUserFromStories(userId) {
-        if (this.db != null) {
-            try {
-                const tx = this.db.transaction('stories_temp', 'readwrite');
-                const store = tx.objectStore('stories_temp');
-                const request = store.delete(userId);
-                await new Promise((resolve, reject) => {
-                    request.onsuccess = () => resolve(request.result);
-                    request.onerror = () => reject(request.error);
-                });
-            }
-            catch (error) {
-                console.error('Error getting stories:', error);
-            }
+    async getMessagesForChat(chatId) {
+        if (this._messages !== null) {
+            return this._messages.getMessagesForChat(chatId)
+        } else {
+            throw new Error('Messages store is not initiaslized.')
         }
-        else {
-            throw new Error("Database is not initialized");
+    }
+
+    async insertMessage(message) {
+        if (this._messages !== null) {
+            return this._messages.insertMessage(message)
+        } else {
+            throw new Error('Messages store is not initiaslized.')
+        }
+    }
+
+    async updateMessage(id, data) {
+        if (this._messages !== null) {
+            return this._messages.updateMessage(id, data)
+        } else {
+            throw new Error('Messages store is not initiaslized.')
+        }
+    }
+
+    async deleteMessage(id) {
+        if (this._messages !== null) {
+            return this._messages.deleteMessage(id)
+        } else {
+            throw new Error('Messages store is not initiaslized.')
+        }
+    }
+
+    async updateMessagesForPinned(id) {
+        if (this._messages !== null) {
+            return this._messages.updateMessagesForPinned(id)
+        } else {
+            throw new Error('Messages store is not initiaslized.')
+        }
+    }
+
+    async updateMessagesForUnPinned(id) {
+        if (this._messages !== null) {
+            return this._messages.updateMessagesForUnPinned(id)
+        } else {
+            throw new Error('Messages store is not initiaslized.')
         }
     }
 
     async getUserStories(userId) {
-        if (this.db != null) {
-            try {
-                
-                const tx = this.db.transaction('stories', 'readonly');
-                const store = tx.objectStore('stories');
-                const index = store.index("userId");
-                console.log(userId)
-                const request = index.getAll(userId);
-
-                const stories = await new Promise((resolve, reject) => {
-                    request.onsuccess = () => resolve(request.result);
-                    request.onerror = () => reject(request.error);
-                });
-                if (stories) {
-                    console.log("Got user stories", stories);
-                    return stories;
-                }
-                else {
-                    throw new Error("User stories not found")
-                }
-                    
-            }
-            catch (error) {
-                throw error;
-            }
-        }
-        else {
-            throw new Error("Database is not initialized");
+        if (this._stories !== null) {
+            return this._stories.getUserStories(userId)
+        } else {
+            throw new Error('Stories store is not initialized')
         }
     }
 
     async insertUserStories(stories, userId) {
-        if (this.db != null) {
-            try {
-                const tx = this.db.transaction('stories', 'readwrite');
-                const store = tx.objectStore('stories');
-                console.log(stories);
-                stories.forEach(story => { 
-                    store.add({
-                        ...story,
-                        userId: userId,
-                    });
-                });
-                await tx.complete;
-                console.log('stories inserted successfully!');
-            }
-            catch (error) {
-                console.error('Error inserting stories:', error);
-            }
-        }
-        else {
-            throw new Error("Database is not initialized");
+        if (this._stories !== null) {
+            return this._stories.insertUserStories(stories, userId)
+        } else {
+            throw new Error('Stories store is not initialized')
         }
     }
 
     async getStory(id) {
-        if (this.db != null) {
-            try {
-                const tx = this.db.transaction('stories', 'readonly'); 
-                const store = tx.objectStore('stories'); 
-                const request = store.get(id); 
-                const story = await new Promise((resolve, reject) => {
-                    request.onsuccess = () => resolve(request.result); 
-                    request.onerror = () => reject(request.error); 
-                });
-                return story;
-            } catch (error) {
-                throw new Error("Failed to get stories from indexed db: " + error.message);
-            }
+        if (this._stories !== null) {
+            return this._stories.getStory(id)
         } else {
-            throw new Error("Database connection is not initialized.");
+            throw new Error('Stories store is not initialized')
         }
     }
 
     async storyExists(id) {
-        if (this.db != null) {
-            try {
-                const tx = this.db.transaction('stories', 'readonly'); 
-                const store = tx.objectStore('stories'); 
-                const request = store.get(id); 
-                const story = await new Promise((resolve, reject) => {
-                    request.onsuccess = () => resolve(request.result); 
-                    request.onerror = () => reject(request.error); 
-                });
-                if (story) {
-                    return true;
-                }
-                return false;
-            } catch (error) {
-                return false;
-            }
+        if (this._stories !== null) {
+            return this._stories.storyExists(id)
         } else {
-            throw new Error("Database connection is not initialized.");
-        }
-    }
-
-    async userHasStories(userId) {
-        if (this.db != null) {
-            try {
-                const tx = this.db.transaction('stories_temp', 'readonly'); 
-                const store = tx.objectStore('stories_temp'); 
-                const request = store.get(userId); 
-                const story = await new Promise((resolve, reject) => {
-                    request.onsuccess = () => resolve(request.result); 
-                    request.onerror = () => reject(request.error); 
-                });
-
-                await tx.complete;
-                if (story) {
-                    return true
-                }
-                
-                return false;    
-            } catch (error) {
-                return false;
-            }
-        } else {
-            throw new Error("Database connection is not initialized.");
-        }
-    }
-
-    async postUserStories(storyData, userData) {
-        if (this.db != null) {
-            try {
-                const tx = this.db.transaction('stories_temp', 'readwrite'); 
-                const store = tx.objectStore('stories_temp'); 
-                const newStory = {
-                    userId: storyData.userId,
-                    userName : userData.userName, // TODO
-                    profilePic: userData.profilePic
-                };
-                console.log(newStory)
-                const request = store.add(newStory); 
-                await new Promise((resolve, reject) => {
-                    request.onsuccess = () => resolve(request.result); 
-                    request.onerror = () => reject(request.error); 
-                });
-            } catch (error) {
-                console.log(error);
-            }
-        } else {
-            throw new Error("Database connection is not initialized.");
+            throw new Error('Stories store is not initialized')
         }
     }
 
     async postStory(story) {
-        if (this.db != null) {
-            try {
-                const tx = this.db.transaction('stories', 'readwrite');
-                const store = tx.objectStore('stories');
-                const request = store.add(story);
-                await new Promise((resolve, reject) => {
-                    request.onsuccess = () => resolve(request.result);
-                    request.onerror = () => reject(request.error);
-                });
-
-            } catch (error) {
-                throw new Error("Failed to post story into indexed db: " + error.message);
-            }
+        if (this._stories !== null) {
+            return this._stories.postStory(story)
         } else {
-            throw new Error("Database connection is not initialized.");
+            throw new Error('Stories store is not initialized')
+        }
+    }
+
+    async addStoryUrl(storyId, url) {
+        if (this._stories !== null) {
+            return this._stories.addStoryUrl(storyId, url)
+        } else {
+            throw new Error('Stories store is not initialized')
         }
     }
 
     async deleteStory(storyId) {
-        if (this.db != null) {
-            try {
-                const tx = this.db.transaction('stories', 'readwrite');
-                const store = tx.objectStore('stories');
-                const request = store.delete(storyId);
-                await new Promise((resolve, reject) => {
-                    request.onsuccess = () => resolve(request.result);
-                    request.onerror = () => reject(request.error);
-                });
-            } catch (error) {
-                throw new Error("Failed to post story into indexed db: " + error.message);
-            }
+        if (this._stories !== null) {
+            return this._stories.deleteStory(storyId)
         } else {
-            throw new Error("Database connection is not initialized.");
+            throw new Error('Stories store is not initialized')
         }
     }
 
     async likesLoaded(storyId) {
-        if (this.db != null) {
-            try {
-                const tx = this.db.transaction('stories', 'readonly'); 
-                const store = tx.objectStore('stories'); 
-                const request = store.get(storyId); 
-                const story = await new Promise((resolve, reject) => {
-                    request.onsuccess = () => resolve(request.result); 
-                    request.onerror = () => reject(request.error); 
-                });
-                console.log(story)
-                if (story && story.likes != null) {
-                    return true;
-                }
-                return false
-            } catch (error) {
-                return false;
-            }
+        if (this._stories !== null) {
+            return this._stories.likesLoaded(storyId)
         } else {
-            throw new Error("Database connection is not initialized.");
+            throw new Error('Stories store is not initialized')
         }
     }
 
     async iLiked(storyId, liked) {
-        if (this.db != null) {
-            try {
-                const tx = this.db.transaction('stories', 'readwrite'); 
-                const store = tx.objectStore('stories'); 
-                const request = store.get(storyId); 
-                const story = await new Promise((resolve, reject) => {
-                    request.onsuccess = () => resolve(request.result); 
-                    request.onerror = () => reject(request.error); 
-                });
-
-                if (story) {
-                    story.liked = liked;
-                    console.log("Likes Date ", Date.now(), " ", story, liked, " " , story.liked)
-                    const request2 = store.put(story);
-                    await new Promise((resolve, reject) => {
-                        request2.onsuccess = () => resolve(request2.result);
-                        request2.onerror = () => reject(request2.error);
-                    });
-                }
-                
-
-            } catch (error) {
-                console.log(error);
-            }
+        if (this._stories !== null) {
+            return this._stories.iLiked(storyId, liked)
         } else {
-            throw new Error("Database connection is not initialized.");
+            throw new Error('Stories store is not initialized')
         }
     }
 
     async iViewed(storyId, viewed) {
-        if (this.db != null) {
-            try {
-                const tx = this.db.transaction('stories', 'readwrite'); 
-                const store = tx.objectStore('stories'); 
-                const request = store.get(storyId); 
-                const story = await new Promise((resolve, reject) => {
-                    request.onsuccess = () => resolve(request.result); 
-                    request.onerror = () => reject(request.error); 
-                });
-
-                if (story) {
-                    story.viewed = viewed;
-                    console.log("Views Date ", Date.now(), " ", story, viewed, " " , story.viewed)
-                    const request2 = store.put(story);
-                    await new Promise((resolve, reject) => {
-                        request2.onsuccess = () => resolve(request2.result);
-                        request2.onerror = () => reject(request2.error);
-                    });
-                }
-                
-
-            } catch (error) {
-                console.log(error);
-            }
+        if (this._stories !== null) {
+            return this._stories.iViewed(storyId, viewed)
         } else {
-            throw new Error("Database connection is not initialized.");
+            throw new Error('Stories store is not initialized')
         }
     }
 
     async isViewed(storyId) {
-        if (this.db != null) {
-            try {
-                const tx = this.db.transaction('stories', 'readwrite'); 
-                const store = tx.objectStore('stories'); 
-                const request = store.get(storyId); 
-                const story = await new Promise((resolve, reject) => {
-                    request.onsuccess = () => resolve(request.result); 
-                    request.onerror = () => reject(request.error); 
-                });
-                if (story) {
-                    return story.viewed;
-                }
-                return false;
-
-            } catch (error) {
-               throw error;
-            }
+        if (this._stories !== null) {
+            return this._stories.isViewed(storyId)
         } else {
-            throw new Error("Database connection is not initialized.");
+            throw new Error('Stories store is not initialized')
         }
     }
 
     async isLiked(storyId) {
-        if (this.db != null) {
-            try {
-                const tx = this.db.transaction('stories', 'readwrite'); 
-                const store = tx.objectStore('stories'); 
-                const request = store.get(storyId); 
-                const story = await new Promise((resolve, reject) => {
-                    request.onsuccess = () => resolve(request.result); 
-                    request.onerror = () => reject(request.error); 
-                });
-                if (story) {
-                    return story.liked;
-                }
-                return false;
-
-            } catch (error) {
-               throw error;
-            }
+        if (this._stories !== null) {
+            return this._stories.isLiked(storyId)
         } else {
-            throw new Error("Database connection is not initialized.");
+            throw new Error('Stories store is not initialized')
         }
     }
 
     async loadLikes(storyId, likes, increment = false) {
-        if (this.db != null) {
-            try {
-                const tx = this.db.transaction('stories', 'readwrite'); 
-                const store = tx.objectStore('stories'); 
-                const request = store.get(storyId); 
-                const story = await new Promise((resolve, reject) => {
-                    request.onsuccess = () => resolve(request.result); 
-                    request.onerror = () => reject(request.error); 
-                });
-                if (story) {
-                    if (increment) {
-                        story.likes++;
-                    } else {
-                        story.likes = likes;
-                    }
-
-                }
-                const request2 = store.put(story);
-                await new Promise((resolve, reject) => {
-                    request2.onsuccess = () => resolve(request2.result);
-                    request2.onerror = () => reject(request2.error);
-                });
-
-            } catch (error) {
-                console.log(error);
-            }
+        if (this._stories !== null) {
+            return this._stories.loadLikes(storyId, likes, increment)
         } else {
-            throw new Error("Database connection is not initialized.");
+            throw new Error('Stories store is not initialized')
         }
     }
 
     async loadViews(storyId, views, increment = false) {
-        if (this.db != null) {
-            try {
-                const tx = this.db.transaction('stories', 'readwrite'); 
-                const store = tx.objectStore('stories'); 
-                const request = store.get(storyId); 
-                const story = await new Promise((resolve, reject) => {
-                    request.onsuccess = () => resolve(request.result); 
-                    request.onerror = () => reject(request.error); 
-                });
-
-                if (story) {
-                    if (increment) {
-                        story.views++;
-                    } else {
-                        story.views = views;
-                    }
-                }
-                const request2 = store.put(story);
-                await new Promise((resolve, reject) => {
-                    request2.onsuccess = () => resolve(request2.result);
-                    request2.onerror = () => reject(request2.error);
-                });
-            } catch (error) {
-                console.log(error);
-            }
+        if (this._stories !== null) {
+            return this._stories.loadViews(storyId, views, increment)
         } else {
-            throw new Error("Database connection is not initialized.");
+            throw new Error('Stories store is not initialized')
         }
     }
 
     async addStoryAttributes(id, storyAttributes) {
-        if (this.db != null) {
-            try {
-                const story = this.getStory(id);
-                if (story && storyAttributes) {
-                    story.media = {
-                        media: storyAttributes.media,
-                        content: storyAttributes.content,
-                        date: storyAttributes.date
-                    };
-                    const tx = this.db.transaction("stories", 'readwrite');
-                    const storiesStore = tx.objectStore("stories");
-                    const updateRequest = storiesStore.put(story);
-                    await new Promise((resolve, reject) => {
-                        updateRequest.onsuccess = () => resolve();
-                        updateRequest.onerror = () => reject(updateRequest.error);
-                    });
-                }
-                
-            } catch (error) {
-                throw new Error("Failed to add story media into indexed db: " + error.message);
-            }
+        if (this._stories !== null) {
+            return this._stories.addStoryAttributes(id, storyAttributes)
         } else {
-            throw new Error("Database connection is not initialized.");
+            throw new Error('Stories store is not initialized')
+        }
+    }
+
+    async insertStories(stories) {
+        if (this._stories_temp !== null) {
+            return this._stories_temp.insertStories(stories)
+        } else {
+            throw new Error('Stories Temp store is not initialized')
+        }
+    }
+
+    async getStories() {
+        if (this._stories_temp !== null) {
+            return this._stories_temp.getStories()
+        } else {
+            throw new Error('Stories Temp store is not initialized')
+        }
+    }
+
+    async deleteUserFromStories(userId) {
+        if (this._stories_temp !== null) {
+            return this._stories_temp.deleteUserFromStories(userId)
+        } else {
+            throw new Error('Stories Temp store is not initialized')
+        }
+    }
+
+    async userHasStories(userId) {
+        if (this._stories_temp !== null) {
+            return this._stories_temp.userHasStories(userId)
+        } else {
+            throw new Error('Stories Temp store is not initialized')
+        }
+    }
+
+    async postUserStories(storyData, userData) {
+        if (this._stories_temp !== null) {
+            return this._stories_temp.postUserStories(storyData, userData)
+        } else {
+            throw new Error('Stories Temp store is not initialized')
+        }
+    }
+
+    async insertPinnedMessages(chatId, messages) {
+        if (this._pinned_messages !== null) {
+            return this._pinned_messages.insertPinnedMessages(chatId, messages)
+        } else {
+            throw new Error('Stories Temp store is not initialized')
+        }
+    }
+
+    async pinMessage(message) {
+        if (this._pinned_messages !== null) {
+            return this._pinned_messages.pinMessage(message)
+        } else {
+            throw new Error('Stories Temp store is not initialized')
+        }
+    }
+
+    async unPinMessage(messageId) {
+        if (this._pinned_messages !== null) {
+            return this._pinned_messages.unPinMessage(messageId)
+        } else {
+            throw new Error('Stories Temp store is not initialized')
+        }
+    }
+
+    async getPinnedMessagesForChat(chatId) {
+        if (this._pinned_messages !== null) {
+            return this._pinned_messages.getPinnedMessagesForChat(chatId)
+        } else {
+            throw new Error('Stories Temp store is not initialized')
+        }
+    }
+
+    async insertMessageWrapper(message) {
+        try {
+            await this.insertMessage(message)
+        } catch (error) {
+            console.log(error)
+        }
+        try {
+            return await this.insertMessageInChat(message)
+        } catch (error) {
+            console.log(error)
         }
     }
 }
 
-export default WhisperDB;
+export default WhisperDB

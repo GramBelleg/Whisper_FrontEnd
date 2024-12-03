@@ -1,7 +1,7 @@
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import './SettingsPage.css'
 import NoProfile from '@/assets/images/no-profile.svg?react'
-import { faAt, faEnvelope, faEye, faLock, faPencil, faPhone } from '@fortawesome/free-solid-svg-icons'
+import { faAt, faDatabase, faEnvelope, faEye, faLock, faPencil, faPhone } from '@fortawesome/free-solid-svg-icons'
 import { useStackedNavigation } from '@/contexts/StackedNavigationContext/StackedNavigationContext'
 import { useProfileSettings } from '@/hooks/useProfileSettings'
 import ProfileStacked from '../ProfileSettings/ProfileStacked'
@@ -9,6 +9,7 @@ import useAuth from '@/hooks/useAuth'
 import CopyButton from '../CopyButton/CopyButton'
 import VisibilitySettings from '../VisibiltySettings/VisibilitySettings'
 import BlockedUsers from '../BlockedUsers/BlockedUsers'
+import StorageSettings from '../StorageSettings/StorageSettings'
 
 const SettingsContainer = () => {
     const { user } = useAuth()
@@ -40,19 +41,19 @@ const SettingsContainer = () => {
                 <div className='profile-info'>
                     <FontAwesomeIcon icon={faPhone} className='text-xl' />
                     <div className='details'>
-                        <span className='detail-title'>{user.phone ? user.phone : 'No phone number'}</span>
+                        <span className='detail-title'>{user.phoneNumber ? user.phoneNumber : 'No phone number'}</span>
                         <span className='detail-subtitle'>Phone</span>
                     </div>
-                    <CopyButton content={user.phone ? user.phone : 'No phone number'} />
+                    <CopyButton content={user.phoneNumber ? user.phoneNumber : 'No phone number'} />
                 </div>
 
                 <div className='profile-info'>
                     <FontAwesomeIcon icon={faAt} className='text-xl' />
                     <div className='details'>
-                        <span className='detail-title'>{user.username ? user.username : 'No username'}</span>
+                        <span className='detail-title'>{user.userName ? user.userName : 'No username'}</span>
                         <span className='detail-subtitle'>Username</span>
                     </div>
-                    <CopyButton content={user.username ? user.username : 'No username'} />
+                    <CopyButton content={user.userName ? user.userName : 'No username'} />
                 </div>
 
                 <div className='profile-info'>
@@ -69,15 +70,38 @@ const SettingsContainer = () => {
 
             <div className='list-container'>
                 <h2 className='subtitle'>Privacy Settings</h2>
-                
-                <div className='item' onClick={() => { push(<VisibilitySettings/>) }}>
+
+                <div
+                    className='item'
+                    onClick={() => {
+                        push(<VisibilitySettings />)
+                    }}
+                >
                     <FontAwesomeIcon icon={faEye} className='list-item-icon' />
                     <span>Visibility Settings</span>
                 </div>
-
-                <div className='item' onClick={() => { push(<BlockedUsers/>) }}>
+                <div
+                    className='item'
+                    onClick={() => {
+                        push(<BlockedUsers />)
+                    }}
+                >
                     <FontAwesomeIcon icon={faLock} className='list-item-icon' />
                     <span>Blocked Users</span>
+                </div>
+            </div>
+
+            <div className='separator'></div>
+            <div className='list-container'>
+                <h2 className='subtitle'>Data & Storage</h2>
+                <div
+                    className='item'
+                    onClick={() => {
+                        push(<StorageSettings />)
+                    }}
+                >
+                    <FontAwesomeIcon icon={faDatabase} className='list-item-icon' />
+                    <span>Storage Settings</span>
                 </div>
             </div>
         </div>

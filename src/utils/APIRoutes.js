@@ -10,8 +10,7 @@ const authRoutes = {
     githubAuth: '/api/auth/github',
     logOneOut: '/api/user/logoutOne',
     logAllOut: '/api/user/logoutAll',
-    sendConfirmCode: '/api/auth/sendConfirmCode',
-  };
-  
-  export default authRoutes;
-  
+    sendConfirmCode: '/api/auth/sendConfirmCode'
+}
+
+export default authRoutes
