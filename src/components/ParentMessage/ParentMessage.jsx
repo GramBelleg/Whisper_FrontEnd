@@ -1,14 +1,14 @@
-import './ParentMessage.css';
-import { faReply, faShare, faTimes } from "@fortawesome/free-solid-svg-icons";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import parentRelationshipTypes from "../../services/chatservice/parentRelationshipTypes";
-import ParentMessageDetails from './ParentMessageDetails';
-import { useChat } from '@/contexts/ChatContext';
+import './ParentMessage.css'
+import { faReply, faShare, faTimes } from '@fortawesome/free-solid-svg-icons'
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
+import parentRelationshipTypes from '../../services/chatservice/parentRelationshipTypes'
+import ParentMessageDetails from './ParentMessageDetails'
+import { useChat } from '@/contexts/ChatContext'
 
 const ParentMessage = () => {
-    const { parentMessage, clearParentMessage } = useChat();
+    const { parentMessage, clearParentMessage } = useChat()
 
-    if (!parentMessage) return null;
+    if (!parentMessage) return null
 
     return (
         <div className='actions-row'>
@@ -17,7 +17,9 @@ const ParentMessage = () => {
             </div>
             <div className='parent-message'>
                 <span className='header'>
-                    {parentMessage.relationship === parentRelationshipTypes.REPLY ? `Reply to ${parentMessage.sender.name}` : 'Forwarded Message'}
+                    {parentMessage.relationship === parentRelationshipTypes.REPLY
+                        ? `Reply to ${parentMessage.sender}`
+                        : 'Forwarded Message'}
                 </span>
                 <ParentMessageDetails message={parentMessage} />
             </div>
@@ -25,7 +27,7 @@ const ParentMessage = () => {
                 <FontAwesomeIcon icon={faTimes} />
             </div>
         </div>
-    );
-};
+    )
+}
 
-export default ParentMessage;
+export default ParentMessage

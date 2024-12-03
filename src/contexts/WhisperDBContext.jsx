@@ -1,42 +1,30 @@
-import WhisperDB from '@/services/indexedDB/whisperDB';
-import React, { createContext, useContext, useEffect, useState } from 'react';
-
-
+import WhisperDB from '@/services/indexedDB/whisperDB'
+import { createContext, useContext, useEffect, useRef } from 'react'
 
 // Create the context
-const WhisperDBContext = createContext(null);
+const WhisperDBContext = createContext(null)
 
 // Create a provider component
 export const WhisperDBProvider = ({ children }) => {
-    const [db, setDb] = useState(null);
+    const dbRef = useRef(null)
 
-    useEffect(() => {
-        const initDB = async () => {
-            const whisperDB = new WhisperDB();
-            try {
-                await whisperDB.init();
-                setDb(whisperDB);
-                console.log('Database initialized');
-            } catch (error) {
-                console.error('Failed to initialize database:', error);
+    const initDB = async () => {
+        try {
+            if (dbRef.current === null) {
+                const whisperDB = WhisperDB.getInstance()
+                await whisperDB.init()
+                dbRef.current = whisperDB
+                console.log('Database initialized')
             }
-        };
+        } catch (error) {
+            console.error('Failed to initialize database:', error)
+        }
+    }
 
-        initDB();
-    }, []);
-
-    return (
-        <WhisperDBContext.Provider value={{db}}>
-            {children}
-        </WhisperDBContext.Provider>
-    );
-};
+    return <WhisperDBContext.Provider value={{ dbRef, initDB }}>{children}</WhisperDBContext.Provider>
+}
 
 // Custom hook for easy usage
 export const useWhisperDB = () => {
-    const context = useContext(WhisperDBContext);
-    if (!context) {
-        throw new Error('useWhisperDB must be used within a WhisperDBProvider');
-    }
-    return context;
-};
+    return useContext(WhisperDBContext)
+}

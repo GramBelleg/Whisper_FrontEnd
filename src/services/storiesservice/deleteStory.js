@@ -1,15 +1,13 @@
-import axiosInstance from "../axiosInstance";
-
-
+import axiosInstance from '../axiosInstance'
 
 export const deleteStory = async (storyId) => {
     try {
-        const response = await axiosInstance.delete(`/myStories?id=${storyId}`);
-        
+        const response = await axiosInstance.delete(`/myStories?id=${storyId}`)
+
         console.log(response.status)
-    
-        return response;
+
+        return response
     } catch (err) {
-        throw err;
+        throw err
     }
 }
