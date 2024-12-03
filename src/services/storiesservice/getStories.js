@@ -5,7 +5,11 @@ let myStories = []
 
 export const getStoriesAPI = async (id) => {
     try {
-        const response = await axios.get(`http://localhost:5000/api/user/story/${id}`, {
+        const token = localStorage.getItem("token")
+        const response = await axios.get(`https://whisper.webredirect.org/api/user/story/${id}`, {
+            headers: {
+                Authorization: `Bearer ${token}` // Use the appropriate scheme (Bearer, Basic, etc.)
+            },
             withCredentials: true
         })
 
@@ -56,8 +60,11 @@ export const getStories = async (id) => {
 
 export const getUsersWithStoriesAPI = async () => {
     try {
-        //const stories = await axiosInstance.get("/stories");
-        const stories = await axios.get(`http://localhost:5000/api/user/story`, {
+        const token = localStorage.getItem("token")
+        const stories = await axios.get(`https://whisper.webredirect.org/api/user/story`, {
+            headers: {
+                Authorization: `Bearer ${token}` // Use the appropriate scheme (Bearer, Basic, etc.)
+            },
             withCredentials: true
         })
 

@@ -3,8 +3,13 @@ import noUser from '../../assets/images/no-user.png'
 
 export const getMessagesForChatFromAPI = async (id) => {
     try {
-        //const  response = await axiosInstance.get(`/chatMessages/${id}`);
-        const response = await axios.get(`http://localhost:5000/api/messages/${id}`, { withCredentials: true })
+        const token = localStorage.getItem("token")
+        const response = await axios.get(`https://whisper.webredirect.org/api/messages/${id}`, {
+            headers: {
+                Authorization: `Bearer ${token}` // Use the appropriate scheme (Bearer, Basic, etc.)
+            },
+            withCredentials: true
+        })
 
         return response.data
     } catch (error) {

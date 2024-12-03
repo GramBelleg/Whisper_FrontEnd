@@ -172,6 +172,7 @@ export const ChatProvider = ({ children }) => {
     }
 
     const handleReceiveMessage = async (messageData) => {
+        console.log("Ahmed")
         try {
             const activeChat = currentChatRef.current
             const myMessageData = {

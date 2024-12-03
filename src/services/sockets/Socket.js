@@ -2,12 +2,16 @@ import { io } from 'socket.io-client'
 
 class Socket {
     static socketInstance // Shared socket instance for all subclasses
-    serverUrl = 'http://localhost:5000/'
+    serverUrl = 'https://whisper.webredirect.org/'
 
     constructor() {
         if (!Socket.socketInstance) {
+            const token = localStorage.getItem("token")
             // Create the shared socket connection only once
             Socket.socketInstance = io(this.serverUrl, {
+                query: {
+                    token: token,
+                },
                 withCredentials: true,
                 transports: ['websocket']
             })

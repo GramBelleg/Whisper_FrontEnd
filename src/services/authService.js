@@ -5,7 +5,8 @@ import { whoAmI } from './chatservice/whoAmI'
 
 export const signUp = async (userData) => {
     try {
-        const response = await axios.post('http://localhost:5000/api/auth/signup', userData)
+        
+        const response = await axios.post('https://whisper.webredirect.org/api/auth/signup', userData)
         console.log(response.data)
         return response.data
     } catch (error) {
@@ -17,7 +18,7 @@ export const signUp = async (userData) => {
 export const googleSignUp = async (codeResponse) => {
     try {
         const res = await axios.post(
-            'http://localhost:5000/api/auth/google',
+            'https://whisper.webredirect.org/api/auth/google',
             {
                 code: codeResponse.code
             },
@@ -34,7 +35,7 @@ export const googleSignUp = async (codeResponse) => {
 export const facebookSignUp = async (codeResponse) => {
     try {
         const res = await axios.post(
-            'http://localhost:5000/api/auth/facebook',
+            'https://whisper.webredirect.org/api/auth/facebook',
             {
                 code: codeResponse
             },
@@ -51,7 +52,7 @@ export const facebookSignUp = async (codeResponse) => {
 export const githubSignUp = async (codeResponse) => {
     try {
         const res = await axios.post(
-            'http://localhost:5000/api/auth/github',
+            'https://whisper.webredirect.org/api/auth/github',
             {
                 code: codeResponse
             },
@@ -67,7 +68,7 @@ export const githubSignUp = async (codeResponse) => {
 
 export const verify = async (code, email) => {
     try {
-        const response = await axios.post('http://localhost:5000/api/auth/confirmEmail', {
+        const response = await axios.post('https://whisper.webredirect.org/api/auth/confirmEmail', {
             email: email,
             code: code
         })
@@ -106,7 +107,7 @@ export const resendCode = async (email) => {
 
 export const login = async (credentials) => {
     try {
-        const response = await axios.post('http://localhost:5000/api/auth/login', credentials, { withCredentials: true })
+        const response = await axios.post('https://whisper.webredirect.org/api/auth/login', credentials, { withCredentials: true })
         console.log(response.data)
         return response.data
     } catch (error) {
@@ -170,7 +171,7 @@ export const clearAuthData = () => {
 
 export const logout = async (token) => {
     try {
-        const response = await axios.get('http://localhost:5000/api/user/logoutOne', {
+        const response = await axios.get('https://whisper.webredirect.org/api/user/logoutOne', {
             headers: {
                 Authorization: `Bearer ${token}`
             },

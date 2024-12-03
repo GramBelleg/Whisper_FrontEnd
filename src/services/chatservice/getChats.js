@@ -7,7 +7,11 @@ let myUsers = []
 
 export const getChatsAPI = async (filters = {}) => {
     try {
-        const chats = await axios.get('http://localhost:5000/api/chats', {
+        const token = localStorage.getItem("token")
+        const chats = await axios.get('https://whisper.webredirect.org/api/chats', {
+            headers: {
+                Authorization: `Bearer ${token}` // Use the appropriate scheme (Bearer, Basic, etc.)
+            },
             withCredentials: true, // Ensure credentials are included
             params: filters
         })

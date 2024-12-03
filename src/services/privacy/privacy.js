@@ -2,10 +2,16 @@ import axios from 'axios'
 
 export const putReadReceiptsSetting = async (enabled) => {
     try {
+        const token = localStorage.getItem("token")
         const response = await axios.post(
-            'http://localhost:5000/api/user/readReceipts',
+            'https://whisper.webredirect.org/api/user/readReceipts',
             { readReceipts: enabled },
-            { withCredentials: true }
+            { 
+                headers: {
+                    Authorization: `Bearer ${token}` // Use the appropriate scheme (Bearer, Basic, etc.)
+                    },
+                withCredentials: true
+            }
         )
 
         console.log('Response:', response.data)
@@ -17,7 +23,11 @@ export const putReadReceiptsSetting = async (enabled) => {
 
 export const putLastSeenVisibilitySettings = async (setting) => {
     try {
-        const response = await axios.put('http://localhost:5000/api/user/lastSeen/privacy', { privacy: setting }, { withCredentials: true })
+        const token = localStorage.getItem("token")
+        const response = await axios.put('https://whisper.webredirect.org/api/user/lastSeen/privacy', { privacy: setting }, { headers: {
+            Authorization: `Bearer ${token}` // Use the appropriate scheme (Bearer, Basic, etc.)
+        },
+        withCredentials: true })
 
         console.log('Response:', response.data)
         return response.data
@@ -27,7 +37,11 @@ export const putLastSeenVisibilitySettings = async (setting) => {
 }
 export const putAutoDownloadSize = async (size) => {
     try {
-        const response = await axios.put('http://localhost:5000/api/user/setAutoDownloadSize', { size: size }, { withCredentials: true })
+        const token = localStorage.getItem("token")
+        const response = await axios.put('https://whisper.webredirect.org/api/user/setAutoDownloadSize', { size: size }, { headers: {
+            Authorization: `Bearer ${token}` // Use the appropriate scheme (Bearer, Basic, etc.)
+        },
+        withCredentials: true })
 
         console.log('Response:', response.data)
         return response.data
@@ -37,7 +51,11 @@ export const putAutoDownloadSize = async (size) => {
 }
 export const putStoriesVisibilitySettings = async (setting) => {
     try {
-        const response = await axios.put('http://localhost:5000/api/user/story/privacy', { privacy: setting }, { withCredentials: true })
+        const token = localStorage.getItem("token")
+        const response = await axios.put('https://whisper.webredirect.org/api/user/story/privacy', { privacy: setting }, { headers: {
+            Authorization: `Bearer ${token}` // Use the appropriate scheme (Bearer, Basic, etc.)
+        },
+        withCredentials: true })
 
         console.log('Response:', response.data)
         return response.data
@@ -48,7 +66,13 @@ export const putStoriesVisibilitySettings = async (setting) => {
 
 export const putProfilePicVisibilitySettings = async (setting) => {
     try {
-        const response = await axios.put('http://localhost:5000/api/user/pfp/privacy', { privacy: setting }, { withCredentials: true })
+        const token = localStorage.getItem("token")
+        const response = await axios.put('https://whisper.webredirect.org/api/user/pfp/privacy', { privacy: setting }, {
+            headers: {
+                Authorization: `Bearer ${token}` // Use the appropriate scheme (Bearer, Basic, etc.)
+            },
+            withCredentials: true
+        })
 
         console.log('Response:', response.data)
         return response.data

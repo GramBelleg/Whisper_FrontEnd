@@ -3,7 +3,11 @@ import axios from 'axios'
 export const getMessageInfo = async (messsageId, userId) => {
     if (messsageId) {
         try {
-            const response = await axios.get(`http://localhost:5000/api/messages/${messsageId}/getMessageStatus`, {
+            const token = localStorage.getItem("token")
+            const response = await axios.get(`https://whisper.webredirect.org/api/messages/${messsageId}/getMessageStatus`, {
+                headers: {
+                    Authorization: `Bearer ${token}` // Use the appropriate scheme (Bearer, Basic, etc.)
+                },
                 withCredentials: true
             })
 

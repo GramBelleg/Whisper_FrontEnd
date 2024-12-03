@@ -3,7 +3,11 @@ import { whoAmI } from '../chatservice/whoAmI'
 
 export const getStoryLikesAndViews = async (storyId) => {
     try {
-        const response = await axios.get(`http://localhost:5000/api/user/story/getViews/${storyId}`, {
+        const token = localStorage.getItem("token")
+        const response = await axios.get(`https://whisper.webredirect.org/api/user/story/getViews/${storyId}`, {
+            headers: {
+                Authorization: `Bearer ${token}` // Use the appropriate scheme (Bearer, Basic, etc.)
+            },
             withCredentials: true
         })
 
@@ -27,7 +31,11 @@ export const getStoryLikesAndViews = async (storyId) => {
 
 export const getStoryViews = async (storyId) => {
     try {
-        const response = await axios.get(`http://localhost:5000/api/user/story/getViews/${storyId}`, {
+        const token = localStorage.getItem("token")
+        const response = await axios.get(`https://whisper.webredirect.org/api/user/story/getViews/${storyId}`, {
+            headers: {
+                Authorization: `Bearer ${token}` // Use the appropriate scheme (Bearer, Basic, etc.)
+            },
             withCredentials: true
         })
         const views = response.data.users.length
