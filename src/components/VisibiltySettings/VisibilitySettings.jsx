@@ -2,7 +2,6 @@ import './VisibilitySettings.css'
 import { faArrowLeft } from '@fortawesome/free-solid-svg-icons'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { useEffect, useState } from 'react'
-import { whoAmI } from '@/services/chatservice/whoAmI'
 import {
     putLastSeenVisibilitySettings,
     putProfilePicVisibilitySettings,
@@ -12,12 +11,14 @@ import {
 import { useModal } from '@/contexts/ModalContext'
 import ErrorMesssage from '../ErrorMessage/ErrorMessage'
 import { useStackedNavigation } from '@/contexts/StackedNavigationContext/StackedNavigationContext'
+import useAuth from '@/hooks/useAuth'
 
 const VisibilitySettings = () => {
+    const { user } = useAuth()
     const [profilePictureVisibility, setProfilePictureVisibility] = useState('Everyone')
     const [storyVisibility, setStoryVisibility] = useState('Everyone')
     const [lastSeenVisibility, setLastSeenVisibility] = useState('Everyone')
-    const [readReceiptsEnabled, setReadReceiptsEnabled] = useState(whoAmI.readReceipts)
+    const [readReceiptsEnabled, setReadReceiptsEnabled] = useState(user.readReceipts)
 
     const { openModal, closeModal } = useModal()
     const { pop } = useStackedNavigation()
@@ -29,7 +30,7 @@ const VisibilitySettings = () => {
     const updateLastSeenVisibilitySettings = async (setting) => {
         const prev = lastSeenVisibility
         setLastSeenVisibility(setting)
-        whoAmI.lastSeenPrivacy = setting
+        handleUpdateUser("lastSeenPrivacy", setting)
 
         try {
             await putLastSeenVisibilitySettings(setting)
@@ -42,7 +43,7 @@ const VisibilitySettings = () => {
     const updateProfilePicVisibiitySettings = async (setting) => {
         const prev = profilePictureVisibility
         setProfilePictureVisibility(setting)
-        whoAmI.pfpPrivacy = setting
+        handleUpdateUser("pfpPrivacy", setting)
 
         try {
             await putProfilePicVisibilitySettings(setting)
@@ -54,7 +55,7 @@ const VisibilitySettings = () => {
     const updateStoryVisibilitySettings = async (setting) => {
         const prev = storyVisibility
         setStoryVisibility(setting)
-        whoAmI.storyPrivacy = setting
+        handleUpdateUser("storyPrivacy", setting)
         try {
             await putStoriesVisibilitySettings(setting)
         } catch (error) {
@@ -74,9 +75,9 @@ const VisibilitySettings = () => {
     }
 
     useEffect(() => {
-        setStoryVisibility(whoAmI.storyPrivacy)
-        setProfilePictureVisibility(whoAmI.pfpPrivacy)
-        setLastSeenVisibility(whoAmI.lastSeenPrivacy)
+        setStoryVisibility(user.storyPrivacy)
+        setProfilePictureVisibility(user.pfpPrivacy)
+        setLastSeenVisibility(user.lastSeenPrivacy)
     }, [])
     return (
         <div className='visibility-settings' data-testid='test-visibility-page'>
