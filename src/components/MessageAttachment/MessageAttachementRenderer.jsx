@@ -3,10 +3,9 @@ import useFetch from '../../services/useFetch'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faCircleNotch, faPlay, faPause, faVolumeUp, faCircleArrowDown } from '@fortawesome/free-solid-svg-icons'
 import { downloadAttachment } from './fileServices'
-import { whoAmI } from '@/services/chatservice/whoAmI'
 import { readMedia } from '@/services/chatservice/media'
-import { useChat } from '@/contexts/ChatContext'
 import { useWhisperDB } from '@/contexts/WhisperDBContext'
+import useAuth from '@/hooks/useAuth'
 const MessageAttachmentRenderer = ({ myMessage }) => {
     const [error, setError] = useState(null)
     const videoRef = useRef(null)
@@ -18,6 +17,8 @@ const MessageAttachmentRenderer = ({ myMessage }) => {
     const [autoDownload, setAutoDownload] = useState(false)
     const [objectUrl, setAttachmentUrl] = useState(null)
     const { dbRef } = useWhisperDB()
+    const { user } = useAuth();
+
     useEffect(() => {
         setAutoDownload(false)
         setAttachmentUrl(null)
@@ -41,7 +42,7 @@ const MessageAttachmentRenderer = ({ myMessage }) => {
                 // If file type is not 0, handle size check and download
                 if (parseInt(myMessage.attachmentType) !== 0 && !autoDownload) {
                     const fileSize = myMessage.size / 1024 / 1024
-                    if (fileSize < whoAmI.autoDownloadSize) {
+                    if (fileSize < user.autoDownloadSize) {
                         let presignedUrl = await readMedia(myMessage.media)
                         const attachment = await downloadAttachment(presignedUrl, myMessage)
                         const newObjectUrl = attachment.objectUrl

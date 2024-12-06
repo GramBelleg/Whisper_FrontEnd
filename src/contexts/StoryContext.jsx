@@ -2,13 +2,11 @@ import { createContext, useContext, useEffect, useRef, useState } from 'react'
 import StorySocket from '@/services/sockets/StorySocket'
 import { getStories } from '@/services/storiesservice/getStories'
 import { downloadBlob } from '@/services/blobs/blob'
-import { downloadLink, uploadLink } from '@/mocks/mockData'
-import { uploadBlob } from '@/services/blobs/blob'
 import { useWhisperDB } from './WhisperDBContext'
-import { whoAmI } from '@/services/chatservice/whoAmI'
 import { getUserInfo } from '@/services/userservices/getUserInfo'
 import { getStoryLikesAndViews } from '@/services/storiesservice/getLikesAndViews'
 import { readMedia, uploadMedia } from '@/services/chatservice/media'
+import useAuth from '@/hooks/useAuth'
 
 export const StoryContext = createContext()
 
@@ -28,15 +26,10 @@ export const StoriesProvider = ({ children }) => {
     const [loading, setLoading] = useState(true)
     const [error, setError] = useState(null)
     const { dbRef } = useWhisperDB()
+    const { user, handleUpdateUser } = useAuth()
 
-    const selectUser = (user) => {
-        setCurrentUser(user)
-    }
-
-    const closeStories = () => {
-        setCurrentStory(null)
-        setCurrentIndex(null)
-        setStories([])
+    const selectUser = (userIn) => {
+        setCurrentUser(userIn)
     }
 
     const selectStory = (next) => {
@@ -97,9 +90,9 @@ export const StoriesProvider = ({ children }) => {
                 await dbRef.current.postUserStories(storyData, data)
                 localGetStories()
             }
-            if (storyData.userId === whoAmI.userId) {
-                loadUserStories(whoAmI.userId)
-                whoAmI.hasStory = true
+            if (storyData.userId === user.userId) {
+                loadUserStories(user.userId)
+                handleUpdateUser('hasStory', true);
             }
         } catch (error) {
             console.log(error)
@@ -124,15 +117,15 @@ export const StoriesProvider = ({ children }) => {
                         console.log(error)
                     }
                     localGetStories()
-                    if (whoAmI.userId === storyData.userId) {
-                        whoAmI.hasStory = false
+                    if (user.userId === storyData.userId) {
+                        handleUpdateUser('hasStory', false)
                     }
                 }
             } catch (error) {
                 console.log(error.message)
             }
-            if (stories && whoAmI.userId === storyData.userId) {
-                loadUserStories(whoAmI.userId)
+            if (stories && user.userId === storyData.userId) {
+                loadUserStories(user.userId)
             }
         } catch (error) {
             console.log(error.message)
@@ -155,7 +148,7 @@ export const StoriesProvider = ({ children }) => {
     const handleRecieveLikeStory = async (storyData) => {
         try {
             await dbRef.current.loadLikes(storyData.storyId, 0, true)
-            if (storyData.userId === whoAmI.userId) {
+            if (storyData.userId === user.userId) {
                 await dbRef.current.iLiked(storyData.storyId, true)
             }
         } catch (error) {
@@ -167,7 +160,7 @@ export const StoriesProvider = ({ children }) => {
         try {
             setChangedViews(true)
 
-            if (storyData.userId === whoAmI.userId) {
+            if (storyData.userId === user.id) {
                 try {
                     if (dbRef) {
                         await dbRef.current.iViewed(storyData.storyId, true)
@@ -218,8 +211,8 @@ export const StoriesProvider = ({ children }) => {
                     if (!liked) {
                         storiesSocket.likeStory({
                             storyId: currentStory.id,
-                            userName: whoAmI.userName,
-                            profilePic: whoAmI.profilePic,
+                            userName: user.userName,
+                            profilePic: user.profilePic,
                             liked: true
                         })
                     }
@@ -241,8 +234,8 @@ export const StoriesProvider = ({ children }) => {
                     if (!viewed) {
                         storiesSocket.viewStory({
                             storyId: currentStory.id,
-                            userName: whoAmI.userName,
-                            profilePic: whoAmI.profilePic
+                            userName: user.userName,
+                            profilePic: user.profilePic
                         })
                     }
                 } catch (error) {
