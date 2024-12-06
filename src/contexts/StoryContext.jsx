@@ -90,9 +90,9 @@ export const StoriesProvider = ({ children }) => {
                 await dbRef.current.postUserStories(storyData, data)
                 localGetStories()
             }
-            if (storyData.userId === user.userId) {
-                loadUserStories(user.userId)
-                handleUpdateUser('hasStory', true);
+            if (storyData.userId === user.id) {
+                loadUserStories(user.id)
+                handleUpdateUser('hasStory', true)
             }
         } catch (error) {
             console.log(error)
@@ -259,12 +259,16 @@ export const StoriesProvider = ({ children }) => {
     useEffect(() => {
         const fetchStoryUrl = async () => {
             try {
+                if (currentStory && currentStory.blob) {
+                    const objectUrl = URL.createObjectURL(currentStory.blob)
+                    currentStory.url = objectUrl
+                }
                 if (currentStory && !currentStory.url) {
                     const presignedUrl = await readMedia(currentStory.media)
                     const { blob } = await downloadBlob({ presignedUrl: presignedUrl })
                     const newBlob = new Blob([blob], { type: currentStory.type })
                     const objectUrl = URL.createObjectURL(newBlob)
-                    await dbRef.current.addStoryUrl(currentStory.id, objectUrl)
+                    await dbRef.current.addStoryBlob(currentStory.id, newBlob)
                     currentStory.url = objectUrl
                 }
             } catch (error) {
@@ -293,6 +297,14 @@ export const StoriesProvider = ({ children }) => {
             storiesSocket.onReceiveLikeStory(handleRecieveLikeStory)
             storiesSocket.onReceiveViewStory(handleRecieveViewStory)
         }
+
+        return () => {
+            storiesSocket.offReceiveStory(handleRecieveStory)
+            storiesSocket.offRecieveDeleteStory(handleReceiveDeleteStory)
+            storiesSocket.offReceiveLikeStory(handleRecieveLikeStory)
+            storiesSocket.offReceiveViewStory(handleRecieveViewStory)
+        }
+
     }, [storiesSocket])
 
     useEffect(() => {
@@ -313,6 +325,8 @@ export const StoriesProvider = ({ children }) => {
             setCurrentStory(stories[currentIndex])
         }
     }, [currentIndex])
+
+    useEffect(() => {console.log(user)}, [user, loading])
 
     return (
         <StoryContext.Provider
