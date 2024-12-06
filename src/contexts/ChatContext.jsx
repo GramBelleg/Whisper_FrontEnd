@@ -4,11 +4,15 @@ import { mapMessage } from '@/services/chatservice/getMessagesForChat'
 import MessagingSocket from '@/services/sockets/MessagingSocket'
 import { useWhisperDB } from './WhisperDBContext'
 import parentRelationshipTypes from '@/services/chatservice/parentRelationshipTypes'
+import useChatEncryption from '@/hooks/useChatEncryption'
+
 
 export const ChatContext = createContext()
 
+
+
 export const ChatProvider = ({ children }) => {
-    const [currentChat, setcurrentChat] = useState(null)
+    const [currentChat, setCurrentChat] = useState(null)
     const [messages, setMessages] = useState([])
     const [pinnedMessages, setPinnedMessages] = useState([])
     const [parentMessage, setParentMessage] = useState(null)
@@ -19,13 +23,14 @@ export const ChatProvider = ({ children }) => {
     const [messageReceived, setMessageReceived] = useState(false)
     const [action, setAction] = useState(false)
     const [messageDelivered, setMessageDelivered] = useState(false)
+    const { encryptMessage , decryptMessage }  = useChatEncryption();
 
     const setActionExposed = (actionIn) => {
         setAction(actionIn)
     }
 
     const selectChat = (chat) => {
-        setcurrentChat(chat)
+        setCurrentChat(chat)
         setParentMessage(null)
     }
 
@@ -46,6 +51,7 @@ export const ChatProvider = ({ children }) => {
             console.log(error)
         }
     }
+    
 
     const clearUnreadMessages = async (id) => {
         try {
@@ -73,10 +79,14 @@ export const ChatProvider = ({ children }) => {
     }, [currentChat])
 
     const updateMessage = async (messageId, content) => {
+        let finalContent = content;
+        if (currentChat.type === 'DM') {
+            finalContent = await encryptMessage(content, currentChat)
+        }
         messagesSocket.updateData({
             chatId: currentChat.id,
-            messageId: messageId,
-            content: content
+            id: messageId,
+            content: finalContent
         })
     }
 
@@ -86,11 +96,18 @@ export const ChatProvider = ({ children }) => {
             messages: [messageId]
         })
     }
+    
+    const sendJoinChat = async (chat, keyId) => {
+        sendMessage({
+            content: keyId.toString(),
+            type: "EVENT",
+        },chat);
+    }
 
-    const sendMessage = async (data) => {
-        setSending(true)
+    const sendMessage = async (data, chat = null) => {
+        setSending(true);
         const newMessage = {
-            chatId: currentChat.id,
+            chatId: chat ? chat.id : currentChat.id,
             forwarded: false,
             selfDestruct: true,
             expiresAfter: 5,
@@ -112,7 +129,14 @@ export const ChatProvider = ({ children }) => {
 
         const newMessageForBackend = { ...newMessage }
 
-        ;(newMessage.senderId = whoAmI.userId), (newMessage.deliveredAt = '')
+        if (!chat && currentChat && currentChat.type === 'DM') {
+            newMessage.isSecret = true
+            newMessageForBackend.isSecret = true
+            newMessageForBackend.content = await encryptMessage(newMessage.content, currentChat)
+        }
+
+        newMessage.senderId = whoAmI.userId
+        newMessage.deliveredAt = ''
         newMessage.readAt = ''
         newMessage.deleted = false
         newMessage.sender = whoAmI.name
@@ -121,13 +145,15 @@ export const ChatProvider = ({ children }) => {
 
         try {
             messagesSocket.sendData(newMessageForBackend)
-            setMessages((prevMessages) => {
-                if (prevMessages) {
-                    return [{ id: Date.now(), ...newMessage }, ...prevMessages]
-                }
-                return [newMessage]
-            })
-            setParentMessage(null)
+            if(!chat) {
+                setMessages((prevMessages) => {
+                    if (prevMessages) {
+                        return [{ id: Date.now(), ...newMessage }, ...prevMessages]
+                    }
+                    return [newMessage]
+                })
+                setParentMessage(null)
+            }
         } catch (error) {
             console.error(error)
         } finally {
@@ -177,6 +203,33 @@ export const ChatProvider = ({ children }) => {
             const myMessageData = {
                 ...messageData
             }
+            const chat = await dbRef.current.getChat(myMessageData.chatId)
+
+            if(myMessageData.type == "EVENT") {
+                let participantKeys = chat.participantKeys;
+                participantKeys[1] = parseInt(myMessageData.content);
+                await dbRef.current.updateChat(myMessageData.chatId,{
+                    participantKeys:participantKeys
+                });
+                if(chat.id === activeChat.id) {
+                    setCurrentChat({
+                        ...chat,
+                        participantKeys:participantKeys
+                    });
+                }
+                setAction(true);
+                return;
+            }
+            
+            if (chat.type == "DM") {
+                myMessageData.content = await decryptMessage(myMessageData.content, chat)
+                if(myMessageData.parentMessage) {
+                    const parent = {...myMessageData.parentMessage}
+                    parent.content = await decryptMessage(parent.content, chat)
+                    myMessageData.parentMessage = parent;
+                }
+            }
+            
             try {
                 await dbRef.current.insertMessageWrapper({ ...mapMessage(myMessageData), drafted: false })
                 setMessageReceived(true)
@@ -195,6 +248,9 @@ export const ChatProvider = ({ children }) => {
             } catch (error) {
                 console.error(error)
             }
+
+            
+
             if (activeChat && activeChat.id === myMessageData.chatId) {
                 try {
                     await loadMessages(activeChat.id)
@@ -272,17 +328,22 @@ export const ChatProvider = ({ children }) => {
     }
     const handleReceiveEditMessage = async (messageData) => {
         try {
-            await dbRef.current.updateMessage(messageData.messageId, {
-                content: messageData.content,
+            const chat = await dbRef.current.getChat(messageData.chatId)
+            let finalContent = messageData.content
+            if (chat.type == "DM") {
+                finalContent = await decryptMessage(messageData.content, chat)
+            }
+            await dbRef.current.updateMessage(messageData.id, {
+                content: finalContent,
                 edited: true
             })
 
             setMessages((prevMessages) => {
                 return prevMessages.map((message) => {
-                    if (message.id === messageData.messageId) {
+                    if (message.id === messageData.id) {
                         return {
                             ...message,
-                            content: messageData.content,
+                            content: finalContent,
                             edited: true
                         }
                     }
@@ -355,6 +416,10 @@ export const ChatProvider = ({ children }) => {
         }
     }
 
+   
+
+    
+
     useEffect(() => {
         if (messagesSocket) {
             messagesSocket.onReceiveMessage(handleReceiveMessage)
@@ -364,6 +429,16 @@ export const ChatProvider = ({ children }) => {
             messagesSocket.onUnPinMessage(handleUnpinMessage)
             messagesSocket.onDeliverMessage(handleDeliverMessage)
             messagesSocket.onReadMessage(handleReadMessage)
+        }
+
+        return () => {
+            messagesSocket.offReceiveMessage(handleReceiveMessage)
+            messagesSocket.offReceiveEditMessage(handleReceiveEditMessage)
+            messagesSocket.offReceiveDeleteMessage(handleReceiveDeleteMessage)
+            messagesSocket.offPinMessage(handlePinMessage)
+            messagesSocket.offUnPinMessage(handleUnpinMessage)
+            messagesSocket.offDeliverMessage(handleDeliverMessage)
+            messagesSocket.offReadMessage(handleReadMessage)
         }
     }, [messagesSocket])
 
@@ -395,6 +470,7 @@ export const ChatProvider = ({ children }) => {
                 unPinMessage,
                 sendMessage,
                 updateMessage,
+                sendJoinChat,
                 searchChat,
                 parentMessage,
                 updateParentMessage,
