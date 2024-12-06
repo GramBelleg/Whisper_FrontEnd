@@ -30,6 +30,10 @@ class MessagingSocket extends Socket {
         this.socket.on('deliverMessage', callback)
     }
 
+    offDeliverMessage(callback) {
+        this.socket.off('deliverMessage', callback)
+    }
+
     readAllMessages(data) {
         console.log(data)
         this.socket.emit('readAllMessages', data)
@@ -38,6 +42,11 @@ class MessagingSocket extends Socket {
     onReadMessage(callback) {
         this.socket.on('readMessage', callback)
     }
+    offReadMessage(callback) {
+        this.socket.off('readMessage', callback)
+    }
+
+
 
     pinMessage(data) {
         this.socket.emit('pinMessage', data)
