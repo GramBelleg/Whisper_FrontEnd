@@ -10,6 +10,20 @@ const SearchSingleChat = () => {
     const [query, setQuery] = useState('')
     const [isDropdownVisible, setIsDropdownVisible] = useState(false)
     const { searchChat } = useChat()
+
+    const handleSearchedClick = (event) => {
+        const messageId = event.target.getAttribute('data-message-id')
+        console.log("Clicked on search message with ID:", messageId)
+    
+        const targetElement = document.getElementById(`message-${messageId}`)
+        if (targetElement) {
+            targetElement.scrollIntoView({ behavior: "smooth", block: "center" })
+        } else {
+            console.log("Target message not found:", messageId);
+        }
+        setIsDropdownVisible(false)
+    };
+
     const onSearch = async (searchText) => {
         try {
             const results = await searchChat(searchText)
@@ -39,10 +53,9 @@ const SearchSingleChat = () => {
                             {searchResults.map((result, index) => (
                                 <li
                                     key={index}
+                                    data-message-id={result.id}
                                     className='px-4 py-2 hover:bg-secondary-dark hover:text-light cursor-pointer'
-                                    onClick={() => {
-                                        console.log(`Selected: ${result}`)
-                                    }}
+                                    onClick={handleSearchedClick}
                                 >
                                     {result.content}
                                 </li>

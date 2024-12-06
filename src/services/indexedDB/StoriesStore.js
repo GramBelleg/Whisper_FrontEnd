@@ -1,6 +1,5 @@
 import { BaseStore } from './BaseStore'
 
-import { whoAmI } from '../chatservice/whoAmI'
 
 export class StoriesStore extends BaseStore {
     constructor(db) {
@@ -92,7 +91,7 @@ export class StoriesStore extends BaseStore {
         })
     }
 
-    async addStoryUrl(storyId, url) {
+    async addStoryBlob(storyId, blob) {
         return this._executeTransaction('readwrite', async (store) => {
             try {
                 const request = store.get(storyId)
@@ -101,7 +100,7 @@ export class StoriesStore extends BaseStore {
                     request.onerror = () => reject(request.error)
                 })
                 if (story) {
-                    story.url = url
+                    story.blob = blob
                     const request2 = store.put(story)
                     await new Promise((resolve, reject) => {
                         request2.onsuccess = () => resolve(request2.result)

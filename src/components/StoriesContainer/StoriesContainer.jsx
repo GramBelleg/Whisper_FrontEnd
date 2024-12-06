@@ -4,7 +4,7 @@ import { useModal } from '@/contexts/ModalContext'
 import StoriesList from '../StoriesList/StoriesList'
 import AddNewStoryModal from '../AddNewStoryModal/AddNewStoryModal'
 import { useStories } from '@/contexts/StoryContext'
-import { whoAmI } from '@/services/chatservice/whoAmI'
+import useAuth from '@/hooks/useAuth'
 
 export default function StoriesContainer() {
     const scrollContainerRef = useRef(null)
@@ -12,6 +12,7 @@ export default function StoriesContainer() {
     const [showRightArrow, setShowRightArrow] = useState(true)
     const { openModal, closeModal } = useModal()
     const { selectUser, stories, storiesTab } = useStories()
+    const { user } = useAuth()
 
     const handleScroll = () => {
         if (scrollContainerRef.current) {
@@ -47,10 +48,10 @@ export default function StoriesContainer() {
         }
     }
 
-    const handleStoryClick = (user, file = null, filePreview = null) => {
+    const handleStoryClick = (inUser, file = null, filePreview = null) => {
         if (!file) {
-            selectUser(user)
-            if ((user.userId === whoAmI.userId && whoAmI.hasStory) || user.userId !== whoAmI.userId) {
+            selectUser(inUser)
+            if ((inUser.userId === user.id && user.hasStory) || inUser.userId !== user.id) {
                 openModal(<StoriesList onClose={closeModal} handleAddStory={handleAddStory} />)
             }
         } else {

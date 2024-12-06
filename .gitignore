@@ -18,7 +18,7 @@ static-analysis-report.html
 # misc
 .DS_Store
 #.env.local
-#.env
+.env
 #.env.development.local
 #.env.test.local
 #.env.production.local
@@ -26,3 +26,6 @@ static-analysis-report.html
 npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
+
+nginxlocal
+dockerfile.test

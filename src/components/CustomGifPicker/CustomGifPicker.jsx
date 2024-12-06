@@ -17,7 +17,7 @@ const CustomGifPicker = ({ onGifSelect }) => {
     return (
         <div className='bottom-full rounded-lg p-2 shadow-lg bg-gray-800' id='gifs-picker' data-testid='gifs-picker'>
             <GifPicker
-                tenorApiKey="AIzaSyB364wG3P7aMI_BKSSYQ347GN9asScxGJM"
+                tenorApiKey={import.meta.env.VITE_APP_GIF_KEY}
                 onGifClick={(gif) => {
                     sendGifFile(gif)
                 }}
