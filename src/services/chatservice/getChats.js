@@ -1,6 +1,5 @@
 import axios from 'axios'
 import noUser from '../../assets/images/no-user.png'
-import axiosInstance from '../axiosInstance'
 import apiUrl from '@/config'
 
 let myChats = []
@@ -13,7 +12,7 @@ export const getChatsAPI = async (filters = {}) => {
             headers: {
                 Authorization: `Bearer ${token}`  
             },
-            withCredentials: true, // Ensure credentials are included
+            withCredentials: true, 
             params: filters
         })
 
@@ -71,9 +70,6 @@ export const getChatsCleaned = async (filters = {}) => {
                 sender: chat.lastMessage ? chat.lastMessage.sender.userName : null,
                 lastSeen: chat.lastSeen ? chat.lastSeen.slice(0, 19).replace('T', ' ') : null,
                 status: chat.status
-                /*
-                    
-                */
             }
 
             myChats.push(flattenedChat)
