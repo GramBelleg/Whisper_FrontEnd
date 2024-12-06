@@ -170,7 +170,7 @@ const ChatItem = ({ index, standaloneChat }) => {
                             </div>
                         </div>
                         <div className='messaging-info'>
-                            {myChat.lastMessage && <LastMessage myChat={myChat} index={index} />}
+                            <LastMessage myChat={myChat} index={index} />
                             {(myChat.unreadMessageCount || myChat.tagged) && (
                                 <UnRead unReadMessages={myChat.unreadMessageCount} tag={myChat.tagged} />
                             )}
