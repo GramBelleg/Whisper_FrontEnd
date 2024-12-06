@@ -1,11 +1,12 @@
+import apiUrl from '@/config'
 import axios from 'axios'
 
 export const draftMessage = async (chatId, draftedMessage) => {
     try {
         const token = localStorage.getItem("token")
-        const response = await axios.post(`http://localhost:5000/api/messages/${chatId}/draftMessage`, draftedMessage, {
+        const response = await axios.post(`${apiUrl}/api/messages/${chatId}/draftMessage`, draftedMessage, {
             headers: {
-                Authorization: `Bearer ${token}` // Use the appropriate scheme (Bearer, Basic, etc.)
+                Authorization: `Bearer ${token}`  
             },
             withCredentials: true
         })
@@ -18,9 +19,9 @@ export const draftMessage = async (chatId, draftedMessage) => {
 export const unDraftMessage = async (chatId) => {
     try {
         const token = localStorage.getItem("token")
-        await axios.put(`http://localhost:5000/api/messages/${chatId}/undraftMessage`, {
+        await axios.put(`${apiUrl}/api/messages/${chatId}/undraftMessage`, {
             headers: {
-                Authorization: `Bearer ${token}` // Use the appropriate scheme (Bearer, Basic, etc.)
+                Authorization: `Bearer ${token}`  
             },
             withCredentials: true
         })

@@ -5,6 +5,7 @@ import UserSocket from '../sockets/UserSocket'
 import { downloadBlob, getBlobUrl, uploadBlob } from '@/services/blobs/blob'
 import useAuth from '@/hooks/useAuth'
 import { useEffect } from 'react'
+import apiUrl from '@/config'
 
 const userSocket = new UserSocket()
 const userId = whoAmI.userId
@@ -12,7 +13,7 @@ const userId = whoAmI.userId
 export const updateBio = async (bio) => {
     try {
         const response = await axios.put(
-            'http://localhost:5000/api/user/bio',
+            `${apiUrl}/api/user/bio`,
             { bio },
             {
                 withCredentials: true
@@ -28,7 +29,7 @@ export const updateBio = async (bio) => {
 export const updateName = async (name) => {
     try {
         const response = await axios.put(
-            'http://localhost:5000/api/user/name',
+            `${apiUrl}/api/user/name`,
             { name },
             {
                 withCredentials: true
@@ -44,7 +45,7 @@ export const updateName = async (name) => {
 export const updateUserName = async (userName) => {
     try {
         const response = await axios.put(
-            'http://localhost:5000/api/user/userName',
+            `${apiUrl}/api/user/userName`,
             { userName },
             {
                 withCredentials: true
@@ -60,7 +61,7 @@ export const updateUserName = async (userName) => {
 export const updatePhone = async (phone) => {
     try {
         const response = await axios.put(
-            'http://localhost:5000/api/user/phoneNumber',
+            `${apiUrl}/api/user/phoneNumber`,
             { phoneNumber: phone },
             {
                 withCredentials: true
@@ -76,7 +77,7 @@ export const updatePhone = async (phone) => {
 export const updateEmail = async (email, code) => {
     try {
         const response = await axios.put(
-            'http://localhost:5000/api/user/email',
+            `${apiUrl}/api/user/email`,
             { email, code },
             {
                 withCredentials: true
@@ -92,7 +93,7 @@ export const updateEmail = async (email, code) => {
 export const sendUpdateCode = async (email) => {
     try {
         const response = await axios.post(
-            'http://localhost:5000/api/user/emailcode',
+            `${apiUrl}/api/user/emailcode`,
             { email },
             {
                 withCredentials: true

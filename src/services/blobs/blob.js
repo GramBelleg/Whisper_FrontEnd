@@ -79,7 +79,7 @@ export const getBlobUrl = async (blobName) => {
                 },
                 { 
                     headers: {
-                        Authorization: `Bearer ${token}` // Use the appropriate scheme (Bearer, Basic, etc.)
+                        Authorization: `Bearer ${token}`  
                     },
                     withCredentials: true
                 }

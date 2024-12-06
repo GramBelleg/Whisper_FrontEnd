@@ -4,11 +4,11 @@ export const putReadReceiptsSetting = async (enabled) => {
     try {
         const token = localStorage.getItem("token")
         const response = await axios.post(
-            'http://localhost:5000/api/user/readReceipts',
+            `${apiUrl}/api/user/readReceipts`,
             { readReceipts: enabled },
             { 
                 headers: {
-                    Authorization: `Bearer ${token}` // Use the appropriate scheme (Bearer, Basic, etc.)
+                    Authorization: `Bearer ${token}`  
                     },
                 withCredentials: true
             }
@@ -24,8 +24,8 @@ export const putReadReceiptsSetting = async (enabled) => {
 export const putLastSeenVisibilitySettings = async (setting) => {
     try {
         const token = localStorage.getItem("token")
-        const response = await axios.put('http://localhost:5000/api/user/lastSeen/privacy', { privacy: setting }, { headers: {
-            Authorization: `Bearer ${token}` // Use the appropriate scheme (Bearer, Basic, etc.)
+        const response = await axios.put(`${apiUrl}/api/user/lastSeen/privacy`, { privacy: setting }, { headers: {
+            Authorization: `Bearer ${token}`  
         },
         withCredentials: true })
 
@@ -38,8 +38,8 @@ export const putLastSeenVisibilitySettings = async (setting) => {
 export const putAutoDownloadSize = async (size) => {
     try {
         const token = localStorage.getItem("token")
-        const response = await axios.put('http://localhost:5000/api/user/setAutoDownloadSize', { size: size }, { headers: {
-            Authorization: `Bearer ${token}` // Use the appropriate scheme (Bearer, Basic, etc.)
+        const response = await axios.put(`${apiUrl}/api/user/setAutoDownloadSize`, { size: size }, { headers: {
+            Authorization: `Bearer ${token}`  
         },
         withCredentials: true })
 
@@ -52,8 +52,8 @@ export const putAutoDownloadSize = async (size) => {
 export const putStoriesVisibilitySettings = async (setting) => {
     try {
         const token = localStorage.getItem("token")
-        const response = await axios.put('http://localhost:5000/api/user/story/privacy', { privacy: setting }, { headers: {
-            Authorization: `Bearer ${token}` // Use the appropriate scheme (Bearer, Basic, etc.)
+        const response = await axios.put(`${apiUrl}/api/user/story/privacy`, { privacy: setting }, { headers: {
+            Authorization: `Bearer ${token}`  
         },
         withCredentials: true })
 
@@ -67,9 +67,9 @@ export const putStoriesVisibilitySettings = async (setting) => {
 export const putProfilePicVisibilitySettings = async (setting) => {
     try {
         const token = localStorage.getItem("token")
-        const response = await axios.put('http://localhost:5000/api/user/pfp/privacy', { privacy: setting }, {
+        const response = await axios.put(`${apiUrl}/api/user/pfp/privacy`, { privacy: setting }, {
             headers: {
-                Authorization: `Bearer ${token}` // Use the appropriate scheme (Bearer, Basic, etc.)
+                Authorization: `Bearer ${token}`  
             },
             withCredentials: true
         })

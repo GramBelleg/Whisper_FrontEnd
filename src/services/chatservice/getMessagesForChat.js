@@ -1,12 +1,13 @@
 import axios from 'axios'
 import noUser from '../../assets/images/no-user.png'
+import apiUrl from '@/config'
 
 export const getMessagesForChatFromAPI = async (id) => {
     try {
         const token = localStorage.getItem("token")
-        const response = await axios.get(`http://localhost:5000/api/messages/${id}`, {
+        const response = await axios.get(`${apiUrl}/api/messages/${id}`, {
             headers: {
-                Authorization: `Bearer ${token}` // Use the appropriate scheme (Bearer, Basic, etc.)
+                Authorization: `Bearer ${token}`  
             },
             withCredentials: true
         })

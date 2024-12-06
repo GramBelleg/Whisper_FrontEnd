@@ -1,12 +1,13 @@
+import apiUrl from '@/config'
 import axios from 'axios'
 
 export const getMessageInfo = async (messsageId, userId) => {
     if (messsageId) {
         try {
             const token = localStorage.getItem("token")
-            const response = await axios.get(`http://localhost:5000/api/messages/${messsageId}/getMessageStatus`, {
+            const response = await axios.get(`${apiUrl}/api/messages/${messsageId}/getMessageStatus`, {
                 headers: {
-                    Authorization: `Bearer ${token}` // Use the appropriate scheme (Bearer, Basic, etc.)
+                    Authorization: `Bearer ${token}`  
                 },
                 withCredentials: true
             })

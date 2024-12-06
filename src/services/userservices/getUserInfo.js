@@ -1,11 +1,12 @@
+import apiUrl from '@/config'
 import axios from 'axios'
 
 export const getUserInfo = async (userId) => {
     try {
         const token = localStorage.getItem("token")
-        const users = await axios.get(`http://localhost:5000/api/user/${userId}/info`, {
+        const users = await axios.get(`${apiUrl}/api/user/${userId}/info`, {
             headers: {
-                Authorization: `Bearer ${token}` // Use the appropriate scheme (Bearer, Basic, etc.)
+                Authorization: `Bearer ${token}`  
             },
             withCredentials: true
         })

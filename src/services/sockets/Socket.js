@@ -1,8 +1,9 @@
+import apiUrl from '@/config'
 import { io } from 'socket.io-client'
 
 class Socket {
     static socketInstance // Shared socket instance for all subclasses
-    serverUrl = 'http://localhost:5000/'
+    serverUrl = apiUrl
 
     constructor() {
         if (!Socket.socketInstance) {

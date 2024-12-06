@@ -2,11 +2,11 @@ import axios from 'axios'
 import axiosInstance from './axiosInstance'
 import authRoutes from '../utils/APIRoutes'
 import { whoAmI } from './chatservice/whoAmI'
+import apiUrl from '@/config'
 
 export const signUp = async (userData) => {
     try {
-        
-        const response = await axios.post('http://localhost:5000/api/auth/signup', userData)
+        const response = await axios.post(`${apiUrl}/api/auth/signup`, userData)
         console.log(response.data)
         return response.data
     } catch (error) {
@@ -18,7 +18,7 @@ export const signUp = async (userData) => {
 export const googleSignUp = async (codeResponse) => {
     try {
         const res = await axios.post(
-            'http://localhost:5000/api/auth/google',
+            `${apiUrl}/api/auth/google`,
             {
                 code: codeResponse.code
             },
@@ -35,7 +35,7 @@ export const googleSignUp = async (codeResponse) => {
 export const facebookSignUp = async (codeResponse) => {
     try {
         const res = await axios.post(
-            'http://localhost:5000/api/auth/facebook',
+            `${apiUrl}/api/auth/facebook`,
             {
                 code: codeResponse
             },
@@ -43,7 +43,7 @@ export const facebookSignUp = async (codeResponse) => {
                 withCredentials: true // Ensure credentials are included
             }
         )
-        return res.data
+        return res.data 
     } catch (error) {
         console.error('Error exchanging code:', error)
     }
@@ -52,7 +52,7 @@ export const facebookSignUp = async (codeResponse) => {
 export const githubSignUp = async (codeResponse) => {
     try {
         const res = await axios.post(
-            'http://localhost:5000/api/auth/github',
+            `${apiUrl}/api/auth/github`,
             {
                 code: codeResponse
             },
@@ -68,7 +68,7 @@ export const githubSignUp = async (codeResponse) => {
 
 export const verify = async (code, email) => {
     try {
-        const response = await axios.post('http://localhost:5000/api/auth/confirmEmail', {
+        const response = await axios.post(`${apiUrl}/api/auth/confirmEmail`, {
             email: email,
             code: code
         })
@@ -95,7 +95,7 @@ export const resendCode = async (email) => {
 
 export const login = async (credentials) => {
     try {
-        const response = await axios.post('http://localhost:5000/api/auth/login', credentials, { withCredentials: true })
+        const response = await axios.post(`${apiUrl}/api/auth/login`, credentials, { withCredentials: true })
         console.log(response.data)
         return response.data
     } catch (error) {
@@ -141,7 +141,7 @@ export const clearAuthData = () => {
 
 export const logout = async (token) => {
     try {
-        const response = await axios.get('http://localhost:5000/api/user/logoutOne', {
+        const response = await axios.get(`${apiUrl}/api/user/logoutOne`, {
             headers: {
                 Authorization: `Bearer ${token}`
             },

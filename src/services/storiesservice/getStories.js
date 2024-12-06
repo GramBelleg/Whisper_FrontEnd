@@ -1,14 +1,15 @@
 import axios from 'axios'
 import { whoAmI } from '../chatservice/whoAmI'
+import apiUrl from '@/config'
 
 let myStories = []
 
 export const getStoriesAPI = async (id) => {
     try {
         const token = localStorage.getItem("token")
-        const response = await axios.get(`http://localhost:5000/api/user/story/${id}`, {
+        const response = await axios.get(`${apiUrl}/api/user/story/${id}`, {
             headers: {
-                Authorization: `Bearer ${token}` // Use the appropriate scheme (Bearer, Basic, etc.)
+                Authorization: `Bearer ${token}`  
             },
             withCredentials: true
         })
@@ -61,9 +62,9 @@ export const getStories = async (id) => {
 export const getUsersWithStoriesAPI = async () => {
     try {
         const token = localStorage.getItem("token")
-        const stories = await axios.get(`http://localhost:5000/api/user/story`, {
+        const stories = await axios.get(`${apiUrl}/api/user/story`, {
             headers: {
-                Authorization: `Bearer ${token}` // Use the appropriate scheme (Bearer, Basic, etc.)
+                Authorization: `Bearer ${token}`  
             },
             withCredentials: true
         })
