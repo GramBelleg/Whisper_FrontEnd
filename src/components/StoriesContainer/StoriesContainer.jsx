@@ -48,10 +48,10 @@ export default function StoriesContainer() {
         }
     }
 
-    const handleStoryClick = (user, file = null, filePreview = null) => {
+    const handleStoryClick = (inUser, file = null, filePreview = null) => {
         if (!file) {
-            selectUser(user)
-            if ((user.userId === user.id && user.hasStory) || user.userId !== user.userId) {
+            selectUser(inUser)
+            if ((inUser.userId === user.id && user.hasStory) || inUser.userId !== user.id) {
                 openModal(<StoriesList onClose={closeModal} handleAddStory={handleAddStory} />)
             }
         } else {

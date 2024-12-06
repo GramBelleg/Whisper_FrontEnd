@@ -78,6 +78,7 @@ export const StoriesProvider = ({ children }) => {
 
     const handleRecieveStory = async (storyData) => {
         try {
+            console.log(storyData)
             const { iLiked, likes, iViewed, views } = await getStoryLikesAndViews(storyData.id)
             try {
                 await dbRef.current.postStory({ ...storyData, likes: likes, views: views, liked: iLiked, viewed: iViewed })

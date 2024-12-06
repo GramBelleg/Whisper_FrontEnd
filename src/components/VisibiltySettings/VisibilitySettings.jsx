@@ -65,14 +65,15 @@ const VisibilitySettings = () => {
     }
 
     const updateReadReceiptsSetting = async () => {
-                 
+        const prev = readReceiptsEnabled
+        setReadReceiptsEnabled(!prev)
         try {
-            await putReadReceiptsSetting(!readReceiptsEnabled)
-            setReadReceiptsEnabled(!readReceiptsEnabled)
-            handleUpdateUser("readReciepts", !readReceiptsEnabled)
+            await putReadReceiptsSetting(!prev)
+            
+            handleUpdateUser("readReceipts", !prev)
         } catch (error) {
             openModal(<ErrorMesssage errorMessage={error.message} onClose={closeModal} appearFor={3000} />)
-            setReadReceiptsEnabled(!readReceiptsEnabled)
+            setReadReceiptsEnabled(prev)
         }
     }
 
