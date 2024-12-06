@@ -21,7 +21,7 @@ const SingleStory = ({ onNextStory, handleAddNewStoryClick, onClose }) => {
     const dropdownRef = useRef(null)
     const { openModal, closeModal } = useModal()
     const [remainingTime, setRemainingTime] = useState(20000)
-    const { user } = useAuth();
+    const { user } = useAuth()
 
     const handleClickOutside = (event) => {
         if (dropdownRef.current && !dropdownRef.current.contains(event.target) && !event.target.closest('.within-story-visibility')) {
