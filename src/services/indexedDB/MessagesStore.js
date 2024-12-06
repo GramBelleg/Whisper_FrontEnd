@@ -1,6 +1,5 @@
 import { BaseStore } from './BaseStore'
 
-import { whoAmI } from '../chatservice/whoAmI'
 
 export class MessagesStore extends BaseStore {
     constructor(db) {

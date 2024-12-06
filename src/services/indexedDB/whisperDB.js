@@ -5,7 +5,6 @@ import { StoriesTempStore } from './StoriesTempStore'
 import { PinnedMessagesStore } from './PinnedMessagesStore'
 
 import { DB_CONFIG } from './DBConfig'
-import { whoAmI } from '../chatservice/whoAmI'
 
 class WhisperDB {
     constructor() {

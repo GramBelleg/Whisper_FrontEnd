@@ -1,6 +1,5 @@
 import { BaseStore } from './BaseStore'
 
-import { whoAmI } from '../chatservice/whoAmI'
 
 export class ChatsStore extends BaseStore {
     constructor(db) {
@@ -19,6 +18,7 @@ export class ChatsStore extends BaseStore {
     }
 
     async insertMessageInChat(message) {
+        const user = localStorage.getItem("user")
         return this._executeTransaction('readwrite', async (store) => {
             const chatRequest = store.get(message.chatId)
             const chat = await new Promise((resolve, reject) => {
@@ -26,7 +26,7 @@ export class ChatsStore extends BaseStore {
                 chatRequest.onerror = () => reject(chatRequest.error)
             })
             if (chat) {
-                if (message.senderId === whoAmI.userId || (chat.drafted === false && message.senderId !== whoAmI.userId)) {
+                if (message.senderId === user.id || (chat.drafted === false && message.senderId !== user.id)) {
                     chat.lastMessageId = message.id
                     chat.lastMessage = message.content
                     chat.messageTime = message.time
