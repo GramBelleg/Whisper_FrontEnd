@@ -32,9 +32,7 @@ const PinnedMessages = ({ onGoToMessage }) => {
     }
 
     const handleGoToMessage = () => {
-        if (onGoToMessage) {
-            onGoToMessage(pinnedMessages[activeIndex])
-        }
+        onGoToMessage(pinnedMessages[activeIndex])
         setIsDropdownOpen(false)
     }
 
@@ -57,8 +55,8 @@ const PinnedMessages = ({ onGoToMessage }) => {
     return (
         <div className='pinned-messages-container'>
             <div className='indicators-container'>
-                {pinnedMessages?.map((_, index) => (
-                    <div key={index} className={`indicator ${activeIndex === index ? 'indicator-active' : 'indicator-inactive'}`}></div>
+                {pinnedMessages?.map((pinned, index) => (
+                    <div key={index} data-message-id={`${pinned.messageId}`} className={`pinned indicator ${activeIndex === index ? 'indicator-active' : 'indicator-inactive'}`}></div>
                 ))}
             </div>
 
@@ -70,7 +68,7 @@ const PinnedMessages = ({ onGoToMessage }) => {
                     }
                 }}
                 onContextMenu={(e) => {
-                    e.preventDefault() // Prevent default context menu
+                    e.preventDefault() 
                     handlePreviousMessage()
                 }}
             >

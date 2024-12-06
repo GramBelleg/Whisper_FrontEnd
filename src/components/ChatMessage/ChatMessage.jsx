@@ -18,7 +18,7 @@ import MessageAttachmentRenderer from '../MessageAttachment/MessageAttachementRe
 import MessageInfo from '../MessageInfo/MessageInfo'
 import useAuth from '@/hooks/useAuth'
 
-const ChatMessage = ({ message, hideActions }) => {
+const ChatMessage = ({ id, message, hideActions }) => {
     const [isMenuOpen, setIsMenuOpen] = useState(false) // Track menu state
     const [menuPosition, setMenuPosition] = useState({ x: 0, y: 0 })
     const [objectLink, setObjectLink] = useState(null)
@@ -105,6 +105,7 @@ const ChatMessage = ({ message, hideActions }) => {
 
     return (
         <div
+            id={id}
             className={`message shadow ${message.senderId === user.userId ? 'sender' : 'reciever'}`}
             onContextMenu={toggleMenu} // Right-click or long-press to open menu
         >
