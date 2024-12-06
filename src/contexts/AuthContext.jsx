@@ -14,6 +14,8 @@ import {
     logoutAll
 } from '../services/authService'
 import axios from 'axios'
+import LoadingData from '@/components/LoadingData/LoadingData'
+import { useStories } from './StoryContext'
 
 const AuthContext = createContext()
 
@@ -22,6 +24,7 @@ export const AuthProvider = ({ children }) => {
     const [token, setToken] = useState(null)
     const [loading, setLoading] = useState(false)
     const [error, setError] = useState(null)
+    const [isFetching, setIsFetching] = useState(true)
 
     useEffect(() => {
         const fetchUser = async () => {
@@ -45,6 +48,8 @@ export const AuthProvider = ({ children }) => {
             } catch (error) {
                 setError('Failed to fetch user data.')
                 console.error('Error fetching user data:', error)
+            } finally {
+                setIsFetching(false)
             }
         }
 
@@ -197,7 +202,7 @@ export const AuthProvider = ({ children }) => {
 
             return { data, success: true }
         } catch (err) {
-            console.log(err)
+            console.log(err)    
             setError(err.message)
             return { error: err, success: false }
         } finally {
@@ -276,6 +281,12 @@ export const AuthProvider = ({ children }) => {
             localStorage.setItem('user', JSON.stringify(updatedUser))
             return updatedUser
         })
+    }
+
+    if (isFetching) {
+        return (
+            <LoadingData/>
+        )
     }
 
     return (

@@ -173,7 +173,6 @@ export const ChatProvider = ({ children }) => {
     }
 
     const handleReceiveMessage = async (messageData) => {
-        console.log("Ahmed")
         try {
             const activeChat = currentChatRef.current
             const myMessageData = {
@@ -366,6 +365,10 @@ export const ChatProvider = ({ children }) => {
             messagesSocket.onUnPinMessage(handleUnpinMessage)
             messagesSocket.onDeliverMessage(handleDeliverMessage)
             messagesSocket.onReadMessage(handleReadMessage)
+        }
+
+        return () => {
+            messagesSocket.disconnect()
         }
     }, [messagesSocket])
 
