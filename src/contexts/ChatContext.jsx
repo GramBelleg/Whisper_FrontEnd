@@ -159,6 +159,10 @@ export const ChatProvider = ({ children }) => {
     }
 
     const pinMessage = (messsageId, durtaion = 0) => {
+        console.log("Pinning", {
+            chatId: currentChat.id,
+            id: messsageId
+        })
         messagesSocket.pinMessage({
             chatId: currentChat.id,
             id: messsageId
@@ -310,17 +314,19 @@ export const ChatProvider = ({ children }) => {
 
     const handlePinMessage = async (pinData) => {
         try {
+            console.log(pinData)
             const activeChat = currentChatRef.current
             const messagesForChat = await dbRef.current.getMessagesForChat(pinData.chatId)
+            console.log("aywa")
             const messageToPin = messagesForChat.find((message) => message.id === pinData.id)
-
+            console.log("aywa", messageToPin)
             if (!messageToPin) {
                 throw new Error(`Message with id ${pinData.id} not found in chat ${pinData.chatId}`)
             }
 
             await dbRef.current.pinMessage({ ...pinData, content: messageToPin.content })
             await dbRef.current.updateMessagesForPinned(pinData.id)
-
+            console.log("aywa", activeChat)
             await loadMessages(activeChat.id)
             await loadPinnedMessages(activeChat.id)
         } catch (error) {

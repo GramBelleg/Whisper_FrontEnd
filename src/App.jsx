@@ -97,7 +97,9 @@ function App() {
         } catch (error) {
             console.error(error)
         } finally {
-            setLoading(false)
+            setTimeout(() => {
+                setLoading(false)
+            }, [5000]);
         }
     }, [dbRef, initDB])
 
