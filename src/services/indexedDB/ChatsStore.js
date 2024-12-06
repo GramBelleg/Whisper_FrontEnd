@@ -10,8 +10,13 @@ export class ChatsStore extends BaseStore {
     async insertChats(chats) {
         return this._executeTransaction('readwrite', async (store) => {
             try {
-                chats.forEach((chat) => store.add(chat))
-                console.log('Chats inserted successfully!')
+                chats.forEach(async (chat) => {
+                    const request = store.put(chat)
+                    await new Promise((resolve, reject) => {
+                        request.onsuccess = () => resolve()
+                        request.onerror = () => reject(request.error)
+                    })
+                })
             } catch (error) {
                 console.error('Error inserting chats:', error)
             }
