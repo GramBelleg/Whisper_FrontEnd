@@ -17,14 +17,16 @@ import EditMessageModal from '../Modals/EditMessageModal/EditMessageModal'
 import parentRelationshipTypes from '@/services/chatservice/parentRelationshipTypes'
 import MessageAttachmentRenderer from '../MessageAttachment/MessageAttachementRenderer'
 import MessageInfo from '../MessageInfo/MessageInfo'
+import useAuth from '@/hooks/useAuth'
 
 const ChatMessage = ({ message, hideActions }) => {
     const [isMenuOpen, setIsMenuOpen] = useState(false) // Track menu state
     const [menuPosition, setMenuPosition] = useState({ x: 0, y: 0 })
     const [objectLink, setObjectLink] = useState(null)
     const { openModal, openConfirmationModal } = useModal()
+    const {user:authUser} = useAuth();
     const menuOverlayGutter = 40
-    const { pinMessage, unPinMessage, deleteMessage, updateParentMessage } = useChat()
+    const { pinMessage, unPinMessage, deleteMessage, updateParentMessage, currentChat } = useChat()
 
     const toggleMenu = (e) => {
         if (hideActions) return
@@ -102,9 +104,13 @@ const ChatMessage = ({ message, hideActions }) => {
         }
     }, [message])
 
+    if (message.type === messageTypes.EVENT) {
+        return null;
+    }
+
     return (
         <div
-            className={`message shadow ${message.senderId === whoAmI.userId ? 'sender' : 'reciever'}`}
+            className={`message shadow ${message.senderId === authUser.id ? 'sender' : 'reciever'}`}
             onContextMenu={toggleMenu} // Right-click or long-press to open menu
         >
             <MessageRelationshipsViewer message={message} />
@@ -115,7 +121,7 @@ const ChatMessage = ({ message, hideActions }) => {
                 <div className='message-info'>
                     {message.edited ? <span className='text-sm opacity-60'>edited</span> : null}
                     <span className='time opacity-60'>{messageTime}</span>
-                    {message.senderId === whoAmI.userId && (
+                    {message.senderId === authUser.id && (
                         <span className='message-status'>
                             {message.state === 0 && <SentTicks width='12px' />}
                             {message.state === 1 && <DeliveredTicks width='12px' />}
@@ -141,17 +147,17 @@ const ChatMessage = ({ message, hideActions }) => {
                             <FontAwesomeIcon style={{ height: '18px' }} icon={faReply} />
                             <span>Reply</span>
                         </button>
-                        {message.content.length ? (
+                        {message.content.length && message.senderId === authUser.id &&  (
                             <button onClick={handleEdit}>
                                 <FontAwesomeIcon style={{ height: '18px' }} icon={faEdit} />
                                 <span>Edit</span>
                             </button>
-                        ) : null}
+                        )}
                         <button onClick={handleForward}>
                             <FontAwesomeIcon style={{ height: '18px' }} icon={faShare} />
                             <span>Forward</span>
                         </button>
-                        {message.senderId === whoAmI.userId && (
+                        {message.senderId === authUser.id && (
                             <button onClick={handleMessageInfo}>
                                 <FontAwesomeIcon height={18} icon={faCircleInfo} />
                                 <span>Info</span>
@@ -168,10 +174,10 @@ const ChatMessage = ({ message, hideActions }) => {
                                 <span>UnPin</span>
                             </button>
                         )}
-                        <button className='danger' onClick={handleDelete}>
+                        {message.senderId === authUser.id &&  (<button className='danger' onClick={handleDelete}>
                             <FontAwesomeIcon style={{ height: '18px' }} icon={faTrash} />
                             <span>Delete</span>
-                        </button>
+                        </button>)}
                     </div>
                 </div>
             )}
