@@ -139,7 +139,7 @@ const SingleStory = ({ onNextStory, handleAddNewStoryClick, onClose }) => {
         if (currentStory && currentStory.url && currentStory?.type.startsWith('video/')) {
             return (
                 <video ref={videoRef} autoPlay className='w-full h-full object-contain'>
-                    <source src={currentStory.url} type={currentStory.type} onError={() => setError('Failed to load video')} />
+                    <source src={currentStory.url} type={currentStory.type} onError={() => console.log("Error")} />
                     Your browser does not support this video format.
                 </video>
             )
