@@ -7,13 +7,10 @@ import { ModalProvider } from '@/contexts/ModalContext'
 import { ChatProvider } from '@/contexts/ChatContext'
 import { SidebarProvider } from '@/contexts/SidebarContext'
 import Sidebar from '../Sidebar/Sidebar'
-import { useWhisperDB, WhisperDBProvider } from '@/contexts/WhisperDBContext'
-import { StoriesProvider } from '@/contexts/StoryContext'
 
 const SampleHome = () => {
     return (
         <ChatProvider>
-            <StoriesProvider>
                 <ModalProvider>
                     <div className='sampleHome'>
                         <SidebarProvider>
@@ -27,7 +24,6 @@ const SampleHome = () => {
                         </div>
                     </div>
                 </ModalProvider>
-            </StoriesProvider>
         </ChatProvider>
     )
 }
