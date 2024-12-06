@@ -26,3 +26,6 @@ static-analysis-report.html
 npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
+
+nginxlocal
+dockerfile.test
