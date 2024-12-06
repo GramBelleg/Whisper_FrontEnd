@@ -1,9 +1,9 @@
 import { createContext, useContext, useEffect, useRef, useState } from 'react'
-import { whoAmI } from '@/services/chatservice/whoAmI'
 import { mapMessage } from '@/services/chatservice/getMessagesForChat'
 import MessagingSocket from '@/services/sockets/MessagingSocket'
 import { useWhisperDB } from './WhisperDBContext'
 import parentRelationshipTypes from '@/services/chatservice/parentRelationshipTypes'
+import useAuth from '@/hooks/useAuth'
 
 export const ChatContext = createContext()
 
@@ -19,6 +19,7 @@ export const ChatProvider = ({ children }) => {
     const [messageReceived, setMessageReceived] = useState(false)
     const [action, setAction] = useState(false)
     const [messageDelivered, setMessageDelivered] = useState(false)
+    const { user } = useAuth()
 
     const setActionExposed = (actionIn) => {
         setAction(actionIn)
@@ -112,10 +113,10 @@ export const ChatProvider = ({ children }) => {
 
         const newMessageForBackend = { ...newMessage }
 
-        ;(newMessage.senderId = whoAmI.userId), (newMessage.deliveredAt = '')
+        ;(newMessage.senderId = user.userId), (newMessage.deliveredAt = '')
         newMessage.readAt = ''
         newMessage.deleted = false
-        newMessage.sender = whoAmI.name
+        newMessage.sender = user.name
         newMessage.state = 4
         newMessage.time = new Date()
 
@@ -187,7 +188,7 @@ export const ChatProvider = ({ children }) => {
             }
 
             try {
-                if (messageData.sender.id !== whoAmI.userId) {
+                if (messageData.sender.id !== user.id) {
                     messagesSocket.sendDeliverMessage({
                         messageId: messageData.id,
                         chatId: messageData.chatId
@@ -204,7 +205,7 @@ export const ChatProvider = ({ children }) => {
                     console.log(error)
                 }
             } else {
-                if (messageData.sender.id !== whoAmI.userId) {
+                if (messageData.sender.id !== user.id) {
                     try {
                         await dbRef.current.updateUnreadCount(myMessageData.chatId, true)
                     } catch (error) {

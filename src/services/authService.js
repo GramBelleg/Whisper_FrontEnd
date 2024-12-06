@@ -1,7 +1,6 @@
 import axios from 'axios'
 import axiosInstance from './axiosInstance'
 import authRoutes from '../utils/APIRoutes'
-import { whoAmI } from './chatservice/whoAmI'
 import apiUrl from '@/config'
 
 export const signUp = async (userData) => {
@@ -130,13 +129,11 @@ export const resetPassword = async (userData) => {
 export const setAuthData = (user, token) => {
     localStorage.setItem('user', JSON.stringify(user))
     localStorage.setItem('token', token)
-    Object.assign(whoAmI, user ? user : {})
 }
 
 export const clearAuthData = () => {
     localStorage.removeItem('user')
     localStorage.removeItem('token')
-    Object.assign(whoAmI, {})
 }
 
 export const logout = async (token) => {
