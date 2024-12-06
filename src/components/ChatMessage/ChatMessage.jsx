@@ -3,7 +3,6 @@ import SentTicks from '../SentTicks/SentTicks'
 import DeliveredTicks from '../DeliveredTicks/DeliveredTicks'
 import ReadTicks from '../ReadTicks/ReadTicks'
 import PendingSend from '../PendingSend/PendingSend'
-import { whoAmI } from '../../services/chatservice/whoAmI'
 import AudioVoiceMessage from '../AudioVoiceMessage/AudioVoiceMessage'
 import { messageTypes } from '@/services/sendTypeEnum'
 import { useEffect, useMemo, useState } from 'react'
@@ -17,6 +16,7 @@ import EditMessageModal from '../Modals/EditMessageModal/EditMessageModal'
 import parentRelationshipTypes from '@/services/chatservice/parentRelationshipTypes'
 import MessageAttachmentRenderer from '../MessageAttachment/MessageAttachementRenderer'
 import MessageInfo from '../MessageInfo/MessageInfo'
+import useAuth from '@/hooks/useAuth'
 
 const ChatMessage = ({ message, hideActions }) => {
     const [isMenuOpen, setIsMenuOpen] = useState(false) // Track menu state
@@ -25,6 +25,7 @@ const ChatMessage = ({ message, hideActions }) => {
     const { openModal, openConfirmationModal } = useModal()
     const menuOverlayGutter = 40
     const { pinMessage, unPinMessage, deleteMessage, updateParentMessage } = useChat()
+    const { user } = useAuth();
 
     const toggleMenu = (e) => {
         if (hideActions) return
@@ -104,7 +105,7 @@ const ChatMessage = ({ message, hideActions }) => {
 
     return (
         <div
-            className={`message shadow ${message.senderId === whoAmI.userId ? 'sender' : 'reciever'}`}
+            className={`message shadow ${message.senderId === user.userId ? 'sender' : 'reciever'}`}
             onContextMenu={toggleMenu} // Right-click or long-press to open menu
         >
             <MessageRelationshipsViewer message={message} />
@@ -115,7 +116,7 @@ const ChatMessage = ({ message, hideActions }) => {
                 <div className='message-info'>
                     {message.edited ? <span className='text-sm opacity-60'>edited</span> : null}
                     <span className='time opacity-60'>{messageTime}</span>
-                    {message.senderId === whoAmI.userId && (
+                    {message.senderId === user.userId && (
                         <span className='message-status'>
                             {message.state === 0 && <SentTicks width='12px' />}
                             {message.state === 1 && <DeliveredTicks width='12px' />}
@@ -151,7 +152,7 @@ const ChatMessage = ({ message, hideActions }) => {
                             <FontAwesomeIcon style={{ height: '18px' }} icon={faShare} />
                             <span>Forward</span>
                         </button>
-                        {message.senderId === whoAmI.userId && (
+                        {message.senderId === user.userId && (
                             <button onClick={handleMessageInfo}>
                                 <FontAwesomeIcon height={18} icon={faCircleInfo} />
                                 <span>Info</span>

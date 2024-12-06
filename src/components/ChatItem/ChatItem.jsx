@@ -9,17 +9,18 @@ import LastMessage from '../LastMessage/LastMessage'
 import UnRead from '../UnRead/UnRead'
 import Info from '../Info/Info'
 import './ChatItem.css'
-import { whoAmI } from '../../services/chatservice/whoAmI'
 import PendingSend from '../PendingSend/PendingSend'
 import { useChat } from '@/contexts/ChatContext'
 import { muteChat, unMuteChat } from '@/services/chatservice/muteUnmuteChat'
 import { useWhisperDB } from '@/contexts/WhisperDBContext'
+import useAuth from '@/hooks/useAuth'
 
 const ChatItem = ({ index, standaloneChat }) => {
     const { dbRef } = useWhisperDB()
     const { selectChat, action, setActionExposed, messageDelivered } = useChat()
+    const { user } = useAuth()
 
-    const maxLength = standaloneChat.muted ? 33 : standaloneChat.name === whoAmI.name ? 30 : 15
+    const maxLength = standaloneChat.muted ? 33 : standaloneChat.name === user.name ? 30 : 15
 
     const [isOverflowing, setIsOverflowing] = useState(false)
 
