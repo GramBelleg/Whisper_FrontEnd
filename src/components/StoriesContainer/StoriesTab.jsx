@@ -1,12 +1,12 @@
 import RightArrow from '../../assets/images/arrow-right.svg?react'
 import LeftArrow from '../../assets/images/arrow-left.svg?react'
 import './StoriesTab.css'
-import { whoAmI } from '@/services/chatservice/whoAmI'
 import { faPlus } from '@fortawesome/free-solid-svg-icons'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { useEffect, useRef, useState } from 'react'
 import ErrorMesssage from '../ErrorMessage/ErrorMessage'
 import { useModal } from '@/contexts/ModalContext'
+import useAuth from '@/hooks/useAuth'
 
 const StoriesTab = ({
     loading,
@@ -22,10 +22,11 @@ const StoriesTab = ({
     const { openModal, closeModal } = useModal()
     const [firstError, setFirstError] = useState(true)
     const fileInputRef = useRef(null)
+    const { user } = useAuth();
 
     useEffect(() => {
-        console.log(whoAmI.hasStory)
-    }, [whoAmI.hasStory])
+        console.log(user.hasStory)
+    }, [user])
 
     if (loading) {
         return <div>Loading...</div>
@@ -50,7 +51,7 @@ const StoriesTab = ({
 
         if (file && (file.type.startsWith('image/') || file.type.startsWith('video/'))) {
             const filePreview = URL.createObjectURL(file)
-            handleStoryClick(whoAmI, file, filePreview)
+            handleStoryClick(user, file, filePreview)
         } else {
             console.log('No valid file selected')
         }
@@ -62,23 +63,23 @@ const StoriesTab = ({
                 <div className='stories-scroll' ref={scrollContainerRef}>
                     <ul className='stories-list'>
                         {showLeftArrow && <LeftArrow onClick={scrollLeft} className='arrow-button prev' />}
-                        <li key={1} className='story-item' onClick={() => handleStoryClick(whoAmI)}>
+                        <li key={1} className='story-item' onClick={() => handleStoryClick(user)}>
                             <div className='profile-picture-container'>
                                 <div className={`profile-picture ${false ? '' : 'unseen'}`}>
-                                    <img src={whoAmI.profilePic} alt={`${whoAmI.name}'s profile`} />
+                                    <img src={user.profilePic} alt={`${user.name}'s profile`} />
                                 </div>
-                                {!whoAmI.hasStory && (
+                                {!user.hasStory && (
                                     <div className='plus-icon-container' onClick={handlePlusIconClick}>
                                         <FontAwesomeIcon icon={faPlus} className='plus-icon' />
                                     </div>
                                 )}
                             </div>
-                            <span className='story-user'>{whoAmI.userName}</span>
+                            <span className='story-user'>{user.userName}</span>
                         </li>
 
                         {stories?.map(
                             (story) =>
-                                story.userId !== whoAmI.userId && (
+                                story.userId !== user.id && (
                                     <li key={story.userId} className='story-item' onClick={() => handleStoryClick(story)}>
                                         <div className={`profile-picture unseen`}>
                                             <img src={story.profilePic} alt={`${story.userName}'s profile`} />

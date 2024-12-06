@@ -15,10 +15,9 @@ import { getChatsCleaned } from './services/chatservice/getChats'
 import { useWhisperDB } from './contexts/WhisperDBContext'
 import { getMessagesForChatCleaned, getPinnedMessagesForChat } from './services/chatservice/getMessagesForChat'
 import { getUsersWithStoriesCleaned } from './services/storiesservice/getStories'
-import { whoAmI } from './services/chatservice/whoAmI'
 
 function App() {
-    const { user, token } = useAuth()
+    const { user, token, handleUpdateUser } = useAuth()
     const [loading, setLoading] = useState(true)
     const { dbRef, initDB } = useWhisperDB()
 
@@ -47,7 +46,7 @@ function App() {
                     try {
                         let messages = await getMessagesForChatCleaned(chat.id)
                         if (messages.length > 0) {
-                            dbRef.current.insertMessages(messages)
+                            await dbRef.current.insertMessages(messages)
                         }
                     } catch (error) {
                         console.log(error.message)
@@ -60,12 +59,16 @@ function App() {
 
         const loadStories = async () => {
             try {
-                let data = await getUsersWithStoriesCleaned()
-                data = data.map((item) => {
-                    const { id, ...rest } = item
-                    return { userId: id, ...rest }
-                })
-                await dbRef.current.insertStories(data)
+                let iHaveStoryFlag = false
+                let data = await getUsersWithStoriesCleaned(iHaveStoryFlag)
+                if (data && data.length > 0) {
+                    data = data.map((item) => {
+                        const { id, ...rest } = item
+                        return { userId: id, ...rest }
+                    })
+                    await dbRef.current.insertStories(data)
+                    handleUpdateUser('hasStory', iHaveStoryFlag)
+                }
             } catch (error) {
                 console.log(error)
             }
@@ -94,7 +97,9 @@ function App() {
         } catch (error) {
             console.error(error)
         } finally {
-            setLoading(false)
+            setTimeout(() => {
+                setLoading(false)
+            }, [5000]);
         }
     }, [dbRef, initDB])
 

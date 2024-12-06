@@ -13,9 +13,10 @@ import {
     logout,
     logoutAll
 } from '../services/authService'
-import { loadAuthData } from '../services/tokenService'
-import { whoAmI } from '@/services/chatservice/whoAmI'
 import axios from 'axios'
+import LoadingData from '@/components/LoadingData/LoadingData'
+import { useStories } from './StoryContext'
+import apiUrl from '@/config'
 
 const AuthContext = createContext()
 
@@ -24,25 +25,23 @@ export const AuthProvider = ({ children }) => {
     const [token, setToken] = useState(null)
     const [loading, setLoading] = useState(false)
     const [error, setError] = useState(null)
+    const [isFetching, setIsFetching] = useState(true)
 
     useEffect(() => {
         const fetchUser = async () => {
             try {
                 const tokenFromCookies = localStorage.getItem('token')
-
                 if (tokenFromCookies) {
-                    const response = await axios.get('https://whisper.webredirect.org/api/user/', {
+                    const response = await axios.get(`${apiUrl}/api/user/`, {
                         headers: {
                             Authorization: `Bearer ${tokenFromCookies}`
                         }
                     })
 
-                    Object.assign(whoAmI, response.data ? response.data : {})
-                    if (whoAmI && whoAmI.id) {
-                        whoAmI.userId = whoAmI.id
-                        delete whoAmI.id
-                    }
-                    setUser(response.data)
+                    setUser({
+                        ...response.data,
+                        userId: response.data.id,
+                    });
                     setToken(tokenFromCookies)
                 } else {
                     setError('No token found in cookies.')
@@ -50,6 +49,8 @@ export const AuthProvider = ({ children }) => {
             } catch (error) {
                 setError('Failed to fetch user data.')
                 console.error('Error fetching user data:', error)
+            } finally {
+                setIsFetching(false)
             }
         }
 
@@ -81,7 +82,11 @@ export const AuthProvider = ({ children }) => {
         setError(null)
         try {
             const data = await googleSignUp(userData)
-            setUser(data.user)
+            console.log(data)
+            setUser({
+                ...data.user,
+                userId: data.user.id,
+            })
             setToken(data.userToken)
             setAuthData(data.user, data.userToken)
         } catch (err) {
@@ -96,6 +101,7 @@ export const AuthProvider = ({ children }) => {
         setError(null)
         try {
             const data = await facebookSignUp(userData)
+            console.log(data)
             setUser(data.user)
             setToken(data.userToken)
             setAuthData(data.user, data.userToken)
@@ -112,7 +118,10 @@ export const AuthProvider = ({ children }) => {
         try {
             const data = await githubSignUp(userData)
             console.log(data)
-            setUser(data.user)
+            setUser({
+                ...data.user,
+                userId: data.user.id,
+            })
             setToken(data.userToken)
             setAuthData(data.user, data.userToken)
         } catch (err) {
@@ -127,7 +136,10 @@ export const AuthProvider = ({ children }) => {
         setError(null)
         try {
             const data = await verify(code, user.email)
-            setUser(data.data.user)
+            setUser({
+                ...data.data.user,
+                userId: data.data.user.id,
+            })
             setToken(data.data.userToken)
             setAuthData(data.data.user, data.data.userToken)
             return { data: data, success: true }
@@ -159,7 +171,10 @@ export const AuthProvider = ({ children }) => {
             const data = await resetPassword(userData)
             console.log(data)
             setToken(data.userToken)
-            setUser(data.user)
+            setUser({
+                ...data.user,
+                userId: data.user.id,
+            })
             setAuthData(data.user, data.userToken)
             if (userData.logoutCheck) {
                 await handleLogoutAll()
@@ -178,16 +193,17 @@ export const AuthProvider = ({ children }) => {
         setError(null)
         try {
             console.log(credentials)
-
             const data = await login(credentials)
-
             setToken(data.userToken)
-            setUser(data.user)
+            setUser({
+                ...data.user,
+                userId: data.user.id,
+            })
             setAuthData(data.user, data.userToken)
 
             return { data, success: true }
         } catch (err) {
-            console.log(err)
+            console.log(err)    
             setError(err.message)
             return { error: err, success: false }
         } finally {
@@ -218,7 +234,6 @@ export const AuthProvider = ({ children }) => {
             setToken(null)
             localStorage.removeItem('token')
             localStorage.removeItem('user')
-            Object.assign(whoAmI, {})
             return { success: true }
         } catch (err) {
             console.log(err)
@@ -237,7 +252,6 @@ export const AuthProvider = ({ children }) => {
             setToken(null)
             localStorage.removeItem('token')
             localStorage.removeItem('user')
-            Object.assign(whoAmI, {})
             return { success: true }
         } catch (err) {
             console.log(err)
@@ -257,7 +271,6 @@ export const AuthProvider = ({ children }) => {
         setToken(null)
         localStorage.removeItem('token')
         localStorage.removeItem('user')
-        Object.assign(whoAmI, {})
     }
 
     const handleUpdateUser = (field, value) => {
@@ -269,6 +282,12 @@ export const AuthProvider = ({ children }) => {
             localStorage.setItem('user', JSON.stringify(updatedUser))
             return updatedUser
         })
+    }
+
+    if (isFetching) {
+        return (
+            <LoadingData/>
+        )
     }
 
     return (

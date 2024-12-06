@@ -9,7 +9,7 @@ export const uploadMedia = async (fileData) => {
                 fileExtension: fileData.extension
             },
             { headers: {
-                Authorization: `Bearer ${token}` // Use the appropriate scheme (Bearer, Basic, etc.)
+                Authorization: `Bearer ${token}`  
             },
             withCredentials: true }
         )
@@ -41,7 +41,7 @@ export const readMedia = async (blobName) => {
         const token = localStorage.getItem("token")
         const downloadData = await axiosInstance.post('/api/media/read', { blobName }, { 
             headers: {
-                Authorization: `Bearer ${token}` // Use the appropriate scheme (Bearer, Basic, etc.)
+                Authorization: `Bearer ${token}`  
             },
             withCredentials: true
         })

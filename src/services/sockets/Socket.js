@@ -1,8 +1,9 @@
+import apiUrl from '@/config'
 import { io } from 'socket.io-client'
 
 class Socket {
     static socketInstance // Shared socket instance for all subclasses
-    serverUrl = 'https://whisper.webredirect.org/'
+    serverUrl = apiUrl
 
     constructor() {
         if (!Socket.socketInstance) {
@@ -30,7 +31,8 @@ class Socket {
     }
 
     disconnect() {
-        throw new Error("Method 'disconnect' must be implemented by subclasses")
+        console.log(`Disconnecting from ${this.serverUrl}`)
+        this.socket.disconnect()
     }
 }
 

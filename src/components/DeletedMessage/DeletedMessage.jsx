@@ -4,24 +4,25 @@
 import './DeletedMessage.css'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faBan } from '@fortawesome/free-solid-svg-icons'
-import { whoAmI } from '../../services/chatservice/whoAmI'
 import { useEffect, useState } from 'react'
+import useAuth from '@/hooks/useAuth'
 
 const DeletedMessage = ({ sender }) => {
-    const [user, setUser] = useState('You')
+    const { user } = useAuth();
+    const [whoDeleted, setWhoDeleted] = useState('You')
 
     useEffect(() => {
-        if (whoAmI.name === sender) {
-            setUser('You')
+        if (user.name === sender) {
+            setWhoDeleted('You')
         } else {
-            setUser(sender)
+            setWhoDeleted(sender)
         }
     }, [sender])
 
     return (
         <div className='deleted-message'>
             <FontAwesomeIcon icon={faBan} className='deleted-icon' />
-            <span className='deleted-text'> {user} deleted this message</span>
+            <span className='deleted-text'> {whoDeleted} deleted this message</span>
         </div>
     )
 }

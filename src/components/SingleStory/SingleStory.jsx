@@ -6,7 +6,7 @@ import { useModal } from '@/contexts/ModalContext'
 import ErrorMesssage from '../ErrorMessage/ErrorMessage'
 import { setStoryPrivacySettings } from '@/services/storiesservice/setStoryVisibility'
 import { useStories } from '@/contexts/StoryContext'
-import { whoAmI } from '@/services/chatservice/whoAmI'
+import useAuth from '@/hooks/useAuth'
 
 const SingleStory = ({ onNextStory, handleAddNewStoryClick, onClose }) => {
     const { loading, error, currentStory, currentUser, isDeleteing, handleDeleteStory, sendLikeStory } = useStories()
@@ -21,6 +21,7 @@ const SingleStory = ({ onNextStory, handleAddNewStoryClick, onClose }) => {
     const dropdownRef = useRef(null)
     const { openModal, closeModal } = useModal()
     const [remainingTime, setRemainingTime] = useState(20000)
+    const { user } = useAuth()
 
     const handleClickOutside = (event) => {
         if (dropdownRef.current && !dropdownRef.current.contains(event.target) && !event.target.closest('.within-story-visibility')) {
@@ -139,7 +140,7 @@ const SingleStory = ({ onNextStory, handleAddNewStoryClick, onClose }) => {
         if (currentStory && currentStory.url && currentStory?.type.startsWith('video/')) {
             return (
                 <video ref={videoRef} autoPlay className='w-full h-full object-contain'>
-                    <source src={currentStory.url} type={currentStory.type} onError={() => setError('Failed to load video')} />
+                    <source src={currentStory.url} type={currentStory.type} onError={() => console.log("Error")} />
                     Your browser does not support this video format.
                 </video>
             )
@@ -153,7 +154,7 @@ const SingleStory = ({ onNextStory, handleAddNewStoryClick, onClose }) => {
                     <FontAwesomeIcon icon={isPaused ? faPlay : faPause} className='h-8 w-8' />
                 </button>
 
-                {currentUser?.userId === whoAmI.userId && (
+                {currentUser?.userId === user.id && (
                     <div className='dropdown-container'>
                         <button onClick={handleDropdownToggle} className='three-dots-button' aria-label='Options'>
                             <FontAwesomeIcon icon={faEllipsisV} className='h-8 w-8' />
@@ -233,7 +234,7 @@ const SingleStory = ({ onNextStory, handleAddNewStoryClick, onClose }) => {
                     <span className='likes-count'>{currentStory?.likes}</span>
                 </div>
 
-                {currentStory?.userId === whoAmI.userId && (
+                {currentStory?.userId === user.id && (
                     <div className='views'>
                         <FontAwesomeIcon icon={faEye} className='h-6 w-6' />
                         <span className='views-count'>{currentStory?.views}</span>

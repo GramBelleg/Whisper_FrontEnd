@@ -1,12 +1,13 @@
 import axios from 'axios'
-import { whoAmI } from '../chatservice/whoAmI'
+import apiUrl from '@/config'
 
 export const getStoryLikesAndViews = async (storyId) => {
     try {
         const token = localStorage.getItem("token")
-        const response = await axios.get(`https://whisper.webredirect.org/api/user/story/getViews/${storyId}`, {
+        const meUser = localStorage.getItem("user")
+        const response = await axios.get(`${apiUrl}/api/user/story/getViews/${storyId}`, {
             headers: {
-                Authorization: `Bearer ${token}` // Use the appropriate scheme (Bearer, Basic, etc.)
+                Authorization: `Bearer ${token}`  
             },
             withCredentials: true
         })
@@ -15,8 +16,8 @@ export const getStoryLikesAndViews = async (storyId) => {
         const views = users.length
 
         const likes = users.filter((user) => user.liked === true).length
-        const Liked = users.some((user) => user.liked === true && user.userId === whoAmI.userId)
-        const Viewed = users.some((user) => user.userId === whoAmI.userId)
+        const Liked = users.some((user) => user.liked === true && user.userId === meUser.id)
+        const Viewed = users.some((user) => user.userId === meUser.id)
 
         return {
             iLiked: Liked,
@@ -32,9 +33,9 @@ export const getStoryLikesAndViews = async (storyId) => {
 export const getStoryViews = async (storyId) => {
     try {
         const token = localStorage.getItem("token")
-        const response = await axios.get(`https://whisper.webredirect.org/api/user/story/getViews/${storyId}`, {
+        const response = await axios.get(`${apiUrl}/api/user/story/getViews/${storyId}`, {
             headers: {
-                Authorization: `Bearer ${token}` // Use the appropriate scheme (Bearer, Basic, etc.)
+                Authorization: `Bearer ${token}` 
             },
             withCredentials: true
         })
