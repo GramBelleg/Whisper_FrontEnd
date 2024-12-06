@@ -14,10 +14,10 @@ import { useStackedNavigation } from '@/contexts/StackedNavigationContext/Stacke
 import useAuth from '@/hooks/useAuth'
 
 const VisibilitySettings = () => {
-    const { user } = useAuth()
-    const [profilePictureVisibility, setProfilePictureVisibility] = useState('Everyone')
-    const [storyVisibility, setStoryVisibility] = useState('Everyone')
-    const [lastSeenVisibility, setLastSeenVisibility] = useState('Everyone')
+    const { user, handleUpdateUser } = useAuth()
+    const [profilePictureVisibility, setProfilePictureVisibility] = useState(user.pfpPrivacy)
+    const [storyVisibility, setStoryVisibility] = useState(user.storyPrivacy)
+    const [lastSeenVisibility, setLastSeenVisibility] = useState(user.lastSeenPrivacy)
     const [readReceiptsEnabled, setReadReceiptsEnabled] = useState(user.readReceipts)
 
     const { openModal, closeModal } = useModal()
@@ -65,9 +65,11 @@ const VisibilitySettings = () => {
     }
 
     const updateReadReceiptsSetting = async () => {
-        setReadReceiptsEnabled(!readReceiptsEnabled)
+                 
         try {
             await putReadReceiptsSetting(!readReceiptsEnabled)
+            setReadReceiptsEnabled(!readReceiptsEnabled)
+            handleUpdateUser("readReciepts", !readReceiptsEnabled)
         } catch (error) {
             openModal(<ErrorMesssage errorMessage={error.message} onClose={closeModal} appearFor={3000} />)
             setReadReceiptsEnabled(!readReceiptsEnabled)
@@ -78,6 +80,7 @@ const VisibilitySettings = () => {
         setStoryVisibility(user.storyPrivacy)
         setProfilePictureVisibility(user.pfpPrivacy)
         setLastSeenVisibility(user.lastSeenPrivacy)
+        setReadReceiptsEnabled(user.readReceiptsEnabled)
     }, [])
     return (
         <div className='visibility-settings' data-testid='test-visibility-page'>

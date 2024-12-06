@@ -1,3 +1,4 @@
+import apiUrl from '@/config'
 import axios from 'axios'
 
 export const putReadReceiptsSetting = async (enabled) => {
