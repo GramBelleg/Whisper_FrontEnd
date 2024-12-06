@@ -46,7 +46,7 @@ function App() {
                     try {
                         let messages = await getMessagesForChatCleaned(chat.id)
                         if (messages.length > 0) {
-                            dbRef.current.insertMessages(messages)
+                            await dbRef.current.insertMessages(messages)
                         }
                     } catch (error) {
                         console.log(error.message)
