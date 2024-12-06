@@ -279,9 +279,9 @@ class WhisperDB {
         }
     }
 
-    async addStoryUrl(storyId, url) {
+    async addStoryBlob(storyId, blob) {
         if (this._stories !== null) {
-            return this._stories.addStoryUrl(storyId, url)
+            return this._stories.addStoryBlob(storyId, blob)
         } else {
             throw new Error('Stories store is not initialized')
         }
