@@ -16,11 +16,17 @@ import { useWhisperDB } from './contexts/WhisperDBContext'
 import { getMessagesForChatCleaned, getPinnedMessagesForChat } from './services/chatservice/getMessagesForChat'
 import { getUsersWithStoriesCleaned } from './services/storiesservice/getStories'
 import { whoAmI } from './services/chatservice/whoAmI'
+import useChatEncryption from './hooks/useChatEncryption'
+import axiosInstance from './services/axiosInstance'
+import { useChat } from './contexts/ChatContext'
 
 function App() {
     const { user, token } = useAuth()
     const [loading, setLoading] = useState(true)
-    const { dbRef, initDB } = useWhisperDB()
+    const { dbRef } = useWhisperDB()
+    const { user: authUser } = useAuth()
+    const {sendJoinChat} = useChat();
+    const {decryptMessage, generateKeyIfNotExists} = useChatEncryption();
 
     if (import.meta.env.VITE_APP_USE_MOCKS === 'true') {
         initializeMock()
@@ -28,17 +34,46 @@ function App() {
 
     useEffect(() => {
         const init = async () => {
-            await initDB()
             await loadChats()
             await loadMessages()
             await loadPinnedMessages()
             await loadStories()
+            setLoading(false)
         }
 
         const loadChats = async () => {
             let allChats = await getChatsCleaned()
-            await dbRef.current.insertChats(allChats)
+            let myDeviceChats = [];
+            const getAllmyKeys = await dbRef.current.getKeysStore().getAll();
+            const keyIds = getAllmyKeys.map(keyData => keyData.id);
+            
+            for (const chat of allChats) {
+                if (chat.type === 'DM' && chat.participantKeys.some(key => keyIds.includes(key))) {
+                    myDeviceChats.push(chat);
+                } else if (chat.type === 'DM' && !chat.participantKeys[1]) {
+                    // I am the second participant in the chat and I have to generate the key
+                    let joinedChat = { ...chat };
+                    // this will send key to the server and store its' private part in the indexedDB
+                    let keyId = await generateKeyIfNotExists(chat, dbRef.current.getKeysStore());
+                    if (keyId) {
+                        joinedChat.participantKeys[1] = keyId;
+                        // associate my key with the chat
+                        await axiosInstance.put(`/api/encrypt/${joinedChat.id}?keyId=${keyId}`, {
+                            keyId: keyId,
+                            userId: authUser.id
+                        });
+                        sendJoinChat(joinedChat, keyId);
+                    }
+                    myDeviceChats.push(joinedChat);
+                } else if (chat.type != 'DM') {
+                    myDeviceChats.push(chat);
+                }
+                
+            }
+            await dbRef.current.insertChats(myDeviceChats)
         }
+
+       
 
         const loadMessages = async () => {
             try {
@@ -47,7 +82,26 @@ function App() {
                     try {
                         let messages = await getMessagesForChatCleaned(chat.id)
                         if (messages.length > 0) {
-                            dbRef.current.insertMessages(messages)
+                            let decryptedMessages = messages;
+                            if(chat.type == 'DM' && chat.participantKeys) {
+                                decryptedMessages = await Promise.all(
+                                    messages.map(async (message) => {
+                                        
+                                        const decryptedMessage = { ...message };
+                                        try {
+                                        decryptedMessage.content = await decryptMessage(message.content, chat);
+                                        if (message.parentMessage && message.parentMessage.content) {
+                                            const parentMessage = { ...message.parentMessage };
+                                            parentMessage.content = await decryptMessage(message.parentMessage.content, chat);
+                                            decryptedMessage.parentMessage = parentMessage;
+                                        }
+                                        } catch (error) {}
+
+                                        return decryptedMessage;
+                                    })
+                                );
+                            }
+                            await dbRef.current.insertMessages(decryptedMessages)
                         }
                     } catch (error) {
                         console.log(error.message)
@@ -93,10 +147,8 @@ function App() {
             init()
         } catch (error) {
             console.error(error)
-        } finally {
-            setLoading(false)
         }
-    }, [dbRef, initDB])
+    }, [dbRef])
 
     return (
         <div className='App'>

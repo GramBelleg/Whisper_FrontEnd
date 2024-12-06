@@ -12,7 +12,6 @@ import { StoriesProvider } from '@/contexts/StoryContext'
 
 const SampleHome = () => {
     return (
-        <ChatProvider>
             <StoriesProvider>
                 <ModalProvider>
                     <div className='sampleHome'>
@@ -28,7 +27,6 @@ const SampleHome = () => {
                     </div>
                 </ModalProvider>
             </StoriesProvider>
-        </ChatProvider>
     )
 }
 

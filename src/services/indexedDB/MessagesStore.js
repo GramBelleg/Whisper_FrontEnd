@@ -10,8 +10,12 @@ export class MessagesStore extends BaseStore {
     async insertMessages(messages) {
         return this._executeTransaction('readwrite', async (store) => {
             try {
-                messages.forEach((message) => {
-                    store.add(message)
+                messages.forEach(async (message) => {
+                    const messageRequest = store.put(message)
+                    await new Promise((resolve, reject) => {
+                        messageRequest.onsuccess = () => resolve()
+                        messageRequest.onerror = () => reject(messageRequest.error)
+                    })
                 })
                 console.log('Messages inserted successfully!')
             } catch (error) {
