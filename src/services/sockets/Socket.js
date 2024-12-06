@@ -31,7 +31,8 @@ class Socket {
     }
 
     disconnect() {
-        throw new Error("Method 'disconnect' must be implemented by subclasses")
+        console.log(`Disconnecting from ${this.serverUrl}`)
+        this.socket.disconnect()
     }
 }
 

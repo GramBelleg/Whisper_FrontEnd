@@ -95,8 +95,7 @@ class MessagingSocket extends Socket {
     }
 
     disconnect() {
-        console.log(`Disconnecting from ${this.serverUrl}`)
-        this.socket.disconnect()
+        super.disconnect()
     }
 }
 
