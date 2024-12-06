@@ -1,14 +1,10 @@
 import axiosInstance from '../axiosInstance'
 import axios from 'axios'
-import { whoAmI } from '../chatservice/whoAmI'
 import UserSocket from '../sockets/UserSocket'
 import { downloadBlob, getBlobUrl, uploadBlob } from '@/services/blobs/blob'
-import useAuth from '@/hooks/useAuth'
-import { useEffect } from 'react'
 import apiUrl from '@/config'
 
 const userSocket = new UserSocket()
-const userId = whoAmI.userId
 
 export const updateBio = async (bio) => {
     try {
