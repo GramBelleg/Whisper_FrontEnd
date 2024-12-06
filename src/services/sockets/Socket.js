@@ -2,7 +2,7 @@ import { io } from 'socket.io-client'
 
 class Socket {
     static socketInstance // Shared socket instance for all subclasses
-    serverUrl = 'https://whisper.webredirect.org/'
+    serverUrl = 'http://localhost:5000/'
 
     constructor() {
         if (!Socket.socketInstance) {

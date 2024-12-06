@@ -75,7 +75,7 @@ export const ChatProvider = ({ children }) => {
     const updateMessage = async (messageId, content) => {
         messagesSocket.updateData({
             chatId: currentChat.id,
-            messageId: messageId,
+            id: messageId,
             content: content
         })
     }

@@ -6,19 +6,19 @@ import { whoAmI } from './chatservice/whoAmI'
 export const signUp = async (userData) => {
     try {
         
-        const response = await axios.post('https://whisper.webredirect.org/api/auth/signup', userData)
+        const response = await axios.post('http://localhost:5000/api/auth/signup', userData)
         console.log(response.data)
         return response.data
     } catch (error) {
         console.log(error)
-        throw new Error('Sign-up failed' + error.response.data.message)
+        throw new Error('failed' + error.response.data.message)
     }
 }
 
 export const googleSignUp = async (codeResponse) => {
     try {
         const res = await axios.post(
-            'https://whisper.webredirect.org/api/auth/google',
+            'http://localhost:5000/api/auth/google',
             {
                 code: codeResponse.code
             },
@@ -35,7 +35,7 @@ export const googleSignUp = async (codeResponse) => {
 export const facebookSignUp = async (codeResponse) => {
     try {
         const res = await axios.post(
-            'https://whisper.webredirect.org/api/auth/facebook',
+            'http://localhost:5000/api/auth/facebook',
             {
                 code: codeResponse
             },
@@ -52,7 +52,7 @@ export const facebookSignUp = async (codeResponse) => {
 export const githubSignUp = async (codeResponse) => {
     try {
         const res = await axios.post(
-            'https://whisper.webredirect.org/api/auth/github',
+            'http://localhost:5000/api/auth/github',
             {
                 code: codeResponse
             },
@@ -68,7 +68,7 @@ export const githubSignUp = async (codeResponse) => {
 
 export const verify = async (code, email) => {
     try {
-        const response = await axios.post('https://whisper.webredirect.org/api/auth/confirmEmail', {
+        const response = await axios.post('http://localhost:5000/api/auth/confirmEmail', {
             email: email,
             code: code
         })
@@ -76,13 +76,7 @@ export const verify = async (code, email) => {
         return { data: response.data, success: true }
     } catch (error) {
         console.log('verify error', error)
-        throw new Error(() => {
-            if (error.response && error.response.data && error.response.data.message) {
-                return error.response.data.message
-            } else {
-                return 'An error occurred'
-            }
-        })
+        throw new Error('failed' + error.response.data.message)
     }
 }
 
@@ -95,30 +89,18 @@ export const resendCode = async (email) => {
         return response.data
     } catch (error) {
         console.log('resend code error', error)
-        throw new Error(() => {
-            if (error.response && error.response.data && error.response.data.message) {
-                return error.response.data.message
-            } else {
-                return 'An error occurred'
-            }
-        })
+        throw new Error('failed' + error.response.data.message)
     }
 }
 
 export const login = async (credentials) => {
     try {
-        const response = await axios.post('https://whisper.webredirect.org/api/auth/login', credentials, { withCredentials: true })
+        const response = await axios.post('http://localhost:5000/api/auth/login', credentials, { withCredentials: true })
         console.log(response.data)
         return response.data
     } catch (error) {
         console.log('login error', error)
-        throw new Error(() => {
-            if (error.response && error.response.data && error.response.data.message) {
-                return error.response.data.message
-            } else {
-                return 'An error occurred'
-            }
-        })
+        throw new Error('failed' + error.response.data.message)
     }
 }
 
@@ -130,13 +112,7 @@ export const forgotPassword = async (email) => {
         console.log(response.data)
         return response.data
     } catch (error) {
-        throw new Error(() => {
-            if (error.response && error.response.data && error.response.data.message) {
-                return error.response.data.message
-            } else {
-                return 'An error occurred'
-            }
-        })
+        throw new Error('failed' + error.response.data.message)
     }
 }
 
@@ -147,13 +123,7 @@ export const resetPassword = async (userData) => {
         return response.data
     } catch (error) {
         console.log('reset password error', error)
-        throw new Error(() => {
-            if (error.response && error.response.data && error.response.data.message) {
-                return error.response.data.message
-            } else {
-                return 'An error occurred'
-            }
-        })
+        throw new Error('failed' + error.response.data.message)
     }
 }
 
@@ -171,7 +141,7 @@ export const clearAuthData = () => {
 
 export const logout = async (token) => {
     try {
-        const response = await axios.get('https://whisper.webredirect.org/api/user/logoutOne', {
+        const response = await axios.get('http://localhost:5000/api/user/logoutOne', {
             headers: {
                 Authorization: `Bearer ${token}`
             },
@@ -181,13 +151,7 @@ export const logout = async (token) => {
         return response.data
     } catch (error) {
         console.log('logout error', error)
-        throw new Error(() => {
-            if (error.response && error.response.data && error.response.data.message) {
-                return error.response.data.message
-            } else {
-                return 'An error occurred'
-            }
-        })
+        throw new Error('failed' + error.response.data.message)
     }
 }
 export const logoutAll = async (token) => {
@@ -202,12 +166,6 @@ export const logoutAll = async (token) => {
         return response.data
     } catch (error) {
         console.log('logout all error', error)
-        throw new Error(() => {
-            if (error.response && error.response.data && error.response.data.message) {
-                return error.response.data.message
-            } else {
-                return 'An error occurred'
-            }
-        })
+        throw new Error('failed' + error.response.data.message)
     }
 }

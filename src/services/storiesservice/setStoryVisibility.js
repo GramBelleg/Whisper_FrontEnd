@@ -4,7 +4,7 @@ export const setStoryPrivacySettings = async (storyId, privacy) => {
     try {
         const token = localStorage.getItem("token")
         const response = await axios.put(
-            `https://whisper.webredirect.org/api/user/story/${storyId}/privacy`,
+            `http://localhost:5000/api/user/story/${storyId}/privacy`,
             {
                 privacy: privacy
             },

@@ -6,7 +6,7 @@ let myStories = []
 export const getStoriesAPI = async (id) => {
     try {
         const token = localStorage.getItem("token")
-        const response = await axios.get(`https://whisper.webredirect.org/api/user/story/${id}`, {
+        const response = await axios.get(`http://localhost:5000/api/user/story/${id}`, {
             headers: {
                 Authorization: `Bearer ${token}` // Use the appropriate scheme (Bearer, Basic, etc.)
             },
@@ -27,7 +27,7 @@ export const getStories = async (id) => {
 
         const myStories = await Promise.all(
             tempStories.map(async (story) => {
-                const flattenedStory = {
+                let flattenedStory = {
                     id: story.id,
                     content: story.content,
                     media: story.media,
@@ -61,7 +61,7 @@ export const getStories = async (id) => {
 export const getUsersWithStoriesAPI = async () => {
     try {
         const token = localStorage.getItem("token")
-        const stories = await axios.get(`https://whisper.webredirect.org/api/user/story`, {
+        const stories = await axios.get(`http://localhost:5000/api/user/story`, {
             headers: {
                 Authorization: `Bearer ${token}` // Use the appropriate scheme (Bearer, Basic, etc.)
             },

@@ -31,7 +31,7 @@ export const AuthProvider = ({ children }) => {
                 const tokenFromCookies = localStorage.getItem('token')
 
                 if (tokenFromCookies) {
-                    const response = await axios.get('https://whisper.webredirect.org/api/user/', {
+                    const response = await axios.get('http://localhost:5000/api/user/', {
                         headers: {
                             Authorization: `Bearer ${tokenFromCookies}`
                         }

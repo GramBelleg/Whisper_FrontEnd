@@ -3,7 +3,7 @@ import axios from 'axios'
 export const muteChat = async (chatId, muteObject) => {
     try {
         const token = localStorage.getItem("token")
-        const response = await axios.post(`https://whisper.webredirect.org/api/chats/${chatId}/muteChat`, muteObject, { 
+        const response = await axios.post(`http://localhost:5000/api/chats/${chatId}/muteChat`, muteObject, { 
             headers: {
                 Authorization: `Bearer ${token}` // Use the appropriate scheme (Bearer, Basic, etc.)
             },
@@ -19,7 +19,7 @@ export const muteChat = async (chatId, muteObject) => {
 export const unMuteChat = async (chatId, muteObject) => {
     try {
         const token = localStorage.getItem("token")
-        const response = await axios.post(`https://whisper.webredirect.org/api/chats/${chatId}/muteChat`, muteObject, {
+        const response = await axios.post(`http://localhost:5000/api/chats/${chatId}/muteChat`, muteObject, {
             headers: {
                 Authorization: `Bearer ${token}` // Use the appropriate scheme (Bearer, Basic, etc.)
             },
