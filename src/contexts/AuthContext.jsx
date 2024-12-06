@@ -16,6 +16,7 @@ import {
 import axios from 'axios'
 import LoadingData from '@/components/LoadingData/LoadingData'
 import { useStories } from './StoryContext'
+import apiUrl from '@/config'
 
 const AuthContext = createContext()
 
@@ -31,7 +32,7 @@ export const AuthProvider = ({ children }) => {
             try {
                 const tokenFromCookies = localStorage.getItem('token')
                 if (tokenFromCookies) {
-                    const response = await axios.get('http://localhost:5000/api/user/', {
+                    const response = await axios.get(`${apiUrl}/api/user/`, {
                         headers: {
                             Authorization: `Bearer ${tokenFromCookies}`
                         }
