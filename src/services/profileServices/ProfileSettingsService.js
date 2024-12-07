@@ -108,8 +108,8 @@ export const updateProfilePic = async (userID, file) => {
         const token = localStorage.getItem('token')
 
         // Request to get a presigned URL for uploading
-        const blobResponse = await axiosInstance.post(
-            'api/media/write',
+        const blobResponse = await axios.post(
+            `${apiUrl}/api/media/write`,
             {
                 fileName: file.name,
                 fileType: file.type,
@@ -128,9 +128,8 @@ export const updateProfilePic = async (userID, file) => {
         }
 
         const { presignedUrl, blobName } = blobResponse.data
-        const newUrl = presignedUrl.replace('https://whisperblob.blob.core.windows.net', 'api')
 
-        await uploadBlob(file, { presignedUrl: newUrl, blobName })
+        await uploadBlob(file, { presignedUrl: presignedUrl, blobName })
 
         userSocket.emitPFP({ userID, profilePic: blobName })
 
