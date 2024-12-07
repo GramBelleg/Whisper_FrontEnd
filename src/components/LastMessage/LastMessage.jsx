@@ -33,7 +33,7 @@ const LastMessage = ({ myChat, index }) => {
                     )}
                     {myChat.messageType?.toLowerCase() === 'video'.toLowerCase() && <VideoMessage messageState={myChat.messageState} />}
                     {myChat.messageType?.toLowerCase() === 'sticker'.toLowerCase() && <StickerMessage messageState={myChat.messageState} />}
-                    {myChat.type == 'DM' && (!myChat.participantKeys[0] || !myChat.participantKeys[1]) && (
+                    {myChat.type == 'DM' && myChat.participantKeys && (!myChat.participantKeys[0] || !myChat.participantKeys[1]) && (
                             <AwaitingJoinMessage chat={myChat} />
                         )}
                 </>

@@ -37,7 +37,7 @@ function App() {
             await loadMessages()
             await loadPinnedMessages()
             await loadStories()
-            setLoading(false)
+            
         }
 
         const loadChats = async () => {
@@ -155,6 +155,8 @@ function App() {
             init()
         } catch (error) {
             console.error(error)
+        } finally {
+            setLoading(false)
         }
     }, [dbRef])
 
