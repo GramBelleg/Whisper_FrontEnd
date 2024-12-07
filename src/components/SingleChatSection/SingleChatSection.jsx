@@ -27,9 +27,23 @@ const SingleChatSection = () => {
     const { currentChat, pinnedMessages } = useChat()
     useEffect(() => {}, [pinnedMessages])
 
+    const handlePinnedClick = (event) => {
+        const messageId = event.messageId; // Retrieve the data-message-id
+        console.log("Clicked on pinned message with ID:", messageId);
+    
+        const targetElement = document.getElementById(`message-${messageId}`);
+        if (targetElement) {
+            targetElement.scrollIntoView({ behavior: "smooth", block: "center" });
+        } else {
+            console.log("Target message not found:", messageId);
+        }
+    };
+       
     if (!currentChat) {
         return <NoChatOpened />
     }
+
+
 
     return (
         <div className='single-chat-container'>
@@ -51,7 +65,7 @@ const SingleChatSection = () => {
                 <SingleChatMessagesList />
                 {pinnedMessages.length > 0 && (
                     <div>
-                        <PinnedMessages onGoToMessage={(message) => console.log('Go to message', message)} />
+                        <PinnedMessages onGoToMessage={handlePinnedClick} />
                     </div>
                 )}
             </div>

@@ -22,7 +22,6 @@ class MessagingSocket extends Socket {
     }
 
     sendDeliverMessage(data) {
-        console.log(data)
         this.socket.emit('deliverMessage', data)
     }
 
@@ -105,8 +104,7 @@ class MessagingSocket extends Socket {
     }
 
     disconnect() {
-        console.log(`Disconnecting from ${this.serverUrl}`)
-        this.socket.disconnect()
+        super.disconnect()
     }
 }
 

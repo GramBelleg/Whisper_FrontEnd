@@ -7,7 +7,10 @@ const GithubButton = ({ classStyle }) => {
     const { loading } = useAuth()
     const handleGitAuth = () => {
         const clientId = import.meta.env.VITE_APP_GITHUB_CLIENT_ID
-        const redirectUri = 'http://localhost:5173/github-callback'
+        console.log(clientId)
+        const homeUrl = process.env.NODE_ENV === 'development' ? import.meta.env.VITE_APP_URL : import.meta.env.VITE_APP_SERVER_URL
+        const redirectUri = `${homeUrl}/github-callback`
+        console.log(redirectUri)
         const scope = 'user:email'
 
         const url = `https://github.com/login/oauth/authorize?client_id=${clientId}&redirect_uri=${encodeURIComponent(redirectUri)}&scope=${scope}`

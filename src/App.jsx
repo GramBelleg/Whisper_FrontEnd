@@ -15,13 +15,12 @@ import { getChatsCleaned } from './services/chatservice/getChats'
 import { useWhisperDB } from './contexts/WhisperDBContext'
 import { getMessagesForChatCleaned, getPinnedMessagesForChat } from './services/chatservice/getMessagesForChat'
 import { getUsersWithStoriesCleaned } from './services/storiesservice/getStories'
-import { whoAmI } from './services/chatservice/whoAmI'
 import useChatEncryption from './hooks/useChatEncryption'
 import axiosInstance from './services/axiosInstance'
 import { useChat } from './contexts/ChatContext'
 
 function App() {
-    const { user, token } = useAuth()
+    const { user, token, handleUpdateUser } = useAuth()
     const [loading, setLoading] = useState(true)
     const { dbRef } = useWhisperDB()
     const { user: authUser } = useAuth()
@@ -119,12 +118,16 @@ function App() {
 
         const loadStories = async () => {
             try {
-                let data = await getUsersWithStoriesCleaned()
-                data = data.map((item) => {
-                    const { id, ...rest } = item
-                    return { userId: id, ...rest }
-                })
-                await dbRef.current.insertStories(data)
+                let iHaveStoryFlag = false
+                let data = await getUsersWithStoriesCleaned(iHaveStoryFlag)
+                if (data && data.length > 0) {
+                    data = data.map((item) => {
+                        const { id, ...rest } = item
+                        return { userId: id, ...rest }
+                    })
+                    await dbRef.current.insertStories(data)
+                    handleUpdateUser('hasStory', iHaveStoryFlag)
+                }
             } catch (error) {
                 console.log(error)
             }

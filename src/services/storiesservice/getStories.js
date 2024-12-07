@@ -1,11 +1,16 @@
 import axios from 'axios'
-import { whoAmI } from '../chatservice/whoAmI'
+import apiUrl from '@/config'
 
 let myStories = []
 
 export const getStoriesAPI = async (id) => {
     try {
-        const response = await axios.get(`http://localhost:5000/api/user/story/${id}`, {
+        const token = localStorage.getItem("token")
+        const user = localStorage.getItem("user")
+        const response = await axios.get(`${apiUrl}/api/user/story/${id}`, {
+            headers: {
+                Authorization: `Bearer ${token}`  
+            },
             withCredentials: true
         })
 
@@ -23,7 +28,7 @@ export const getStories = async (id) => {
 
         const myStories = await Promise.all(
             tempStories.map(async (story) => {
-                const flattenedStory = {
+                let flattenedStory = {
                     id: story.id,
                     content: story.content,
                     media: story.media,
@@ -56,8 +61,11 @@ export const getStories = async (id) => {
 
 export const getUsersWithStoriesAPI = async () => {
     try {
-        //const stories = await axiosInstance.get("/stories");
-        const stories = await axios.get(`http://localhost:5000/api/user/story`, {
+        const token = localStorage.getItem("token")
+        const stories = await axios.get(`${apiUrl}/api/user/story`, {
+            headers: {
+                Authorization: `Bearer ${token}`  
+            },
             withCredentials: true
         })
 
@@ -67,14 +75,15 @@ export const getUsersWithStoriesAPI = async () => {
     }
 }
 
-export const getUsersWithStoriesCleaned = async () => {
+export const getUsersWithStoriesCleaned = async (iHaveStory) => {
     try {
         const stories = await getUsersWithStoriesAPI()
         myStories = []
-        whoAmI.hasStory = false
+        const user = localStorage.getItem("user")
+        iHaveStory = false
         stories.users.users.map((story) => {
-            if (story.id === whoAmI.userId) {
-                whoAmI.hasStory = true
+            if (story.id === user.id) {
+                iHaveStory = true
             }
             const flattenedStory = {
                 id: story.id,

@@ -1,11 +1,10 @@
 import { createContext, useContext, useEffect, useRef, useState } from 'react'
-import { whoAmI } from '@/services/chatservice/whoAmI'
 import { mapMessage } from '@/services/chatservice/getMessagesForChat'
 import MessagingSocket from '@/services/sockets/MessagingSocket'
 import { useWhisperDB } from './WhisperDBContext'
 import parentRelationshipTypes from '@/services/chatservice/parentRelationshipTypes'
 import useChatEncryption from '@/hooks/useChatEncryption'
-
+import useAuth from '@/hooks/useAuth'
 
 export const ChatContext = createContext()
 
@@ -24,6 +23,7 @@ export const ChatProvider = ({ children }) => {
     const [action, setAction] = useState(false)
     const [messageDelivered, setMessageDelivered] = useState(false)
     const { encryptMessage , decryptMessage }  = useChatEncryption();
+    const { user } = useAuth()
 
     const setActionExposed = (actionIn) => {
         setAction(actionIn)
@@ -135,11 +135,11 @@ export const ChatProvider = ({ children }) => {
             newMessageForBackend.content = await encryptMessage(newMessage.content, currentChat)
         }
 
-        newMessage.senderId = whoAmI.userId
+        newMessage.senderId = user.userId
         newMessage.deliveredAt = ''
         newMessage.readAt = ''
         newMessage.deleted = false
-        newMessage.sender = whoAmI.name
+        newMessage.sender = user.name
         newMessage.state = 4
         newMessage.time = new Date()
 
@@ -184,6 +184,10 @@ export const ChatProvider = ({ children }) => {
     }
 
     const pinMessage = (messsageId, durtaion = 0) => {
+        console.log("Pinning", {
+            chatId: currentChat.id,
+            id: messsageId
+        })
         messagesSocket.pinMessage({
             chatId: currentChat.id,
             id: messsageId
@@ -246,7 +250,7 @@ export const ChatProvider = ({ children }) => {
             }
 
             try {
-                if (messageData.sender.id !== whoAmI.userId) {
+                if (messageData.sender.id !== user.id) {
                     messagesSocket.sendDeliverMessage({
                         messageId: messageData.id,
                         chatId: messageData.chatId
@@ -266,7 +270,7 @@ export const ChatProvider = ({ children }) => {
                     console.log(error)
                 }
             } else {
-                if (messageData.sender.id !== whoAmI.userId) {
+                if (messageData.sender.id !== user.id) {
                     try {
                         await dbRef.current.updateUnreadCount(myMessageData.chatId, true)
                     } catch (error) {
@@ -377,17 +381,19 @@ export const ChatProvider = ({ children }) => {
 
     const handlePinMessage = async (pinData) => {
         try {
+            console.log(pinData)
             const activeChat = currentChatRef.current
             const messagesForChat = await dbRef.current.getMessagesForChat(pinData.chatId)
+            console.log("aywa")
             const messageToPin = messagesForChat.find((message) => message.id === pinData.id)
-
+            console.log("aywa", messageToPin)
             if (!messageToPin) {
                 throw new Error(`Message with id ${pinData.id} not found in chat ${pinData.chatId}`)
             }
 
             await dbRef.current.pinMessage({ ...pinData, content: messageToPin.content })
             await dbRef.current.updateMessagesForPinned(pinData.id)
-
+            console.log("aywa", activeChat)
             await loadMessages(activeChat.id)
             await loadPinnedMessages(activeChat.id)
         } catch (error) {
@@ -446,6 +452,7 @@ export const ChatProvider = ({ children }) => {
             messagesSocket.offUnPinMessage(handleUnpinMessage)
             messagesSocket.offDeliverMessage(handleDeliverMessage)
             messagesSocket.offReadMessage(handleReadMessage)
+            messagesSocket.disconnect()
         }
     }, [messagesSocket])
 
@@ -461,6 +468,7 @@ export const ChatProvider = ({ children }) => {
             setMessageDelivered(false)
         }
     }, [messageDelivered])
+
 
     return (
         <ChatContext.Provider

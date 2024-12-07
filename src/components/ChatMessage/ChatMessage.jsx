@@ -3,7 +3,6 @@ import SentTicks from '../SentTicks/SentTicks'
 import DeliveredTicks from '../DeliveredTicks/DeliveredTicks'
 import ReadTicks from '../ReadTicks/ReadTicks'
 import PendingSend from '../PendingSend/PendingSend'
-import { whoAmI } from '../../services/chatservice/whoAmI'
 import AudioVoiceMessage from '../AudioVoiceMessage/AudioVoiceMessage'
 import { messageTypes } from '@/services/sendTypeEnum'
 import { useEffect, useMemo, useState } from 'react'
@@ -19,14 +18,14 @@ import MessageAttachmentRenderer from '../MessageAttachment/MessageAttachementRe
 import MessageInfo from '../MessageInfo/MessageInfo'
 import useAuth from '@/hooks/useAuth'
 
-const ChatMessage = ({ message, hideActions }) => {
+const ChatMessage = ({ id, message, hideActions }) => {
     const [isMenuOpen, setIsMenuOpen] = useState(false) // Track menu state
     const [menuPosition, setMenuPosition] = useState({ x: 0, y: 0 })
     const [objectLink, setObjectLink] = useState(null)
     const { openModal, openConfirmationModal } = useModal()
-    const {user:authUser} = useAuth();
     const menuOverlayGutter = 40
-    const { pinMessage, unPinMessage, deleteMessage, updateParentMessage, currentChat } = useChat()
+    const { pinMessage, unPinMessage, deleteMessage, updateParentMessage } = useChat()
+    const { user } = useAuth();
 
     const toggleMenu = (e) => {
         if (hideActions) return
@@ -110,7 +109,8 @@ const ChatMessage = ({ message, hideActions }) => {
 
     return (
         <div
-            className={`message shadow ${message.senderId === authUser.id ? 'sender' : 'reciever'}`}
+            id={id}
+            className={`message shadow ${message.senderId === user.userId ? 'sender' : 'reciever'}`}
             onContextMenu={toggleMenu} // Right-click or long-press to open menu
         >
             <MessageRelationshipsViewer message={message} />
@@ -121,7 +121,7 @@ const ChatMessage = ({ message, hideActions }) => {
                 <div className='message-info'>
                     {message.edited ? <span className='text-sm opacity-60'>edited</span> : null}
                     <span className='time opacity-60'>{messageTime}</span>
-                    {message.senderId === authUser.id && (
+                    {message.senderId === user.userId && (
                         <span className='message-status'>
                             {message.state === 0 && <SentTicks width='12px' />}
                             {message.state === 1 && <DeliveredTicks width='12px' />}
@@ -147,7 +147,7 @@ const ChatMessage = ({ message, hideActions }) => {
                             <FontAwesomeIcon style={{ height: '18px' }} icon={faReply} />
                             <span>Reply</span>
                         </button>
-                        {message.content.length && message.senderId === authUser.id &&  (
+                        {message.content.length && message.senderId === user.id &&  (
                             <button onClick={handleEdit}>
                                 <FontAwesomeIcon style={{ height: '18px' }} icon={faEdit} />
                                 <span>Edit</span>
@@ -157,7 +157,7 @@ const ChatMessage = ({ message, hideActions }) => {
                             <FontAwesomeIcon style={{ height: '18px' }} icon={faShare} />
                             <span>Forward</span>
                         </button>
-                        {message.senderId === authUser.id && (
+                        {message.senderId === user.userId && (
                             <button onClick={handleMessageInfo}>
                                 <FontAwesomeIcon height={18} icon={faCircleInfo} />
                                 <span>Info</span>
@@ -174,7 +174,7 @@ const ChatMessage = ({ message, hideActions }) => {
                                 <span>UnPin</span>
                             </button>
                         )}
-                        {message.senderId === authUser.id &&  (<button className='danger' onClick={handleDelete}>
+                        {message.senderId === user.id &&  (<button className='danger' onClick={handleDelete}>
                             <FontAwesomeIcon style={{ height: '18px' }} icon={faTrash} />
                             <span>Delete</span>
                         </button>)}

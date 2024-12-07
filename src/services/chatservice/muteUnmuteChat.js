@@ -1,8 +1,15 @@
+import apiUrl from '@/config'
 import axios from 'axios'
 
 export const muteChat = async (chatId, muteObject) => {
     try {
-        const response = await axios.post(`http://localhost:5000/api/chats/${chatId}/muteChat`, muteObject, { withCredentials: true })
+        const token = localStorage.getItem("token")
+        const response = await axios.post(`${apiUrl}/api/chats/${chatId}/muteChat`, muteObject, { 
+            headers: {
+                Authorization: `Bearer ${token}`  
+            },
+            withCredentials: true
+        })
 
         return response.data
     } catch (error) {
@@ -12,7 +19,13 @@ export const muteChat = async (chatId, muteObject) => {
 
 export const unMuteChat = async (chatId, muteObject) => {
     try {
-        const response = await axios.post(`http://localhost:5000/api/chats/${chatId}/muteChat`, muteObject, { withCredentials: true })
+        const token = localStorage.getItem("token")
+        const response = await axios.post(`${apiUrl}/api/chats/${chatId}/muteChat`, muteObject, {
+            headers: {
+                Authorization: `Bearer ${token}`  
+            },
+            withCredentials: true
+        })
 
         return response.data
     } catch (error) {

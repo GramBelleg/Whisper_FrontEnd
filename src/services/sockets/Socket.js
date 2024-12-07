@@ -1,13 +1,18 @@
+import apiUrl from '@/config'
 import { io } from 'socket.io-client'
 
 class Socket {
     static socketInstance // Shared socket instance for all subclasses
-    serverUrl = 'http://localhost:5000/'
+    serverUrl = apiUrl
 
     constructor() {
         if (!Socket.socketInstance) {
+            const token = localStorage.getItem("token")
             // Create the shared socket connection only once
             Socket.socketInstance = io(this.serverUrl, {
+                query: {
+                    token: token,
+                },
                 withCredentials: true,
                 transports: ['websocket']
             })
@@ -26,7 +31,8 @@ class Socket {
     }
 
     disconnect() {
-        throw new Error("Method 'disconnect' must be implemented by subclasses")
+        console.log(`Disconnecting from ${this.serverUrl}`)
+        this.socket.disconnect()
     }
 }
 

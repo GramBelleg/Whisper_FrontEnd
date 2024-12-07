@@ -2,14 +2,15 @@ import './StorageSettings.css'
 import { faArrowLeft } from '@fortawesome/free-solid-svg-icons'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { useEffect, useState } from 'react'
-import { whoAmI } from '@/services/chatservice/whoAmI'
 import { putAutoDownloadSize } from '@/services/privacy/privacy'
 import { useModal } from '@/contexts/ModalContext'
 import ErrorMesssage from '../ErrorMessage/ErrorMessage'
 import { useStackedNavigation } from '@/contexts/StackedNavigationContext/StackedNavigationContext'
+import useAuth from '@/hooks/useAuth'
 
 const StorageSettings = () => {
-    const [autoDownloadSize, setAutoDownloadSize] = useState(whoAmI.autoDownloadSize)
+    const { user, handleUpdateUser } = useAuth()
+    const [autoDownloadSize, setAutoDownloadSize] = useState(user.autoDownloadSize)
 
     const { openModal, closeModal } = useModal()
     const { pop } = useStackedNavigation()
@@ -21,7 +22,7 @@ const StorageSettings = () => {
     const updateUserAutoDownloadSize = async (size) => {
         const prev = autoDownloadSize
         setAutoDownloadSize(size)
-        whoAmI.autoDownloadSize = size
+        handleUpdateUser("autoDownloadSize", size)
         try {
             await putAutoDownloadSize(size)
         } catch (error) {
@@ -31,7 +32,7 @@ const StorageSettings = () => {
     }
 
     useEffect(() => {
-        setAutoDownloadSize(whoAmI.autoDownloadSize)
+        setAutoDownloadSize(user.autoDownloadSize)
     }, [])
     return (
         <div className='visibility-settings' data-testid='test-visibility-page'>

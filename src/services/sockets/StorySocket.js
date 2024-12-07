@@ -47,16 +47,27 @@ class StorySocket extends Socket {
     }
 
     offReceiveStory(callback) {
-        // this.socket.off('receive', callback);
+        console.log("hello recieve")
+        this.socket.off('story', callback);
     }
 
     offRecieveDeleteStory(callback) {
-        // this.socket.off('deleteStory', callback);
+        console.log("delete recieve")
+        this.socket.off('deleteStory', callback);
+    }
+
+    offReceiveLikeStory(callback) {
+        console.log("like recieve")
+        this.socket.off('likeStory', callback);
+    }
+
+    offReceiveViewStory(callback) {
+        console.log("view recieve")
+        this.socket.off('viewStory', callback);
     }
 
     disconnect() {
-        console.log(`Disconnecting from ${this.serverUrl}`)
-        this.socket.disconnect()
+        super.disconnect()
     }
 }
 

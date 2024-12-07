@@ -1,6 +1,5 @@
 import { BaseStore } from './BaseStore'
 
-import { whoAmI } from '../chatservice/whoAmI'
 
 export class MessagesStore extends BaseStore {
     constructor(db) {
@@ -12,10 +11,11 @@ export class MessagesStore extends BaseStore {
             try {
                 messages.forEach(async (message) => {
                     const messageRequest = store.put(message)
-                    await new Promise((resolve, reject) => {
-                        messageRequest.onsuccess = () => resolve()
+                    const response = await new Promise((resolve, reject) => {
+                        messageRequest.onsuccess = () => resolve(messageRequest.result)
                         messageRequest.onerror = () => reject(messageRequest.error)
                     })
+                    console.log(response)
                 })
                 console.log('Messages inserted successfully!')
             } catch (error) {
