@@ -65,6 +65,7 @@ export const getChatsCleaned = async (filters = {}) => {
                 media: chat.lastMessage && chat.lastMessage.media ? chat.lastMessage.media : '', // TODO: to be removed
                 story: chat.hasStory !== null ? chat.hasStory : false,
                 muted: chat.isMuted !== null ? chat.isMuted : false,
+                participantKeys: chat.participantKeys,
                 profilePic: noUser, // TODO
                 unreadMessageCount: chat.unreadMessageCount,
                 sender: chat.lastMessage ? chat.lastMessage.sender.userName : null,

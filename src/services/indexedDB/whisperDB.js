@@ -3,6 +3,7 @@ import { ChatsStore } from './ChatsStore'
 import { StoriesStore } from './StoriesStore'
 import { StoriesTempStore } from './StoriesTempStore'
 import { PinnedMessagesStore } from './PinnedMessagesStore'
+import { KeysStore } from './KeysStore'
 
 import { DB_CONFIG } from './DBConfig'
 
@@ -16,7 +17,7 @@ class WhisperDB {
         this._chats = null
         this._messages = null
         this._stories = null
-
+        this._keys = null;
         WhisperDB.instance = this
     }
 
@@ -55,6 +56,7 @@ class WhisperDB {
         this._stories = new StoriesStore(this.db)
         this._stories_temp = new StoriesTempStore(this.db)
         this._pinned_messages = new PinnedMessagesStore(this.db)
+        this._keys = new KeysStore(this.db);
     }
 
     _createStores(db) {
@@ -72,6 +74,10 @@ class WhisperDB {
                 }
             }
         })
+    }
+
+    getKeysStore() {
+        return this._keys;
     }
 
     /**
@@ -101,6 +107,60 @@ class WhisperDB {
                 reject(new Error('Database deletion is blocked.'))
             }
         })
+    }
+
+    async getChat(id) {
+        if (this.db != null) {
+            try {
+                const tx = this.db.transaction('chats', 'readonly');
+                const store = tx.objectStore('chats');
+                const request = store.get(id);
+    
+                const chat = await new Promise((resolve, reject) => {
+                    request.onsuccess = () => resolve(request.result);
+                    request.onerror = () => reject(request.error);
+                });
+    
+                return chat;
+            } catch (error) {
+                throw new Error("Failed to get chat from indexed db: " + error.message);
+            }
+        } else {
+            throw new Error("Database connection is not initialized.");
+        }
+    }
+    async updateChat(id,data) {
+        if (this.db != null) {
+            try {
+                const tx = this.db.transaction('chats', 'readwrite');
+                const store = tx.objectStore('chats');
+                const request = store.get(id);
+    
+                const existingChat = await new Promise((resolve, reject) => {
+                    request.onsuccess = () => resolve(request.result);
+                    request.onerror = () => reject(request.error);
+                });
+    
+                if (existingChat) {
+                    const newChat = { ...existingChat, ...data };
+                    const updateRequest = store.put(newChat);
+                    await new Promise((resolve, reject) => {
+                        updateRequest.onsuccess = () => resolve();
+                        updateRequest.onerror = () => reject(updateRequest.error);
+                    });
+    
+                    console.log(`Message with id ${id} was successfully updated.`);
+                } else {
+                    throw new Error(`Message with id ${id} not found.`);
+                }
+    
+                await tx.complete;
+            } catch (error) {
+                throw new Error("Failed to update message: " + error.message);
+            }
+        } else {
+            throw new Error("Database connection is not initialized.");
+        }
     }
 
     async insertChats(chats) {
@@ -185,10 +245,11 @@ class WhisperDB {
 
     async insertMessages(messages) {
         if (this._messages !== null) {
-            return this._messages.insertMessages(messages)
+           await this._messages.insertMessages(messages)
         } else {
             throw new Error('Messages store is not initiaslized.')
         }
+        return await this.insertMessageInChat(messages.at(-1))
     }
 
     async getMessagesForChat(chatId) {
@@ -444,5 +505,4 @@ class WhisperDB {
         }
     }
 }
-
 export default WhisperDB
