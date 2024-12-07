@@ -1,6 +1,6 @@
 export const DB_CONFIG = {
     name: 'WhisperApp',
-    version: 6,
+    version: 7,
     stores: {
         keys:{
             name: 'keys',
