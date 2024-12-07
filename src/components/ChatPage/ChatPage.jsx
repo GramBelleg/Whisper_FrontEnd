@@ -40,7 +40,8 @@ const ChatPage = () => {
             let keyId = await generateKeyIfNotExists(chatData);
             if (keyId) {
                 // then I am the second participant in the chat
-                data.participantKeys[1] = keyId;
+                if(!chatData.participantKeys[1]) chatData.participantKeys[1] = keyId;
+                if(!chatData.participantKeys[0]) chatData.participantKeys[0] = keyId;
                 await axiosInstance.put(`/api/encrypt/${chatData.id}?keyId=${keyId}`, {
                     keyId: keyId,
                     userId: authUser.id

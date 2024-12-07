@@ -50,13 +50,18 @@ function App() {
             for (const chat of allChats) {
                 if (chat.type === 'DM' && chat.participantKeys.some(key => keyIds.includes(key))) {
                     myDeviceChats.push(chat);
-                } else if (chat.type === 'DM' && !chat.participantKeys[1]) {
+                } else if (chat.type === 'DM' && (!chat.participantKeys[1] || !chat.participantKeys[0])) {
                     // I am the second participant in the chat and I have to generate the key
                     let joinedChat = { ...chat };
                     // this will send key to the server and store its' private part in the indexedDB
                     let keyId = await generateKeyIfNotExists(chat, dbRef.current.getKeysStore());
                     if (keyId) {
-                        joinedChat.participantKeys[1] = keyId;
+                        if(!joinedChat.participantKeys[1]) {
+                            joinedChat.participantKeys[1] = keyId;
+                        }
+                        if(!joinedChat.participantKeys[0]) {
+                            joinedChat.participantKeys[0] = keyId;
+                        }
                         // associate my key with the chat
                         await axiosInstance.put(`/api/encrypt/${joinedChat.id}?keyId=${keyId}`, {
                             keyId: keyId,

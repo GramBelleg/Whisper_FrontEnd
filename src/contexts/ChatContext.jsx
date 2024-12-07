@@ -207,11 +207,18 @@ export const ChatProvider = ({ children }) => {
 
             if(myMessageData.type == "EVENT") {
                 let participantKeys = chat.participantKeys;
-                participantKeys[1] = parseInt(myMessageData.content);
+                if(!participantKeys[1]) {
+                    participantKeys[1] = parseInt(myMessageData.content);
+                }
+
+                if(!participantKeys[0]) {
+                    participantKeys[0] = parseInt(myMessageData.content);
+                }
+                
                 await dbRef.current.updateChat(myMessageData.chatId,{
                     participantKeys:participantKeys
                 });
-                if(chat.id === activeChat.id) {
+                if(activeChat && chat.id === activeChat.id) {
                     setCurrentChat({
                         ...chat,
                         participantKeys:participantKeys
