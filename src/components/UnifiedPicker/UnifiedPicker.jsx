@@ -31,6 +31,7 @@ const UnifiedPicker = ({ onGifSelect, onStickerSelect }) => {
                 icon={faIcons}
                 onClick={togglePicker}
                 className='text-primary cursor-pointer text-2xl hover:text-indigo-500 transition-colors'
+                id="unified-picker"
             />
             {showPicker && (
                 <div className='absolute bottom-12 left-0 bg-gray-800 text-white rounded-lg shadow-lg w-80'>
