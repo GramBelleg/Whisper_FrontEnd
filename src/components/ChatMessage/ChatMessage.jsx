@@ -103,6 +103,10 @@ const ChatMessage = ({ id, message, hideActions }) => {
         }
     }, [message])
 
+    if (message.type === messageTypes.EVENT) {
+        return null;
+    }
+
     return (
         <div
             id={id}
@@ -143,12 +147,12 @@ const ChatMessage = ({ id, message, hideActions }) => {
                             <FontAwesomeIcon style={{ height: '18px' }} icon={faReply} />
                             <span>Reply</span>
                         </button>
-                        {message.content.length ? (
+                        {message.content.length && message.senderId === user.id &&  (
                             <button onClick={handleEdit}>
                                 <FontAwesomeIcon style={{ height: '18px' }} icon={faEdit} />
                                 <span>Edit</span>
                             </button>
-                        ) : null}
+                        )}
                         <button onClick={handleForward}>
                             <FontAwesomeIcon style={{ height: '18px' }} icon={faShare} />
                             <span>Forward</span>
@@ -170,10 +174,10 @@ const ChatMessage = ({ id, message, hideActions }) => {
                                 <span>UnPin</span>
                             </button>
                         )}
-                        <button className='danger' onClick={handleDelete}>
+                        {message.senderId === user.id &&  (<button className='danger' onClick={handleDelete}>
                             <FontAwesomeIcon style={{ height: '18px' }} icon={faTrash} />
                             <span>Delete</span>
-                        </button>
+                        </button>)}
                     </div>
                 </div>
             )}

@@ -7,6 +7,7 @@ import AudioVoiceNoteMessage from '../AudioVoiceNoteMessage/AudioVoiceNoteMessag
 import DeletedMessage from '../DeletedMessage/DeletedMessage' // Fixed typo here
 import DraftedMessage from '../DraftedMessage/DraftedMessage'
 import { useEffect } from 'react'
+import AwaitingJoinMessage from '../AwaitingJoinMessage/AwaitingJoinMessage'
 
 const LastMessage = ({ myChat, index }) => {
     useEffect(() => {}, [myChat])
@@ -23,7 +24,7 @@ const LastMessage = ({ myChat, index }) => {
                     )}
                     {myChat.messageType?.toLowerCase() === 'image'.toLowerCase() && <ImageMessage messageState={myChat.messageState} />}
                     {(myChat.messageType?.toLowerCase() === 'audio'.toLowerCase() ||
-                        myChat.messageType.toLowerCase() === 'voiceNote'.toLowerCase()) && (
+                        myChat.messageType?.toLowerCase() === 'voiceNote'.toLowerCase()) && (
                         <AudioVoiceNoteMessage
                             messageType={myChat.messageType}
                             messageState={myChat.messageState}
@@ -32,6 +33,9 @@ const LastMessage = ({ myChat, index }) => {
                     )}
                     {myChat.messageType?.toLowerCase() === 'video'.toLowerCase() && <VideoMessage messageState={myChat.messageState} />}
                     {myChat.messageType?.toLowerCase() === 'sticker'.toLowerCase() && <StickerMessage messageState={myChat.messageState} />}
+                    {myChat.type == 'DM' && (!myChat.participantKeys[0] || !myChat.participantKeys[1]) && (
+                            <AwaitingJoinMessage chat={myChat} />
+                        )}
                 </>
             )}
         </div>

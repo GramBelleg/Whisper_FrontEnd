@@ -71,7 +71,11 @@ const SingleChatSection = () => {
             </div>
 
             <div className='w-full flex items-center justify-center'>
-                <ChatActions />
+                {((currentChat.participantKeys[0] && currentChat.participantKeys[1]) || currentChat.type != "DM") ? <ChatActions /> : 
+                <div className='flex items-center justify-center mb-3 p-4 text-white'>
+                    Waiting for the other participant to join the chat to exchange keys for secure communication
+                </div>
+                }
             </div>
         </div>
     )
