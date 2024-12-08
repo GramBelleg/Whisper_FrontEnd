@@ -1,31 +1,28 @@
-
-
-const CreateNewChat = ( myOnMouseLeave, handleCreateGroupClick, handleCreatePrivateClick, handleCreateChannelClick ) => {
-    
-    return ( 
-        <div 
-            className="create-drop-down"
+import { faUserGroup, faBullhorn, faUser } from "@fortawesome/free-solid-svg-icons";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import "./CreateNewChat.css"
+const CreateNewChat = ({ myOnMouseLeave, handleCreateGroupClick, handleCreatePrivateClick, handleCreateChannelClick }) => {
+    return (
+        <div
+            className="create-new-chat-drop-down"
             onMouseLeave={myOnMouseLeave}
         >
             <ul>
-                <li>
-                    <button onClick={handleCreateGroupClick}>
-                        New Group
-                    </button>
+                <li onClick={handleCreateChannelClick}>
+                        <FontAwesomeIcon icon={faBullhorn} />
+                        <span>New Channel</span>
                 </li>
-                <li>
-                    <button onClick={handleCreatePrivateClick}>
-                        New Private Chat
-                    </button>
+                <li onClick={handleCreateGroupClick}>
+                        <FontAwesomeIcon icon={faUserGroup} />
+                        <span>New Group</span>
                 </li>
-                <li>
-                    <button onClick={handleCreateChannelClick}>
-                        New Channel
-                    </button>
+                <li onClick={handleCreatePrivateClick}>
+                        <FontAwesomeIcon icon={faUser} />
+                        <span>New Private Chat</span>
                 </li>
             </ul>
         </div>
     );
-}
- 
+};
+
 export default CreateNewChat;

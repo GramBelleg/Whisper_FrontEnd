@@ -15,7 +15,8 @@ import useAuth from '@/hooks/useAuth'
 import CreatePrivateChatModal from '../Modals/CreatePrivateChatModal/CreatePrivateChatModal'
 import axiosInstance from '@/services/axiosInstance'
 import CreateNewChat from '../CreateNewChat/CreateNewChat'
-import CreateGroupModal from '../Modals/CreateGroupModal/CreateGroupModal'
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
+import { faTimes } from '@fortawesome/free-solid-svg-icons'
 
 const ChatPage = () => {
     const { selectChat, action, messageDelivered, sendJoinChat } = useChat()
@@ -37,9 +38,6 @@ const ChatPage = () => {
 
     const handleCreateGroupClick = () => {
         setDropDownVisible(false)
-        openModal(
-            <CreateGroupModal />
-        )
     };
 
     const handleCreateChannelClick = () => {
@@ -115,12 +113,17 @@ const ChatPage = () => {
             <div className='sidebar__other-content overflow-y-auto h-full'>
                 {chatList && chatList.length > 0 && <ChatList chatList={chatList} chooseChat={selectChat} />}
                 {!dropDownVisible ? <AddNewButton onClick={() => setDropDownVisible(true)} /> : (
-                    <CreateNewChat 
-                        myOnMouseLeave={() => setDropDownVisible(false)}
-                        handleCreatePrivateClick={handleCreatePrivateClick}
-                        handleCreateGroupClick={handleCreateGroupClick}
-                        handleCreateChannelClick={handleCreateChannelClick}
-                    />
+                    <div className="create-new">
+                        <CreateNewChat 
+                            myOnMouseLeave={() => setDropDownVisible(false)}
+                            handleCreatePrivateClick={handleCreatePrivateClick}
+                            handleCreateGroupClick={handleCreateGroupClick}
+                            handleCreateChannelClick={handleCreateChannelClick}
+                        />
+                        <div className="close-create" onClick={() => setDropDownVisible(false)}>
+                            <FontAwesomeIcon icon={faTimes}/>
+                        </div>
+                    </div>
                 )}
             </div>
         </div>

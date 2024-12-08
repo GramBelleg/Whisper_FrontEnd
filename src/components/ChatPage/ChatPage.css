@@ -3,6 +3,7 @@
     flex-direction: column;
     height: 100%;
     width: 100%;
+    position: relative; /* Added to position elements relative to this container */
 }
 
 .chat-page-stories {
@@ -12,4 +13,70 @@
 .chat-page-other-content {
     width: 100%;
     height: 80%;
+}
+
+.create-new {
+    position: absolute;
+    bottom: 20px; /* Adjust this value to control the distance between the dropdown and the button */
+    right: 5px;
+    z-index: 1001; /* Make sure the dropdown appears above other elements */
+}
+
+.close-create {
+    position: absolute;
+    bottom: 0;
+    right: 15px;
+    width: 50px;
+    height: 50px;
+    background-color: var(--accent-color);
+    border: none;
+    border-radius: 50%;
+    color: white;
+    font-size: 15px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    cursor: pointer;
+    box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.3);
+    transition: background-color 0.3s ease;
+    z-index: 1000; /* Ensure the button is behind the dropdown */
+}
+
+.close-create:hover {
+    background-color: #6A50C6;
+}
+
+.create-new-chat-drop-down {
+    position: absolute;
+    right: 0; 
+    background-color: #081d3c;
+    border: 1px solid #081d3c;
+    border-radius: 10px;
+    text-align: left;
+    z-index: 1002; 
+    width: 200px; 
+    cursor: pointer;
+    bottom: 100%;
+    top: auto;
+    color: white;
+
+}
+
+.create-new-chat-drop-down ul {
+    list-style-type: none;
+    border-radius: 5px;
+    background-color: #081d3c;
+    border: 1px solid #081d3c;
+    padding: 0;
+    margin: 0;
+}
+
+.create-new-chat-drop-down li {
+    padding: 8px 12px;
+    cursor: pointer;
+    border-radius: 10px;
+}
+
+.create-new-chat-drop-down li:hover {
+    background-color: var(--third-color); 
 }
