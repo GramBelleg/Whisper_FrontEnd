@@ -14,6 +14,7 @@ import useChatEncryption from '@/hooks/useChatEncryption'
 import useAuth from '@/hooks/useAuth'
 import CreatePrivateChatModal from '../Modals/CreatePrivateChatModal/CreatePrivateChatModal'
 import axiosInstance from '@/services/axiosInstance'
+import CreateNewChat from '../CreateNewChat/CreateNewChat'
 
 const ChatPage = () => {
     const { selectChat, action, messageDelivered, sendJoinChat } = useChat()
@@ -21,12 +22,27 @@ const ChatPage = () => {
     const { dbRef } = useWhisperDB()
     const chatSocket = new ChatSocket()
     const { openModal, closeModal } = useModal()
+    const [dropDownVisible, setDropDownVisible] = useState(false)
 
     const {user:authUser} = useAuth();
 
-    
 
-    const handleAddNewClick = () => {
+    const handleCreatePrivateClick = () => {
+        setDropDownVisible(false)
+        openModal(
+            <CreatePrivateChatModal />
+        )
+    };
+
+    const handleCreateGroupClick = () => {
+        setDropDownVisible(false)
+        openModal(
+            <CreatePrivateChatModal />
+        )
+    };
+
+    const handleCreateChannelClick = () => {
+        setDropDownVisible(false)
         openModal(
             <CreatePrivateChatModal />
         )
@@ -69,7 +85,7 @@ const ChatPage = () => {
 
     useEffect(() => {
         loadChats()
-
+        
     }, []);
 
     useEffect(() => {
@@ -97,7 +113,14 @@ const ChatPage = () => {
             </div>
             <div className='sidebar__other-content overflow-y-auto h-full'>
                 {chatList && chatList.length > 0 && <ChatList chatList={chatList} chooseChat={selectChat} />}
-                <AddNewButton onClick={handleAddNewClick} />
+                {!dropDownVisible ? <AddNewButton onClick={() => setDropDownVisible(true)} /> : (
+                    <CreateNewChat 
+                        myOnMouseLeave={() => setDropDownVisible(false)}
+                        handleCreatePrivateClick={handleCreatePrivateClick}
+                        handleCreateGroupClick={handleCreateGroupClick}
+                        handleCreateChannelClick={handleCreateChannelClick}
+                    />
+                )}
             </div>
         </div>
     )

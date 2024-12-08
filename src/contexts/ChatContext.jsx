@@ -429,9 +429,6 @@ export const ChatProvider = ({ children }) => {
         }
     }
 
-   
-
-    
 
     useEffect(() => {
         if (messagesSocket) {
