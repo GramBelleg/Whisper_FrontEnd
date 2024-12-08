@@ -15,6 +15,7 @@ import useAuth from '@/hooks/useAuth'
 import CreatePrivateChatModal from '../Modals/CreatePrivateChatModal/CreatePrivateChatModal'
 import axiosInstance from '@/services/axiosInstance'
 import CreateNewChat from '../CreateNewChat/CreateNewChat'
+import CreateGroupModal from '../Modals/CreateGroupModal/CreateGroupModal'
 
 const ChatPage = () => {
     const { selectChat, action, messageDelivered, sendJoinChat } = useChat()
@@ -37,7 +38,7 @@ const ChatPage = () => {
     const handleCreateGroupClick = () => {
         setDropDownVisible(false)
         openModal(
-            <CreatePrivateChatModal />
+            <CreateGroupModal />
         )
     };
 
