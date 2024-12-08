@@ -2,7 +2,11 @@ export const DB_CONFIG = {
     name: 'WhisperApp',
     version: 7,
     stores: {
-        keys:{
+        users: {
+            name: 'users',
+            keyPath: 'id',
+        },
+        keys: {
             name: 'keys',
             keyPath: 'id',
             indexes: [{ name: 'id', keyPath: 'id', options: { unique: true } }]

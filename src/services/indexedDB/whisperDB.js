@@ -4,6 +4,8 @@ import { StoriesStore } from './StoriesStore'
 import { StoriesTempStore } from './StoriesTempStore'
 import { PinnedMessagesStore } from './PinnedMessagesStore'
 import { KeysStore } from './KeysStore'
+import { UsersStore } from './KeysStore'
+
 
 import { DB_CONFIG } from './DBConfig'
 
@@ -17,7 +19,8 @@ class WhisperDB {
         this._chats = null
         this._messages = null
         this._stories = null
-        this._keys = null;
+        this._keys = null
+        this._users = null
         WhisperDB.instance = this
     }
 
@@ -56,7 +59,8 @@ class WhisperDB {
         this._stories = new StoriesStore(this.db)
         this._stories_temp = new StoriesTempStore(this.db)
         this._pinned_messages = new PinnedMessagesStore(this.db)
-        this._keys = new KeysStore(this.db);
+        this._keys = new KeysStore(this.db)
+        this._users = new UsersStore(this.db)
     }
 
     _createStores(db) {
@@ -160,6 +164,22 @@ class WhisperDB {
             }
         } else {
             throw new Error("Database connection is not initialized.");
+        }
+    }
+
+    async insertUsers(users) {
+        if (this._messages !== null) {
+            return this._users.insertUsers(users)
+        } else {
+            throw new Error('Users store is not initiaslized.')
+        }
+    }
+
+    async getUsers() {
+        if (this._messages !== null) {
+            return this._users.getUsers()
+        } else {
+            throw new Error('Users store is not initiaslized.')
         }
     }
 
