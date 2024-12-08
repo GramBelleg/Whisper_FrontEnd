@@ -18,6 +18,7 @@ import { getUsersWithStoriesCleaned } from './services/storiesservice/getStories
 import useChatEncryption from './hooks/useChatEncryption'
 import axiosInstance from './services/axiosInstance'
 import { useChat } from './contexts/ChatContext'
+import { getAllUsers } from './services/userservices/getAllUsers'
 
 function App() {
     const { user, token, handleUpdateUser } = useAuth()
@@ -32,12 +33,24 @@ function App() {
     }
 
     useEffect(() => {
-        const init = async () => {
+        const init = async () => { 
             await loadChats()
             await loadMessages()
             await loadPinnedMessages()
             await loadStories()
-            
+            await loadUsers()
+        }
+
+        const loadUsers = async () => {
+            try {
+                let allUsers = await getAllUsers()
+                if (allUsers) {
+                    await dbRef.current.insertUsers(allUsers)
+                }
+            } catch (error) {
+                console.error(error)
+            }
+
         }
 
         const loadChats = async () => {
