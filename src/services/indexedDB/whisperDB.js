@@ -4,7 +4,7 @@ import { StoriesStore } from './StoriesStore'
 import { StoriesTempStore } from './StoriesTempStore'
 import { PinnedMessagesStore } from './PinnedMessagesStore'
 import { KeysStore } from './KeysStore'
-import { UsersStore } from './KeysStore'
+import { UsersStore } from './UsersStore'
 
 
 import { DB_CONFIG } from './DBConfig'
