@@ -18,6 +18,7 @@ import CreateNewChat from '../CreateNewChat/CreateNewChat'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faTimes } from '@fortawesome/free-solid-svg-icons'
 import { useSidebar } from '@/contexts/SidebarContext'
+import { cleanChat } from '@/services/chatservice/getChats'
 
 const ChatPage = () => {
     const { selectChat, action, messageDelivered, sendJoinChat } = useChat()
@@ -54,22 +55,26 @@ const ChatPage = () => {
     const handleChatCreate = useCallback(async (chatData) => {
         try {
             let data = { ...chatData };
-            let keyId = await generateKeyIfNotExists(chatData);
-            if (keyId) {
-                // then I am the second participant in the chat
-                if(!chatData.participantKeys[1]) chatData.participantKeys[1] = keyId;
-                if(!chatData.participantKeys[0]) chatData.participantKeys[0] = keyId;
-                await axiosInstance.put(`/api/encrypt/${chatData.id}?keyId=${keyId}`, {
-                    keyId: keyId,
-                    userId: authUser.id
-                });
-                sendJoinChat(chatData, keyId);
+            if (chatData && chatData.type === "DM") {
+                let keyId = await generateKeyIfNotExists(chatData);
+                if (keyId) {
+                    // then I am the second participant in the chat
+                    if(!chatData.participantKeys[1]) chatData.participantKeys[1] = keyId;
+                    if(!chatData.participantKeys[0]) chatData.participantKeys[0] = keyId;
+                    await axiosInstance.put(`/api/encrypt/${chatData.id}?keyId=${keyId}`, {
+                        keyId: keyId,
+                        userId: authUser.id
+                    });
+                    sendJoinChat(chatData, keyId);
+                }
             }
             // otherwise I am the first participant in the chat how created the chat and I have the key already
-            await dbRef.current.insertChats([data]);
-    
-            setChatList((prev) => [...prev, data]);
-            
+            const newChat = cleanChat({...data})
+            console.log("New Chat: ", newChat)
+            await dbRef.current.insertChat(newChat)
+        
+            setChatList((prev) => [...prev, newChat])
+            setActivePage("chat")
         } catch (error) {
             console.error(error);
         }
