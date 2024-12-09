@@ -28,7 +28,7 @@ export class UsersStore extends BaseStore {
                 const request = store.getAll()
                 const users = await new Promise((resolve, reject) => {
                     request.onsuccess = () => resolve(request.result)
-                    request.onerror = () => reject(request.error) // Reject on error
+                    request.onerror = () => reject(request.error) 
                 })
                 return users
             } catch (error) {

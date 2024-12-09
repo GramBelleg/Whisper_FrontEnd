@@ -168,7 +168,7 @@ class WhisperDB {
     }
 
     async insertUsers(users) {
-        if (this._messages !== null) {
+        if (this._users !== null) {
             return this._users.insertUsers(users)
         } else {
             throw new Error('Users store is not initiaslized.')
@@ -176,7 +176,7 @@ class WhisperDB {
     }
 
     async getUsers() {
-        if (this._messages !== null) {
+        if (this._users !== null) {
             return this._users.getUsers()
         } else {
             throw new Error('Users store is not initiaslized.')

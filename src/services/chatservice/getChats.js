@@ -31,7 +31,7 @@ export const mapMessageState = (read, delivered) => {
     }
 }
 
-const mapPicture = async (picture) => {
+export const mapPicture = async (picture) => {
     try {
         if (picture) {
             const type = picture.substring(picture.lastIndexOf('.') + 1)
