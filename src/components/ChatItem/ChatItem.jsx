@@ -171,7 +171,7 @@ const ChatItem = ({ index, standaloneChat }) => {
                             {(myChat.unreadMessageCount || myChat.tagged) && (
                                 <UnRead unReadMessages={myChat.unreadMessageCount} tag={myChat.tagged} />
                             )}
-                            <Info index={index} group={myChat.type === "GROUP"} muted={myChat.muted} onMute={handleMute} onUnMute={handleUnMute} />
+                            <Info id={myChat.id} index={index} group={myChat.type === "GROUP"} muted={myChat.muted} onMute={handleMute} onUnMute={handleUnMute} />
                         </div>
                     </div>
                 </div>

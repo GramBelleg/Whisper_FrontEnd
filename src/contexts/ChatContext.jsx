@@ -9,6 +9,7 @@ import ChatSocket from '@/services/sockets/ChatSocket'
 import { cleanChat } from '@/services/chatservice/getChats'
 import apiUrl from '@/config'
 import { useSidebar } from './SidebarContext'
+import { getMembers } from '@/services/chatservice/getChatMembers'
 
 
 export const ChatContext = createContext()
@@ -204,9 +205,35 @@ export const ChatProvider = ({ children }) => {
         })
     }
 
+    const leaveGroup = async (chatId) => {
+        console.log("leaving", chatId)
+        chatSocket.leaveGroup({
+            chatId: chatId
+        })
+    }
+
+    const handleReceiveLeaveGroup = async (groupLeft) => {
+        try {
+            console.log("Group left", groupLeft)
+            if (groupLeft.userName === user.userName) {
+                await dbRef.current.removeChat(groupLeft.chatId)
+            }
+            else {
+                const members = await dbRef.current.getChatMembers(groupLeft.chatId)
+                if (members) {
+                    const filteredMember = members.filter((member) => {
+                        member.userName === groupLeft.userName
+                    })
+                    await dbRef.current.removeChatMember(groupLeft.chatId, filteredMember.id)
+                }
+            }
+        } catch (error) {
+            console.log(error)
+        }
+    }
+
     const handleChatCreate = async (chatData) => {
         try {
-            console.log("Recieving", chatData)
             let data = { ...chatData };
             if (chatData && chatData.type === "DM") {
                 let keyId = await generateKeyIfNotExists(chatData);
@@ -223,8 +250,8 @@ export const ChatProvider = ({ children }) => {
             }
             // otherwise I am the first participant in the chat how created the chat and I have the key already
             const newChat = await cleanChat({...data})
-            console.log("New Chat: ", newChat)
-            await dbRef.current.insertChat(newChat)
+            const members = await getMembers(newChat.id)
+            await dbRef.current.insertChat({...newChat, members: members})
             SetReloadChats(true)
             setActivePage("chat")
         } catch (error) {
@@ -482,6 +509,7 @@ export const ChatProvider = ({ children }) => {
     useEffect(() => {
         if (chatSocket) {
             chatSocket.onReceiveCreateChat(handleChatCreate)
+            chatSocket.onReceiveLeaveChat(handleReceiveLeaveGroup)
         }
     }, [chatSocket])
 
@@ -512,6 +540,7 @@ export const ChatProvider = ({ children }) => {
                 setActionExposed,
                 pinMessage,
                 unPinMessage,
+                leaveGroup,
                 sendMessage,
                 updateMessage,
                 sendJoinChat,

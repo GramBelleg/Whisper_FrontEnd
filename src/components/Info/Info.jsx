@@ -4,8 +4,9 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faChevronDown } from '@fortawesome/free-solid-svg-icons'
 import { useModal } from '@/contexts/ModalContext'
 import MuteDurationModal from '../MuteDurationModal/MuteDurationModal'
+import { useChat } from '@/contexts/ChatContext'
 
-const Info = ({ index, group, onMute, onUnMute, muted }) => {
+const Info = ({ id, index, group, onMute, onUnMute, muted }) => {
     const infoRef = useRef(null)
     const dropdownRef = useRef(null)
     const [dropdownPosition, setDropdownPosition] = useState('down')
@@ -13,6 +14,7 @@ const Info = ({ index, group, onMute, onUnMute, muted }) => {
     const { openModal, closeModal } = useModal()
     const [muteDuration, setMuteDuration] = useState(null)
     const [clicked, setClicked] = useState(false)
+    const { leaveGroup } = useChat()
 
     const toggleDropdown = () => {
         setIsVisible(!isVisible)
@@ -30,14 +32,18 @@ const Info = ({ index, group, onMute, onUnMute, muted }) => {
         const spaceAbove = infoRect.top
 
         if (spaceBelow < dropdownHeight && spaceAbove >= dropdownHeight) {
-            setDropdownPosition('up') // Position dropdown above
+            setDropdownPosition('up') 
         } else {
-            setDropdownPosition('down') // Position dropdown below
+            setDropdownPosition('down') 
         }
     }
 
     const handleMute = () => {
         openModal(<MuteDurationModal setMuteDuration={setMuteDuration} onClose={closeModal} setClicked={setClicked} />)
+    }
+
+    const handleLeaveGroup = () => {
+        leaveGroup(id)
     }
 
     useEffect(() => {
@@ -101,7 +107,7 @@ const Info = ({ index, group, onMute, onUnMute, muted }) => {
                                 {group && (
                                     <li
                                         style={{ padding: '8px 12px', cursor: 'pointer', color: 'red' }}
-                                        onClick={() => handleAction('Leave group')}
+                                        onClick={handleLeaveGroup}
                                     >
                                         Leave group
                                     </li>
