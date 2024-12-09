@@ -12,7 +12,6 @@ const ChooseGroupMembers = ({ selectedUsers, setSelectedUsers }) => {
         const getAllUsers = async () => {
             try {
                 const response = await dbRef.current.getChats()
-                console.log(response)
                 setAllUsers(response)
             } catch (error) {
                 console.log(error)
