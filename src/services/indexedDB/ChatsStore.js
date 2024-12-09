@@ -129,14 +129,68 @@ export class ChatsStore extends BaseStore {
     }
 
     async getChats() {
-        return this._executeTransaction('readwrite', async (store) => {
+        return this._executeTransaction('readonly', async (store) => {
             try {
                 const request = store.getAll()
-                const messages = await new Promise((resolve, reject) => {
+                const chats = await new Promise((resolve, reject) => {
                     request.onsuccess = () => resolve(request.result)
                     request.onerror = () => reject(request.error) // Reject on error
                 })
-                return messages
+                return chats
+            } catch (error) {
+                throw new Error('Failed to get chats from indexed db: ' + error.message)
+            }
+        })
+    }
+
+    async getChatMembers(chatId) {
+        return this._executeTransaction('readonly', async (store) => {
+            try {
+                const request = store.get(chatId)
+                const chat = await new Promise((resolve, reject) => {
+                    request.onsuccess = () => resolve(request.result)
+                    request.onerror = () => reject(request.error) 
+                })
+                if (chat)
+                    return chat.members
+                else 
+                    return []
+            } catch (error) {
+                throw new Error('Failed to get chats from indexed db: ' + error.message)
+            }
+        })
+    }
+
+    async removeChat(chatId) {
+        return this._executeTransaction('readwrite', async (store) => {
+            try {
+                const request = store.delete(chatId)
+                await new Promise((resolve, reject) => {
+                    request.onsuccess = () => resolve(request.result)
+                    request.onerror = () => reject(request.error) 
+                })
+            } catch (error) {
+                throw new Error('Failed to get chats from indexed db: ' + error.message)
+            }
+        })
+    }
+
+    async removeChatMember(chatId, memberId) {
+        return this._executeTransaction('readwrite', async (store) => {
+            try {
+                const chat = store.get(chatId)
+                await new Promise((resolve, reject) => {
+                    request.onsuccess = () => resolve(request.result)
+                    request.onerror = () => reject(request.error) 
+                })
+                if (chat) {
+                    chat.members = chat.members.filter(member => member.id !== memberId)
+                    const updateRequest = store.put(chat)
+                    await new Promise((resolve, reject) => {
+                        updateRequest.onsuccess = () => resolve(updateRequest.result)
+                        updateRequest.onerror = () => reject(updateRequest.error) 
+                    })
+                }
             } catch (error) {
                 throw new Error('Failed to get chats from indexed db: ' + error.message)
             }

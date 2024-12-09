@@ -207,9 +207,33 @@ class WhisperDB {
         }
     }
 
+    async getChatMembers(chatId) {
+        if (this._chats !== null) {
+            return this._chats.getChatMembers(chatId)
+        } else {
+            throw new Error('Chats store is not initiaslized.')
+        }
+    }
+
     async getDraftedMessage(chatId) {
         if (this._chats != null) {
             return this._chats.getDraftedMessage(chatId)
+        } else {
+            throw new Error('Chats store is not initiaslized.')
+        }
+    }
+
+    async removeChat(chatId) {
+        if (this._chats != null) {
+            return this._chats.removeChat(chatId)
+        } else {
+            throw new Error('Chats store is not initiaslized.')
+        }
+    }
+
+    async removeChatMember(chatId, memberId) {
+        if (this._chats != null) {
+            return this._chats.removeChatMember(chatId, memberId)
         } else {
             throw new Error('Chats store is not initiaslized.')
         }
