@@ -4,7 +4,7 @@ import axios from 'axios'
 export const getAllUsers = async () => {
     try {
         const token = localStorage.getItem("token")
-        const response = await axios.get(`${apiUrl}/api/admin/getUsers`, {
+        const response = await axios.post(`${apiUrl}/api/user/contact`, {
             headers: {
                 Authorization: `Bearer ${token}`  
             },
@@ -12,7 +12,7 @@ export const getAllUsers = async () => {
         })
 
 
-        return response.data
+        return response.data.users
     } catch (error) {
         console.log('Error ', error.message)
     }
