@@ -9,6 +9,7 @@ import { ProfileSettingsProvider } from './contexts/ProfileSettingsContext.jsx'
 import { WhisperDBProvider } from './contexts/WhisperDBContext.jsx'
 import { StoriesProvider } from './contexts/StoryContext.jsx'
 import { ChatProvider } from './contexts/ChatContext.jsx'
+import { SidebarProvider } from './contexts/SidebarContext.jsx'
 
 createRoot(document.getElementById('root')).render(
     <ProfileSettingsProvider>
@@ -16,9 +17,11 @@ createRoot(document.getElementById('root')).render(
             <GoogleOAuthProvider clientId={import.meta.env.VITE_APP_GOOGLE_CLIENT_ID}>
                 <WhisperDBProvider>
                     <StoriesProvider>
-                        <ChatProvider>
-                            <App />
-                        </ChatProvider>
+                        <SidebarProvider>
+                            <ChatProvider>
+                                <App />
+                            </ChatProvider>
+                        </SidebarProvider>
                     </StoriesProvider>
                 </WhisperDBProvider>
             </GoogleOAuthProvider>
