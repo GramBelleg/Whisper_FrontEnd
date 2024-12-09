@@ -74,7 +74,7 @@ const Info = ({ index, group, onMute, onUnMute, muted }) => {
                     <FontAwesomeIcon icon={faChevronDown} style={{ color: 'grey' }} />
                     {isVisible && (
                         <div
-                            className='dropdown' // Add a class for dropdown styling
+                            className='dropdown' 
                             onMouseLeave={() => {
                                 setIsVisible(false)
                             }}
