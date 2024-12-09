@@ -9,7 +9,7 @@ const ChatList = ({ chatList }) => {
 
     return (
         <div className='chat-list'>
-            {chatList?.map((element, index) => {
+            {chatList?.map((chat, index) => {
                 return (
                     <div
                         key={index}
@@ -19,7 +19,7 @@ const ChatList = ({ chatList }) => {
                         }}
                         onMouseLeave={() => setHoveredIndex(null)}
                     >
-                        <ChatItem index={index === hoveredIndex} standaloneChat={element} />
+                        <ChatItem index={index === hoveredIndex} standaloneChat={chat} />
                     </div>
                 )
             })}
