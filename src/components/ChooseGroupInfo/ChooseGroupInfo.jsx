@@ -71,9 +71,9 @@ const ChooseGroupInfo = ({ selectedUsers, setGroupName, setGroupPicFileData }) =
                 {selectedUsers?.map((selectedUser) => (
                     <div key={selectedUser.id} className="user-item">
                         <div className="user-image">
-                            <img src={selectedUser.profilePic} alt={selectedUser.name} />
+                            <img src={selectedUser.profilePic} alt={selectedUser.userName} />
                         </div>
-                        <label htmlFor={`user-${selectedUser.id}`}>{selectedUser.name}</label>
+                        <label htmlFor={`user-${selectedUser.id}`}>{selectedUser.userName}</label>
                     </div>
                 ))}
             </div>

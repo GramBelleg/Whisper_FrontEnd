@@ -1,20 +1,6 @@
 import './SingleChatSection.css'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import {
-    faEllipsisV,
-    faMicrophone,
-    faMicrophoneAlt,
-    faPaperclip,
-    faPhone,
-    faSearch,
-    faSmile,
-    faPaperPlane,
-    faImage,
-    faFile,
-    faTimes,
-    faCircleNotch,
-    faMusic
-} from '@fortawesome/free-solid-svg-icons'
+import { faEllipsisV, faPhone } from '@fortawesome/free-solid-svg-icons'
 import SingleChatMessagesList from '../SingleChatMessagesList/SingleChatMessagesList'
 import ChatActions from '../ChatActions/ChatActions'
 import { useChat } from '@/contexts/ChatContext'
@@ -28,7 +14,7 @@ const SingleChatSection = () => {
     useEffect(() => {}, [pinnedMessages])
 
     const handlePinnedClick = (event) => {
-        const messageId = event.messageId; // Retrieve the data-message-id
+        const messageId = event.messageId; 
         console.log("Clicked on pinned message with ID:", messageId);
     
         const targetElement = document.getElementById(`message-${messageId}`);
@@ -43,8 +29,6 @@ const SingleChatSection = () => {
         return <NoChatOpened />
     }
 
-
-
     return (
         <div className='single-chat-container'>
             <div className='single-chat-header shadow-md'>
@@ -53,7 +37,10 @@ const SingleChatSection = () => {
                 </div>
                 <div className='header-details'>
                     <span className='header-title'>{currentChat.name}</span>
-                    <span className='header-subtitle'>Last seen at {currentChat.lastSeen}</span>
+                    {
+                        currentChat.type === "DM" &&
+                        <span className='header-subtitle'>Last seen at {currentChat.lastSeen}</span>
+                    }
                 </div>
                 <SearchSingleChat />
                 <div className='header-icons'>
