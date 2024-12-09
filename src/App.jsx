@@ -25,7 +25,7 @@ function App() {
     const [loading, setLoading] = useState(true)
     const { dbRef } = useWhisperDB()
     const { user: authUser } = useAuth()
-    const {sendJoinChat} = useChat();
+    const { sendJoinChat } = useChat();
     const {decryptMessage, generateKeyIfNotExists} = useChatEncryption();
 
     if (import.meta.env.VITE_APP_USE_MOCKS === 'true') {
@@ -34,11 +34,17 @@ function App() {
 
     useEffect(() => {
         const init = async () => { 
-            await loadChats()
-            await loadMessages()
-            await loadPinnedMessages()
-            await loadStories()
-            await loadUsers()
+            try {
+                await loadChats()
+                await loadMessages()
+                await loadPinnedMessages()
+                await loadStories()
+                await loadUsers()
+            } catch (error) {
+                console.log(error)
+            } finally {
+                setLoading(false)
+            }
         }
 
         const loadUsers = async () => {
@@ -54,43 +60,45 @@ function App() {
         }
 
         const loadChats = async () => {
-            let allChats = await getChatsCleaned()
-            let myDeviceChats = [];
-            const getAllmyKeys = await dbRef.current.getKeysStore().getAll();
-            const keyIds = getAllmyKeys.map(keyData => keyData.id);
-            
-            for (const chat of allChats) {
-                if (chat.type === 'DM' && chat.participantKeys.some(key => keyIds.includes(key))) {
-                    myDeviceChats.push(chat);
-                } else if (chat.type === 'DM' && (!chat.participantKeys[1] || !chat.participantKeys[0])) {
-                    // I am the second participant in the chat and I have to generate the key
-                    let joinedChat = { ...chat };
-                    // this will send key to the server and store its' private part in the indexedDB
-                    let keyId = await generateKeyIfNotExists(chat, dbRef.current.getKeysStore());
-                    if (keyId) {
-                        if(!joinedChat.participantKeys[1]) {
-                            joinedChat.participantKeys[1] = keyId;
-                        }
-                        if(!joinedChat.participantKeys[0]) {
-                            joinedChat.participantKeys[0] = keyId;
-                        }
-                        // associate my key with the chat
-                        await axiosInstance.put(`/api/encrypt/${joinedChat.id}?keyId=${keyId}`, {
-                            keyId: keyId,
-                            userId: authUser.id
-                        });
-                        sendJoinChat(joinedChat, keyId);
-                    }
-                    myDeviceChats.push(joinedChat);
-                } else if (chat.type != 'DM') {
-                    myDeviceChats.push(chat);
-                }
+            try {
+                let allChats = await getChatsCleaned()
+                let myDeviceChats = [];
+                const getAllmyKeys = await dbRef.current.getKeysStore().getAll();
+                const keyIds = getAllmyKeys.map(keyData => keyData.id);
                 
+                for (const chat of allChats) {
+                    if (chat.type === 'DM' && chat.participantKeys.some(key => keyIds.includes(key))) {
+                        myDeviceChats.push(chat);
+                    } else if (chat.type === 'DM' && (!chat.participantKeys[1] || !chat.participantKeys[0])) {
+                        // I am the second participant in the chat and I have to generate the key
+                        let joinedChat = { ...chat };
+                        // this will send key to the server and store its' private part in the indexedDB
+                        let keyId = await generateKeyIfNotExists(chat, dbRef.current.getKeysStore());
+                        if (keyId) {
+                            if(!joinedChat.participantKeys[1]) {
+                                joinedChat.participantKeys[1] = keyId;
+                            }
+                            if(!joinedChat.participantKeys[0]) {
+                                joinedChat.participantKeys[0] = keyId;
+                            }
+                            // associate my key with the chat
+                            await axiosInstance.put(`/api/encrypt/${joinedChat.id}?keyId=${keyId}`, {
+                                keyId: keyId,
+                                userId: authUser.id
+                            });
+                            sendJoinChat(joinedChat, keyId);
+                        }
+                        myDeviceChats.push(joinedChat);
+                    } else if (chat.type != 'DM') {
+                        myDeviceChats.push(chat);
+                    }
+                    console.log(myDeviceChats)
+                }
+                await dbRef.current.insertChats(myDeviceChats)
+            } catch (error) {
+                console.log(error)
             }
-            await dbRef.current.insertChats(myDeviceChats)
         }
-
-       
 
         const loadMessages = async () => {
             try {
@@ -165,11 +173,11 @@ function App() {
         }
 
         try {
+            setLoading(true)
             init()
+            console.log("Helo")
         } catch (error) {
             console.error(error)
-        } finally {
-            setLoading(false)
         }
     }, [dbRef])
 
