@@ -20,12 +20,24 @@ class ChatSocket extends Socket {
         this.socket.emit('createChat', data);
     }
 
+    leaveGroup(data) {
+        this.socket.emit('leaveChat', data)
+    }
+
     onReceiveCreateChat(callback) {
         this.socket.on('createChat', callback);
     }
 
     offReceiveCreateChat(callback) {
         this.socket.off('createChat', callback);
+    }
+
+    onReceiveLeaveChat(callback) {
+        this.socket.on('leaveChat', callback);
+    }
+
+    offReceiveLeaveChat(callback) {
+        this.socket.off('leaveChat', callback);
     }
 
     disconnect() {
