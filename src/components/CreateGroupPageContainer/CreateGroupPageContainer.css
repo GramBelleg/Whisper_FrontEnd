@@ -1,0 +1,41 @@
+.create-new-group {
+    position: relative;
+    padding: 1rem 0.5rem;
+    color: var(--text-color);
+    height: 100%;
+  }
+  
+.create-new-group h1 {
+    color: var(--text-color);
+    font-size: 1.2rem;
+    font-weight: regular;
+    margin-left: 0.5rem;
+}
+  
+.create-new-group .header {
+    padding: 0 1.5rem;
+}
+
+.create-new-group .back-icon {
+    font-size: 28px;
+    cursor: pointer;
+}
+
+.forward-icon {
+    position: absolute;
+    top: 100px;
+    bottom: 60px;
+    right: 30px;
+    cursor: pointer;
+    font-size: 1.5rem;
+    background-color: var(--accent-color);
+    border-radius: 50%;
+    width: 50px;
+    height: 50px;
+    font-size: 28px;
+    padding-top: 5px;
+}
+
+.forward-icon:last-of-type {
+    top: auto;    
+}
