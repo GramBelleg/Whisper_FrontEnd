@@ -31,7 +31,6 @@ const ChatItem = ({ index, standaloneChat }) => {
         return ''
     }
 
-    // The local obhect of the chat
     const [myChat, setMyChat] = useState({
         id: -1,
         senderId: -1,
@@ -54,9 +53,7 @@ const ChatItem = ({ index, standaloneChat }) => {
         drafted: false
     })
 
-    // Function to handle clicks and call chooseChat
     const handleClick = (e) => {
-        // Check if the click is on the Info component
         const infoElement = e.target.closest('.info')
         if (!infoElement) {
             selectChat(myChat)
@@ -132,7 +129,7 @@ const ChatItem = ({ index, standaloneChat }) => {
                     <div className={`profile-pic-wrapper ${myChat.story ? 'has-story' : ''}`}>
                         <img
                             src={myChat.profilePic}
-                            className={`profile-pic`} // Add the conditional class
+                            className={`profile-pic`} 
                             onError={(e) => handleNoUserImage(e)}
                         />
                     </div>
@@ -141,7 +138,7 @@ const ChatItem = ({ index, standaloneChat }) => {
                         <div className='user-info'>
                             <div className='name-container'>
                                 <p
-                                    ref={userNameRef} // Attach the ref to the user name element
+                                    ref={userNameRef} 
                                     className={`user-name ${myChat.muted ? 'muted' : ''} ${isOverflowing ? 'overflow' : ''} ${index ? 'hovered' : ''}`} // Add overflow class conditionally
                                 >
                                     {myChat.name}
