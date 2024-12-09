@@ -5,10 +5,13 @@ import { useWhisperDB } from './WhisperDBContext'
 import parentRelationshipTypes from '@/services/chatservice/parentRelationshipTypes'
 import useChatEncryption from '@/hooks/useChatEncryption'
 import useAuth from '@/hooks/useAuth'
+import ChatSocket from '@/services/sockets/ChatSocket'
+import { cleanChat } from '@/services/chatservice/getChats'
+import apiUrl from '@/config'
+import { useSidebar } from './SidebarContext'
+
 
 export const ChatContext = createContext()
-
-
 
 export const ChatProvider = ({ children }) => {
     const [currentChat, setCurrentChat] = useState(null)
@@ -17,13 +20,18 @@ export const ChatProvider = ({ children }) => {
     const [parentMessage, setParentMessage] = useState(null)
     const [sending, setSending] = useState(false)
     const messagesSocket = new MessagingSocket()
+    const chatSocket = new ChatSocket()
     const { dbRef } = useWhisperDB()
     const currentChatRef = useRef(currentChat)
     const [messageReceived, setMessageReceived] = useState(false)
     const [action, setAction] = useState(false)
     const [messageDelivered, setMessageDelivered] = useState(false)
-    const { encryptMessage , decryptMessage }  = useChatEncryption();
+    const { encryptMessage , decryptMessage }  = useChatEncryption()
     const { user } = useAuth()
+    const [reloadChats, SetReloadChats] = useState(false)
+    const { generateKeyIfNotExists } = useChatEncryption()
+    const { setActivePage } = useSidebar()
+
 
     const setActionExposed = (actionIn) => {
         setAction(actionIn)
@@ -51,7 +59,6 @@ export const ChatProvider = ({ children }) => {
             console.log(error)
         }
     }
-    
 
     const clearUnreadMessages = async (id) => {
         try {
@@ -184,10 +191,6 @@ export const ChatProvider = ({ children }) => {
     }
 
     const pinMessage = (messsageId, durtaion = 0) => {
-        console.log("Pinning", {
-            chatId: currentChat.id,
-            id: messsageId
-        })
         messagesSocket.pinMessage({
             chatId: currentChat.id,
             id: messsageId
@@ -200,6 +203,34 @@ export const ChatProvider = ({ children }) => {
             id: messsageId
         })
     }
+
+    const handleChatCreate = async (chatData) => {
+        try {
+            console.log("Recieving", chatData)
+            let data = { ...chatData };
+            if (chatData && chatData.type === "DM") {
+                let keyId = await generateKeyIfNotExists(chatData);
+                if (keyId) {
+                    // then I am the second participant in the chat
+                    if(!chatData.participantKeys[1]) chatData.participantKeys[1] = keyId;
+                    if(!chatData.participantKeys[0]) chatData.participantKeys[0] = keyId;
+                    await axios.put(`${apiUrl}/api/encrypt/${chatData.id}?keyId=${keyId}`, {
+                        keyId: keyId,
+                        userId: authUser.id
+                    });
+                    sendJoinChat(chatData, keyId);
+                }
+            }
+            // otherwise I am the first participant in the chat how created the chat and I have the key already
+            const newChat = await cleanChat({...data})
+            console.log("New Chat: ", newChat)
+            await dbRef.current.insertChat(newChat)
+            SetReloadChats(true)
+            setActivePage("chat")
+        } catch (error) {
+            console.error(error);
+        }
+    };
 
     const handleReceiveMessage = async (messageData) => {
         try {
@@ -259,8 +290,6 @@ export const ChatProvider = ({ children }) => {
             } catch (error) {
                 console.error(error)
             }
-
-            
 
             if (activeChat && activeChat.id === myMessageData.chatId) {
                 try {
@@ -337,6 +366,7 @@ export const ChatProvider = ({ children }) => {
             }
         } catch (error) {}
     }
+
     const handleReceiveEditMessage = async (messageData) => {
         try {
             const chat = await dbRef.current.getChat(messageData.chatId)
@@ -370,7 +400,6 @@ export const ChatProvider = ({ children }) => {
     const handleReceiveDeleteMessage = async (deletedData) => {
         try {
             await dbRef.current.deleteMessage(deletedData.messages[0])
-
             setMessages((prevMessages) => {
                 return prevMessages.filter((message) => message.id != deletedData.messages[0])
             })
@@ -381,19 +410,16 @@ export const ChatProvider = ({ children }) => {
 
     const handlePinMessage = async (pinData) => {
         try {
-            console.log(pinData)
             const activeChat = currentChatRef.current
             const messagesForChat = await dbRef.current.getMessagesForChat(pinData.chatId)
-            console.log("aywa")
             const messageToPin = messagesForChat.find((message) => message.id === pinData.id)
-            console.log("aywa", messageToPin)
+
             if (!messageToPin) {
                 throw new Error(`Message with id ${pinData.id} not found in chat ${pinData.chatId}`)
             }
 
             await dbRef.current.pinMessage({ ...pinData, content: messageToPin.content })
             await dbRef.current.updateMessagesForPinned(pinData.id)
-            console.log("aywa", activeChat)
             await loadMessages(activeChat.id)
             await loadPinnedMessages(activeChat.id)
         } catch (error) {
@@ -453,6 +479,12 @@ export const ChatProvider = ({ children }) => {
         }
     }, [messagesSocket])
 
+    useEffect(() => {
+        if (chatSocket) {
+            chatSocket.onReceiveCreateChat(handleChatCreate)
+        }
+    }, [chatSocket])
+
     useEffect(() => {}, [messages, pinnedMessages])
     useEffect(() => {
         if (action) {
@@ -484,6 +516,8 @@ export const ChatProvider = ({ children }) => {
                 updateMessage,
                 sendJoinChat,
                 searchChat,
+                reloadChats,
+                SetReloadChats,
                 parentMessage,
                 updateParentMessage,
                 clearParentMessage,
@@ -496,7 +530,6 @@ export const ChatProvider = ({ children }) => {
     )
 }
 
-// Create a custom hook to use the chat context
 export const useChat = () => {
     return useContext(ChatContext)
 }

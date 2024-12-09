@@ -11,12 +11,11 @@ const SampleHome = () => {
     return (
             <ModalProvider>
                 <div className='sampleHome'>
-                    <SidebarProvider>
+                    
                         <div className='buttons-bar-container'>
                             <ButtonsBar />
                         </div>
                         <Sidebar />
-                    </SidebarProvider>
                     <div className='chatting'>
                         <SingleChatSection />
                     </div>
