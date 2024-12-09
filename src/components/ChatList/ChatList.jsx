@@ -1,7 +1,3 @@
-// This contains the list of all chats
-// It takes as an input the list of all chats
-// It then calls the SingleChat page for each chat
-
 import { useEffect, useState } from 'react'
 import ChatItem from '../ChatItem/ChatItem'
 import './ChatList.css'
