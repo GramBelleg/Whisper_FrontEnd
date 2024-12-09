@@ -15,45 +15,53 @@ const useChatEncryption = () => {
   const generateKeyIfNotExists = async (chat) => {
      let keys = await keyGeneratorIfNotExists(chat, dbRef.current.getKeysStore());
      if(keys) {
-        let response = await axiosInstance.post('/api/encrypt',{
-            key: keys.publicKey,
-            userId: authUser.id
-          })
-          
-        const keyId = response.data;
-        await dbRef.current.getKeysStore().storeKey(keyId, keys.privateKey);
-        return keyId;
+        try {
+          let response = await axiosInstance.post('/api/encrypt',{
+              key: keys.publicKey,
+              userId: authUser.id
+            })
+            
+          const keyId = response.data;
+          await dbRef.current.getKeysStore().storeKey(keyId, keys.privateKey);
+          return keyId;
+          } catch (error) {
+            return null;
+          }
      }
      return null;
   }
 
   const getChatSymmetricKey = async (chat) => {
-    if (chatId && chatId === chat.id && chatKey) {
-        return chatKey;
-    }
-    const keyIds = chat.participantKeys;
-    const key1Data = await dbRef.current.getKeysStore().getKey(keyIds[0] ?? 0);
-    const key2Data = await dbRef.current.getKeysStore().getKey(keyIds[1] ?? 0);
-    let myKeyBase64 = key1Data ? key1Data.key : key2Data.key;
-    let othersKeyId = key1Data ? keyIds[1] : keyIds[0];
+    try {
+      if (chatId && chatId === chat.id && chatKey) {
+          return chatKey;
+      }
+      const keyIds = chat.participantKeys;
+      const key1Data = await dbRef.current.getKeysStore().getKey(keyIds[0] ?? 0);
+      const key2Data = await dbRef.current.getKeysStore().getKey(keyIds[1] ?? 0);
+      let myKeyBase64 = key1Data ? key1Data.key : key2Data.key;
+      let othersKeyId = key1Data ? keyIds[1] : keyIds[0];
 
-    if(!myKeyBase64 || !othersKeyId) {
-        throw new Error('Other user key not found');
-    }
-    const { data: othersPublicKeyBase64 } = await axiosInstance.get(`/api/encrypt/${chat.id}?userId=${chat.othersId}`);
-    if(!othersPublicKeyBase64) {
-        throw new Error('Other user key not found');
-    }
+      if(!myKeyBase64 || !othersKeyId) {
+          throw new Error('Other user key not found');
+      }
+      const { data: othersPublicKeyBase64 } = await axiosInstance.get(`/api/encrypt/${chat.id}?userId=${chat.othersId}`);
+      if(!othersPublicKeyBase64) {
+          throw new Error('Other user key not found');
+      }
 
-    let myKey = await importPrivateKey(myKeyBase64);
-    let othersPublicKey = await importPublicKey(othersPublicKeyBase64);
-    let sharedSecret = await deriveSharedSecret(myKey, othersPublicKey);
-    const symmetricKey = await deriveSymmetricKeyWithHKDF(sharedSecret);
-    console.log('Symmetric key', symmetricKey);
-    console.log('chat key ids', chat.participantKeys);
-    setChatKey(symmetricKey);
-    setChatId(chat.id);
-    return symmetricKey;
+      let myKey = await importPrivateKey(myKeyBase64);
+      let othersPublicKey = await importPublicKey(othersPublicKeyBase64);
+      let sharedSecret = await deriveSharedSecret(myKey, othersPublicKey);
+      const symmetricKey = await deriveSymmetricKeyWithHKDF(sharedSecret);
+      console.log('Symmetric key', symmetricKey);
+      console.log('chat key ids', chat.participantKeys);
+      setChatKey(symmetricKey);
+      setChatId(chat.id);
+      return symmetricKey;
+    } catch (error) {
+      console.log(error)
+    }
   }
 
   const encryptMessage = async (message, chat) => {

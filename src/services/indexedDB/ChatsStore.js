@@ -22,6 +22,20 @@ export class ChatsStore extends BaseStore {
         })
     }
 
+    async insertChat(chat) {
+        return this._executeTransaction('readwrite', async (store) => {
+            try {
+                const request = store.put(chat)
+                await new Promise((resolve, reject) => {
+                    request.onsuccess = () => resolve()
+                    request.onerror = () => reject(request.error)
+                })
+            } catch (error) {
+                console.error('Error inserting chats:', error)
+            }
+        })
+    }
+
     async insertMessageInChat(message) {
         const user = localStorage.getItem("user")
         return this._executeTransaction('readwrite', async (store) => {

@@ -191,6 +191,14 @@ class WhisperDB {
         }
     }
 
+    async insertChat(chat) {
+        if (this._chats != null) {
+            return this._chats.insertChat(chat)
+        } else {
+            throw new Error('Chats Store is not initialized')
+        }
+    }
+
     async getChats() {
         if (this._chats !== null) {
             return this._chats.getChats()
