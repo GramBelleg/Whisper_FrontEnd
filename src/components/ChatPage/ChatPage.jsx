@@ -17,6 +17,7 @@ import axiosInstance from '@/services/axiosInstance'
 import CreateNewChat from '../CreateNewChat/CreateNewChat'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faTimes } from '@fortawesome/free-solid-svg-icons'
+import { useSidebar } from '@/contexts/SidebarContext'
 
 const ChatPage = () => {
     const { selectChat, action, messageDelivered, sendJoinChat } = useChat()
@@ -25,8 +26,8 @@ const ChatPage = () => {
     const chatSocket = new ChatSocket()
     const { openModal, closeModal } = useModal()
     const [dropDownVisible, setDropDownVisible] = useState(false)
-
-    const {user:authUser} = useAuth();
+    const { setActivePage } = useSidebar()
+    const {user:authUser} = useAuth()
 
 
     const handleCreatePrivateClick = () => {
@@ -38,6 +39,7 @@ const ChatPage = () => {
 
     const handleCreateGroupClick = () => {
         setDropDownVisible(false)
+        setActivePage("create_group")
     };
 
     const handleCreateChannelClick = () => {

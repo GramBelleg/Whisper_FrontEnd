@@ -1,11 +1,13 @@
 import './Sidebar.css'
 import { useSidebar } from '@/contexts/SidebarContext'
-import ChatPage from '../ChatPage/ChatPage'
 import ProfileSettingsPage from '@/pages/ProfileSettingsPage'
-import { useEffect, useRef, useState } from 'react'
+import {  useEffect, useRef, useState } from 'react'
 import BlockedUsers from '../BlockedUsers/BlockedUsers'
 import VisibilitySettings from '../VisibiltySettings/VisibilitySettings'
 import SettingsPage from '@/pages/SettingsPage'
+import ChooseUsersGroupPage from '@/pages/CreateGroupPage'
+import ChatPage from '../ChatPage/ChatPage'
+import CreateGroupPage from '@/pages/CreateGroupPage'
 
 const pages = [
     {
@@ -27,6 +29,10 @@ const pages = [
     {
         id: 'settings',
         Component: SettingsPage
+    },
+    {
+        id: 'create_group',
+        Component: CreateGroupPage 
     }
 ]
 
@@ -71,7 +77,7 @@ const Sidebar = () => {
 
     return (
         <div className='sidebar' ref={sidebarRef} style={{ width: `${sidebarWidth}%` }}>
-            <Component />
+            <Component/>
             <div className='sidebar__resizer' onMouseDown={startResizing} />
         </div>
     )
