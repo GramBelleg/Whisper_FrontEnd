@@ -11,7 +11,8 @@ const ChooseGroupMembers = ({ selectedUsers, setSelectedUsers }) => {
     useEffect(() => {
         const getAllUsers = async () => {
             try {
-                const response = await dbRef.current.getChats()
+                const response = await dbRef.current.getUsers()
+                console.log("Users", response)
                 setAllUsers(response)
             } catch (error) {
                 console.log(error)
@@ -23,14 +24,14 @@ const ChooseGroupMembers = ({ selectedUsers, setSelectedUsers }) => {
     const handleCheckboxChange = (user) => {
         console.log(user)
         setSelectedUsers((prevSelectedUsers) =>
-            prevSelectedUsers.some((localUser) => localUser.othersId === user.othersId)
-                ? prevSelectedUsers.filter((localUser) => localUser.othersId !== user.othersId)
+            prevSelectedUsers.some((localUser) => localUser.id === user.id)
+                ? prevSelectedUsers.filter((localUser) => localUser.id !== user.id)
                 : [...prevSelectedUsers, user]
         )
     }
 
-    const filteredUsers = allUsers.filter((user) =>
-        user.name.toLowerCase().includes(searchTerm.toLowerCase())
+    const filteredUsers = allUsers?.filter((user) =>
+        user.userName.toLowerCase().includes(searchTerm.toLowerCase())
     );
 
     return ( 
@@ -48,13 +49,13 @@ const ChooseGroupMembers = ({ selectedUsers, setSelectedUsers }) => {
                         <input
                             type="checkbox"
                             id={`user-${user.id}`}
-                            checked={selectedUsers.some((localUser) => localUser.othersId === user.othersId)}
+                            checked={selectedUsers.some((localUser) => localUser.id === user.id)}
                             onChange={() => handleCheckboxChange(user)}
                         />
                         <div className="user-image">
-                            <img src={user.profilePic} alt={user.name} />
+                            <img src={user.profilePic} alt={user.userName} />
                         </div>
-                        <label htmlFor={`user-${user.id}`}>{user.name}</label>
+                        <label htmlFor={`user-${user.id}`}>{user.userName}</label>
                     </div>
                 ))}
             </div>
