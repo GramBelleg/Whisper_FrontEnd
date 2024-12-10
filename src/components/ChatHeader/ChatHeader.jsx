@@ -3,9 +3,10 @@ import { useChat } from '@/contexts/ChatContext'
 import './ChatHeader.css'
 import SearchSingleChat from '../SearchSingleChat/SearchSingleChat'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import { faBell, faBellSlash, faEllipsisV, faPhone, faTrash, faUsers } from '@fortawesome/free-solid-svg-icons'
+import { faBell, faBellSlash, faEllipsisV, faGear, faPhone, faTrash, faUsers } from '@fortawesome/free-solid-svg-icons'
 import { useModal } from '@/contexts/ModalContext'
 import GroupMembersContainer from '../GroupMembers/GroupMembersContainer'
+import GroupSettings from '../GroupSettings/GroupSettings'
 
 const ChatHeader = () => {
     const { currentChat, leaveGroup, chatAltered, handleMute, handleUnMute } = useChat()
@@ -43,8 +44,12 @@ const ChatHeader = () => {
     }
 
     const handleViewMembers = () => {
-        console.log('he7')
         openModal(<GroupMembersContainer />)
+        setIsDropdownOpen(false)
+    }
+
+    const handleSettings = () => {
+        openModal(<GroupSettings />)
         setIsDropdownOpen(false)
     }
 
@@ -97,6 +102,14 @@ const ChatHeader = () => {
                                 <div className='dropdown-item' onClick={handleViewMembers}>
                                     <FontAwesomeIcon style={{ height: '20px' }} className='menu-icon' icon={faUsers} />
                                     <span>View Members</span>
+                                </div>
+                            )}
+                            {currentChat.type === 'GROUP' 
+                            // && currentChat.isAdmin 
+                            && (
+                                <div className='dropdown-item' onClick={handleSettings}>
+                                    <FontAwesomeIcon style={{ height: '20px' }} className='menu-icon' icon={faGear} />
+                                    <span>Settings</span>
                                 </div>
                             )}
                             {currentChat.type === 'GROUP' && currentChat.isAdmin && (
