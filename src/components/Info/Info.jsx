@@ -6,7 +6,7 @@ import { useModal } from '@/contexts/ModalContext'
 import MuteDurationModal from '../MuteDurationModal/MuteDurationModal'
 import { useChat } from '@/contexts/ChatContext'
 
-const Info = ({ id, index, group, onMute, onUnMute, muted }) => {
+const Info = ({ id, index, group, isAdmin, onMute, onUnMute, muted }) => {
     const infoRef = useRef(null)
     const dropdownRef = useRef(null)
     const [dropdownPosition, setDropdownPosition] = useState('down')
@@ -44,6 +44,10 @@ const Info = ({ id, index, group, onMute, onUnMute, muted }) => {
 
     const handleLeaveGroup = () => {
         leaveGroup(id)
+    }
+
+    const handleDeleteGroup = () => {
+        // TODO: implement delete group
     }
 
     useEffect(() => {
@@ -105,12 +109,21 @@ const Info = ({ id, index, group, onMute, onUnMute, muted }) => {
                                 <li onClick={() => handleAction('Block')}>Block</li>
                                 <li onClick={() => handleAction('Archive')}>Archive</li>
                                 {group && (
-                                    <li
-                                        style={{ padding: '8px 12px', cursor: 'pointer', color: 'red' }}
-                                        onClick={handleLeaveGroup}
-                                    >
-                                        Leave group
-                                    </li>
+                                    isAdmin ? (
+                                        <li
+                                            style={{ padding: '8px 12px', cursor: 'pointer', color: 'red' }}
+                                            onClick={handleLeaveGroup}
+                                        >
+                                            Leave group
+                                        </li>
+                                    ) : (
+                                        <li
+                                            style={{ padding: '8px 12px', cursor: 'pointer', color: 'red' }}
+                                            onClick={handleDeleteGroup}
+                                        >
+                                            Delete group
+                                        </li>
+                                    )
                                 )}
                             </ul>
                         </div>
