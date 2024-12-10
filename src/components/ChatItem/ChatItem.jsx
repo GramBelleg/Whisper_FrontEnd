@@ -18,7 +18,7 @@ import LoadingData from '../LoadingData/LoadingData'
 
 const ChatItem = ({ index, standaloneChat }) => {
     const { dbRef } = useWhisperDB()
-    const { selectChat, chatAltered, setChatAltered, messageDelivered } = useChat()
+    const { selectChat, chatAltered, messageDelivered, handleMute, handleUnMute } = useChat()
     const { user } = useAuth()
 
     const maxLength = standaloneChat.isMuted ? 33 : standaloneChat.name === user.name ? 30 : 15
@@ -39,40 +39,18 @@ const ChatItem = ({ index, standaloneChat }) => {
         }
     }
 
-    const handleMute = async (duration = 0) => {
+    const myHandleMute = async () => {
         try {
-            await muteChat(standaloneChat.id, {
-                type: standaloneChat.type,
-                isMuted: true,
-                duration: duration
-            })
-
-            try {
-                await dbRef.current.muteNotifications(standaloneChat.id)
-            } catch (error) {
-                console.error(error)
-            }
-            setChatAltered(true)
-        } catch (error) {
+            await handleMute(myChat.id, myChat.type)
+        } catch  (error) {
             console.log(error)
         }
     }
 
-    const handleUnMute = async (duration = 0) => {
+    const myHandleUnMute = async () => {
         try {
-            await unMuteChat(standaloneChat.id, {
-                type: standaloneChat.type,
-                isMuted: false,
-                duration: duration
-            })
-
-            try {
-                await dbRef.current.unMuteNotifications(standaloneChat.id)
-            } catch (error) {
-                console.error(error)
-            }
-            setChatAltered(true)
-        } catch (error) {
+            await handleUnMute(myChat.id, myChat.type)
+        } catch  (error) {
             console.log(error)
         }
     }
@@ -156,7 +134,7 @@ const ChatItem = ({ index, standaloneChat }) => {
                             {(myChat.unreadMessageCount || myChat.tagged) && (
                                 <UnRead unReadMessages={myChat.unreadMessageCount} tag={myChat.tagged} />
                             )}
-                            <Info id={myChat.id} index={index} group={myChat.type === "GROUP"} isAdmin={myChat.isAdmin} muted={myChat.isMuted} onMute={handleMute} onUnMute={handleUnMute} />
+                            <Info id={myChat.id} index={index} group={myChat.type === "GROUP"} isAdmin={myChat.isAdmin} muted={myChat.isMuted} type={myChat.type}/>
                         </div>
                     </div>
                 </div>

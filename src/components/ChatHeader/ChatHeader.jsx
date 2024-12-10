@@ -8,51 +8,24 @@ import { muteChat, unMuteChat } from "@/services/chatservice/muteUnmuteChat";
 import { useWhisperDB } from "@/contexts/WhisperDBContext";
 
 const ChatHeader = () => {
-    const { currentChat, leaveGroup, setChatAltered } = useChat()
+    const { currentChat, leaveGroup, setChatAltered, handleMute, handleUnMute } = useChat()
     const [isDropdownOpen, setIsDropdownOpen] = useState(false)
     const { dbRef } = useWhisperDB()
 
-    const handleMute = async () => {
+    const myHandleMute = async () => {
+        setIsDropdownOpen(false)
         try {
-            setIsDropdownOpen(false)
-            console.log(currentChat.id, {
-                type: currentChat.type,
-                isMuted: true,
-                duration: 0
-            })
-            await muteChat(currentChat.id, {
-                type: currentChat.type,
-                isMuted: true,
-                duration: 0
-            })
-
-            try {
-                await dbRef.current.muteNotifications(currentChat.id)
-            } catch (error) {
-                console.error(error)
-            }
-            setChatAltered(true)
-        } catch (error) {
+            await handleMute(currentChat.id, currentChat.type)
+        } catch  (error) {
             console.log(error)
         }
     }
 
-    const handleUnMute = async () => { 
+    const myHandleUnMute = async () => {
+        setIsDropdownOpen(false)
         try {
-            setIsDropdownOpen(false)
-            await unMuteChat(currentChat.id, {
-                type: currentChat.type,
-                isMuted: false,
-                duration: 0
-            })
-
-            try {
-                await dbRef.current.unMuteNotifications(currentChat.id)
-            } catch (error) {
-                console.error(error)
-            }
-            setChatAltered(true)
-        } catch (error) {
+            await handleUnMute(currentChat.id, currentChat.type)
+        } catch  (error) {
             console.log(error)
         }
     }
@@ -97,11 +70,11 @@ const ChatHeader = () => {
                         >
                             {
                                 !currentChat.isMuted ? 
-                                <div className="dropdown-item" onClick={handleMute}>
+                                <div className="dropdown-item" onClick={myHandleMute}>
                                     <FontAwesomeIcon style={{ height: "20px" }} className="menu-icon" icon={faBell} />
                                     <span>Mute Chat</span>
                                 </div> :
-                                <div className="dropdown-item" onClick={handleUnMute}>
+                                <div className="dropdown-item" onClick={myHandleUnMute}>
                                     <FontAwesomeIcon style={{ height: "20px" }} className="menu-icon" icon={faBellSlash} />
                                     <span>Unmute Chat</span>
                                 </div>

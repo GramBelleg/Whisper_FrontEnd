@@ -2,19 +2,14 @@ import React, { useRef, useState, useEffect } from 'react'
 import './Info.css'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faChevronDown } from '@fortawesome/free-solid-svg-icons'
-import { useModal } from '@/contexts/ModalContext'
-import MuteDurationModal from '../MuteDurationModal/MuteDurationModal'
 import { useChat } from '@/contexts/ChatContext'
 
-const Info = ({ id, index, group, isAdmin, onMute, onUnMute, muted }) => {
+const Info = ({ id, index, group, isAdmin, muted, type }) => {
     const infoRef = useRef(null)
     const dropdownRef = useRef(null)
     const [dropdownPosition, setDropdownPosition] = useState('down')
     const [isVisible, setIsVisible] = useState(false)
-    const { openModal, closeModal } = useModal()
-    const [muteDuration, setMuteDuration] = useState(null)
-    const [clicked, setClicked] = useState(false)
-    const { leaveGroup } = useChat()
+    const { leaveGroup, handleMute, handleUnMute } = useChat()
 
     const toggleDropdown = () => {
         setIsVisible(!isVisible)
@@ -38,8 +33,20 @@ const Info = ({ id, index, group, isAdmin, onMute, onUnMute, muted }) => {
         }
     }
 
-    const handleMute = () => {
-        openModal(<MuteDurationModal setMuteDuration={setMuteDuration} onClose={closeModal} setClicked={setClicked} />)
+    const myHandleMute = async () => {
+        try {
+            await handleMute(id, type)
+        } catch (error) {
+            console.error(error)
+        }
+    }
+
+    const myHandleUnMute = async () => {
+        try {
+            await handleUnMute(id, type)
+        } catch (error) {
+            console.error(error)
+        }
     }
 
     const handleLeaveGroup = () => {
@@ -49,16 +56,6 @@ const Info = ({ id, index, group, isAdmin, onMute, onUnMute, muted }) => {
     const handleDeleteGroup = () => {
         // TODO: implement delete group
     }
-
-    useEffect(() => {
-        if (clicked) {
-            setClicked(false)
-            if (muteDuration) {
-                onMute(0)
-            }
-            setMuteDuration(null)
-        }
-    }, [clicked, muteDuration])
 
     useEffect(() => {
         if (isVisible) {
@@ -73,9 +70,6 @@ const Info = ({ id, index, group, isAdmin, onMute, onUnMute, muted }) => {
         }
     }, [isVisible])
 
-    useEffect(() => {
-        setMuteDuration(null)
-    }, [])
 
     return (
         <>
@@ -96,15 +90,9 @@ const Info = ({ id, index, group, isAdmin, onMute, onUnMute, muted }) => {
                         >
                             <ul>
                                 {!muted ? (
-                                    <li onClick={handleMute}>Mute notifications</li>
+                                    <li onClick={myHandleMute}>Mute notifications</li>
                                 ) : (
-                                    <li
-                                        onClick={() => {
-                                            onUnMute()
-                                        }}
-                                    >
-                                        Unmute notifications
-                                    </li>
+                                    <li onClick={myHandleUnMute}>Unmute notifications</li>
                                 )}
                                 <li onClick={() => handleAction('Block')}>Block</li>
                                 <li onClick={() => handleAction('Archive')}>Archive</li>
@@ -112,18 +100,18 @@ const Info = ({ id, index, group, isAdmin, onMute, onUnMute, muted }) => {
                                     isAdmin ? (
                                         <li
                                             style={{ padding: '8px 12px', cursor: 'pointer', color: 'red' }}
-                                            onClick={handleLeaveGroup}
-                                        >
-                                            Leave group
-                                        </li>
-                                    ) : (
-                                        <li
-                                            style={{ padding: '8px 12px', cursor: 'pointer', color: 'red' }}
                                             onClick={handleDeleteGroup}
                                         >
                                             Delete group
                                         </li>
-                                    )
+                                    ) : (
+                                        <li
+                                            style={{ padding: '8px 12px', cursor: 'pointer', color: 'red' }}
+                                            onClick={handleLeaveGroup}
+                                        >
+                                            Leave group
+                                        </li>
+                                    ) 
                                 )}
                             </ul>
                         </div>

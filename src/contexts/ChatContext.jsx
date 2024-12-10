@@ -10,6 +10,7 @@ import { cleanChat } from '@/services/chatservice/getChats'
 import apiUrl from '@/config'
 import { useSidebar } from './SidebarContext'
 import { getMembers } from '@/services/chatservice/getChatMembers'
+import { muteChat, unMuteChat } from '@/services/chatservice/muteUnmuteChat'
 
 
 export const ChatContext = createContext()
@@ -186,6 +187,45 @@ export const ChatProvider = ({ children }) => {
             }
         } catch (error) {
             console.error(error)
+        }
+    }
+
+    const handleMute = async (chatId, chatType) => {
+        try {
+            await muteChat(chatId, {
+                type: chatType,
+                isMuted: true,
+                duration: 0
+            })
+
+            try {
+                await dbRef.current.muteNotifications(chatId)
+            } catch (error) {
+                console.error(error)
+            }
+            setChatAltered(true)
+        } catch (error) {
+            console.log(error)
+        }
+    }
+
+    const handleUnMute = async (chatId, chatType) => { 
+        try {
+            setIsDropdownOpen(false)
+            await unMuteChat(chatId, {
+                type: chatType,
+                isMuted: false,
+                duration: 0
+            })
+
+            try {
+                await dbRef.current.unMuteNotifications(chatId)
+            } catch (error) {
+                console.error(error)
+            }
+            setChatAltered(true)
+        } catch (error) {
+            console.log(error)
         }
     }
 
@@ -553,6 +593,8 @@ export const ChatProvider = ({ children }) => {
                 pinMessage,
                 unPinMessage,
                 leaveGroup,
+                handleMute,
+                handleUnMute,
                 sendMessage,
                 updateMessage,
                 sendJoinChat,
