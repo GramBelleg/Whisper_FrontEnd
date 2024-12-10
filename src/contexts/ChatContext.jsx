@@ -26,7 +26,6 @@ export const ChatProvider = ({ children }) => {
     const { dbRef } = useWhisperDB()
     const currentChatRef = useRef(currentChat)
     const [messageReceived, setMessageReceived] = useState(false)
-    const [messageDelivered, setMessageDelivered] = useState(false)
     const { encryptMessage , decryptMessage }  = useChatEncryption()
     const { user } = useAuth()
     const [reloadChats, SetReloadChats] = useState(false)
@@ -211,7 +210,6 @@ export const ChatProvider = ({ children }) => {
 
     const handleUnMute = async (chatId, chatType) => { 
         try {
-            setIsDropdownOpen(false)
             await unMuteChat(chatId, {
                 type: chatType,
                 isMuted: false,
@@ -385,7 +383,6 @@ export const ChatProvider = ({ children }) => {
     const handleDeliverMessage = async (data) => {
         try {
             const activeChat = currentChatRef.current
-            console.log(activeChat, ' ', data)
             const localMessageIds = data.messageIds
             localMessageIds.map(async (messageId) => {
                 try {
@@ -460,7 +457,7 @@ export const ChatProvider = ({ children }) => {
                     return message
                 })
             })
-            setMessageDelivered(true)
+            setChatAltered(true)
         } catch (error) {
             console.error(error)
         }
@@ -558,17 +555,11 @@ export const ChatProvider = ({ children }) => {
     useEffect(() => {}, [messages, pinnedMessages])
 
     useEffect(() => {
-        if (messageDelivered) {
-            setMessageDelivered(false)
-        }
-    }, [messageDelivered])
-
-    useEffect(() => {
         const loadSingleChat = async () => {
             if (chatAltered && currentChat) {
                 try {
                     const updatedChat = await dbRef.current.getChat(currentChat.id)
-                    setCurrentChat(updatedChat)
+                    setCurrentChat({...updatedChat})
                     setChatAltered(false)
                 } catch (error) {
                     console.error(error)
@@ -588,7 +579,6 @@ export const ChatProvider = ({ children }) => {
                 messageReceived,
                 pinnedMessages,
                 chatAltered,
-                messageDelivered,
                 setChatAltered,
                 pinMessage,
                 unPinMessage,

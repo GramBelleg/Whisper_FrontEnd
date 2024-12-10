@@ -15,7 +15,7 @@ import { faTimes } from '@fortawesome/free-solid-svg-icons'
 import { useSidebar } from '@/contexts/SidebarContext'
 
 const ChatPage = () => {
-    const { selectChat, chatAltered, messageDelivered, reloadChats, SetReloadChats } = useChat()
+    const { selectChat, chatAltered, reloadChats, SetReloadChats } = useChat()
     const [chatList, setChatList] = useState([])
     const { dbRef } = useWhisperDB()
     const { openModal, closeModal } = useModal()
@@ -59,10 +59,10 @@ const ChatPage = () => {
             loadChats()
             SetReloadChats(false)
         }
-        if (chatAltered || messageDelivered) {
+        if (chatAltered) {
             loadChats()
         }
-    }, [reloadChats, chatAltered, messageDelivered, loadChats])
+    }, [reloadChats, chatAltered, loadChats])
 
     return (
         <div className='chat-page'>

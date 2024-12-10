@@ -18,7 +18,7 @@ import LoadingData from '../LoadingData/LoadingData'
 
 const ChatItem = ({ index, standaloneChat }) => {
     const { dbRef } = useWhisperDB()
-    const { selectChat, chatAltered, messageDelivered, handleMute, handleUnMute } = useChat()
+    const { selectChat, chatAltered } = useChat()
     const { user } = useAuth()
 
     const maxLength = standaloneChat.isMuted ? 33 : standaloneChat.name === user.name ? 30 : 15
@@ -36,22 +36,6 @@ const ChatItem = ({ index, standaloneChat }) => {
         const infoElement = e.target.closest('.info')
         if (!infoElement) {
             selectChat(standaloneChat)
-        }
-    }
-
-    const myHandleMute = async () => {
-        try {
-            await handleMute(myChat.id, myChat.type)
-        } catch  (error) {
-            console.log(error)
-        }
-    }
-
-    const myHandleUnMute = async () => {
-        try {
-            await handleUnMute(myChat.id, myChat.type)
-        } catch  (error) {
-            console.log(error)
         }
     }
 
@@ -77,7 +61,7 @@ const ChatItem = ({ index, standaloneChat }) => {
         }
     }, [standaloneChat])
 
-    useEffect(() => {}, [chatAltered, messageDelivered])
+    useEffect(() => {}, [chatAltered])
 
     if (!myChat) {
         return <LoadingData/>

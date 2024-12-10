@@ -4,13 +4,10 @@ import "./ChatHeader.css";
 import SearchSingleChat from "../SearchSingleChat/SearchSingleChat";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faBell, faBellSlash, faEllipsisV, faPhone, faTrash } from "@fortawesome/free-solid-svg-icons";
-import { muteChat, unMuteChat } from "@/services/chatservice/muteUnmuteChat";
-import { useWhisperDB } from "@/contexts/WhisperDBContext";
 
 const ChatHeader = () => {
-    const { currentChat, leaveGroup, setChatAltered, handleMute, handleUnMute } = useChat()
+    const { currentChat, leaveGroup, chatAltered, handleMute, handleUnMute } = useChat()
     const [isDropdownOpen, setIsDropdownOpen] = useState(false)
-    const { dbRef } = useWhisperDB()
 
     const myHandleMute = async () => {
         setIsDropdownOpen(false)
@@ -41,6 +38,10 @@ const ChatHeader = () => {
         leaveGroup(currentChat.id)
         setIsDropdownOpen(false)
     }
+
+    useEffect(() => {
+
+    }, [chatAltered])
 
 
     return (
