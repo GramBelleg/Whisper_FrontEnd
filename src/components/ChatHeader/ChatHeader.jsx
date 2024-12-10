@@ -39,10 +39,6 @@ const ChatHeader = () => {
         setIsDropdownOpen(false)
     }
 
-    useEffect(() => {
-
-    }, [chatAltered])
-
 
     return (
         <div className="single-chat-header shadow-md">

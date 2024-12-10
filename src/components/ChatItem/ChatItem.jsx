@@ -61,7 +61,6 @@ const ChatItem = ({ index, standaloneChat }) => {
         }
     }, [standaloneChat])
 
-    useEffect(() => {}, [chatAltered])
 
     if (!myChat) {
         return <LoadingData/>
