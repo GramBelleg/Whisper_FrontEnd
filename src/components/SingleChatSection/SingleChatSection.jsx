@@ -6,8 +6,8 @@ import ChatActions from '../ChatActions/ChatActions'
 import { useChat } from '@/contexts/ChatContext'
 import NoChatOpened from '../NoChatOpened/NoChatOpened'
 import PinnedMessages from '../PinnedMessages/PinnedMessages'
-import SearchSingleChat from '../SearchSingleChat/SearchSingleChat'
 import { useEffect } from 'react'
+import ChatHeader from '../ChatHeader/ChatHeader'
 
 const SingleChatSection = () => {
     const { currentChat, pinnedMessages } = useChat()
@@ -15,7 +15,6 @@ const SingleChatSection = () => {
 
     const handlePinnedClick = (event) => {
         const messageId = event.messageId; 
-        console.log("Clicked on pinned message with ID:", messageId);
     
         const targetElement = document.getElementById(`message-${messageId}`);
         if (targetElement) {
@@ -31,23 +30,7 @@ const SingleChatSection = () => {
 
     return (
         <div className='single-chat-container'>
-            <div className='single-chat-header shadow-md'>
-                <div className='header-avatar'>
-                    <img src={currentChat.profilePic} alt={currentChat.name} />
-                </div>
-                <div className='header-details'>
-                    <span className='header-title'>{currentChat.name}</span>
-                    {
-                        currentChat.type === "DM" &&
-                        <span className='header-subtitle'>Last seen at {currentChat.lastSeen}</span>
-                    }
-                </div>
-                <SearchSingleChat />
-                <div className='header-icons'>
-                    <FontAwesomeIcon style={{ height: '24px' }} className='icon' icon={faPhone} />
-                    <FontAwesomeIcon style={{ height: '24px' }} className='icon' icon={faEllipsisV} />
-                </div>
-            </div>
+            <ChatHeader/>
             <div className='messages'>
                 <SingleChatMessagesList />
                 {pinnedMessages.length > 0 && (
