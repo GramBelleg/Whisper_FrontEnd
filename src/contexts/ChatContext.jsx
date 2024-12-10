@@ -214,19 +214,19 @@ export const ChatProvider = ({ children }) => {
 
     const handleReceiveLeaveGroup = async (groupLeft) => {
         try {
-            console.log("Group left", groupLeft)
             if (groupLeft.userName === user.userName) {
                 await dbRef.current.removeChat(groupLeft.chatId)
             }
             else {
                 const members = await dbRef.current.getChatMembers(groupLeft.chatId)
                 if (members) {
-                    const filteredMember = members.filter((member) => {
+                    const filteredMember = members.filter((member) => 
                         member.userName === groupLeft.userName
-                    })
-                    await dbRef.current.removeChatMember(groupLeft.chatId, filteredMember.id)
+                    )
+                    await dbRef.current.removeChatMember(groupLeft.chatId, filteredMember[0].id)
                 }
             }
+            SetReloadChats(true)
         } catch (error) {
             console.log(error)
         }
