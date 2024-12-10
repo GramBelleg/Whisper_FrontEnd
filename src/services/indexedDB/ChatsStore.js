@@ -151,7 +151,7 @@ export class ChatsStore extends BaseStore {
                     request.onsuccess = () => resolve(request.result)
                     request.onerror = () => reject(request.error) 
                 })
-                if (chat)
+                if (chat) 
                     return chat.members
                 else 
                     return []
@@ -178,8 +178,8 @@ export class ChatsStore extends BaseStore {
     async removeChatMember(chatId, memberId) {
         return this._executeTransaction('readwrite', async (store) => {
             try {
-                const chat = store.get(chatId)
-                await new Promise((resolve, reject) => {
+                const request = store.get(chatId)
+                const chat = await new Promise((resolve, reject) => {
                     request.onsuccess = () => resolve(request.result)
                     request.onerror = () => reject(request.error) 
                 })
