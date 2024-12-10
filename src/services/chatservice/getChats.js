@@ -51,13 +51,18 @@ export const mapPicture = async (picture) => {
 
 export const cleanChat = async (chat) => {
     try {
+        console.log(chat)
         const flattenedChat = {
-            id: chat.id,
-            othersId: chat.othersId, 
-            name: chat.name,
-            type: chat.type,
-            lastMessage: chat.lastMessage ? chat.lastMessage.content : null,
-            drafted: chat.lastMessage ? chat.lastMessage.drafted : false,
+            id: chat.id, //
+            othersId: chat.othersId, //
+            name: chat.name, //
+            type: chat.type, //
+            lastMessage: chat.lastMessage ? chat.lastMessage : null, //
+            draftMessageContent: chat.draftMessage ? chat.draftMessage.draftContent : "", //
+            draftMessageTime: chat.draftMessage ? chat.draftMessage.draftTime : "", //
+            draftMessageParentId: chat.draftMessage ? chat.draftMessage.draftParentMessageId : "", //
+            draftMessageParent: chat.draftMessage ? chat.draftMessage.parentMessage : "", //
+            draftMessageTime: chat.draftMessage ? chat.draftMessage.draftTime : "", //
             messageTime: chat.lastMessage && chat.lastMessage.sentAt ? chat.lastMessage.sentAt.slice(0, 19).replace('T', ' ') : null,
             senderId: chat.lastMessage ? chat.lastMessage.sender.id : null,
             messageType: chat.lastMessage ? chat.lastMessage.type : null,
@@ -67,13 +72,13 @@ export const cleanChat = async (chat) => {
             ),
             lastMessageId: chat.lastMessage ? chat.lastMessage.id : null, 
             media: chat.lastMessage && chat.lastMessage.media ? chat.lastMessage.media : '', 
-            story: chat.hasStory !== null ? chat.hasStory : false,
-            muted: chat.isMuted !== null ? chat.isMuted : false,
-            participantKeys: chat.participantKeys,
-            profilePic: await mapPicture(chat.picture), 
-            unreadMessageCount: chat.unreadMessageCount,
+            hasStory: chat.hasStory !== null ? chat.hasStory : false, //
+            isMuted: chat.isMuted !== null ? chat.isMuted : false,
+            participantKeys: chat.participantKeys, //
+            profilePic: await mapPicture(chat.picture), //
+            unreadMessageCount: chat.unreadMessageCount, //
             sender: chat.lastMessage ? chat.lastMessage.sender.userName : null,
-            lastSeen: chat.lastSeen ? chat.lastSeen.slice(0, 19).replace('T', ' ') : null,
+            lastSeen: chat.lastSeen ? chat.lastSeen.slice(0, 19).replace('T', ' ') : null, //
             status: chat.status
         }
         return flattenedChat

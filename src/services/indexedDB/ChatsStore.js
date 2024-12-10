@@ -271,7 +271,7 @@ export class ChatsStore extends BaseStore {
                 })
 
                 if (existingChat) {
-                    existingChat.muted = true
+                    existingChat.isMuted = true
                     const updateRequest = store.put(existingChat)
                     await new Promise((resolve, reject) => {
                         updateRequest.onsuccess = () => resolve()
@@ -296,7 +296,7 @@ export class ChatsStore extends BaseStore {
                     request.onerror = () => reject(request.error)
                 })
                 if (existingChat) {
-                    existingChat.muted = false
+                    existingChat.isMuted = false
                     const updateRequest = store.put(existingChat)
                     await new Promise((resolve, reject) => {
                         updateRequest.onsuccess = () => resolve()
