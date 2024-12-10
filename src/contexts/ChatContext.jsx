@@ -247,6 +247,17 @@ export const ChatProvider = ({ children }) => {
         })
     }
 
+    const handleGetMembers = async () => {
+        try {
+            //TODO: const members = await dbRef.current.getChatMembers(currentChat.id)
+            const members = getMembers(currentChat.id);
+            console.log(members)
+            return members;
+        } catch (error) {
+            console.log(error)
+        }
+    }
+
     const handleReceiveLeaveGroup = async (groupLeft) => {
         try {
             if (groupLeft.userName === user.userName) {
@@ -595,7 +606,8 @@ export const ChatProvider = ({ children }) => {
                 updateParentMessage,
                 clearParentMessage,
                 deleteMessage,
-                sending
+                sending,
+                handleGetMembers
             }}
         >
             {children}

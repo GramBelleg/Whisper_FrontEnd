@@ -3,11 +3,14 @@ import { useChat } from "@/contexts/ChatContext";
 import "./ChatHeader.css";
 import SearchSingleChat from "../SearchSingleChat/SearchSingleChat";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faBell, faBellSlash, faEllipsisV, faPhone, faTrash } from "@fortawesome/free-solid-svg-icons";
+import { faBell, faBellSlash, faEllipsisV, faPhone, faTrash, faUsers } from "@fortawesome/free-solid-svg-icons";
+import { useModal } from "@/contexts/ModalContext";
+import GroupMembersContainer from "../GroupMembers/GroupMembersContainer";
 
 const ChatHeader = () => {
     const { currentChat, leaveGroup, chatAltered, handleMute, handleUnMute } = useChat()
     const [isDropdownOpen, setIsDropdownOpen] = useState(false)
+    const {openModal,closeModal} = useModal();
 
     const myHandleMute = async () => {
         setIsDropdownOpen(false)
@@ -30,6 +33,12 @@ const ChatHeader = () => {
     const handleDelete = () => {
         // TODO: after back finishes
         console.log("Chat deleted")
+        setIsDropdownOpen(false)
+    }
+
+    const handleViewMembers = () => {
+        console.log("he7")
+        openModal(<GroupMembersContainer/>)
         setIsDropdownOpen(false)
     }
 
@@ -82,6 +91,13 @@ const ChatHeader = () => {
                                 <div className="dropdown-item" onClick={handleDelete}>
                                     <FontAwesomeIcon style={{ height: "20px", color: "red"}} className="menu-icon" icon={faTrash} />
                                     <span style={{color:"red"}} >Delete Chat</span>
+                                </div>
+                            }
+                            { 
+                                currentChat.type === "GROUP" && 
+                                <div className="dropdown-item" onClick={handleViewMembers}>
+                                    <FontAwesomeIcon style={{ height: "20px"}} className="menu-icon" icon={faUsers} />
+                                    <span>View Members</span>
                                 </div>
                             }
                             { 
