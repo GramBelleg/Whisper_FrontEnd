@@ -189,7 +189,7 @@ export const ChatProvider = ({ children }) => {
         }
     }
 
-    const handleMute = async (chatId, chatType) => {
+    const handleMute = async (chatId, chatType, duration) => {
         try {
             await muteChat(chatId, {
                 type: chatType,
