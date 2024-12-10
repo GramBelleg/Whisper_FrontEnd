@@ -25,18 +25,16 @@ export const ChatProvider = ({ children }) => {
     const { dbRef } = useWhisperDB()
     const currentChatRef = useRef(currentChat)
     const [messageReceived, setMessageReceived] = useState(false)
-    const [action, setAction] = useState(false)
     const [messageDelivered, setMessageDelivered] = useState(false)
     const { encryptMessage , decryptMessage }  = useChatEncryption()
     const { user } = useAuth()
     const [reloadChats, SetReloadChats] = useState(false)
     const { generateKeyIfNotExists } = useChatEncryption()
     const { setActivePage } = useSidebar()
+    const [chatAltered, setChatAltered] = useState(false)
 
 
-    const setActionExposed = (actionIn) => {
-        setAction(actionIn)
-    }
+
 
     const selectChat = (chat) => {
         setCurrentChat(chat)
@@ -206,7 +204,6 @@ export const ChatProvider = ({ children }) => {
     }
 
     const leaveGroup = async (chatId) => {
-        console.log("leaving", chatId)
         chatSocket.leaveGroup({
             chatId: chatId
         })
@@ -216,6 +213,7 @@ export const ChatProvider = ({ children }) => {
         try {
             if (groupLeft.userName === user.userName) {
                 await dbRef.current.removeChat(groupLeft.chatId)
+                setCurrentChat(null)
             }
             else {
                 const members = await dbRef.current.getChatMembers(groupLeft.chatId)
@@ -224,8 +222,10 @@ export const ChatProvider = ({ children }) => {
                         member.userName === groupLeft.userName
                     )
                     await dbRef.current.removeChatMember(groupLeft.chatId, filteredMember[0].id)
+                    setChatAltered(true)
                 }
             }
+            
             SetReloadChats(true)
         } catch (error) {
             console.log(error)
@@ -251,7 +251,9 @@ export const ChatProvider = ({ children }) => {
             // otherwise I am the first participant in the chat how created the chat and I have the key already
             const newChat = await cleanChat({...data})
             const members = await getMembers(newChat.id)
-            await dbRef.current.insertChat({...newChat, members: members})
+            const admin = members.filter((member) => member.isAdmin)[0]
+            const isAdmin = admin.id === user.id 
+            await dbRef.current.insertChat({...newChat, members: members, isAdmin: isAdmin})
             SetReloadChats(true)
             setActivePage("chat")
         } catch (error) {
@@ -286,7 +288,7 @@ export const ChatProvider = ({ children }) => {
                         participantKeys:participantKeys
                     });
                 }
-                setAction(true);
+                setChatAltered(true);
                 return;
             }
             
@@ -302,7 +304,7 @@ export const ChatProvider = ({ children }) => {
             try {
                 await dbRef.current.insertMessageWrapper({ ...mapMessage(myMessageData), drafted: false })
                 setMessageReceived(true)
-                setAction(true)
+                setChatAltered(true)
             } catch (error) {
                 console.error(error)
             }
@@ -514,17 +516,27 @@ export const ChatProvider = ({ children }) => {
     }, [chatSocket])
 
     useEffect(() => {}, [messages, pinnedMessages])
-    useEffect(() => {
-        if (action) {
-            setAction(false)
-        }
-    }, [action])
 
     useEffect(() => {
         if (messageDelivered) {
             setMessageDelivered(false)
         }
     }, [messageDelivered])
+
+    useEffect(() => {
+        const loadSingleChat = async () => {
+            if (chatAltered && currentChat) {
+                try {
+                    const updatedChat = await dbRef.current.getChat(currentChat.id)
+                    setCurrentChat(updatedChat)
+                    setChatAltered(false)
+                } catch (error) {
+                    console.error(error)
+                }
+            }
+        }
+        loadSingleChat()
+    }, [chatAltered])
 
 
     return (
@@ -535,9 +547,9 @@ export const ChatProvider = ({ children }) => {
                 messages,
                 messageReceived,
                 pinnedMessages,
-                action,
+                chatAltered,
                 messageDelivered,
-                setActionExposed,
+                setChatAltered,
                 pinMessage,
                 unPinMessage,
                 leaveGroup,

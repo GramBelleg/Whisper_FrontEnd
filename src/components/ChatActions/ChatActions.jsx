@@ -31,7 +31,7 @@ import { getFileExtension } from '@/utils/getFileExtension'
 const ChatActions = () => {
     const [textMessage, setTextMessage] = useState('')
     const { isRecording, duration, startRecording, stopRecording, discardRecording } = useVoiceRecorder()
-    const { sendMessage, sending, parentMessage, setActionExposed } = useChat()
+    const { sendMessage, sending, parentMessage, setChatAltered } = useChat()
 
     const [attachedFile, setAttachedFile] = useState(null)
     const [showAttachMenu, setShowAttachMenu] = useState(false)
@@ -183,13 +183,14 @@ const ChatActions = () => {
                         console.log(error)
                     }
 
-                    setActionExposed(true)
+                    setChatAltered(true)
                 }
             }
         }
         const setMessageByDrafted = async () => {
             try {
                 if (currentChat) {
+                    console.log(currentChat)
                     const lastMessage = await dbRef.current.getDraftedMessage(currentChat.id)
                     if (lastMessage) {
                         setTextMessage(lastMessage)
@@ -224,7 +225,7 @@ const ChatActions = () => {
                     } catch (error) {
                         console.log(error)
                     }
-                    setActionExposed(true)
+                    setChatAltered(true)
                 } catch (error) {
                     console.log(error.message)
                 }
