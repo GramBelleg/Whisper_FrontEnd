@@ -3,6 +3,7 @@ import noUser from '../../assets/images/no-user.png'
 import apiUrl from '@/config'
 import { readMedia } from './media'
 import { downloadBlob } from '../blobs/blob'
+import { getMembers } from './getChatMembers'
 
 export const getChatsAPI = async (filters = {}) => {
     try {
@@ -79,7 +80,8 @@ export const cleanChat = async (chat) => {
             unreadMessageCount: chat.unreadMessageCount, //
             sender: chat.lastMessage ? chat.lastMessage.sender.userName : null,
             lastSeen: chat.lastSeen ? chat.lastSeen.slice(0, 19).replace('T', ' ') : null, //
-            status: chat.status
+            status: chat.status,
+            members: await getMembers(chat.id)
         }
         return flattenedChat
     } catch (error) {
