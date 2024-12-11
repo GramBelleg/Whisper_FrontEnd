@@ -71,6 +71,7 @@ const ChatHeader = () => {
                     <FontAwesomeIcon
                         style={{ height: "30px" , marginTop: "5px"}}
                         className="icon"
+                        data-testid="test-ellipses"
                         icon={faEllipsisV}
                         onClick={() => setIsDropdownOpen(true)}
                     />
