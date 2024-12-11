@@ -128,6 +128,45 @@ export class ChatsStore extends BaseStore {
         })
     }
 
+    async getChat(id) {
+        return this._executeTransaction('readwrite', async (store) => {
+            try {
+                const request = store.get(id);
+                const chat = await new Promise((resolve, reject) => {
+                    request.onsuccess = () => resolve(request.result);
+                    request.onerror = () => reject(request.error);
+                });
+                return chat;
+            } catch (error) {
+                console.error('Error inserting chats:', error)
+            }
+        })
+    }
+    async updateChat(id,data) {
+        return this._executeTransaction('readwrite', async (store) => {
+            try {
+                const request = store.get(id);
+                const existingChat = await new Promise((resolve, reject) => {
+                    request.onsuccess = () => resolve(request.result);
+                    request.onerror = () => reject(request.error);
+                });
+    
+                if (existingChat) {
+                    const newChat = { ...existingChat, ...data };
+                    const updateRequest = store.put(newChat);
+                    await new Promise((resolve, reject) => {
+                        updateRequest.onsuccess = () => resolve();
+                        updateRequest.onerror = () => reject(updateRequest.error);
+                    });
+                } else {
+                    throw new Error(`Message with id ${id} not found.`);
+                }
+            } catch (error) {
+                console.error('Error inserting chats:', error)
+            }
+        })
+    }
+
     async getChats() {
         return this._executeTransaction('readonly', async (store) => {
             try {
