@@ -11,6 +11,8 @@ import apiUrl from '@/config'
 import { useSidebar } from './SidebarContext'
 import { getMembers } from '@/services/chatservice/getChatMembers'
 import { muteChat, unMuteChat } from '@/services/chatservice/muteUnmuteChat'
+import { setPrivacy } from '@/services/chatservice/groupSettings'
+import { setGroupLimit } from '@/services/chatservice/groupSettings'
 
 
 export const ChatContext = createContext()
@@ -245,6 +247,18 @@ export const ChatProvider = ({ children }) => {
         chatSocket.leaveGroup({
             chatId: chatId
         })
+    }
+    const saveGroupSettings = async (groupLimit, privacy) =>
+    {
+        try {
+            if(privacy)
+                await setPrivacy(currentChat.id, privacy)
+            if(groupLimit)
+                await setGroupLimit(currentChat.id, groupLimit)
+        } catch (error) {
+            console.log(error)
+            throw new Error ("failed to update group settings")
+        }
     }
 
     const handleGetMembers = async () => {
@@ -607,7 +621,8 @@ export const ChatProvider = ({ children }) => {
                 clearParentMessage,
                 deleteMessage,
                 sending,
-                handleGetMembers
+                handleGetMembers,
+                saveGroupSettings
             }}
         >
             {children}

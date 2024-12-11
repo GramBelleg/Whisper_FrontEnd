@@ -1,10 +1,11 @@
 import React, { useState } from 'react'
-import EditableField from '../ProfileSettings/EditFields/EditableField'
+import { useChat } from '@/contexts/ChatContext'
 
 const GroupSettings = () => {
     const [privacy, setPrivacy] = useState('Public')
     const [groupLimit, setGroupLimit] = useState(0)
     const [error,setError] = useState('')
+    const { saveGroupSettings } = useChat();
 
     const handlePrivacyChange = (event) => {
         setPrivacy(event.target.value)
@@ -20,6 +21,7 @@ const GroupSettings = () => {
     const handleSubmit = () => {
         console.log('Privacy Setting:', privacy)
         console.log('Group Limit:', groupLimit)
+        saveGroupSettings(groupLimit,privacy)
         alert(`Settings Saved!\nPrivacy: ${privacy}\nGroup Limit: ${groupLimit}`)
     }
 
@@ -37,14 +39,19 @@ const GroupSettings = () => {
                 </select>
             </div>
 
-            <EditableField
-                initialText={groupLimit}
-                fieldName='Group Limit'
-                id='group-limit'
-                onSave={(value) => handleGroupLimitChange(value)}
-                error={error}
-                clearError={()=>setError('')}
-            />
+            <div className='m-4'>
+                <label htmlFor='privacy' className='block text-left text-primary font-medium mb-2'>
+                    Privacy Setting:
+                </label>
+                <select id='group-limit' value={groupLimit} onChange={handleGroupLimitChange} className='border bg-dark rounded-md px-3 py-2 w-full'>
+                    <option value='20'>20</option>
+                    <option value='50'>50</option>
+                    <option value='100'>100</option>
+                    <option value='500'>500</option>
+                    <option value='1000'>1000</option>
+                </select>
+            </div>
+
 
             <button onClick={handleSubmit} className=' text-white px-4 py-2 rounded-md hover:bg-primary duration-300'>
                 Save Settings
