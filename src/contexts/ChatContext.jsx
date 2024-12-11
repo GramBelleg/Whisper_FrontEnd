@@ -272,6 +272,7 @@ export const ChatProvider = ({ children }) => {
 
     const handleChatCreate = async (chatData) => {
         try {
+            console.log(chatData)
             let data = { ...chatData };
             if (chatData && chatData.type === "DM") {
                 let keyId = await generateKeyIfNotExists(chatData);
@@ -288,6 +289,7 @@ export const ChatProvider = ({ children }) => {
             }
             // otherwise I am the first participant in the chat how created the chat and I have the key already
             const newChat = await cleanChat({...data})
+            console.log(newChat)
             const members = await getMembers(newChat.id)
             const admin = members.filter((member) => member.isAdmin)[0]
             const isAdmin = admin.id === user.id 
