@@ -15,9 +15,9 @@ const CreateGroupPageContainer = () => {
 
     const [pageOrder, setPageOrder] = useState(0);
     const [selectedUsers, setSelectedUsers] = useState([])
-    const { setActivePage } = useSidebar()
+    const { setActivePage, type } = useSidebar()
     const chatsSocket = new ChatSocket()
-    const [groupName, setGroupName] = useState('')
+    const [batchName, setBatchName] = useState('')
     const [groupPicFileData, setGroupPicFileData] = useState(null)
     const { user } = useAuth()
     const { openModal, closeModal } = useModal()
@@ -32,17 +32,24 @@ const CreateGroupPageContainer = () => {
             )
         }
     }
-    const createGroup = async () => {
+    const createBatch = async () => {
         try {
-            if (groupName.length > 0) {
+            if (batchName.length > 0) {
                 setLoading(true)
                 let blobName = null;
                 if (groupPicFileData) {
                     blobName = await uploadMedia(groupPicFileData)
                 }
+                console.log({
+                    type: type,
+                    name: batchName,
+                    users: [...selectedUsers.map((selectedUser) => selectedUser.id), user.id],
+                    picture: blobName,
+                    senderKey: null
+                })
                 chatsSocket.createChat({
-                    type: "GROUP",
-                    name: groupName,
+                    type: type,
+                    name: batchName,
                     users: [...selectedUsers.map((selectedUser) => selectedUser.id), user.id],
                     picture: blobName,
                     senderKey: null
@@ -67,7 +74,7 @@ const CreateGroupPageContainer = () => {
         if (pageOrder === 0) {
             setPageOrder((prev) => prev + 1)
         } else {
-            createGroup()
+            createBatch()
             
         }
     };
@@ -88,7 +95,7 @@ const CreateGroupPageContainer = () => {
             </div>
             <div className="content">
                 {pageOrder === 0 ? <ChooseGroupMembers selectedUsers={selectedUsers} setSelectedUsers={setSelectedUsers}/> 
-                : <ChooseGroupInfo selectedUsers={selectedUsers} setGroupName={setGroupName} setGroupPicFileData={setGroupPicFileData}/>}
+                : <ChooseGroupInfo selectedUsers={selectedUsers} setBatchName={setBatchName} setGroupPicFileData={setGroupPicFileData}/>}
             </div>
             <div className="forward-icon" onClick={handleGoForward}>
                 <FontAwesomeIcon icon={faArrowRight} />
