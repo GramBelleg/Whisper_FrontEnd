@@ -11,7 +11,7 @@ import apiUrl from '@/config'
 import { useSidebar } from './SidebarContext'
 import { getMembers } from '@/services/chatservice/getChatMembers'
 import { muteChat, unMuteChat } from '@/services/chatservice/muteUnmuteChat'
-import { setPrivacy } from '@/services/chatservice/groupSettings'
+import { getGroupSettings, setPrivacy } from '@/services/chatservice/groupSettings'
 import { setGroupLimit } from '@/services/chatservice/groupSettings'
 
 
@@ -196,7 +196,7 @@ export const ChatProvider = ({ children }) => {
             await muteChat(chatId, {
                 type: chatType,
                 isMuted: true,
-                duration: 0
+                duration: duration
             })
 
             try {
@@ -248,6 +248,16 @@ export const ChatProvider = ({ children }) => {
             chatId: chatId
         })
     }
+
+    const handleGetGroupSettings = async () => {
+        try {
+            const res = await getGroupSettings(currentChat.id);
+            return res;
+        } catch (error) {
+            console.log("error",error)
+        }
+    }
+
     const saveGroupSettings = async (groupLimit, privacy) =>
     {
         try {
@@ -622,7 +632,8 @@ export const ChatProvider = ({ children }) => {
                 deleteMessage,
                 sending,
                 handleGetMembers,
-                saveGroupSettings
+                saveGroupSettings,
+                handleGetGroupSettings
             }}
         >
             {children}

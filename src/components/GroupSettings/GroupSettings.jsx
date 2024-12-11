@@ -1,11 +1,26 @@
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import { useChat } from '@/contexts/ChatContext'
 
 const GroupSettings = () => {
     const [privacy, setPrivacy] = useState('Public')
     const [groupLimit, setGroupLimit] = useState(0)
     const [error,setError] = useState('')
-    const { saveGroupSettings } = useChat();
+    const { saveGroupSettings,handleGetGroupSettings } = useChat();
+
+    useEffect(() => {
+        const getGroupSettings = async () => {
+            try {
+                const response = await handleGetGroupSettings()
+                console.log(response)
+                setPrivacy(response.privacy?'Public':'Private')
+                setGroupLimit(response.maxSize)
+            } catch (error) {
+                console.error('Error fetching members:', error)
+            }
+        }
+
+        getGroupSettings()
+    }, [])
 
     const handlePrivacyChange = (event) => {
         setPrivacy(event.target.value)
