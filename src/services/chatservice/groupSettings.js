@@ -39,3 +39,23 @@ export const setGroupLimit = async (groupId, limit) => {
         throw new Error('failed' + error.response.data.message)
     }
 };
+
+export const getGroupSettings = async (groupId) => {
+    try {
+        const token = localStorage.getItem("token")
+        const res = await axiosInstance.get(`/api/groups/${groupId}/settings`, 
+        {
+            headers: {
+                Authorization: `Bearer ${token}`
+            },
+            withCredentials: true
+        }
+        )
+        console.log(res)
+        return res.data
+    } catch (error) {
+        console.log(error)
+
+        throw new Error('failed' + error.response.data.message)
+    }
+}
