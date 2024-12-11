@@ -56,6 +56,7 @@ const ChatHeader = () => {
         setIsDropdownOpen(false)
     }
 
+    
 
     return (
         <div className="single-chat-header shadow-md">
@@ -68,7 +69,7 @@ const ChatHeader = () => {
                 <FontAwesomeIcon style={{ height: "24px" }} className="icon" icon={faPhone} />
                 <div className="dropdown-container">
                     <FontAwesomeIcon
-                        style={{ height: "24px" }}
+                        style={{ height: "30px" , marginTop: "5px"}}
                         className="icon"
                         icon={faEllipsisV}
                         onClick={() => setIsDropdownOpen(true)}
@@ -90,24 +91,24 @@ const ChatHeader = () => {
                             }
                             
                             { 
-                                currentChat.type !== "GROUP" && 
+                                currentChat.type === "DM" && 
                                 <div className="dropdown-item" onClick={handleDelete}>
                                     <FontAwesomeIcon style={{ height: "20px", color: "red"}} className="menu-icon" icon={faTrash} />
                                     <span style={{color:"red"}} >Delete Chat</span>
                                 </div>
                             }
                             { 
-                                currentChat.type === "GROUP" && currentChat.isAdmin && 
+                                (currentChat.type === "GROUP" || currentChat.type === "CHANNEL") && currentChat.isAdmin && 
                                 <div className="dropdown-item" onClick={handleDelete}>
                                     <FontAwesomeIcon style={{ height: "20px" , color: "red"}} className="menu-icon" icon={faTrash} />
-                                    <span style={{color:"red"}}>Delete Group</span>
+                                    <span style={{color:"red"}}>Delete {currentChat.type.toLowerCase()}</span>
                                 </div>
                             }
                             { 
-                                currentChat.type === "GROUP" && !currentChat.isAdmin && 
+                                (currentChat.type === "GROUP" || currentChat.type === "CHANNEL") && !currentChat.isAdmin && 
                                 <div className="dropdown-item" onClick={handleLeave}>
                                     <FontAwesomeIcon style={{ height: "20px" ,color: "red"}} className="menu-icon" icon={faTrash} />
-                                    <span style={{color:"red"}}>Leave Group</span>
+                                    <span style={{color:"red"}}>Leave {currentChat.type.toLowerCase()}</span>
                                 </div>
                             }
                         </div>
