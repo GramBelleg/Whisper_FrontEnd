@@ -196,7 +196,7 @@ export const ChatProvider = ({ children }) => {
             await muteChat(chatId, {
                 type: chatType,
                 isMuted: true,
-                duration: 0
+                duration: duration
             })
 
             try {
