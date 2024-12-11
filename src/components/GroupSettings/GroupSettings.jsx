@@ -1,10 +1,12 @@
-import React, { useEffect, useState } from 'react'
-import { useChat } from '@/contexts/ChatContext'
+import React, { useEffect, useState } from "react";
+import { useChat } from "@/contexts/ChatContext";
+import { useStackedNavigation } from "@/contexts/StackedNavigationContext/StackedNavigationContext";
+import { faArrowLeft } from '@fortawesome/free-solid-svg-icons'
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 
 const GroupSettings = () => {
-    const [privacy, setPrivacy] = useState('Public')
-    const [groupLimit, setGroupLimit] = useState(0)
-    const [error,setError] = useState('')
+    const [privacy, setPrivacy] = useState("Public");
+    const [groupLimit, setGroupLimit] = useState(0);
     const { saveGroupSettings,handleGetGroupSettings } = useChat();
 
     useEffect(() => {
@@ -21,58 +23,71 @@ const GroupSettings = () => {
 
         getGroupSettings()
     }, [])
+    const { pop } = useStackedNavigation(); 
 
     const handlePrivacyChange = (event) => {
-        setPrivacy(event.target.value)
-    }
+        setPrivacy(event.target.value);
+    };
 
     const handleGroupLimitChange = (event) => {
-        const value = Number(event.target.value)
+        const value = Number(event.target.value);
         if (value >= 0) {
-            setGroupLimit(value)
+            setGroupLimit(value);
         }
-    }
+    };
 
     const handleSubmit = () => {
-        console.log('Privacy Setting:', privacy)
-        console.log('Group Limit:', groupLimit)
-        saveGroupSettings(groupLimit,privacy)
-        alert(`Settings Saved!\nPrivacy: ${privacy}\nGroup Limit: ${groupLimit}`)
-    }
+        saveGroupSettings(groupLimit, privacy);
+        alert(`Settings Saved!\nPrivacy: ${privacy}\nGroup Limit: ${groupLimit}`);
+        pop(); // Close the settings screen
+    };
+    useEffect(() => {
+        console.log("mounted")
+    },[]
+    )
 
     return (
-        <div className='group-settings bg-dark p-4 border rounded-lg shadow-md text-light'>
-            <h2 className='text-lg font-bold mb-4'>Group Settings</h2>
-
-            <div className='m-4'>
-                <label htmlFor='privacy' className='block text-left text-primary font-medium mb-2'>
+        <div className="fixed top-0 right-0 w-80 h-full bg-dark text-light shadow-xl z-100 p-4 transition-transform transform translate-x-0">
+            <div className="flex justify-between items-center space-x-4">
+            <div onClick={()=>pop()}>
+                <FontAwesomeIcon icon={faArrowLeft} />
+            </div>
+            </div>
+            <h2 className="text-lg font-bold mb-4 text-left mb-4 mt-4">Group Settings</h2>
+            <div className="m-4">
+                <label htmlFor="privacy" className="block text-left text-primary font-medium mb-2">
                     Privacy Setting:
                 </label>
-                <select id='privacy' value={privacy} onChange={handlePrivacyChange} className='border bg-dark rounded-md px-3 py-2 w-full'>
-                    <option value='Public'>Public</option>
-                    <option value='Private'>Private</option>
+                <select
+                    id="privacy"
+                    value={privacy}
+                    onChange={handlePrivacyChange}
+                    className="border bg-dark rounded-md px-3 py-2 w-full"
+                >
+                    <option value="Public">Public</option>
+                    <option value="Private">Private</option>
                 </select>
             </div>
-
-            <div className='m-4'>
-                <label htmlFor='privacy' className='block text-left text-primary font-medium mb-2'>
-                    Privacy Setting:
+            <div className="m-4">
+                <label htmlFor="group-limit" className="block text-left text-primary font-medium mb-2">
+                    Group Limit:
                 </label>
-                <select id='group-limit' value={groupLimit} onChange={handleGroupLimitChange} className='border bg-dark rounded-md px-3 py-2 w-full'>
-                    <option value='20'>20</option>
-                    <option value='50'>50</option>
-                    <option value='100'>100</option>
-                    <option value='500'>500</option>
-                    <option value='1000'>1000</option>
-                </select>
+                <input
+                    id="group-limit"
+                    type="number"
+                    value={groupLimit}
+                    onChange={handleGroupLimitChange}
+                    className="border bg-dark rounded-md px-3 py-2 w-full"
+                />
             </div>
-
-
-            <button onClick={handleSubmit} className=' text-white px-4 py-2 rounded-md hover:bg-primary duration-300'>
+            <button
+                onClick={handleSubmit}
+                className="text-white px-4 py-2 rounded-md hover:bg-primary duration-300"
+            >
                 Save Settings
             </button>
         </div>
-    )
-}
+    );
+};
 
-export default GroupSettings
+export default GroupSettings;
