@@ -101,20 +101,7 @@ const ChatHeader = ({handleInfoOpen}) => {
                                     <span style={{ color: 'red' }}>Delete Chat</span>
                                 </div>
                             )}
-                            {currentChat.type === 'GROUP' && (
-                                <div className='dropdown-item' onClick={handleViewMembers}>
-                                    <FontAwesomeIcon style={{ height: '20px' }} className='menu-icon' icon={faUsers} />
-                                    <span>View Members</span>
-                                </div>
-                            )}
-                            {currentChat.type === 'GROUP' 
-                            // && currentChat.isAdmin 
-                            && (
-                                <div className='dropdown-item' onClick={handleSettings}>
-                                    <FontAwesomeIcon style={{ height: '20px' }} className='menu-icon' icon={faGear} />
-                                    <span>Settings</span>
-                                </div>
-                            )}
+
                             {currentChat.type === 'GROUP' && currentChat.isAdmin && (
                                 <div className='dropdown-item' onClick={handleDelete}>
                                     <FontAwesomeIcon style={{ height: '20px', color: 'red' }} className='menu-icon' icon={faTrash} />
