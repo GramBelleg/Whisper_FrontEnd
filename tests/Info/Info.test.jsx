@@ -1,93 +1,134 @@
 import { render, screen, fireEvent, waitFor } from "@testing-library/react";
+import Info from "../../src/components/Info/Info";
 import { vi } from "vitest";
-import { useModal } from "@/contexts/ModalContext";
-import Info from "@/components/Info/Info";
+import { useChat } from "@/contexts/ChatContext";
 
-vi.mock("@/contexts/ModalContext", () => ({
-    useModal: vi.fn(),
+// Mock the context provider
+vi.mock('@/contexts/ChatContext', () => ({
+  useChat: vi.fn()
 }));
 
-describe("Info Component", () => {
-    let openModalMock, closeModalMock;
-
+describe("Info component", () => {
+    const mockHandleMute = vi.fn();
+    const mockHandleUnMute = vi.fn();
+    const mockLeaveGroup = vi.fn();
+    const mockHandleAction = vi.fn();
+  
     beforeEach(() => {
-        openModalMock = vi.fn();
-        closeModalMock = vi.fn();
-        useModal.mockReturnValue({ openModal: openModalMock, closeModal: closeModalMock });
-    });
-
-    it("renders the Info component", () => {
-        render(<Info index={1} group={false} muted={false} onMute={vi.fn()} onUnMute={vi.fn()} />);
-        const infoIcon = document.querySelector(".info");
-        expect(infoIcon).toBeInTheDocument();
-    });
-    
-    it("toggles dropdown visibility on click", () => {
-        render(<Info index={1} group={false} muted={false} onMute={vi.fn()} onUnMute={vi.fn()} />);
-        const infoIcon = document.querySelector(".info");
-
-        fireEvent.click(infoIcon);
-        let dropdown = screen.getByRole("list");
-        expect(dropdown).toBeInTheDocument();
-
-        fireEvent.click(infoIcon);
-        expect(dropdown).not.toBeVisible();
-    });
-    
-    it("calls the onMute function when mute is selected", async () => {
-        const onMuteMock = vi.fn();
-        render(<Info index={1} group={false} muted={false} onMute={onMuteMock} onUnMute={vi.fn()} />);
-
-        const infoIcon = document.querySelector(".info");
-
-        fireEvent.click(infoIcon);
-
-        const muteOption = screen.getByText("Mute notifications");
-        fireEvent.click(muteOption);
-
-        await waitFor(() => {
-            expect(openModalMock).toHaveBeenCalled();
+        useChat.mockReturnValue({
+            leaveGroup: mockLeaveGroup,
+            handleMute: mockHandleMute,
+            handleUnMute: mockHandleUnMute
         });
     });
-    
-    it("calls the onUnMute function when unmute is selected", () => {
-        const onUnMuteMock = vi.fn();
-        render(<Info index={1} group={false} muted={true} onMute={vi.fn()} onUnMute={onUnMuteMock} />);
 
-        const infoIcon = document.querySelector(".info");
-        fireEvent.click(infoIcon);
-
-        const unMuteOption = screen.getByText("Unmute notifications");
-        fireEvent.click(unMuteOption);
-
-        expect(onUnMuteMock).toHaveBeenCalled();
+    afterEach(() => {
+        vi.clearAllMocks();
     });
-    
-    it("renders additional options for groups", () => {
-        render(<Info index={1} group={true} muted={false} onMute={vi.fn()} onUnMute={vi.fn()} />);
 
-        const infoIcon = document.querySelector(".info");
-        fireEvent.click(infoIcon);
+    it("renders the component and toggles dropdown visibility", () => {
+        const myChat = { id: "123", type: "DM", isMuted: false, isAdmin: false };
 
-        const leaveGroupOption = screen.getByText("Leave group");
-        expect(leaveGroupOption).toBeInTheDocument();
+        render(<Info index={true} myChat={myChat} />);
+
+        // Initially, dropdown should not be visible
+        expect(screen.queryByText(/Mute notifications/)).not.toBeInTheDocument();
+        expect(screen.queryByText(/Unmute notifications/)).not.toBeInTheDocument();
+
+        // Click on the info icon to toggle dropdown
+        const divStart = document.querySelector(".info")
+        fireEvent.click(divStart);
+        
+        // Dropdown should appear after click
+        expect(screen.getByText(/Mute notifications/)).toBeInTheDocument();
     });
-    
-    it("positions dropdown correctly", async () => {
-        render(<Info index={1} group={false} muted={false} onMute={vi.fn()} onUnMute={vi.fn()} />);
 
-        const infoIcon = document.querySelector(".info");
-        fireEvent.click(infoIcon);
+    it("handles mute and unmute actions", async () => {
+        const myChat = { id: "123", type: "DM", isMuted: false, isAdmin: false };
 
-        const dropdown = document.querySelector(".dropdown");
+        render(<Info index={true} myChat={myChat} />);
 
-        // Simulate a window resize or a positioning update
-        fireEvent.resize(window);
+        // Click to open the dropdown
+        const divStart = document.querySelector(".info")
+        fireEvent.click(divStart);
+
+        // Mute action should trigger handleMute
+        fireEvent.click(screen.getByText(/Mute notifications/));
 
         await waitFor(() => {
-            expect(dropdown).toHaveStyle({
-                top: "100%",
-            });
+            expect(mockHandleMute).toHaveBeenCalledWith(myChat.id, myChat.type);
         });
+
+        // Change state to "muted" and test Unmute action
+        myChat.isMuted = true;
+
+        render(<Info index={true} myChat={myChat} />);
+
+        // Click to open the dropdown again
+        const divStart2 = document.querySelector(".info")
+        fireEvent.click(divStart2);
+
+        // Unmute action should trigger handleUnMute
+        fireEvent.click(screen.getByText(/Unmute notifications/));
+
+        await waitFor(() => {
+            expect(mockHandleUnMute).toHaveBeenCalledWith(myChat.id, myChat.type);
+        });
+    });
+
+    it("invokes leave group action", () => {
+        const myChat = { id: "123", type: "group", isMuted: false, isAdmin: false };
+
+        render(<Info index={true} myChat={myChat} />);
+
+        // Open the dropdown
+        const divStart = document.querySelector(".info")
+        fireEvent.click(divStart);
+
+        // Trigger Leave group action
+        fireEvent.click(screen.getByText(/Leave group/));
+
+        expect(mockLeaveGroup).toHaveBeenCalledWith(myChat.id);
+    });
+
+    it("hides dropdown on mouse leave", () => {
+        const myChat = { id: "123", type: "group", isMuted: false, isAdmin: false };
+
+        render(<Info index={true} myChat={myChat} />);
+
+        // Click to open the dropdown
+        const divStart = document.querySelector(".info")
+        fireEvent.click(divStart);
+
+        // Mouse leave should close the dropdown
+        fireEvent.mouseLeave(screen.getByRole('list'));
+
+        expect(screen.queryByText(/Mute notifications/)).not.toBeInTheDocument();
+    });
+
+    it("renders delete group option for admins", () => {
+        const myChat = { id: "123", type: "group", isMuted: false, isAdmin: true };
+
+        render(<Info index={true} myChat={myChat} />);
+
+        // Open the dropdown
+        const divStart = document.querySelector(".info")
+        fireEvent.click(divStart);
+
+        // Check for delete option
+        expect(screen.getByText(/Delete group/)).toBeInTheDocument();
+    });
+
+    it("does not show delete group option for non-admins", () => {
+        const myChat = { id: "123", type: "group", isMuted: false, isAdmin: false };
+
+        render(<Info index={true} myChat={myChat} />);
+
+        // Open the dropdown
+        const divStart = document.querySelector(".info")
+        fireEvent.click(divStart);
+
+        // Check that the delete option is not visible
+        expect(screen.queryByText(/Delete group/)).not.toBeInTheDocument();
     });
 });
