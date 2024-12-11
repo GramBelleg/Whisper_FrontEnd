@@ -7,10 +7,13 @@ import { faBell, faBellSlash, faEllipsisV, faGear, faPhone, faTrash, faUsers } f
 import { useModal } from '@/contexts/ModalContext'
 import GroupMembersContainer from '../GroupMembers/GroupMembersContainer'
 import GroupSettings from '../GroupSettings/GroupSettings'
+import GroupInfo from '../GroupInfo/GroupInfo'
+import GroupInfoContainer from '../GroupInfo/GroupInfoContainer'
 
-const ChatHeader = () => {
+const ChatHeader = ({handleInfoOpen}) => {
     const { currentChat, leaveGroup, chatAltered, handleMute, handleUnMute } = useChat()
     const [isDropdownOpen, setIsDropdownOpen] = useState(false)
+    const [isChatInfoOpen, setIsChatInfoOpen] = useState(false)
     const [isMuteDropdownOpen, setMuteIsDropdownOpen] = useState(false)
     const { openModal, closeModal } = useModal()
 
@@ -64,7 +67,7 @@ const ChatHeader = () => {
             <div className='header-avatar'>
                 <img src={currentChat.profilePic} alt={currentChat.name} />
             </div>
-            <div className='header-details'>
+            <div className='header-details' onClick={handleInfoOpen}>
                 <span className='header-title'>{currentChat.name}</span>
                 {currentChat.type === 'DM' && <span className='header-subtitle'>Last seen at {currentChat.lastSeen}</span>}
             </div>
@@ -141,6 +144,8 @@ const ChatHeader = () => {
                     )}
                 </div>
             </div>
+            {isChatInfoOpen && currentChat.type === "GROUP" && 
+            <GroupInfoContainer currentChat={currentChat}  onClose={()=>setIsChatInfoOpen(false)}/>}
         </div>
     )
 }

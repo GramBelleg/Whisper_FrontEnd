@@ -3,9 +3,10 @@ import noUser from '../../assets/images/no-user.png'
 const GroupMembers = ({ filteredMembers, handleQueryChange }) => {
     return (
         <div className=' p-4 rounded-md'>
-            <SearchBar handleQueryChange={handleQueryChange} />
+            <h2 className='text-lg text-light text-left mb-6'>Group Members</h2>
+            <SearchBar handleQueryChange={handleQueryChange} className='pd-4' />
 
-            <div className='members-list'>
+            <div className='members-list mg-4'>
                 {filteredMembers?.map((member) => (
                     <div key={member.id} className='user-item'>
                         <div className='user-image'>
