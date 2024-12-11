@@ -131,13 +131,13 @@ const ChatHeader = ({handleInfoOpen}) => {
                     )}
                     {isMuteDropdownOpen && (
                         <div className='dropdown-menu'>
-                            <div className='dropdown-item' onClick={() => myHandleMute(8)}>
+                            <div className='dropdown-item' onClick={() => myHandleMute('8 Hours')}>
                                 8 Hours
                             </div>
-                            <div className='dropdown-item' onClick={() => myHandleMute(1)}>
+                            <div className='dropdown-item' onClick={() => myHandleMute('1 Week')}>
                                 1 Week
                             </div>
-                            <div className='dropdown-item' onClick={() => myHandleMute(0)}>
+                            <div className='dropdown-item' onClick={() => myHandleMute('Always')}>
                                 Always
                             </div>
                         </div>

@@ -28,7 +28,7 @@ const GroupInfo = ({ currentChat, onClose }) => {
 
     return (
         <div
-            className={`fixed top-0 right-0 w-80 h-full bg-dark text-light shadow-lg p-4 transition-transform transform ${
+            className={`fixed top-0 right-0 w-80 h-full bg-dark text-light shadow-lg z-200 p-4 transition-transform transform ${
                 isVisible ? "translate-x-0" : "translate-x-full"
             }`}
         >
