@@ -13,18 +13,19 @@ import { SidebarProvider } from './contexts/SidebarContext.jsx'
 
 createRoot(document.getElementById('root')).render(
     <ProfileSettingsProvider>
-        <AuthProvider>
-            <GoogleOAuthProvider clientId={import.meta.env.VITE_APP_GOOGLE_CLIENT_ID}>
-                <WhisperDBProvider>
-                    <StoriesProvider>
-                        <SidebarProvider>
-                            <ChatProvider>
-                                <App />
-                            </ChatProvider>
-                        </SidebarProvider>
-                    </StoriesProvider>
-                </WhisperDBProvider>
-            </GoogleOAuthProvider>
-        </AuthProvider>
+        <WhisperDBProvider>
+            <AuthProvider>
+                <GoogleOAuthProvider clientId={import.meta.env.VITE_APP_GOOGLE_CLIENT_ID}>
+                    
+                        <StoriesProvider>
+                            <SidebarProvider>
+                                <ChatProvider>
+                                    <App />
+                                </ChatProvider>
+                            </SidebarProvider>
+                        </StoriesProvider>
+                </GoogleOAuthProvider>
+            </AuthProvider>
+        </WhisperDBProvider>
     </ProfileSettingsProvider>
 )
