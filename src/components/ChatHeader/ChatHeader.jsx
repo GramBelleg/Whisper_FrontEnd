@@ -6,9 +6,26 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faBell, faBellSlash, faEllipsisV, faPhone, faTrash } from "@fortawesome/free-solid-svg-icons";
 
 const ChatHeader = () => {
-    const { currentChat, leaveGroup, chatAltered, handleMute, handleUnMute } = useChat()
+    const { currentChat, leaveGroup, handleMute, handleUnMute } = useChat()
     const [isDropdownOpen, setIsDropdownOpen] = useState(false)
 
+    const renderHeaderSubtitles = () => {
+        return (
+            <div className="header-details">
+                <span className="header-title">{currentChat.name}</span>
+                {currentChat.type === "DM" ? (
+                    <span className="header-subtitle">Last seen at {currentChat.lastSeen}</span>
+                ):(
+                    currentChat.type === "GROUP" ?
+                    (
+                        <span className="header-subtitle">Members {currentChat.members.length}</span>
+                    ) : (
+                        <span className="header-subtitle">Subscribers {currentChat.members.length}</span>
+                    )
+                )}
+            </div>
+        )
+    }
     const myHandleMute = async () => {
         setIsDropdownOpen(false)
         try {
@@ -45,12 +62,7 @@ const ChatHeader = () => {
             <div className="header-avatar">
                 <img src={currentChat.profilePic} alt={currentChat.name} />
             </div>
-            <div className="header-details">
-                <span className="header-title">{currentChat.name}</span>
-                {currentChat.type === "DM" && (
-                    <span className="header-subtitle">Last seen at {currentChat.lastSeen}</span>
-                )}
-            </div>
+            {renderHeaderSubtitles()}
             <SearchSingleChat />
             <div className="header-icons">
                 <FontAwesomeIcon style={{ height: "24px" }} className="icon" icon={faPhone} />
