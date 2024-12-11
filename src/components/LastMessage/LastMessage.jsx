@@ -4,7 +4,7 @@ import ImageMessage from '../ImageMessage/ImageMessage'
 import StickerMessage from '../StickerMessage/StickerMessage'
 import VideoMessage from '../VideoMessage/VideoMessage'
 import AudioVoiceNoteMessage from '../AudioVoiceNoteMessage/AudioVoiceNoteMessage'
-import DeletedMessage from '../DeletedMessage/DeletedMessage' // Fixed typo here
+import DeletedMessage from '../DeletedMessage/DeletedMessage' 
 import DraftedMessage from '../DraftedMessage/DraftedMessage'
 import { useEffect } from 'react'
 import AwaitingJoinMessage from '../AwaitingJoinMessage/AwaitingJoinMessage'
@@ -18,7 +18,7 @@ const LastMessage = ({ myChat }) => {
             {myChat.drafted ? (
                 <DraftedMessage message={myChat.lastMessage} />
             ) : myChat.messageState === 3 ? (
-                <DeletedMessage sender={myChat.senderId} /> // Fixed typo here
+                <DeletedMessage sender={myChat.sender} /> 
             ) : (
                 <>
                     {myChat.messageType?.toLowerCase() === 'text'.toLowerCase() && (

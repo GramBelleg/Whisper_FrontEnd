@@ -1,5 +1,5 @@
 :root {
-    --primary-color: #0A122F; /* Define the color as a CSS variable */
+    --primary-color: #0A122F; 
     --dots-color: #0A122F;
     --secondary-color: #0A254A;
     --third-color:#8D6AEE;
@@ -27,10 +27,10 @@
 
 
 .profile-pic-wrapper {
-    display: flex; /* Use flexbox to center the inner circle */
-    justify-content: center; /* Horizontally center the profile image */
-    align-items: center; /* Vertically center the profile image */
-    border-radius: 50%; /* Make it circular */
+    display: flex;
+    justify-content: center; 
+    align-items: center; 
+    border-radius: 50%; 
     width: 65px;
     height: 65px;
     flex-shrink: 0;
@@ -55,7 +55,7 @@
     width: 85%;
     height: 100%;
     margin-left: 3%;
-    box-sizing: border-box; /* This prevents border from exceeding required */
+    box-sizing: border-box;
 }
 
 .user-info {
@@ -63,7 +63,7 @@
     height: 50%;
     width: 100%;
     align-items: center;
-    justify-content: space-between; /* Ensure the ticks stay at the right */
+    justify-content: space-between; 
 }
 
 .name-container {
@@ -79,11 +79,11 @@
 
 
 .ticks-info {
-    min-width: 40%; /* Maintain a fixed size for tick info */
+    min-width: 40%; 
     width: 40%;
     height: 100%;
     display: flex;
-    flex-shrink: 0;  /* Prevent shrinking of ticks */
+    flex-shrink: 0;  
     justify-content: center;
     align-items: center;
     margin-top: 5%;
@@ -107,13 +107,13 @@
 
 .user-name {
     text-overflow: ellipsis; 
-    font-size: clamp(15px, 5vw, 20px); /* Responsive font size */
+    font-size: clamp(15px, 5vw, 20px); 
     color: white;
     height: 100%;
     display: flex;
-    white-space: nowrap; /* Prevent wrapping */
-    overflow: hidden; /* Hide overflow text */
-    position: relative; /* Position relative for the pseudo-element */
+    white-space: nowrap; 
+    overflow: hidden; 
+    position: relative; 
 }
 
 .user-name::after {
@@ -151,7 +151,7 @@
 }
 
 :root {
-    --primary-color: #0A122F; /* Define the color as a CSS variable */
+    --primary-color: #0A122F; 
     --dots-color: #0A122F;
     --secondary-color: #0A254A;
     --third-color:#8D6AEE;
