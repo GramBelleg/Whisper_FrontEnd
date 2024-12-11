@@ -2,6 +2,7 @@ import { createRoot } from 'react-dom/client'
 import App from './App.jsx'
 import './styles/main.css'
 import './styles/colors.css'
+import './index.css';
 import React from 'react'
 import { AuthProvider } from './contexts/AuthContext.jsx'
 import { GoogleOAuthProvider } from '@react-oauth/google'

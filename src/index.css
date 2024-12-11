@@ -19,15 +19,34 @@
   --dark: #0a122f;
 }
 
-body {
+html, body {
   margin: 0;
+  padding: 0;
+  height: 100%; /* Make the html and body take the full height of the viewport */
+  box-sizing: border-box;
+}
+
+body {
   font-family: 'ABeeZee', sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   background-color: var(--dark);
+  display: flex;
+  justify-content: center;
+  align-items: center; /* Vertically center the content */
+}
+
+#root {
+  width: 91%;
+  height: 95%; 
+  background-color: var(--secondary-dark); 
+  border-radius: 10px; 
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3); 
+  display: flex; 
+  justify-content: center; 
+  align-items: center; 
 }
 
 code {
-  font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New',
-    monospace;
+  font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New', monospace;
 }

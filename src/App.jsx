@@ -1,4 +1,4 @@
-import SampleHome from './components/SampleHome/SampleHome'
+import Home from './components/Home/Home'
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom'
 import './App.css'
 import LoginPage from './pages/LoginPage'
@@ -190,7 +190,7 @@ function App() {
                         token && token !== 'undefined' ? (
                             user.role !== 'admin' ? (
                                 <>
-                                    {!loading ? <Route path='/' element={<SampleHome />} /> : <Route path='/' element={<LoadingData />} />}
+                                    {!loading ? <Route path='/' element={<Home />} /> : <Route path='/' element={<LoadingData />} />}
                                     <Route path='/*' element={<Navigate to='/' />} />
                                 </>
                             ) : (
