@@ -150,3 +150,47 @@
     position: relative; /* Enables absolute positioning for the .info div */
 }
 
+:root {
+    --primary-color: #0A122F; /* Define the color as a CSS variable */
+    --dots-color: #0A122F;
+    --secondary-color: #0A254A;
+    --third-color:#8D6AEE;
+}
+
+.unread {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 40px; /* Define fixed width */
+    height: 40px; /* Define fixed height */
+    margin-left: 8%;
+}
+
+/* For rendering the unread message count */
+.unread-count {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 25px; 
+    height: 25px; 
+    color: white;
+    background-color: var(--third-color); 
+    border-radius: 50%; 
+    font-size: 12px; 
+    font-weight: bold;
+    text-align: center;
+}
+
+.unread-at {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 25px; 
+    height: 25px; 
+    color: white;
+    background-color: var(--third-color); 
+    border-radius: 50%; 
+    font-size: 12px; 
+    font-weight: bold;
+    text-align: center;
+}

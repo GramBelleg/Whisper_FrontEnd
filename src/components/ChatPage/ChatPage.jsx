@@ -73,7 +73,7 @@ const ChatPage = () => {
                 <StoriesContainer />
             </div>
             <div className='sidebar__other-content overflow-y-auto h-full'>
-                {chatList && chatList.length > 0 && <ChatList chatList={chatList} chooseChat={selectChat} />}
+                {chatList && chatList.length > 0 && <ChatList chatList={chatList} />}
                 {!dropDownVisible ? <AddNewButton onClick={() => setDropDownVisible(true)} /> : (
                     <div className="create-new">
                         <CreateNewChat 

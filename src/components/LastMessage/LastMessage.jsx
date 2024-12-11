@@ -9,8 +9,10 @@ import DraftedMessage from '../DraftedMessage/DraftedMessage'
 import { useEffect } from 'react'
 import AwaitingJoinMessage from '../AwaitingJoinMessage/AwaitingJoinMessage'
 
-const LastMessage = ({ myChat, index }) => {
+const LastMessage = ({ myChat }) => {
+
     useEffect(() => {}, [myChat])
+    
     return (
         <div className='last-message'>
             {myChat.drafted ? (
@@ -20,7 +22,7 @@ const LastMessage = ({ myChat, index }) => {
             ) : (
                 <>
                     {myChat.messageType?.toLowerCase() === 'text'.toLowerCase() && (
-                        <TextMessage index={index} message={myChat.lastMessage} />
+                        <TextMessage message={myChat.lastMessage} />
                     )}
                     {myChat.messageType?.toLowerCase() === 'image'.toLowerCase() && <ImageMessage messageState={myChat.messageState} />}
                     {(myChat.messageType?.toLowerCase() === 'audio'.toLowerCase() ||
