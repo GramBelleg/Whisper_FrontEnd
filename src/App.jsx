@@ -173,13 +173,14 @@ function App() {
         }
 
         try {
-            setLoading(true)
-            init()
-            console.log("Helo")
+            if (user) {
+                setLoading(true)
+                init()
+            }
         } catch (error) {
             console.error(error)
         }
-    }, [dbRef])
+    }, [dbRef, user])
 
     return (
         <div className='App'>
