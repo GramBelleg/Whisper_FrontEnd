@@ -290,10 +290,14 @@ export const ChatProvider = ({ children }) => {
             // otherwise I am the first participant in the chat how created the chat and I have the key already
             const newChat = await cleanChat({...data})
             console.log(newChat)
-            const members = await getMembers(newChat.id)
-            const admin = members.filter((member) => member.isAdmin)[0]
-            const isAdmin = admin.id === user.id 
-            await dbRef.current.insertChat({...newChat, members: members, isAdmin: isAdmin})
+            if (newChat.type === "GROUP") {
+                const members = await getMembers(newChat.id)
+                const admin = members.filter((member) => member.isAdmin)[0]
+                const isAdmin = admin.id === user.id 
+                await dbRef.current.insertChat({...newChat, members: members, isAdmin: isAdmin})
+            } else {
+                await dbRef.current.insertChat({...newChat, members: [], isAdmin: false})
+            }
             SetReloadChats(true)
             setActivePage("chat")
         } catch (error) {
