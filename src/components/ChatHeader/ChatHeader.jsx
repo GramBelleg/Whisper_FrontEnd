@@ -9,32 +9,14 @@ import GroupMembersContainer from '../GroupMembers/GroupMembersContainer'
 import GroupSettings from '../GroupSettings/GroupSettings'
 import GroupInfoContainer from '../GroupInfo/GroupInfoContainer'
 
-const ChatHeader = () => {
+const ChatHeader = ({ handleInfoOpen, infoOpen }) => {
     const { currentChat, leaveGroup, handleMute, handleUnMute } = useChat()
     const [isDropdownOpen, setIsDropdownOpen] = useState(false)
     const [isChatInfoOpen, setIsChatInfoOpen] = useState(false)
     const [isMuteDropdownOpen, setMuteIsDropdownOpen] = useState(false)
     const { openModal, closeModal } = useModal()
-
-    const renderHeaderSubtitles = () => {
-        return (
-            <div className="header-details">
-                <span className="header-title">{currentChat.name}</span>
-                {currentChat.type === "DM" ? (
-                    <span className="header-subtitle">Last seen at {currentChat.lastSeen}</span>
-                ):(
-                    currentChat.type === "GROUP" ?
-                    (
-                        <span className="header-subtitle">Members {currentChat.members.length}</span>
-                    ) : (
-                        <span className="header-subtitle">Subscribers {currentChat.members.length}</span>
-                    )
-                )}
-            </div>
-        )
-    }        
+     
     const myHandleMute = async () => {
-        setMuteIsDropdownOpen(false)
         setIsDropdownOpen(false)
         try {
             await handleMute(currentChat.id, currentChat.type,0)
@@ -79,6 +61,24 @@ const ChatHeader = () => {
         setIsDropdownOpen(false)
     }
 
+    const renderHeaderSubtitles = () => {
+        return (
+            <div className="header-details" onClick={handleInfoOpen}>
+                <span className="header-title">{currentChat.name}</span>
+                {currentChat.type === "DM" ? (
+                    <span className="header-subtitle">Last seen at {currentChat.lastSeen}</span>
+                ):(
+                    currentChat.type === "GROUP" ?
+                    (
+                        <span className="header-subtitle">Members {currentChat.members.length}</span>
+                    ) : (
+                        <span className="header-subtitle">Subscribers {currentChat.members.length}</span>
+                    )
+                )}
+            </div>
+        )
+    }   
+
     return (
         <div className='single-chat-header shadow-md'>
             <div className='header-avatar'>
@@ -89,13 +89,13 @@ const ChatHeader = () => {
             <div className='header-icons'>
                 <FontAwesomeIcon style={{ height: '24px' }} className='icon' icon={faPhone} />
                 <div className='dropdown-container'>
-                    <FontAwesomeIcon
+                    {!infoOpen  && <FontAwesomeIcon
                         style={{ height: "30px" , marginTop: "5px"}}
                         className="icon"
                         data-testid="test-ellipses"
                         icon={faEllipsisV}
                         onClick={() => setIsDropdownOpen(true)}
-                    />
+                    />}
                     {isDropdownOpen && (
                         <div className='dropdown-menu' onMouseLeave={() => setIsDropdownOpen(false)}>
                             {!currentChat.isMuted ? (

@@ -30,7 +30,7 @@ const SingleChatSection = () => {
 
     return (
         <div className='single-chat-container'>
-            <ChatHeader handleInfoOpen={ () => setInfoOpen(true) }/>
+            <ChatHeader infoOpen={infoOpen} handleInfoOpen={ () => setInfoOpen(true) }/>
             <div className='messages'>
                 <SingleChatMessagesList />
                 {pinnedMessages.length > 0 && (
