@@ -10,7 +10,7 @@ const TextMessage = ({ message }) => {
 
     return (
         <p ref={textRef} className={`text-message`}>
-            {trimmedMessage.content}
+            {trimmedMessage}
         </p>
     )
 }
