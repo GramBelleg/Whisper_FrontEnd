@@ -3,6 +3,7 @@ import { formatDuration } from '@/utils/formatDuration'
 import ChatTextingActions from '../ChatTextingActions/ChatTextingActions'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import {
+    faBullhorn,
     faCircleNotch,
     faFile,
     faImage,
@@ -39,6 +40,7 @@ const ChatActions = () => {
     const imageInputRef = useRef(null)
     const audioInputRef = useRef(null)
     const [attachmentType, setAttachmentType] = useState(-1)
+    const [isAnnouncement, setIsAnnouncement] = useState(false)
     const isTyping = useMemo(() => textMessage.length > 0, [textMessage])
 
     const showSendIcon = useMemo(
@@ -155,9 +157,12 @@ const ChatActions = () => {
                 attachmentName: attachmentPayload ? attachmentPayload.file.name : null,
                 media: attachmentPayload ? attachmentPayload.blobName : null,
                 extension: attachmentPayload ? attachmentPayload.extension : null,
-                size: attachmentPayload ? attachmentPayload.file.size : null
+                size: attachmentPayload ? attachmentPayload.file.size : null,
+                isAnnouncement: isAnnouncement
             })
             setTextMessage('')
+            if(isAnnouncement)
+                setIsAnnouncement(false)
         }
     }
 
@@ -287,6 +292,14 @@ const ChatActions = () => {
                         />
                         <UnifiedPicker onGifSelect={handleGifAttach} onStickerSelect={handleStickerAttach} />
                     </div>
+
+                    { currentChat && currentChat.type === 'GROUP' &&
+                        <FontAwesomeIcon 
+                            icon={faBullhorn} 
+                            onClick={() => setIsAnnouncement(!isAnnouncement)} 
+                            className={`mr-2 text-primary cursor-pointer pd-6 hover:text-blue-500 ${isAnnouncement ? 'bg-light text-primary p-1 border-2 border-blue-500 rounded-full' : ''}`}
+                         />
+                    }
 
                     {isRecording ? (
                         <div className='flex items-center justify-center space-x-2'>
