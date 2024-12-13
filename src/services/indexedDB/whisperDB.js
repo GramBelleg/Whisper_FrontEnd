@@ -160,6 +160,14 @@ class WhisperDB {
         }
     }
 
+    async addGroupAdmin(chatId, userId) {
+        if (this._chats !== null) {
+            return this._chats.addGroupAdmin(chatId, userId)
+        } else {
+            throw new Error('Chats store is not initiaslized.')
+        }
+    }
+
     async getChatMembers(chatId) {
         if (this._chats !== null) {
             return this._chats.getChatMembers(chatId)
