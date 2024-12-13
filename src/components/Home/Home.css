@@ -1,13 +1,13 @@
 
-.sampleHome {
+.Home {
     display: flex;
     flex-direction: row; 
     justify-content: flex-start; 
     align-items: stretch; 
-    height: 100vh; 
+    height: 100%; 
     width: 100%; 
 }
-.sampleHome> * {
+.Home> * {
     flex-shrink: 0; 
     margin: 0 0px; 
 }
@@ -19,10 +19,10 @@
 
 .chatpage-container {
     margin-left: 0px;
-    width: 30%;
+    width: 25%;
     
 }
 .chatting {
     margin-right: 0; 
-    min-width: 65%;
+    min-width: 70%;
 }

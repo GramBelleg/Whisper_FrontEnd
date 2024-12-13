@@ -15,8 +15,8 @@ import {
 } from '../services/authService'
 import axios from 'axios'
 import LoadingData from '@/components/LoadingData/LoadingData'
-import { useStories } from './StoryContext'
 import apiUrl from '@/config'
+import { useWhisperDB } from './WhisperDBContext'
 
 const AuthContext = createContext()
 
@@ -26,6 +26,7 @@ export const AuthProvider = ({ children }) => {
     const [loading, setLoading] = useState(false)
     const [error, setError] = useState(null)
     const [isFetching, setIsFetching] = useState(true)
+    const { dbRef } = useWhisperDB()
 
     useEffect(() => {
         const fetchUser = async () => {
@@ -234,6 +235,11 @@ export const AuthProvider = ({ children }) => {
             setToken(null)
             localStorage.removeItem('token')
             localStorage.removeItem('user')
+            try {
+                await dbRef.current.clearDB()
+            } catch (error) {
+                console.log(error)
+            }
             return { success: true }
         } catch (err) {
             console.log(err)

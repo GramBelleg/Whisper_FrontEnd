@@ -1,38 +1,87 @@
-import LastMessage from "@/components/LastMessage/LastMessage";
-import TextMessage from "@/components/TextMessage/TextMessage";
 import { render, screen } from "@testing-library/react";
+import LastMessage from "../../src/components/LastMessage/LastMessage";
+import WhisperDB from "@/services/indexedDB/whisperDB";
 
+vi.mock('@/hooks/useAuth', () => ({
+    default: () => ({
+      user: { name: 'CurrentUser' }, 
+    }),
+}));
 
-describe("Testing LastMessage", () => {
+vi.mock('@/contexts/WhisperDBContext', () => ({
+    default: () => ({
+        dbRef: new WhisperDB(), 
+    }),
+}));
 
-    it("renders TextMessage when messageType is text", () => {
+describe("LastMessage component", () => {
+    it("renders DraftedMessage when myChat.drafted is true", () => {
+        const myChat = {
+            drafted: true,
+            lastMessage: "Drafted message"
+        };
+        render(<LastMessage myChat={myChat} />);
+        expect(screen.getByText("Drafted message")).toBeInTheDocument();
+    });
+
+    it("renders DeletedMessage when myChat.messageState is 3", () => {
+        const myChat = {
+            drafted: false,
+            messageState: 3,
+            sender: "John"
+        };
+        render(<LastMessage myChat={myChat} />);
+        expect(screen.getByText("John deleted this message")).toBeInTheDocument();
+    });
+
+    it("renders TextMessage for 'text' message type", () => {
         const myChat = {
             drafted: false,
             messageState: 1,
             messageType: "text",
-            lastMessage: "This is a text message",
+            lastMessage: "Hello World"
         };
-        render(<LastMessage myChat={myChat} index={0} />);
-        expect(screen.getByText("This is a text message")).toBeInTheDocument();
+        render(<LastMessage myChat={myChat} />);
+        expect(screen.getByText("Hello World")).toBeInTheDocument();
     });
 
-    it("renders DeletedMessage when messageState is 3", () => {
+    it("renders ImageMessage for 'image' message type", () => {
         const myChat = {
             drafted: false,
-            messageState: 3,
-            messageType: "text",
-            senderId: "12345",
+            messageState: 1,
+            messageType: "image"
         };
-        render(<LastMessage myChat={myChat} index={0} />);
-        expect(screen.getByText("12345 deleted this message")).toBeInTheDocument();
+        render(<LastMessage myChat={myChat} />);
+        expect(screen.getByText("Image")).toBeInTheDocument();
     });
 
-    it("renders DraftedMessage when drafted is true", () => {
+    it("renders VideoMessage for 'video' message type", () => {
         const myChat = {
-            drafted: true,
-            lastMessage: "Drafted message content",
+            drafted: false,
+            messageState: 1,
+            messageType: "video"
         };
-        render(<LastMessage myChat={myChat} index={0} />);
-        expect(screen.getByText("Drafted message content")).toBeInTheDocument();
+        render(<LastMessage myChat={myChat} />);
+        expect(screen.getByText("Video")).toBeInTheDocument();
     });
-})
+
+    it("renders StickerMessage for 'sticker' message type", () => {
+        const myChat = {
+            drafted: false,
+            messageState: 1,
+            messageType: "sticker"
+        };
+        render(<LastMessage myChat={myChat} />);
+        expect(screen.getByText("Sticker")).toBeInTheDocument();
+    });
+
+
+    it("does not render AwaitingJoinMessage if participantKeys are complete", () => {
+        const myChat = {
+            type: "DM",
+            participantKeys: ["key1", "key2"]
+        };
+        render(<LastMessage myChat={myChat} />);
+        expect(screen.queryByText("Awaiting join")).not.toBeInTheDocument();
+    });
+});

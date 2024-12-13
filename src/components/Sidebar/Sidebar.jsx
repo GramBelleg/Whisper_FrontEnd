@@ -38,7 +38,7 @@ const pages = [
 
 const Sidebar = () => {
     const { activePage } = useSidebar()
-    const [sidebarWidth, setSidebarWidth] = useState(30)
+    const [sidebarWidth, setSidebarWidth] = useState(25)
     const sidebarRef = useRef(null)
     const isResizing = useRef(false)
 
