@@ -2,10 +2,15 @@ import { render, screen, fireEvent } from "@testing-library/react";
 import { vi } from "vitest";
 import { useChat } from "@/contexts/ChatContext";
 import ChatHeader from "@/components/ChatHeader/ChatHeader";
+import { useModal } from "@/contexts/ModalContext";
 
 // Mock the useChat context
 vi.mock("@/contexts/ChatContext", () => ({
     useChat: vi.fn(),
+}));
+
+vi.mock("@/contexts/ModalContext", () => ({
+    useModal: vi.fn(),
 }));
 
 describe("ChatHeader", () => {
@@ -23,6 +28,8 @@ describe("ChatHeader", () => {
     const mockLeaveGroup = vi.fn();
     const mockHandleMute = vi.fn();
     const mockHandleUnMute = vi.fn();
+    const mockOpenModal = vi.fn()
+    const mockCloseModal = vi.fn()
 
 
     afterEach(() => {
@@ -35,8 +42,15 @@ describe("ChatHeader", () => {
             leaveGroup: mockLeaveGroup,
             handleMute: mockHandleMute,
             handleUnMute: mockHandleUnMute,
-            });
-        render(<ChatHeader />);
+        });
+
+        useModal.mockReturnValue({
+            openModal: mockOpenModal,
+            closeModal: mockCloseModal,
+        });
+
+
+        render(<ChatHeader handleInfoOpen={vi.fn()} infoOpen={true}/>);
 
         expect(screen.getByText(mockCurrentChat.name)).toBeInTheDocument();
         expect(screen.getByText(`Members ${mockCurrentChat.members.length}`)).toBeInTheDocument();
@@ -45,12 +59,12 @@ describe("ChatHeader", () => {
 
     it("calls handleMute when mute button is clicked", async () => {
         useChat.mockReturnValue({
-            currentChat: {...mockCurrentChat, isMuted: true},
-            leaveGroup: mockLeaveGroup,
-            handleMute: mockHandleMute,
-            handleUnMute: mockHandleUnMute,
+                currentChat: {...mockCurrentChat, isMuted: true},
+                leaveGroup: mockLeaveGroup,
+                handleMute: mockHandleMute,
+                handleUnMute: mockHandleUnMute,
             });
-        render(<ChatHeader />);
+        render(<ChatHeader handleInfoOpen={vi.fn()} infoOpen={false}/>);
 
         fireEvent.click(screen.getByTestId("test-ellipses"))
         fireEvent.click(screen.getByText(/Mute Chat/i));
@@ -58,33 +72,33 @@ describe("ChatHeader", () => {
 
     it("calls handleUnMute when unmute button is clicked", async () => {
         useChat.mockReturnValueOnce({
-        currentChat: { ...mockCurrentChat, isMuted: true },
-        leaveGroup: mockLeaveGroup,
-        handleMute: mockHandleMute,
-        handleUnMute: mockHandleUnMute,
+            currentChat: { ...mockCurrentChat, isMuted: true },
+            leaveGroup: mockLeaveGroup,
+            handleMute: mockHandleMute,
+            handleUnMute: mockHandleUnMute,
         });
 
-        render(<ChatHeader />);
+        render(<ChatHeader handleInfoOpen={vi.fn()} infoOpen={false}/>);
         fireEvent.click(screen.getByTestId("test-ellipses"))
         fireEvent.click(screen.getByText(/Unmute Chat/i));
         expect(mockHandleUnMute).toHaveBeenCalledWith(mockCurrentChat.id, mockCurrentChat.type);
     });
 
     it("renders delete button for admin users", () => {
-        render(<ChatHeader />);
+        render(<ChatHeader handleInfoOpen={vi.fn()} infoOpen={false}/>);
         fireEvent.click(screen.getByTestId("test-ellipses"))
         expect(screen.getByText(/Delete group/i)).toBeInTheDocument();
     });
 
     it("does not render delete button for non-admin users", () => {
         useChat.mockReturnValueOnce({
-        currentChat: { ...mockCurrentChat, isAdmin: false },
-        leaveGroup: mockLeaveGroup,
-        handleMute: mockHandleMute,
-        handleUnMute: mockHandleUnMute,
+            currentChat: { ...mockCurrentChat, isAdmin: false },
+            leaveGroup: mockLeaveGroup,
+            handleMute: mockHandleMute,
+            handleUnMute: mockHandleUnMute,
         });
 
-        render(<ChatHeader />);
+        render(<ChatHeader handleInfoOpen={vi.fn()} infoOpen={false}/>);
         expect(screen.queryByText(/Delete group/i)).not.toBeInTheDocument();
     });
 });
