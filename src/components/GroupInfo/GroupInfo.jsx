@@ -2,7 +2,6 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faTimes, faEdit } from "@fortawesome/free-solid-svg-icons";
 import { useState, useEffect } from "react";
 import GroupSettings from "../GroupSettings/GroupSettings";
-import GroupMembers from "../GroupMembers/GroupMembers";
 import GroupMembersContainer from "../GroupMembers/GroupMembersContainer";
 import { useStackedNavigation } from "@/contexts/StackedNavigationContext/StackedNavigationContext";
 
