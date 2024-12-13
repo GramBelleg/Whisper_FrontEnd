@@ -225,9 +225,9 @@ export const ChatProvider = ({ children }) => {
                 setCurrentChat(null)
                 SetReloadChats(true)
             }
-            else {
-                
-                await dbRef.current.removeFromChat(chatId, userId)
+            else { 
+                await dbRef.current.removeChatMember(chatId, userId)
+                setChatAltered(true)
             }
         } catch (error) {
             console.error(error)
@@ -297,7 +297,6 @@ export const ChatProvider = ({ children }) => {
     }
 
     const pinMessage = (messsageId, durtaion = 0) => {
-        console.log("pinning")
         messagesSocket.pinMessage({
             chatId: currentChat.id,
             id: messsageId
