@@ -472,6 +472,7 @@ export const ChatProvider = ({ children }) => {
                 await dbRef.current.insertMessageWrapper({ ...mapMessage(myMessageData), drafted: false })
                 setMessageReceived(true)
                 setChatAltered(true)
+                SetReloadChats(true)
             } catch (error) {
                 console.error(error)
             }
