@@ -187,6 +187,62 @@ export const ChatProvider = ({ children }) => {
         setParentMessage(null)
     }
 
+    const removeFromChat = (incomingUser) => {
+        try {
+            const toSend = {
+                user: {
+                    id: incomingUser.id,
+                    userName: incomingUser.userName
+                },
+                chatId: currentChat.id
+            }
+            chatSocket.removeFromChat(toSend)
+        } catch (error) {
+            console.error(error)
+        }
+    }
+
+    const addAdmin = (userId) => {
+        try {
+            const toSend = {
+                userId:userId,
+                chatId: currentChat.id,
+            }
+
+            chatSocket.addAdmin(toSend)
+        } catch (error) {
+            console.error(error)
+        }
+    }
+
+    const handleReceiveRemoveFromChat = async (data) => {
+        try {
+            console.log(data)
+            const userId = data.user.id
+            const chatId = data.chatId
+            if (userId === user.id) {
+                await dbRef.current.removeChat(chatId)
+                setCurrentChat(null)
+                SetReloadChats(true)
+            }
+            else {
+                
+                await dbRef.current.removeFromChat(chatId, userId)
+            }
+        } catch (error) {
+            console.error(error)
+        }
+    }
+            
+
+    const handleReceiveAddAdmin = async (adminData) => {
+        try {
+            await dbRef.current.addGroupAdmin(adminData.chatId, adminData.userId)
+        } catch (error) {
+            console.error(error)
+        }
+    }
+
     const searchChat = async (query) => {
         try {
             if (currentChat) {
@@ -602,6 +658,8 @@ export const ChatProvider = ({ children }) => {
         if (chatSocket) {
             chatSocket.onReceiveCreateChat(handleChatCreate)
             chatSocket.onReceiveLeaveChat(handleReceiveLeaveGroup)
+            chatSocket.onReceiveAddAdmin(handleReceiveAddAdmin)
+            chatSocket.onReceiveRemoveFromChat(handleReceiveRemoveFromChat)
         }
     }, [chatSocket])
 
@@ -642,12 +700,14 @@ export const ChatProvider = ({ children }) => {
                 updateMessage,
                 sendJoinChat,
                 searchChat,
+                addAdmin,
                 reloadChats,
                 SetReloadChats,
                 parentMessage,
                 updateParentMessage,
                 clearParentMessage,
                 deleteMessage,
+                removeFromChat,
                 sending,
                 handleGetMembers,
                 saveGroupSettings,
