@@ -19,9 +19,9 @@ const LastMessage = ({ myChat, index }) => {
                 <DeletedMessage sender={myChat.senderId} /> // Fixed typo here
             ) : (
                 <>
-                    {myChat.messageType?.toLowerCase() === 'text'.toLowerCase() && (
+                    {/*myChat.messageType?.toLowerCase() === 'text'.toLowerCase() && (
                         <TextMessage index={index} message={myChat.lastMessage} />
-                    )}
+                    )*/}
                     {myChat.messageType?.toLowerCase() === 'image'.toLowerCase() && <ImageMessage messageState={myChat.messageState} />}
                     {(myChat.messageType?.toLowerCase() === 'audio'.toLowerCase() ||
                         myChat.messageType?.toLowerCase() === 'voiceNote'.toLowerCase()) && (
