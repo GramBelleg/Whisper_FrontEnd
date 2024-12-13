@@ -1,0 +1,15 @@
+.Dashboard {
+    background-color: #0a122f;
+    border-right: 3px solid #8d6aee;
+    position: relative;
+    
+    /* overflow: hidden; */
+    scrollbar-width: none;
+    display: flex;
+    flex-direction: row; 
+    justify-content: flex-start; 
+    align-items: stretch; 
+    height: 100vh; 
+    width: 100%; 
+    
+}

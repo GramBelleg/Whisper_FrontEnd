@@ -12,9 +12,11 @@ import { initializeMock } from './mocks/mock'
 import { useEffect, useState } from 'react'
 import LoadingData from './components/LoadingData/LoadingData'
 import { getChatsCleaned } from './services/chatservice/getChats'
+import { getUsers, getGroups } from './services/adminservice/getData'
 import { useWhisperDB } from './contexts/WhisperDBContext'
 import { getMessagesForChatCleaned, getPinnedMessagesForChat } from './services/chatservice/getMessagesForChat'
 import { getUsersWithStoriesCleaned } from './services/storiesservice/getStories'
+import AdminPage from './pages/AdminPage'
 
 function App() {
     const { user, token, handleUpdateUser } = useAuth()
@@ -28,12 +30,42 @@ function App() {
     useEffect(() => {
         const init = async () => {
             await initDB()
-            await loadChats()
-            await loadMessages()
-            await loadPinnedMessages()
-            await loadStories()
+            if(false && user.role !== 'admin')
+            {   
+                await loadChats()
+                await loadMessages()
+                await loadPinnedMessages()
+                await loadStories()
+            }
+            else
+            {
+                await loadUsers()
+                await loadGroups()
+            }
+           
         }
 
+        const loadUsers = async () => {
+            try {
+                let data = await getUsers()
+                if (data && data.length > 0) {
+                    await dbRef.current.insertUsers(data)
+                }
+            } catch (error) {
+                console.log(error)
+            }
+        }
+
+        const loadGroups = async () => {
+            try {
+                let data = await getGroups()
+                if (data && data.length > 0) {
+                    await dbRef.current.insertGroups(data)
+                }
+            } catch (error) {
+                console.log(error)
+            }
+        }
         const loadChats = async () => {
             let allChats = await getChatsCleaned()
             await dbRef.current.insertChats(allChats)
@@ -109,14 +141,14 @@ function App() {
                 <Routes>
                     {user ? (
                         token && token !== 'undefined' ? (
-                            user.role !== 'admin' ? (
+                            false && user.role !== 'admin' ? (
                                 <>
                                     {!loading ? <Route path='/' element={<SampleHome />} /> : <Route path='/' element={<LoadingData />} />}
                                     <Route path='/*' element={<Navigate to='/' />} />
                                 </>
                             ) : (
                                 <>
-                                    <Route path='/dashboard' element={<div>Dashboard</div>} />
+                                    <Route path='/dashboard' element={ <AdminPage />} />
                                     <Route path='/' element={<Navigate to='/dashboard' />} />
                                     <Route path='/*' element={<Navigate to='/dashboard' />} />
                                 </>
