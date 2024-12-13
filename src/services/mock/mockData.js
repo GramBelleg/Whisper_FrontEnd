@@ -79,7 +79,188 @@ export const storiesData = [
     { userId: 9, user: 'fatma', profilePicture: profilePicture, seen: false, date: '1/2/2022', content: 'hello from fatma' },
     { userId: 10, user: 'hana', profilePicture: profilePicture, seen: true, date: '1/2/2022', content: 'hello from hana' }
 ]
+export const mockUsers = [
+    {
+        id: 1,
+        email: "lionel.messi@example.com",
+        userName: "leo_messi",
+        name: "Lionel Messi",
+        phoneNumber: "+1234567890",
+        profilePic: "21733843980832.image/jpeg",
+        ban: false
+    },
+    {
+        id: 2,
+        email: "cristiano.ronaldo@example.com", 
+        userName: "cr7_official",
+        name: "Cristiano Ronaldo",
+        phoneNumber: "+0987654321",
+        profilePic: "21733845642025.image/jpeg",
+        ban: false
+    },
+    {
+        id: 3,
+        email: "neymar.jr@example.com",
+        userName: "neymar_jr",
+        name: "Neymar Jr",
+        phoneNumber: "+1122334455",
+        profilePic: "21733843980832.image/jpeg",
+        ban: true
+    },
+    {
+        id: 4,
+        email: "kylian.mbappe@example.com",
+        userName: "mbappe_k",
+        name: "Kylian Mbappé",
+        phoneNumber: "+6677889900",
+        profilePic: "21733844034929.image/jpeg",
+        ban: true
+    },
+    {
+        id: 5,
+        email: "kylian.mbappe@example.com",
+        userName: "mbappe_k",
+        name: "Kylian Mbappé",
+        phoneNumber: "+6677889900",
+        profilePic: "21733844034929.image/jpeg",
+        ban: true
+    },
+    {
+        id: 6,
+        email: "kylian.mbappe@example.com",
+        userName: "mbappe_k",
+        name: "Kylian Mbappé",
+        phoneNumber: "+6677889900",
+        profilePic: "21733844034929.image/jpeg",
+        ban: true
+    },
+    {
+        id: 7,
+        email: "kylian.mbappe@example.com",
+        userName: "mbappe_k",
+        name: "Kylian Mbappé",
+        phoneNumber: "+6677889900",
+        profilePic: "21733844034929.image/jpeg",
+        ban: true
+    },
+    {
+        id: 8,
+        email: "kylian.mbappe@example.com",
+        userName: "mbappe_k",
+        name: "Kylian Mbappé",
+        phoneNumber: "+6677889900",
+        profilePic: "21733844034929.image/jpeg",
+        ban: true
+    },
+    {
+        id: 9,
+        email: "kylian.mbappe@example.com",
+        userName: "mbappe_k",
+        name: "Kylian Mbappé",
+        phoneNumber: "+6677889900",
+        profilePic: "21733844034929.image/jpeg",
+        ban: true
+    },
+    {
+        id: 10,
+        email: "kylian.mbappe@example.com",
+        userName: "mbappe_k",
+        name: "Kylian Mbappé",
+        phoneNumber: "+6677889900",
+        profilePic: "21733844034929.image/jpeg",
+        ban: true
+    },
+    {
+        id: 11,
+        email: "kylian.mbappe@example.com",
+        userName: "mbappe_k",
+        name: "Kylian Mbappé",
+        phoneNumber: "+6677889900",
+        profilePic: "21733844034929.image/jpeg",
+        ban: true
+    },
+    {
+        id: 12,
+        email: "kylian.mbappe@example.com",
+        userName: "mbappe_k",
+        name: "Kylian Mbappé",
+        phoneNumber: "+6677889900",
+        profilePic: "21733844034929.image/jpeg",
+        ban: true
+    },
+    {
+        id: 13,
+        email: "kylian.mbappe@example.com",
+        userName: "mbappe_k",
+        name: "Kylian Mbappé",
+        phoneNumber: "+6677889900",
+        profilePic: "21733844034929.image/jpeg",
+        ban: true
+    },
+    {
+        id: 14,
+        email: "kylian.mbappe@example.com",
+        userName: "mbappe_k",
+        name: "Kylian Mbappé",
+        phoneNumber: "+6677889900",
+        profilePic: "21733844034929.image/jpeg",
+        ban: true
+    },
+    {
+        id: 15,
+        email: "kylian.mbappe@example.com",
+        userName: "mbappe_k",
+        name: "Kylian Mbappé",
+        phoneNumber: "+6677889900",
+        profilePic: "21733844034929.image/jpeg",
+        ban: true
+    },
+    {
+        id: 16,
+        email: "kylian.mbappe@example.com",
+        userName: "mbappe_k",
+        name: "Kylian Mbappé",
+        phoneNumber: "+6677889900",
+        profilePic: "21733844034929.image/jpeg",
+        ban: true
+    },
+    {
+        id: 17,
+        email: "kylian.mbappe@example.com",
+        userName: "mbappe_k",
+        name: "Kylian Mbappé",
+        phoneNumber: "+6677889900",
+        profilePic: "21733844034929.image/jpeg",
+        ban: true
+    }
+]
 
+export const mockGroups = [
+    {
+        id: 1,
+        name: "Football Legends",
+        picture: "21733844034929.image/jpeg",
+        filter: false
+    },
+    {
+        id: 2,
+        name: "World Cup Winners",
+        picture: "21733844034929.image/jpeg",
+        filter: false
+    },
+    {
+        id: 3,
+        name: "PSG Squad",
+        picture: "21733844034929.image/jpeg",
+        filter: true
+    },
+    {
+        id: 4,
+        name: "PSG Squad",
+        picture: "21733844034929.image/jpeg",
+        filter: true
+    }
+]
 export const userDetails = [
     {
         userId: 2,
