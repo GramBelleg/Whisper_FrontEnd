@@ -274,7 +274,7 @@ export const ChatProvider = ({ children }) => {
     const handleGetMembers = async () => {
         try {
             //TODO: const members = await dbRef.current.getChatMembers(currentChat.id)
-            const members = getMembers(currentChat.id);
+            const members = await getMembers(currentChat.id);
             console.log(members)
             return members;
         } catch (error) {
