@@ -27,8 +27,8 @@ const GroupInfo = ({ currentChat, onClose }) => {
 
     return (
         <div
-            className={`fixed top-0 right-0 w-80 h-full bg-dark text-light shadow-lg z-200 p-4 transition-transform transform ${
-                isVisible ? "translate-x-0" : "translate-x-full"
+            className={`fixed top-[2.5%] right-[4.5%] w-80 h-[100%] bg-dark text-light shadow-lg z-200 p-4 transition-transform transform ${
+                isVisible ? "translate-x-0" : "translate-x-[200%]"
             }`}
         >
             <div className="flex justify-between items-center mb-4">

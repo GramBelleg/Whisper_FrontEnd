@@ -45,7 +45,7 @@ const GroupSettings = () => {
     };
 
     return (
-        <div className="fixed top-0 right-0 w-80 h-full bg-dark text-light shadow-xl z-100 p-4 transition-transform transform translate-x-0">
+        <div className="fixed top-[2.5%] right-[4.5%] w-80 h-full bg-dark text-light shadow-xl z-100 p-4 transition-transform transform translate-x-0">
             <div className="flex justify-between items-center space-x-4">
             <div onClick={()=> pop()} id="back">
                 <FontAwesomeIcon icon={faArrowLeft} />
