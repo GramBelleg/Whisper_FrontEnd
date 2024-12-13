@@ -52,7 +52,7 @@ export const mapPicture = async (picture) => {
 
 export const cleanChat = async (chat) => {
     try {
-        console.log(chat)
+        console.log("chattt", chat)
         const flattenedChat = {
             id: chat.id, //
             othersId: chat.othersId, //
@@ -83,7 +83,13 @@ export const cleanChat = async (chat) => {
             status: chat.status,
             members: await getMembers(chat.id)
         }
-        return flattenedChat
+        let isAdmin = false
+        if (flattenedChat.members) {
+            const user = JSON.parse(localStorage.getItem("user"));
+            const admins = flattenedChat.members.filter((member) => member.isAdmin)
+            isAdmin = admins.filter((admin) => admin.id === user.id).length > 0
+        }
+        return {...flattenedChat, isAdmin: isAdmin}
     } catch (error) {
         console.log(error)
         return null
