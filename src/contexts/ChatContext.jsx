@@ -217,7 +217,6 @@ export const ChatProvider = ({ children }) => {
 
     const handleReceiveRemoveFromChat = async (data) => {
         try {
-            console.log(data)
             const userId = data.user.id
             const chatId = data.chatId
             if (userId === user.id) {
@@ -238,6 +237,20 @@ export const ChatProvider = ({ children }) => {
     const handleReceiveAddAdmin = async (adminData) => {
         try {
             await dbRef.current.addGroupAdmin(adminData.chatId, adminData.userId)
+            setChatAltered(true)
+        } catch (error) {
+            console.error(error)
+        }
+    }
+
+    const handleReceiveDeleteChat = async (chatData) => {
+        try {
+            await dbRef.current.removeChat(chatData.chatId)
+            if (currentChat && currentChat.id === chatData.chatId) {
+                setCurrentChat(null)
+            }
+            setChatAltered(true)
+            SetReloadChats(true)
         } catch (error) {
             console.error(error)
         }
@@ -340,10 +353,20 @@ export const ChatProvider = ({ children }) => {
 
     const handleGetMembers = async () => {
         try {
-            //TODO: const members = await dbRef.current.getChatMembers(currentChat.id)
-            const members = await getMembers(currentChat.id);
+            const members = await dbRef.current.getChatMembers(currentChat.id)
+            //const members = await getMembers(currentChat.id);
             console.log(members)
             return members;
+        } catch (error) {
+            console.log(error)
+        }
+    }
+
+    const deleteChat = async (chatId) => {
+        try {
+            chatSocket.deleteChat({
+                chatId: chatId
+            })
         } catch (error) {
             console.log(error)
         }
@@ -374,7 +397,6 @@ export const ChatProvider = ({ children }) => {
 
     const handleChatCreate = async (chatData) => {
         try {
-            console.log(chatData)
             let data = { ...chatData };
             if (chatData && chatData.type === "DM") {
                 let keyId = await generateKeyIfNotExists(chatData);
@@ -391,7 +413,6 @@ export const ChatProvider = ({ children }) => {
             }
             // otherwise I am the first participant in the chat how created the chat and I have the key already
             const newChat = await cleanChat({...data})
-            console.log(newChat)
             if (newChat.type === "GROUP") {
                 const members = await getMembers(newChat.id)
                 const admin = members.filter((member) => member.isAdmin)[0]
@@ -659,6 +680,7 @@ export const ChatProvider = ({ children }) => {
             chatSocket.onReceiveLeaveChat(handleReceiveLeaveGroup)
             chatSocket.onReceiveAddAdmin(handleReceiveAddAdmin)
             chatSocket.onReceiveRemoveFromChat(handleReceiveRemoveFromChat)
+            chatSocket.onReceiveDeleteChat(handleReceiveDeleteChat)
         }
     }, [chatSocket])
 
@@ -700,6 +722,7 @@ export const ChatProvider = ({ children }) => {
                 sendJoinChat,
                 searchChat,
                 addAdmin,
+                deleteChat,
                 reloadChats,
                 SetReloadChats,
                 parentMessage,
