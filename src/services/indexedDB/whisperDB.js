@@ -3,7 +3,8 @@ import { ChatsStore } from './ChatsStore'
 import { StoriesStore } from './StoriesStore'
 import { StoriesTempStore } from './StoriesTempStore'
 import { PinnedMessagesStore } from './PinnedMessagesStore'
-
+import { UsersStore } from './UsersStore'
+import { GroupsStore } from './GroupsStore'
 import { DB_CONFIG } from './DBConfig'
 
 class WhisperDB {
@@ -16,6 +17,8 @@ class WhisperDB {
         this._chats = null
         this._messages = null
         this._stories = null
+        this._users = null
+        this._groups = null
 
         WhisperDB.instance = this
     }
@@ -50,6 +53,8 @@ class WhisperDB {
     }
 
     _initializeStores() {
+        this._users = new UsersStore(this.db)
+        this._groups = new GroupsStore(this.db)
         this._chats = new ChatsStore(this.db)
         this._messages = new MessagesStore(this.db)
         this._stories = new StoriesStore(this.db)
@@ -118,7 +123,78 @@ class WhisperDB {
             throw new Error('Chats store is not initiaslized.')
         }
     }
+    async insertUsers(users) {
+        if (this._users != null) {
+            return this._users.insertUsers(users)
+        } else {
+            throw new Error('Users Store is not initialized')
+        }
+    }
 
+    async getUsers() {
+        if (this._users !== null) {
+            return this._users.getUsers()
+        } else {
+            throw new Error('Users store is not initiaslized.')
+        }
+    }
+    async insertGroups(groups) {
+        if (this._groups != null) {
+            return this._groups.insertGroups(groups)
+        } else {
+            throw new Error('Groups Store is not initialized')
+        }
+    }
+
+    async getGroups() {
+        if (this._groups !== null) {
+            return this._groups.getGroups()
+        } else {
+            throw new Error('Groups store is not initiaslized.')
+        }
+    }
+    async banUser(id) {
+        if (this._users !== null) {
+            return this._users.banUser(id)
+        } else {
+            throw new Error('Users store is not initiaslized.')
+        }
+    }
+    async unBanUser(id) {
+        if (this._users !== null) {
+            return this._users.unBanUser(id)
+        } else {
+            throw new Error('Users store is not initiaslized.')
+        }
+    }
+    async filterGroup(id) {
+        if (this._groups !== null) {
+            return this._groups.filterGroup(id)
+        } else {
+            throw new Error('Groups store is not initiaslized.')
+        }
+    }
+    async unFilterGroup(id) {
+        if (this._groups !== null) {
+            return this._groups.unFilterGroup(id)
+        } else {
+            throw new Error('Groups store is not initiaslized.')
+        }
+    }
+    async updateUser(id, data) {
+        if (this._users !== null) {
+            return this._users.updateUser(id, data)
+        } else {
+            throw new Error('Users store is not initiaslized.')
+        }
+    }
+    async updateGroup(id, data) {
+        if (this._groups !== null) {
+            return this._groups.updateGroup(id, data)
+        } else {
+            throw new Error('Groups store is not initiaslized.')
+        }
+    }
     async getDraftedMessage(chatId) {
         if (this._chats != null) {
             return this._chats.getDraftedMessage(chatId)
