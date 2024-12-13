@@ -4,11 +4,13 @@ import ChatActions from '../ChatActions/ChatActions'
 import { useChat } from '@/contexts/ChatContext'
 import NoChatOpened from '../NoChatOpened/NoChatOpened'
 import PinnedMessages from '../PinnedMessages/PinnedMessages'
-import { useEffect } from 'react'
+import { useEffect, useState } from 'react'
 import ChatHeader from '../ChatHeader/ChatHeader'
+import GroupInfoContainer from '../GroupInfo/GroupInfoContainer'
 
 const SingleChatSection = () => {
     const { currentChat, pinnedMessages } = useChat()
+    const [infoOpen, setInfoOpen] = useState(false)
     useEffect(() => {}, [pinnedMessages])
 
     const handlePinnedClick = (event) => {
@@ -28,7 +30,7 @@ const SingleChatSection = () => {
 
     return (
         <div className='single-chat-container'>
-            <ChatHeader/>
+            <ChatHeader handleInfoOpen={ () => setInfoOpen(true) }/>
             <div className='messages'>
                 <SingleChatMessagesList />
                 {pinnedMessages.length > 0 && (
@@ -49,6 +51,10 @@ const SingleChatSection = () => {
                         )
                     )
                 }
+            </div>
+            <div>
+            {infoOpen && currentChat.type === "GROUP" && 
+            <GroupInfoContainer currentChat={currentChat} onClose={()=>setInfoOpen(false)} />}
             </div>
         </div>
     )

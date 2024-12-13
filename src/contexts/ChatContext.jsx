@@ -11,6 +11,8 @@ import apiUrl from '@/config'
 import { useSidebar } from './SidebarContext'
 import { getMembers } from '@/services/chatservice/getChatMembers'
 import { muteChat, unMuteChat } from '@/services/chatservice/muteUnmuteChat'
+import { getGroupSettings, setPrivacy } from '@/services/chatservice/groupSettings'
+import { setGroupLimit } from '@/services/chatservice/groupSettings'
 
 
 export const ChatContext = createContext()
@@ -44,6 +46,12 @@ export const ChatProvider = ({ children }) => {
     const loadMessages = async (id) => {
         try {
             const myMessages = await dbRef.current.getMessagesForChat(id)
+            myMessages.map(async (message) => {
+                if(message.isAnnouncement && !message.isPinned)
+                {
+                    pinMessage(message.id)
+                }
+            })
             setMessages(myMessages)
         } catch (error) {
             console.log(error)
@@ -77,6 +85,7 @@ export const ChatProvider = ({ children }) => {
             loadMessages(currentChat.id)
             clearUnreadMessages(currentChat.id)
             loadPinnedMessages(currentChat.id)
+            
         } else {
             setMessages([])
             setPinnedMessages([])
@@ -124,7 +133,6 @@ export const ChatProvider = ({ children }) => {
             forwardedFromUserId: null,
             mentions: [],
             isSecret: false,
-            isAnnouncement: false,
             size: null,
             ...data
         }
@@ -164,6 +172,10 @@ export const ChatProvider = ({ children }) => {
             console.error(error)
         } finally {
             setSending(false)
+            if(newMessage.isAnnouncement)
+            {
+               //TODO: pin the message that is just sent
+            }
         }
     }
 
@@ -178,6 +190,7 @@ export const ChatProvider = ({ children }) => {
     const searchChat = async (query) => {
         try {
             if (currentChat) {
+                console.log("curretChat",currentChat)
                 const response = await dbRef.current.getMessagesForChat(currentChat.id)
                 const filteredMessages = response.filter((message) => message.content.toLowerCase().includes(query.toLowerCase()))
                 return filteredMessages
@@ -189,12 +202,12 @@ export const ChatProvider = ({ children }) => {
         }
     }
 
-    const handleMute = async (chatId, chatType) => {
+    const handleMute = async (chatId, chatType, duration) => {
         try {
             await muteChat(chatId, {
                 type: chatType,
                 isMuted: true,
-                duration: 0
+                duration: duration
             })
 
             try {
@@ -228,6 +241,7 @@ export const ChatProvider = ({ children }) => {
     }
 
     const pinMessage = (messsageId, durtaion = 0) => {
+        console.log("pinning")
         messagesSocket.pinMessage({
             chatId: currentChat.id,
             id: messsageId
@@ -245,6 +259,39 @@ export const ChatProvider = ({ children }) => {
         chatSocket.leaveGroup({
             chatId: chatId
         })
+    }
+
+    const handleGetGroupSettings = async () => {
+        try {
+            const res = await getGroupSettings(currentChat.id);
+            return res;
+        } catch (error) {
+            console.log("error",error)
+        }
+    }
+
+    const saveGroupSettings = async (groupLimit, privacy) =>
+    {
+        try {
+            if(privacy)
+                await setPrivacy(currentChat.id, privacy)
+            if(groupLimit)
+                await setGroupLimit(currentChat.id, groupLimit)
+        } catch (error) {
+            console.log(error)
+            throw new Error ("failed to update group settings")
+        }
+    }
+
+    const handleGetMembers = async () => {
+        try {
+            //TODO: const members = await dbRef.current.getChatMembers(currentChat.id)
+            const members = await getMembers(currentChat.id);
+            console.log(members)
+            return members;
+        } catch (error) {
+            console.log(error)
+        }
     }
 
     const handleReceiveLeaveGroup = async (groupLeft) => {
@@ -601,7 +648,10 @@ export const ChatProvider = ({ children }) => {
                 updateParentMessage,
                 clearParentMessage,
                 deleteMessage,
-                sending
+                sending,
+                handleGetMembers,
+                saveGroupSettings,
+                handleGetGroupSettings
             }}
         >
             {children}

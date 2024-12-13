@@ -9,8 +9,8 @@ const TextMessage = ({ message }) => {
     const trimmedMessage = message.length > maxLength ? `${message.slice(0, maxLength - 3)}...` : message
 
     return (
-        <p ref={textRef} className={'text-message'}>
-            {trimmedMessage}
+        <p ref={textRef} className={`text-message ${index ? 'hovered' : ''}`}>
+            {trimmedMessage.content}
         </p>
     )
 }
