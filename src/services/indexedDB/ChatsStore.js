@@ -37,7 +37,7 @@ export class ChatsStore extends BaseStore {
     }
 
     async insertMessageInChat(message) {
-        const user = localStorage.getItem("user")
+        const user = JSON.parse(localStorage.getItem("user"))
         return this._executeTransaction('readwrite', async (store) => {
             const chatRequest = store.get(message.chatId)
             const chat = await new Promise((resolve, reject) => {
