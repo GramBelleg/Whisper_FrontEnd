@@ -48,7 +48,7 @@ const GroupMembers = ({ filteredMembers, handleQueryChange, amIAdmin, handleAddA
             <SearchBar handleQueryChange={handleQueryChange} className='pd-4' />
 
             <div className='members-list mg-4'>
-                {filteredMembers?.map((member, index) => (
+                {filteredMembers?.map((member) => (
                     <div
                         key={member.id}
                         className='user-item'
