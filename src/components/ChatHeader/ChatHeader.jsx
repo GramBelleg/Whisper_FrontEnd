@@ -3,11 +3,10 @@ import { useChat } from '@/contexts/ChatContext'
 import './ChatHeader.css'
 import SearchSingleChat from '../SearchSingleChat/SearchSingleChat'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import { faBell, faBellSlash, faEllipsisV, faGear, faPhone, faTrash, faUsers } from '@fortawesome/free-solid-svg-icons'
+import { faBell, faBellSlash, faEllipsisV, faGear, faInfo, faPhone, faTrash, faUsers } from '@fortawesome/free-solid-svg-icons'
 import { useModal } from '@/contexts/ModalContext'
 import GroupMembersContainer from '../GroupMembers/GroupMembersContainer'
 import GroupSettings from '../GroupSettings/GroupSettings'
-import GroupInfo from '../GroupInfo/GroupInfo'
 import GroupInfoContainer from '../GroupInfo/GroupInfoContainer'
 
 const ChatHeader = ({handleInfoOpen}) => {
@@ -101,7 +100,7 @@ const ChatHeader = ({handleInfoOpen}) => {
                                     <span style={{ color: 'red' }}>Delete Chat</span>
                                 </div>
                             )}
-
+                            
                             {currentChat.type === 'GROUP' && currentChat.isAdmin && (
                                 <div className='dropdown-item' onClick={handleDelete}>
                                     <FontAwesomeIcon style={{ height: '20px', color: 'red' }} className='menu-icon' icon={faTrash} />

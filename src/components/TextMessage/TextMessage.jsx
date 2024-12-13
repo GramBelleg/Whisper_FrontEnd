@@ -13,7 +13,7 @@ const TextMessage = ({ index, message }) => {
 
     return (
         <p ref={textRef} className={`text-message ${index ? 'hovered' : ''}`}>
-            {trimmedMessage}
+            {trimmedMessage.content}
         </p>
     )
 }

@@ -46,6 +46,12 @@ export const ChatProvider = ({ children }) => {
     const loadMessages = async (id) => {
         try {
             const myMessages = await dbRef.current.getMessagesForChat(id)
+            myMessages.map(async (message) => {
+                if(message.isAnnouncement && !message.isPinned)
+                {
+                    pinMessage(message.id)
+                }
+            })
             setMessages(myMessages)
         } catch (error) {
             console.log(error)
@@ -79,6 +85,7 @@ export const ChatProvider = ({ children }) => {
             loadMessages(currentChat.id)
             clearUnreadMessages(currentChat.id)
             loadPinnedMessages(currentChat.id)
+            
         } else {
             setMessages([])
             setPinnedMessages([])
@@ -126,7 +133,6 @@ export const ChatProvider = ({ children }) => {
             forwardedFromUserId: null,
             mentions: [],
             isSecret: false,
-            isAnnouncement: false,
             size: null,
             ...data
         }
@@ -166,6 +172,10 @@ export const ChatProvider = ({ children }) => {
             console.error(error)
         } finally {
             setSending(false)
+            if(newMessage.isAnnouncement)
+            {
+               //TODO: pin the message that is just sent
+            }
         }
     }
 
@@ -180,6 +190,7 @@ export const ChatProvider = ({ children }) => {
     const searchChat = async (query) => {
         try {
             if (currentChat) {
+                console.log("curretChat",currentChat)
                 const response = await dbRef.current.getMessagesForChat(currentChat.id)
                 const filteredMessages = response.filter((message) => message.content.toLowerCase().includes(query.toLowerCase()))
                 return filteredMessages
@@ -230,6 +241,7 @@ export const ChatProvider = ({ children }) => {
     }
 
     const pinMessage = (messsageId, durtaion = 0) => {
+        console.log("pinning")
         messagesSocket.pinMessage({
             chatId: currentChat.id,
             id: messsageId
