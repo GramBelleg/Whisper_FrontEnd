@@ -9,7 +9,7 @@ const Info = ({index,  myChat }) => {
     const dropdownRef = useRef(null)
     const [dropdownPosition, setDropdownPosition] = useState('down')
     const [isVisible, setIsVisible] = useState(false)
-    const { leaveGroup, handleMute, handleUnMute } = useChat()
+    const { leaveGroup, handleMute, handleUnMute, deleteChat } = useChat()
 
     const toggleDropdown = () => {
         setIsVisible(!isVisible)
@@ -54,8 +54,9 @@ const Info = ({index,  myChat }) => {
     }
 
     const handleDeleteGroup = () => {
-        // TODO: implement delete groGROUPup
+        deleteChat(myChat.id)
     }
+
     useEffect(() => {
         setIsVisible(false)
     }, [])

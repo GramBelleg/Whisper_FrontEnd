@@ -10,7 +10,7 @@ import GroupSettings from '../GroupSettings/GroupSettings'
 import GroupInfoContainer from '../GroupInfo/GroupInfoContainer'
 
 const ChatHeader = ({ handleInfoOpen, infoOpen }) => {
-    const { currentChat, leaveGroup, handleMute, handleUnMute } = useChat()
+    const { currentChat, leaveGroup, handleMute, handleUnMute, deleteChat } = useChat()
     const [isDropdownOpen, setIsDropdownOpen] = useState(false)
     const [isChatInfoOpen, setIsChatInfoOpen] = useState(false)
     const [isMuteDropdownOpen, setMuteIsDropdownOpen] = useState(false)
@@ -40,8 +40,8 @@ const ChatHeader = ({ handleInfoOpen, infoOpen }) => {
     }
 
     const handleDelete = () => {
-        // TODO: after back finishes
         console.log('Chat deleted')
+        deleteChat(currentChat.id)
         setIsDropdownOpen(false)
     }
 
@@ -70,9 +70,9 @@ const ChatHeader = ({ handleInfoOpen, infoOpen }) => {
                 ):(
                     currentChat.type === "GROUP" ?
                     (
-                        <span className="header-subtitle">Members {currentChat.members.length}</span>
+                        <span className="header-subtitle">Members {currentChat.members?.length}</span>
                     ) : (
-                        <span className="header-subtitle">Subscribers {currentChat.members.length}</span>
+                        <span className="header-subtitle">Subscribers {currentChat.members?.length}</span>
                     )
                 )}
             </div>

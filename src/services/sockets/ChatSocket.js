@@ -20,6 +20,10 @@ class ChatSocket extends Socket {
         this.socket.emit('createChat', data);
     }
 
+    deleteChat(data) {
+        this.socket.emit('deleteChat', data);
+    }
+
     addAdmin(data) {
         this.socket.emit('addAdmin', data);
     }
@@ -34,6 +38,10 @@ class ChatSocket extends Socket {
 
     onReceiveRemoveFromChat(callback) {
         this.socket.on('removeUser', callback);
+    }
+
+    onReceiveDeleteChat(callback) {
+        this.socket.on('deleteChat', callback);
     }
 
     onReceiveCreateChat(callback) {
