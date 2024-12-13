@@ -58,7 +58,7 @@ export const cleanChat = async (chat) => {
             othersId: chat.othersId, //
             name: chat.name, //
             type: chat.type, //
-            lastMessage: chat.lastMessage ? chat.lastMessage : null, //
+            lastMessage: chat.lastMessage ? chat.lastMessage.content : null, //
             draftMessageContent: chat.draftMessage ? chat.draftMessage.draftContent : "", //
             draftMessageTime: chat.draftMessage ? chat.draftMessage.draftTime : "", //
             draftMessageParentId: chat.draftMessage ? chat.draftMessage.draftParentMessageId : "", //
@@ -72,6 +72,7 @@ export const cleanChat = async (chat) => {
                 chat.lastMessage ? chat.lastMessage.delivered : false
             ),
             lastMessageId: chat.lastMessage ? chat.lastMessage.id : null, 
+            lastMessageState: chat.lastMessage ? mapMessageState(chat.read, chat.delivered) : null,
             media: chat.lastMessage && chat.lastMessage.media ? chat.lastMessage.media : '', 
             hasStory: chat.hasStory !== null ? chat.hasStory : false, //
             isMuted: chat.isMuted !== null ? chat.isMuted : false,
