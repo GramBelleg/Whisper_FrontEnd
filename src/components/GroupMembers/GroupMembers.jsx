@@ -5,7 +5,7 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faChevronDown } from '@fortawesome/free-solid-svg-icons';
 import useAuth from '@/hooks/useAuth';
 
-const GroupMembers = ({ filteredMembers, handleQueryChange, amIAdmin, handleAddAmin, handleRemoveFromChat }) => {
+const GroupMembers = ({ filteredMembers, handleQueryChange, amIAdmin, handleAddAmin, handleRemoveFromChat, type }) => {
     const [menuState, setMenuState] = useState({
         isVisible: false,
         selectedUser: null, 
@@ -44,7 +44,7 @@ const GroupMembers = ({ filteredMembers, handleQueryChange, amIAdmin, handleAddA
 
     return (
         <div className='p-4 rounded-md' onClick={handleCloseMenu}>
-            <h2 className='text-lg text-light text-left mb-6'>Group Members</h2>
+            <h2 className='text-lg text-light text-left mb-6'>{type.charAt(0).toUpperCase() + type.slice(1)} Members</h2>
             <SearchBar handleQueryChange={handleQueryChange} className='pd-4' />
 
             <div className='members-list mg-4'>
@@ -77,7 +77,7 @@ const GroupMembers = ({ filteredMembers, handleQueryChange, amIAdmin, handleAddA
                                 ref={menuRef}
                             >
                                 <p className='w-full rounded-md hover:bg-[var(--accent-color)] hover:shadow-xl p-2' onClick={() => handleAddAmin(member.id)}>Promote to admin</p>
-                                <p className='w-full rounded-md hover:bg-[var(--accent-color)] hover:shadow-xl p-2' onClick={() => handleRemoveFromChat(member)}>Remove from group</p>
+                                <p className='w-full rounded-md hover:bg-[var(--accent-color)] hover:shadow-xl p-2' onClick={() => handleRemoveFromChat(member)}>Remove from {type}</p>
 
                             </div>
                         )}

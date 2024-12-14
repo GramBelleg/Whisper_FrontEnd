@@ -6,7 +6,7 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { useWhisperDB } from "@/contexts/WhisperDBContext";
 import ChooseGroupMembers from "../ChooseGroupMembers/ChooseGroupMembers";
 
-const GroupAddMembers = () => {
+const GroupAddMembers = ({type}) => {
   const [selectedUsers, setSelectedUsers] = useState([]);
   const [currentMembers, setCurrentMembers] = useState([]);
   const [allUsers, setAllUsers] = useState([]);
@@ -52,7 +52,7 @@ const GroupAddMembers = () => {
         <div onClick={() => pop()} id="back" data-testid="back">
           <FontAwesomeIcon icon={faArrowLeft} />
         </div>
-        <h2 className="text-lg font-bold flex-grow text-center">Add Members</h2>
+        <h2 className="text-lg font-bold flex-grow text-center">Add {(type === "group")? "Members" :"Subscribers"}</h2>
       </div>
 
       {

@@ -1,11 +1,12 @@
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faTimes, faEdit } from "@fortawesome/free-solid-svg-icons";
+import { faTimes, faEdit, faAdd } from "@fortawesome/free-solid-svg-icons";
 import { useState, useEffect } from "react";
 import { useStackedNavigation } from "@/contexts/StackedNavigationContext/StackedNavigationContext";
 import CopyButton from "../CopyButton/CopyButton";
 import { useChat } from "@/contexts/ChatContext";
 import ChannelSettings from "../ChannelSettings/ChannelSettings";
-
+import GroupMembersContainer from "../GroupMembers/GroupMembersContainer";
+import GroupAddMembers from "../GroupAddMembers/GroupAddMembers";
 
 const ChannelInfo = ({ currentChat, onClose }) => {
     const [isVisible, setIsVisible] = useState(false);
@@ -20,7 +21,9 @@ const ChannelInfo = ({ currentChat, onClose }) => {
             onClose(); 
         }, 300); 
     };
-
+    const handleAddUsers = () => {
+        push(<GroupAddMembers type={"channel"}/> )
+    }
     useEffect(() => {
         setIsVisible(true); 
         const getChannelInvite = async () => {
@@ -50,6 +53,9 @@ const ChannelInfo = ({ currentChat, onClose }) => {
             <div className="flex justify-between items-center mb-4">
                 <h3 className="text-xl font-semibold">Channel Info</h3>
                 <div className="flex justify-between items-center space-x-4 ">
+                <button className="text-light" onClick={handleAddUsers} data-testid="add-button">
+                    <FontAwesomeIcon icon={faAdd} />
+                </button>
                 <button className="text-light" onClick={handleEdit} data-testid="edit-button">
                     <FontAwesomeIcon icon={faEdit} />
                 </button>
@@ -73,7 +79,7 @@ const ChannelInfo = ({ currentChat, onClose }) => {
                     <CopyButton content={channelInvite} />
                 </div>
             <div className="border-t border-gray-600 pt-4">
-                {/* TODO: Channel members */}
+                <GroupMembersContainer chatType={"channel"}/>
             </div>
         </div>
     );
