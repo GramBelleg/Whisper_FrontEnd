@@ -13,6 +13,7 @@ import { getMembers } from '@/services/chatservice/getChatMembers'
 import { muteChat, unMuteChat } from '@/services/chatservice/muteUnmuteChat'
 import { getGroupSettings, setPrivacy } from '@/services/chatservice/groupSettings'
 import { setGroupLimit } from '@/services/chatservice/groupSettings'
+import { getChannelInvite } from '@/services/chatservice/channelSettings'
 
 
 export const ChatContext = createContext()
@@ -332,6 +333,15 @@ export const ChatProvider = ({ children }) => {
     const handleGetGroupSettings = async () => {
         try {
             const res = await getGroupSettings(currentChat.id);
+            return res;
+        } catch (error) {
+            console.log("error",error)
+        }
+    }
+
+    const handleGetChannelInvite = async () => {
+        try {
+            const res = await getChannelInvite(currentChat.id);
             return res;
         } catch (error) {
             console.log("error",error)
@@ -734,7 +744,8 @@ export const ChatProvider = ({ children }) => {
                 sending,
                 handleGetMembers,
                 saveGroupSettings,
-                handleGetGroupSettings
+                handleGetGroupSettings,
+                handleGetChannelInvite
             }}
         >
             {children}

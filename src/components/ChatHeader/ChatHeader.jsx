@@ -45,16 +45,6 @@ const ChatHeader = ({ handleInfoOpen, infoOpen }) => {
         setIsDropdownOpen(false)
     }
 
-    const handleViewMembers = () => {
-        openModal(<GroupMembersContainer />)
-        setIsDropdownOpen(false)
-    }
-
-    const handleSettings = () => {
-        openModal(<GroupSettings />)
-        setIsDropdownOpen(false)
-    }
-
     const handleLeave = () => {
         console.log('Chat left')
         leaveGroup(currentChat.id)
