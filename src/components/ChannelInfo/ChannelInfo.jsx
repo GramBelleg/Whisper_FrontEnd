@@ -4,6 +4,7 @@ import { useState, useEffect } from "react";
 import { useStackedNavigation } from "@/contexts/StackedNavigationContext/StackedNavigationContext";
 import CopyButton from "../CopyButton/CopyButton";
 import { useChat } from "@/contexts/ChatContext";
+import ChannelSettings from "../ChannelSettings/ChannelSettings";
 
 
 const ChannelInfo = ({ currentChat, onClose }) => {
@@ -34,7 +35,7 @@ const ChannelInfo = ({ currentChat, onClose }) => {
 
     
     const handleEdit = () => {
-        // push( <GroupSettings /> )
+        push( <ChannelSettings /> )
     }
 
     return (
