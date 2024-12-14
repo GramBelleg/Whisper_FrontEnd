@@ -199,6 +199,13 @@ class WhisperDB {
             throw new Error('Chats store is not initiaslized.')
         }
     }
+    async addChatMember(chatId, member) {
+        if (this._chats != null) {
+            return this._chats.addChatMember(chatId, member)
+        } else {
+            throw new Error('Chats store is not initiaslized.')
+        }
+    }
 
     async insertMessageInChat(message) {
         if (this._chats !== null) {

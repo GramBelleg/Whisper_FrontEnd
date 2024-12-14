@@ -242,7 +242,27 @@ export class ChatsStore extends BaseStore {
             }
         })
     }
-
+    async addChatMember(chatId, member) {
+        return this._executeTransaction('readwrite', async (store) => {
+            try {
+                const request = store.get(chatId)
+                const chat = await new Promise((resolve, reject) => {
+                    request.onsuccess = () => resolve(request.result)
+                    request.onerror = () => reject(request.error) 
+                })
+                if (chat) {
+                    chat.members = [...chat.members, member]
+                    const updateRequest = store.put(chat)
+                    await new Promise((resolve, reject) => {
+                        updateRequest.onsuccess = () => resolve(updateRequest.result)
+                        updateRequest.onerror = () => reject(updateRequest.error) 
+                    })
+                }
+            } catch (error) {
+                throw new Error('Failed to get chats from indexed db: ' + error.message)
+            }
+        })
+    }
     async removeChatMember(chatId, memberId) {
         return this._executeTransaction('readwrite', async (store) => {
             try {

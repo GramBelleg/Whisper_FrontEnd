@@ -1,7 +1,8 @@
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faTimes, faEdit } from "@fortawesome/free-solid-svg-icons";
+import { faTimes, faEdit, faAdd } from "@fortawesome/free-solid-svg-icons";
 import { useState, useEffect } from "react";
 import GroupSettings from "../GroupSettings/GroupSettings";
+import GroupAddMembers from "../GroupAddMembers/GroupAddMembers";
 import GroupMembersContainer from "../GroupMembers/GroupMembersContainer";
 import { useStackedNavigation } from "@/contexts/StackedNavigationContext/StackedNavigationContext";
 
@@ -19,7 +20,9 @@ const GroupInfo = ({ currentChat, onClose }) => {
     useEffect(() => {
         setIsVisible(true); 
     }, []);
-
+    const handleAddUsers = () => {
+        push(<GroupAddMembers /> )
+    }
     
     const handleEdit = () => {
         push( <GroupSettings /> )
@@ -34,6 +37,9 @@ const GroupInfo = ({ currentChat, onClose }) => {
             <div className="flex justify-between items-center mb-4">
                 <h3 className="text-xl font-semibold">Group Info</h3>
                 <div className="flex justify-between items-center space-x-4 ">
+                <button className="text-light" onClick={handleAddUsers} data-testid="add-button">
+                    <FontAwesomeIcon icon={faAdd} />
+                </button>
                 <button className="text-light" onClick={handleEdit} data-testid="edit-button">
                     <FontAwesomeIcon icon={faEdit} />
                 </button>

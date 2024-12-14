@@ -2,7 +2,7 @@ import { useEffect, useState } from "react"
 import "./ChooseGroupMembers.css"
 import { useWhisperDB } from "@/contexts/WhisperDBContext"
 
-const ChooseGroupMembers = ({ selectedUsers, setSelectedUsers }) => {
+const ChooseGroupMembers = ({ selectedUsers, setSelectedUsers, Users }) => {
     const [allUsers, setAllUsers] = useState([])
     const [searchTerm, setSearchTerm] = useState("")
     
@@ -18,7 +18,13 @@ const ChooseGroupMembers = ({ selectedUsers, setSelectedUsers }) => {
                 console.log(error)
             }
         }
-        getAllUsers()
+        if (!Users) {
+            getAllUsers()
+        }
+        else
+        {   console.log("Users", Users)
+            setAllUsers(Users)
+        }
     }, [dbRef])
 
     const handleCheckboxChange = (user) => {

@@ -13,7 +13,7 @@ import { getMembers } from '@/services/chatservice/getChatMembers'
 import { muteChat, unMuteChat } from '@/services/chatservice/muteUnmuteChat'
 import { getGroupSettings, setPrivacy } from '@/services/chatservice/groupSettings'
 import { setGroupLimit } from '@/services/chatservice/groupSettings'
-
+import ProfilePic from '@/components/ProfileSettings/ProfilePicture/ProfilePic'
 
 export const ChatContext = createContext()
 
@@ -34,7 +34,6 @@ export const ChatProvider = ({ children }) => {
     const { generateKeyIfNotExists } = useChatEncryption()
     const { setActivePage } = useSidebar()
     const [chatAltered, setChatAltered] = useState(false)
-
 
 
 
@@ -214,6 +213,24 @@ export const ChatProvider = ({ children }) => {
             console.error(error)
         }
     }
+    const addUser = (user) => {
+        try {
+            console.log("User",user)
+            const UserData = {
+                id: user.id,
+                userName: user.userName,
+                ProfilePic: user.profilePic
+            }
+            const toSend = {
+                user:UserData,
+                chatId: currentChat.id,
+            }
+            console.log("toSend",toSend)
+            chatSocket.addUser(toSend)
+        } catch (error) {
+            console.error(error)
+        }
+    }
 
     const handleReceiveRemoveFromChat = async (data) => {
         try {
@@ -237,6 +254,24 @@ export const ChatProvider = ({ children }) => {
     const handleReceiveAddAdmin = async (adminData) => {
         try {
             await dbRef.current.addGroupAdmin(adminData.chatId, adminData.userId)
+            setChatAltered(true)
+        } catch (error) {
+            console.error(error)
+        }
+    }
+    const handleReceiveAddUser = async (userData) => {
+        try {
+            console.log("userData",userData)
+            const member = {
+                id: userData.user.id,
+                userName: userData.user.userName,
+                profilePic: userData.user.ProfilePic,
+                isAdmin: false,
+                hasStory: false
+            }
+            console.log("member",member)
+            await dbRef.current.addChatMember(userData.chatId,member)
+            console.log("will reload")
             setChatAltered(true)
         } catch (error) {
             console.error(error)
@@ -681,6 +716,7 @@ export const ChatProvider = ({ children }) => {
             chatSocket.onReceiveLeaveChat(handleReceiveLeaveGroup)
             chatSocket.onReceiveAddAdmin(handleReceiveAddAdmin)
             chatSocket.onReceiveRemoveFromChat(handleReceiveRemoveFromChat)
+            chatSocket.onReceiveAddUser(handleReceiveAddUser)
             chatSocket.onReceiveDeleteChat(handleReceiveDeleteChat)
         }
     }, [chatSocket])
@@ -723,6 +759,7 @@ export const ChatProvider = ({ children }) => {
                 sendJoinChat,
                 searchChat,
                 addAdmin,
+                addUser,
                 deleteChat,
                 reloadChats,
                 SetReloadChats,
