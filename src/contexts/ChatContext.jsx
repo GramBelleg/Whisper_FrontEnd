@@ -14,6 +14,8 @@ import { muteChat, unMuteChat } from '@/services/chatservice/muteUnmuteChat'
 import { getGroupSettings, setPrivacy } from '@/services/chatservice/groupSettings'
 import { setGroupLimit } from '@/services/chatservice/groupSettings'
 import ProfilePic from '@/components/ProfileSettings/ProfilePicture/ProfilePic'
+import { getChannelSettings } from '@/services/chatservice/channelSettings'
+
 
 export const ChatContext = createContext()
 
@@ -367,6 +369,15 @@ export const ChatProvider = ({ children }) => {
     const handleGetGroupSettings = async () => {
         try {
             const res = await getGroupSettings(currentChat.id);
+            return res;
+        } catch (error) {
+            console.log("error",error)
+        }
+    }
+
+    const handleGetChannelSettings = async () => {
+        try {
+            const res = await getChannelSettings(currentChat.id);
             return res;
         } catch (error) {
             console.log("error",error)
@@ -771,7 +782,8 @@ export const ChatProvider = ({ children }) => {
                 sending,
                 handleGetMembers,
                 saveGroupSettings,
-                handleGetGroupSettings
+                handleGetGroupSettings,
+                handleGetChannelSettings
             }}
         >
             {children}

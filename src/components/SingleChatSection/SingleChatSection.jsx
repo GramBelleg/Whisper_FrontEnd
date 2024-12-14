@@ -7,6 +7,7 @@ import PinnedMessages from '../PinnedMessages/PinnedMessages'
 import { useEffect, useState } from 'react'
 import ChatHeader from '../ChatHeader/ChatHeader'
 import GroupInfoContainer from '../GroupInfo/GroupInfoContainer'
+import ChannelInfoContainer from '../ChannelInfo/ChannelInfoContainer'
 
 const SingleChatSection = () => {
     const { currentChat, pinnedMessages } = useChat()
@@ -28,6 +29,8 @@ const SingleChatSection = () => {
         return <NoChatOpened />
     }
 
+    console.log(currentChat,"curr")
+
     return (
         <div className='single-chat-container'>
             <ChatHeader infoOpen={infoOpen} handleInfoOpen={ () => setInfoOpen(true) }/>
@@ -43,7 +46,7 @@ const SingleChatSection = () => {
             <div className='w-full flex items-center justify-center'>
                 {((currentChat.participantKeys && currentChat.participantKeys[0] && currentChat.participantKeys[1]) || currentChat.type === "GROUP" || (currentChat.type === "CHANNEL" && currentChat.isAdmin)) ? <ChatActions /> : 
                     (
-                        (currentChat.type === "CHANNEL") ? <></>
+                        (currentChat.type === "CHANNEL") ? <div className='flex items-center justify-center mb-3 p-4 text-light bg-dark shadow-lg rounded-lg'>Only admins can post to channels</div>
                         : (
                             <div className='flex items-center justify-center mb-3 p-4 text-white'>
                                 Waiting for the other participant to join the chat to exchange keys for secure communication
@@ -55,6 +58,8 @@ const SingleChatSection = () => {
             <div>
             {infoOpen && currentChat.type === "GROUP" && 
             <GroupInfoContainer currentChat={currentChat} onClose={()=>setInfoOpen(false)} />}
+            {infoOpen && currentChat.type === "CHANNEL" && 
+            <ChannelInfoContainer currentChat={currentChat} onClose={()=>setInfoOpen(false)} />}
             </div>
         </div>
     )

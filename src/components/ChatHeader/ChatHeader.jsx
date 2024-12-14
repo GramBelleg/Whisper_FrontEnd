@@ -17,7 +17,7 @@ const ChatHeader = ({ handleInfoOpen, infoOpen }) => {
     const { openModal, closeModal } = useModal()
      
     const myHandleMute = async () => {
-        setIsDropdownOpen(false)
+        setMuteIsDropdownOpen(false)
         try {
             await handleMute(currentChat.id, currentChat.type,0)
         } catch (error) {
@@ -43,22 +43,14 @@ const ChatHeader = ({ handleInfoOpen, infoOpen }) => {
         console.log('Chat deleted')
         deleteChat(currentChat.id)
         setIsDropdownOpen(false)
-    }
-
-    const handleViewMembers = () => {
-        openModal(<GroupMembersContainer />)
-        setIsDropdownOpen(false)
-    }
-
-    const handleSettings = () => {
-        openModal(<GroupSettings />)
-        setIsDropdownOpen(false)
+        setMuteIsDropdownOpen(false)
     }
 
     const handleLeave = () => {
         console.log('Chat left')
         leaveGroup(currentChat.id)
         setIsDropdownOpen(false)
+        setMuteIsDropdownOpen(false)
     }
 
     const renderHeaderSubtitles = () => {
@@ -134,7 +126,7 @@ const ChatHeader = ({ handleInfoOpen, infoOpen }) => {
                         </div>
                     )}
                     {isMuteDropdownOpen && (
-                        <div className='dropdown-menu'>
+                        <div className='dropdown-menu' onMouseLeave={() => setMuteIsDropdownOpen(false)}>
                             <div className='dropdown-item' onClick={() => myHandleMute('8 Hours')}>
                                 8 Hours
                             </div>
