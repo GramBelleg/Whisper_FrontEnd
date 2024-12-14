@@ -69,7 +69,7 @@ const GroupAddMembers = ({type}) => {
           disabled={selectedUsers.length === 0}
           className="w-full bg-[var(--accent-color)] text-white py-2 rounded-t-lg absolute bottom-full left-0 right-0 mb-2 hover:brightness-110 disabled:opacity-50 disabled:cursor-not-allowed"
         >
-          Add {selectedUsers.length} Member{selectedUsers.length !== 1 ? 's' : ''}
+          Add {selectedUsers.length} {type==="group" ? "Member" : "Subscriber"}{selectedUsers.length !== 1 ? 's' : ''}
         </button>
       </div>
     </div>
