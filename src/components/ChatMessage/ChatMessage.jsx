@@ -7,7 +7,7 @@ import AudioVoiceMessage from '../AudioVoiceMessage/AudioVoiceMessage'
 import { messageTypes } from '@/services/sendTypeEnum'
 import { useEffect, useMemo, useState } from 'react'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import { faReply, faShare, faTrash, faThumbtack, faThumbtackSlash, faCircleInfo, faEdit } from '@fortawesome/free-solid-svg-icons'
+import { faReply, faShare, faTrash, faThumbtack, faThumbtackSlash, faCircleInfo, faEdit, faCommentDots } from '@fortawesome/free-solid-svg-icons'
 import { useModal } from '@/contexts/ModalContext'
 import ForwardMessageModal from '../Modals/ForwardMessageModal/ForwardMessageModal'
 import { useChat } from '@/contexts/ChatContext'
@@ -24,8 +24,10 @@ const ChatMessage = ({ id, message, hideActions }) => {
     const [objectLink, setObjectLink] = useState(null)
     const { openModal, openConfirmationModal } = useModal()
     const menuOverlayGutter = 40
-    const { pinMessage, unPinMessage, deleteMessage, updateParentMessage } = useChat()
-    const { user } = useAuth();
+    const { currentChat, pinMessage, unPinMessage, deleteMessage, updateParentMessage, setIsThreadOpenned } = useChat()
+    const { user } = useAuth()
+    const colors = ['purple', 'aqua', 'lightgreen'];
+    const [randomColor, setRandomColor] = useState('');
 
     const toggleMenu = (e) => {
         if (hideActions) return
@@ -44,6 +46,10 @@ const ChatMessage = ({ id, message, hideActions }) => {
     const handleReply = () => {
         updateParentMessage(message, parentRelationshipTypes.REPLY)
         setIsMenuOpen(false)
+    }
+
+    const handleThread = () => {
+        setIsThreadOpenned(true)
     }
 
     const handleForward = () => {
@@ -72,6 +78,14 @@ const ChatMessage = ({ id, message, hideActions }) => {
         setObjectLink(objectLink)
     }
 
+    useEffect(() => {
+        setRandomColor(colors[Math.floor(Math.random() * colors.length)])
+
+    }, [])
+
+    useEffect(() => {
+        console.log(randomColor)
+    }, [randomColor])
     const messageTime = useMemo(() => {
         const date = new Date(message.time)
         let hours = date.getHours()
@@ -113,6 +127,11 @@ const ChatMessage = ({ id, message, hideActions }) => {
             <MessageRelationshipsViewer message={message} />
 
             <div className='flex flex-col justify-between'>
+            {currentChat.type !== "DM" && message.sender !== user.userName && (
+                <div style={{color: randomColor}}>
+                    {message.sender}
+                </div>
+            )}
                 {renderMessageContent}
 
                 <div className='message-info'>
@@ -143,6 +162,10 @@ const ChatMessage = ({ id, message, hideActions }) => {
                         <button onClick={handleReply}>
                             <FontAwesomeIcon style={{ height: '18px' }} icon={faReply} />
                             <span>Reply</span>
+                        </button>
+                        <button onClick={handleThread}>
+                            <FontAwesomeIcon style={{ height: '18px' }} icon={faCommentDots} />
+                            <span>New thread</span>
                         </button>
                         {message.content.length && message.senderId === user.id &&  (
                             <button onClick={handleEdit}>
