@@ -1,10 +1,8 @@
 import { render, screen, fireEvent } from '@testing-library/react'
-import ChatActions from '../ChatActions/ChatActions'
-import { messageTypes } from '../../services/sendTypeEnum'
-import { uploadLink, downloadLink } from '../../services/mock/mockData'
+import ChatActions from '../../src/components/ChatActions/ChatActions'
 import { waitFor } from '@testing-library/dom'
-import { useModal } from '../../contexts/ModalContext'
-vi.mock('../../contexts/ModalContext', () => ({
+import { useModal } from '../../src/contexts/ModalContext'
+vi.mock('../../src/contexts/ModalContext', () => ({
     useModal: vi.fn()
 }))
 describe('ChatActions', () => {

@@ -10,6 +10,18 @@ const mockMembers = [
 ];
 
 describe('GroupMembers Component', () => {
+  vi.mock('@/hooks/useAuth', () => {
+    const mockUseAuth = () => ({
+      user: {
+        id: '1',
+        autoDownloadSize: 12
+      }
+    });
+    return {
+      default: mockUseAuth,
+      useAuth: mockUseAuth
+    }
+  })
   it('renders correctly with group members', () => {
     render(
       <GroupMembers
