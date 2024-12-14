@@ -13,7 +13,6 @@ import { getMembers } from '@/services/chatservice/getChatMembers'
 import { muteChat, unMuteChat } from '@/services/chatservice/muteUnmuteChat'
 import { getGroupSettings, setPrivacy } from '@/services/chatservice/groupSettings'
 import { setGroupLimit } from '@/services/chatservice/groupSettings'
-import ProfilePic from '@/components/ProfileSettings/ProfilePicture/ProfilePic'
 import { getChannelSettings } from '@/services/chatservice/channelSettings'
 
 
@@ -36,11 +35,12 @@ export const ChatProvider = ({ children }) => {
     const { generateKeyIfNotExists } = useChatEncryption()
     const { setActivePage } = useSidebar()
     const [chatAltered, setChatAltered] = useState(false)
-
+    const [isThreadOpenned, setIsThreadOpenned] = useState(false)
 
 
     const selectChat = (chat) => {
         setCurrentChat(chat)
+        setIsThreadOpenned(false)
         setParentMessage(null)
     }
 
@@ -241,6 +241,7 @@ export const ChatProvider = ({ children }) => {
             if (userId === user.id) {
                 await dbRef.current.removeChat(chatId)
                 setCurrentChat(null)
+                setIsThreadOpenned(false)
                 SetReloadChats(true)
             }
             else { 
@@ -285,6 +286,7 @@ export const ChatProvider = ({ children }) => {
             await dbRef.current.removeChat(chatData.chatId)
             if (currentChat && currentChat.id === chatData.chatId) {
                 setCurrentChat(null)
+                setIsThreadOpenned(false)
             }
             setChatAltered(true)
             SetReloadChats(true)
@@ -423,6 +425,7 @@ export const ChatProvider = ({ children }) => {
             if (groupLeft.userName === user.userName) {
                 await dbRef.current.removeChat(groupLeft.chatId)
                 setCurrentChat(null)
+                setIsThreadOpenned(false)
             }
             else {
                 const members = await dbRef.current.getChatMembers(groupLeft.chatId)
@@ -499,7 +502,8 @@ export const ChatProvider = ({ children }) => {
                     setCurrentChat({
                         ...chat,
                         participantKeys:participantKeys
-                    });
+                    })
+                    setIsThreadOpenned(false)
                 }
                 setChatAltered(true);
                 return;
@@ -740,6 +744,7 @@ export const ChatProvider = ({ children }) => {
                 try {
                     const updatedChat = await dbRef.current.getChat(currentChat.id)
                     setCurrentChat({...updatedChat})
+                    setIsThreadOpenned(false)
                     setChatAltered(false)
                 } catch (error) {
                     console.error(error)
@@ -767,12 +772,14 @@ export const ChatProvider = ({ children }) => {
                 handleUnMute,
                 sendMessage,
                 updateMessage,
+                setIsThreadOpenned,
                 sendJoinChat,
                 searchChat,
                 addAdmin,
                 addUser,
                 deleteChat,
                 reloadChats,
+                isThreadOpenned,
                 SetReloadChats,
                 parentMessage,
                 updateParentMessage,
