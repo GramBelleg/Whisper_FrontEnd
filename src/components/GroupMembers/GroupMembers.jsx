@@ -44,7 +44,7 @@ const GroupMembers = ({ filteredMembers, handleQueryChange, amIAdmin, handleAddA
 
     return (
         <div className='p-4 rounded-md' onClick={handleCloseMenu}>
-            <h2 className='text-lg text-light text-left mb-6'>{type.charAt(0).toUpperCase() + type.slice(1)} Members</h2>
+            <h2 className='text-lg text-light text-left mb-6'>{type.charAt(0).toUpperCase() + type.slice(1)} {type === 'group' ? 'Members' : 'Subscribers'}</h2>
             <SearchBar handleQueryChange={handleQueryChange} className='pd-4' />
 
             <div className='members-list mg-4'>
