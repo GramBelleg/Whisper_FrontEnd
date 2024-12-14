@@ -47,7 +47,7 @@ const GroupSettings = () => {
     return (
         <div className="fixed top-0 right-0 w-80 h-full bg-dark text-light shadow-xl z-100 p-4 transition-transform transform translate-x-0">
             <div className="flex justify-between items-center space-x-4">
-            <div onClick={()=> pop()} id="back">
+            <div onClick={()=> pop()} id="back" data-testid="back">
                 <FontAwesomeIcon icon={faArrowLeft} />
             </div>
             </div>
@@ -73,6 +73,7 @@ const GroupSettings = () => {
                                 value='Private'
                                 checked={privacy === 'Private'}
                                 onChange={() => setPrivacy("Private")}
+                                data-testid='private'
                             />
                             Private
                         </label>
@@ -80,6 +81,7 @@ const GroupSettings = () => {
                     <div className="flex justify-start space-x-4 mt-4">
                         <button
                         onClick={handlePrivacySubmit}
+                        data-testid='save-privacy'
                         className="text-light bg-primary px-4 py-2 rounded-md hover:bg-light hover:text-dark duration-300"
                         >
                         Save 
@@ -103,6 +105,7 @@ const GroupSettings = () => {
                 <div className="flex justify-start space-x-4 mt-4">
                     <button
                     onClick={handleLimitSubmit}
+                    data-testid='save-limit'
                     className="text-light bg-primary px-4 py-2 rounded-md hover:bg-light hover:text-dark duration-300"
                 >
                     Save 
