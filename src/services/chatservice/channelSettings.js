@@ -1,6 +1,6 @@
 import axiosInstance from "../axiosInstance"
 
-export const getChannelInvite = async (channelId) => {
+export const getChannelSettings = async (channelId) => {
     try {
         const token = localStorage.getItem("token")
         const res = await axiosInstance.get(`/api/channels/${channelId}/settings`,

@@ -10,8 +10,10 @@ import ChannelSettings from "../ChannelSettings/ChannelSettings";
 const ChannelInfo = ({ currentChat, onClose }) => {
     const [isVisible, setIsVisible] = useState(false);
     const { push } = useStackedNavigation()
-    const {handleGetChannelInvite} = useChat();
+    const {handleGetChannelSettings} = useChat();
     const [channelInvite,setChannelInvite] = useState("http://ayhaga:5173/")
+    const [privacy,setPrivacy] = useState("Public")
+
     const handleClose = () => {
         setIsVisible(false); 
         setTimeout(() => {
@@ -23,8 +25,9 @@ const ChannelInfo = ({ currentChat, onClose }) => {
         setIsVisible(true); 
         const getChannelInvite = async () => {
             try {
-                const response = await handleGetChannelInvite()
+                const response = await handleGetChannelSettings()
                 console.log(response)
+                //TODO set invite link and privacy
             } catch (error) {
                 console.error('Error fetching members:', error)
             }
@@ -35,7 +38,7 @@ const ChannelInfo = ({ currentChat, onClose }) => {
 
     
     const handleEdit = () => {
-        push( <ChannelSettings /> )
+        push( <ChannelSettings initialPrivacy={privacy}/> )
     }
 
     return (

@@ -4,8 +4,8 @@ import { useStackedNavigation } from "@/contexts/StackedNavigationContext/Stacke
 import { faArrowLeft } from '@fortawesome/free-solid-svg-icons'
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 
-const ChannelSettings = () => {
-    const [privacy, setPrivacy] = useState("Public");
+const ChannelSettings = ({initialPrivacy}) => {
+    const [privacy, setPrivacy] = useState(initialPrivacy || "Public");
 
     const { pop } = useStackedNavigation(); 
 
