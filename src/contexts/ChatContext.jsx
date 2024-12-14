@@ -187,6 +187,75 @@ export const ChatProvider = ({ children }) => {
         setParentMessage(null)
     }
 
+    const removeFromChat = (incomingUser) => {
+        try {
+            const toSend = {
+                user: {
+                    id: incomingUser.id,
+                    userName: incomingUser.userName
+                },
+                chatId: currentChat.id
+            }
+            chatSocket.removeFromChat(toSend)
+        } catch (error) {
+            console.error(error)
+        }
+    }
+
+    const addAdmin = (userId) => {
+        try {
+            const toSend = {
+                userId:userId,
+                chatId: currentChat.id,
+            }
+
+            chatSocket.addAdmin(toSend)
+        } catch (error) {
+            console.error(error)
+        }
+    }
+
+    const handleReceiveRemoveFromChat = async (data) => {
+        try {
+            const userId = data.user.id
+            const chatId = data.chatId
+            if (userId === user.id) {
+                await dbRef.current.removeChat(chatId)
+                setCurrentChat(null)
+                SetReloadChats(true)
+            }
+            else { 
+                await dbRef.current.removeChatMember(chatId, userId)
+                setChatAltered(true)
+            }
+        } catch (error) {
+            console.error(error)
+        }
+    }
+            
+
+    const handleReceiveAddAdmin = async (adminData) => {
+        try {
+            await dbRef.current.addGroupAdmin(adminData.chatId, adminData.userId)
+            setChatAltered(true)
+        } catch (error) {
+            console.error(error)
+        }
+    }
+
+    const handleReceiveDeleteChat = async (chatData) => {
+        try {
+            await dbRef.current.removeChat(chatData.chatId)
+            if (currentChat && currentChat.id === chatData.chatId) {
+                setCurrentChat(null)
+            }
+            setChatAltered(true)
+            SetReloadChats(true)
+        } catch (error) {
+            console.error(error)
+        }
+    }
+
     const searchChat = async (query) => {
         try {
             if (currentChat) {
@@ -241,7 +310,6 @@ export const ChatProvider = ({ children }) => {
     }
 
     const pinMessage = (messsageId, durtaion = 0) => {
-        console.log("pinning")
         messagesSocket.pinMessage({
             chatId: currentChat.id,
             id: messsageId
@@ -285,10 +353,20 @@ export const ChatProvider = ({ children }) => {
 
     const handleGetMembers = async () => {
         try {
-            //TODO: const members = await dbRef.current.getChatMembers(currentChat.id)
-            const members = await getMembers(currentChat.id);
+            const members = await dbRef.current.getChatMembers(currentChat.id)
+            //const members = await getMembers(currentChat.id);
             console.log(members)
             return members;
+        } catch (error) {
+            console.log(error)
+        }
+    }
+
+    const deleteChat = async (chatId) => {
+        try {
+            chatSocket.deleteChat({
+                chatId: chatId
+            })
         } catch (error) {
             console.log(error)
         }
@@ -335,10 +413,14 @@ export const ChatProvider = ({ children }) => {
             }
             // otherwise I am the first participant in the chat how created the chat and I have the key already
             const newChat = await cleanChat({...data})
-            const members = await getMembers(newChat.id)
-            const admin = members.filter((member) => member.isAdmin)[0]
-            const isAdmin = admin.id === user.id 
-            await dbRef.current.insertChat({...newChat, members: members, isAdmin: isAdmin})
+            if (newChat.type === "GROUP") {
+                const members = await getMembers(newChat.id)
+                const admin = members.filter((member) => member.isAdmin)[0]
+                const isAdmin = admin.id === user.id 
+                await dbRef.current.insertChat({...newChat, members: members, isAdmin: isAdmin})
+            } else {
+                await dbRef.current.insertChat({...newChat, members: [], isAdmin: false})
+            }
             SetReloadChats(true)
             setActivePage("chat")
         } catch (error) {
@@ -390,6 +472,7 @@ export const ChatProvider = ({ children }) => {
                 await dbRef.current.insertMessageWrapper({ ...mapMessage(myMessageData), drafted: false })
                 setMessageReceived(true)
                 setChatAltered(true)
+                SetReloadChats(true)
             } catch (error) {
                 console.error(error)
             }
@@ -596,6 +679,9 @@ export const ChatProvider = ({ children }) => {
         if (chatSocket) {
             chatSocket.onReceiveCreateChat(handleChatCreate)
             chatSocket.onReceiveLeaveChat(handleReceiveLeaveGroup)
+            chatSocket.onReceiveAddAdmin(handleReceiveAddAdmin)
+            chatSocket.onReceiveRemoveFromChat(handleReceiveRemoveFromChat)
+            chatSocket.onReceiveDeleteChat(handleReceiveDeleteChat)
         }
     }, [chatSocket])
 
@@ -636,12 +722,15 @@ export const ChatProvider = ({ children }) => {
                 updateMessage,
                 sendJoinChat,
                 searchChat,
+                addAdmin,
+                deleteChat,
                 reloadChats,
                 SetReloadChats,
                 parentMessage,
                 updateParentMessage,
                 clearParentMessage,
                 deleteMessage,
+                removeFromChat,
                 sending,
                 handleGetMembers,
                 saveGroupSettings,

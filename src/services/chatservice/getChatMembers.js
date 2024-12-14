@@ -12,7 +12,7 @@ export const getMembers = async (chatId) => {
                 }
             }
         )
-        console.log(response)
+        
         return response.data;
     } catch (error) {
         console.error(error);

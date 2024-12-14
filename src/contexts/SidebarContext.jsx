@@ -4,9 +4,12 @@ const SidebarContext = createContext()
 
 export const SidebarProvider = ({ children }) => {
     const [activePage, setActivePage] = useState('chat')
+    const [type, setType] = useState("")
 
     const value = {
         activePage,
+        type,
+        setType,
         setActivePage
     }
 

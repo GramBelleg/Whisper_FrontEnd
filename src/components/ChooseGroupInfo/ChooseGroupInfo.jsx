@@ -5,7 +5,7 @@ import "./ChooseGroupInfo"
 import EditableField from '../ProfileSettings/EditFields/EditableField'
 import { useRef, useState } from 'react'
 
-const ChooseGroupInfo = ({ selectedUsers, setGroupName, setGroupPicFileData }) => {
+const ChooseGroupInfo = ({ selectedUsers, setBatchName, setGroupPicFileData }) => {
     
     const { user } = useAuth()
     const [profilePic, setProfilePic] = useState(user.profilePic || '')
@@ -63,7 +63,7 @@ const ChooseGroupInfo = ({ selectedUsers, setGroupName, setGroupPicFileData }) =
                 initialText={''}
                 fieldName='Group Name'
                 id='bio'
-                onSave={(value) => setGroupName(value)}
+                onSave={(value) => setBatchName(value)}
                 error={() => console.log("error")}
                 clearError={() => console.log("clear error")}
             />

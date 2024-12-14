@@ -2,6 +2,7 @@ import { createRoot } from 'react-dom/client'
 import App from './App.jsx'
 import './styles/main.css'
 import './styles/colors.css'
+import './index.css';
 import React from 'react'
 import { AuthProvider } from './contexts/AuthContext.jsx'
 import { GoogleOAuthProvider } from '@react-oauth/google'
@@ -13,18 +14,19 @@ import { SidebarProvider } from './contexts/SidebarContext.jsx'
 
 createRoot(document.getElementById('root')).render(
     <ProfileSettingsProvider>
-        <AuthProvider>
-            <GoogleOAuthProvider clientId={import.meta.env.VITE_APP_GOOGLE_CLIENT_ID}>
-                <WhisperDBProvider>
-                    <StoriesProvider>
-                        <SidebarProvider>
-                            <ChatProvider>
-                                <App />
-                            </ChatProvider>
-                        </SidebarProvider>
-                    </StoriesProvider>
-                </WhisperDBProvider>
-            </GoogleOAuthProvider>
-        </AuthProvider>
+        <WhisperDBProvider>
+            <AuthProvider>
+                <GoogleOAuthProvider clientId={import.meta.env.VITE_APP_GOOGLE_CLIENT_ID}>
+                    
+                        <StoriesProvider>
+                            <SidebarProvider>
+                                <ChatProvider>
+                                    <App />
+                                </ChatProvider>
+                            </SidebarProvider>
+                        </StoriesProvider>
+                </GoogleOAuthProvider>
+            </AuthProvider>
+        </WhisperDBProvider>
     </ProfileSettingsProvider>
 )

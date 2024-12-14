@@ -3,6 +3,7 @@ import noUser from '../../assets/images/no-user.png'
 import apiUrl from '@/config'
 import { readMedia } from './media'
 import { downloadBlob } from '../blobs/blob'
+import { getMembers } from './getChatMembers'
 
 export const getChatsAPI = async (filters = {}) => {
     try {
@@ -51,13 +52,13 @@ export const mapPicture = async (picture) => {
 
 export const cleanChat = async (chat) => {
     try {
-        console.log(chat)
+        console.log("chattt", chat)
         const flattenedChat = {
             id: chat.id, //
             othersId: chat.othersId, //
             name: chat.name, //
             type: chat.type, //
-            lastMessage: chat.lastMessage ? chat.lastMessage : null, //
+            lastMessage: chat.lastMessage ? chat.lastMessage.content : null, //
             draftMessageContent: chat.draftMessage ? chat.draftMessage.draftContent : "", //
             draftMessageTime: chat.draftMessage ? chat.draftMessage.draftTime : "", //
             draftMessageParentId: chat.draftMessage ? chat.draftMessage.draftParentMessageId : "", //
@@ -71,6 +72,7 @@ export const cleanChat = async (chat) => {
                 chat.lastMessage ? chat.lastMessage.delivered : false
             ),
             lastMessageId: chat.lastMessage ? chat.lastMessage.id : null, 
+            lastMessageState: chat.lastMessage ? mapMessageState(chat.read, chat.delivered) : null,
             media: chat.lastMessage && chat.lastMessage.media ? chat.lastMessage.media : '', 
             hasStory: chat.hasStory !== null ? chat.hasStory : false, //
             isMuted: chat.isMuted !== null ? chat.isMuted : false,
@@ -79,9 +81,16 @@ export const cleanChat = async (chat) => {
             unreadMessageCount: chat.unreadMessageCount, //
             sender: chat.lastMessage ? chat.lastMessage.sender.userName : null,
             lastSeen: chat.lastSeen ? chat.lastSeen.slice(0, 19).replace('T', ' ') : null, //
-            status: chat.status
+            status: chat.status,
+            members: await getMembers(chat.id)
         }
-        return flattenedChat
+        let isAdmin = false
+        if (flattenedChat.members) {
+            const user = JSON.parse(localStorage.getItem("user"));
+            const admins = flattenedChat.members.filter((member) => member.isAdmin)
+            isAdmin = admins.filter((admin) => admin.id === user.id).length > 0
+        }
+        return {...flattenedChat, isAdmin: isAdmin}
     } catch (error) {
         console.log(error)
         return null

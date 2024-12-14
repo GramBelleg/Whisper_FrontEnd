@@ -5,8 +5,6 @@ import { StoriesTempStore } from './StoriesTempStore'
 import { PinnedMessagesStore } from './PinnedMessagesStore'
 import { KeysStore } from './KeysStore'
 import { UsersStore } from './UsersStore'
-
-
 import { DB_CONFIG } from './DBConfig'
 
 class WhisperDB {
@@ -15,7 +13,7 @@ class WhisperDB {
             return WhisperDB.instance
         }
 
-        this._db = null
+        this.db = null
         this._chats = null
         this._messages = null
         this._stories = null
@@ -53,6 +51,28 @@ class WhisperDB {
         })
     }
 
+    async clearDB() {
+        if (this.db) {
+            console.log(Object.keys(DB_CONFIG.stores))
+            const transaction = this.db.transaction(Object.keys(DB_CONFIG.stores), "readwrite");
+        
+            transaction.oncomplete = () => {
+                console.log("All stores cleared successfully.");
+            };
+        
+            transaction.onerror = (event) => {
+                console.error("Error clearing stores:", transaction.error || event.target.error);
+            };
+        
+            Object.values(DB_CONFIG.stores).forEach((storeConfig) => {
+                const store = transaction.objectStore(storeConfig.name);
+                store.clear();
+            });
+        } else {
+            console.log("Can't Clear Stores")
+        }
+    }
+
     _initializeStores() {
         this._chats = new ChatsStore(this.db)
         this._messages = new MessagesStore(this.db)
@@ -84,86 +104,19 @@ class WhisperDB {
         return this._keys;
     }
 
-    /**
-     * Deletes the WhisperDB IndexedDB database.
-     * @returns {Promise<void>}
-     */
-    async delete() {
-        return new Promise((resolve, reject) => {
-            if (this.db) {
-                this.db.close() // Close any open connections to the database
-            }
-
-            const deleteRequest = indexedDB.deleteDatabase(DB_CONFIG.name)
-
-            deleteRequest.onsuccess = () => {
-                console.log(`Database "${DB_CONFIG.name}" deleted successfully.`)
-                resolve()
-            }
-
-            deleteRequest.onerror = (event) => {
-                console.error(`Error deleting database "${DB_CONFIG.name}":`, event.target.error)
-                reject(event.target.error)
-            }
-
-            deleteRequest.onblocked = () => {
-                console.warn(`Database deletion is blocked. Please close all other tabs using this database.`)
-                reject(new Error('Database deletion is blocked.'))
-            }
-        })
-    }
-
     async getChat(id) {
-        if (this.db != null) {
-            try {
-                const tx = this.db.transaction('chats', 'readonly');
-                const store = tx.objectStore('chats');
-                const request = store.get(id);
-    
-                const chat = await new Promise((resolve, reject) => {
-                    request.onsuccess = () => resolve(request.result);
-                    request.onerror = () => reject(request.error);
-                });
-    
-                return chat;
-            } catch (error) {
-                throw new Error("Failed to get chat from indexed db: " + error.message);
-            }
+        if (this._chats !== null) {
+            return this._chats.getChat(id)
         } else {
-            throw new Error("Database connection is not initialized.");
+            throw new Error('Users store is not initiaslized.')
         }
     }
+
     async updateChat(id,data) {
-        if (this.db != null) {
-            try {
-                const tx = this.db.transaction('chats', 'readwrite');
-                const store = tx.objectStore('chats');
-                const request = store.get(id);
-    
-                const existingChat = await new Promise((resolve, reject) => {
-                    request.onsuccess = () => resolve(request.result);
-                    request.onerror = () => reject(request.error);
-                });
-    
-                if (existingChat) {
-                    const newChat = { ...existingChat, ...data };
-                    const updateRequest = store.put(newChat);
-                    await new Promise((resolve, reject) => {
-                        updateRequest.onsuccess = () => resolve();
-                        updateRequest.onerror = () => reject(updateRequest.error);
-                    });
-    
-                    console.log(`Message with id ${id} was successfully updated.`);
-                } else {
-                    throw new Error(`Message with id ${id} not found.`);
-                }
-    
-                await tx.complete;
-            } catch (error) {
-                throw new Error("Failed to update message: " + error.message);
-            }
+        if (this._chats !== null) {
+            return this._chats.updateChat(id, data)
         } else {
-            throw new Error("Database connection is not initialized.");
+            throw new Error('Users store is not initiaslized.')
         }
     }
 
@@ -202,6 +155,14 @@ class WhisperDB {
     async getChats() {
         if (this._chats !== null) {
             return this._chats.getChats()
+        } else {
+            throw new Error('Chats store is not initiaslized.')
+        }
+    }
+
+    async addGroupAdmin(chatId, userId) {
+        if (this._chats !== null) {
+            return this._chats.addGroupAdmin(chatId, userId)
         } else {
             throw new Error('Chats store is not initiaslized.')
         }

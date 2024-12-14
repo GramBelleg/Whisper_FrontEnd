@@ -4,12 +4,12 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faChevronDown } from '@fortawesome/free-solid-svg-icons'
 import { useChat } from '@/contexts/ChatContext'
 
-const Info = ({ id, index, group, isAdmin, muted, type }) => {
+const Info = ({index,  myChat }) => {
     const infoRef = useRef(null)
     const dropdownRef = useRef(null)
     const [dropdownPosition, setDropdownPosition] = useState('down')
     const [isVisible, setIsVisible] = useState(false)
-    const { leaveGroup, handleMute, handleUnMute } = useChat()
+    const { leaveGroup, handleMute, handleUnMute, deleteChat } = useChat()
 
     const toggleDropdown = () => {
         setIsVisible(!isVisible)
@@ -35,7 +35,7 @@ const Info = ({ id, index, group, isAdmin, muted, type }) => {
 
     const myHandleMute = async () => {
         try {
-            await handleMute(id, type)
+            await handleMute(myChat.id, myChat.type)
         } catch (error) {
             console.error(error)
         }
@@ -43,20 +43,23 @@ const Info = ({ id, index, group, isAdmin, muted, type }) => {
 
     const myHandleUnMute = async () => {
         try {
-            await handleUnMute(id, type)
+            await handleUnMute(myChat.id, myChat.type)
         } catch (error) {
             console.error(error)
         }
     }
 
     const handleLeaveGroup = () => {
-        leaveGroup(id)
+        leaveGroup(myChat.id)
     }
 
     const handleDeleteGroup = () => {
-        // TODO: implement delete group
+        deleteChat(myChat.id)
     }
 
+    useEffect(() => {
+        setIsVisible(false)
+    }, [])
     useEffect(() => {
         if (isVisible) {
             handlePositioning()
@@ -89,27 +92,27 @@ const Info = ({ id, index, group, isAdmin, muted, type }) => {
                             }}
                         >
                             <ul>
-                                {!muted ? (
+                                {!myChat.isMuted ? (
                                     <li onClick={myHandleMute}>Mute notifications</li>
                                 ) : (
                                     <li onClick={myHandleUnMute}>Unmute notifications</li>
                                 )}
                                 <li onClick={() => handleAction('Block')}>Block</li>
                                 <li onClick={() => handleAction('Archive')}>Archive</li>
-                                {group && (
-                                    isAdmin ? (
+                                {myChat.type !== "DM" && (
+                                    myChat.isAdmin ? (
                                         <li
                                             style={{ padding: '8px 12px', cursor: 'pointer', color: 'red' }}
                                             onClick={handleDeleteGroup}
                                         >
-                                            Delete group
+                                            Delete {myChat.type.toLowerCase()}
                                         </li>
                                     ) : (
                                         <li
                                             style={{ padding: '8px 12px', cursor: 'pointer', color: 'red' }}
                                             onClick={handleLeaveGroup}
                                         >
-                                            Leave group
+                                            Leave {myChat.type.toLowerCase()}
                                         </li>
                                     ) 
                                 )}

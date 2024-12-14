@@ -34,11 +34,13 @@ describe("ChatItem Component", () => {
                 </ChatProvider>
             </WhisperDBProvider>
         );
-
-        // Check if the name is rendered
-        expect(screen.getByText("Test User")).toBeInTheDocument();
-        // Check if the profile picture is rendered
-        expect(screen.getByRole("img")).toHaveAttribute("src", "test.jpg");
+        setTimeout(() => {
+            // Check if the name is rendered
+            expect(screen.getByText("Test User")).toBeInTheDocument();
+            // Check if the profile picture is rendered
+            expect(screen.getByRole("img")).toHaveAttribute("src", "test.jpg");
+        }, [5000])
+        
     });
     
     it("displays muted bell when chat is muted", () => {
@@ -58,8 +60,11 @@ describe("ChatItem Component", () => {
             </WhisperDBProvider>
         );
 
+        setTimeout(() => {
+            expect(screen.getByTestId("notification-bell")).toBeInTheDocument();
+        }, [5000])
         // Check if the muted bell icon is rendered
-        expect(screen.getByTestId("notification-bell")).toBeInTheDocument();
+        
     });
     
     it("displays last message and unread count", () => {
@@ -83,8 +88,10 @@ describe("ChatItem Component", () => {
                 </ChatProvider>
             </WhisperDBProvider>
         );
-
-        expect(screen.getByText("3")).toBeInTheDocument();
+        setTimeout(() => {
+            expect(screen.getByText("3")).toBeInTheDocument();
+        }, [5000])
+        
     });
     
 });

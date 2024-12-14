@@ -37,7 +37,7 @@ export class ChatsStore extends BaseStore {
     }
 
     async insertMessageInChat(message) {
-        const user = localStorage.getItem("user")
+        const user = JSON.parse(localStorage.getItem("user"))
         return this._executeTransaction('readwrite', async (store) => {
             const chatRequest = store.get(message.chatId)
             const chat = await new Promise((resolve, reject) => {
@@ -103,6 +103,35 @@ export class ChatsStore extends BaseStore {
         })
     }
 
+    async addGroupAdmin(chatId, userId) {
+        return this._executeTransaction('readwrite', async (store) => {
+            try {
+                const request = store.get(chatId)
+                const chat = await new Promise((resolve, reject) => {
+                    request.onsuccess = () => resolve(request.result)
+                    request.onerror = () => reject(request.error)
+                })
+
+                if (chat) {
+                    const members = chat.members
+                    const member = members.find((member) => member.id === userId)
+                    if (member) {
+                        member.isAdmin = true
+                        const updateRequest = store.put(chat)
+                        await new Promise((resolve, reject) => {
+                            updateRequest.onsuccess = () => resolve()
+                            updateRequest.onerror = () => reject(updateRequest.error)
+                        })
+                    } else {
+                        throw new Error(`User with id ${userId} not found in chat ${chatId}`)
+                    }
+                }
+            } catch (error) {
+                console.error('Error inserting chats:', error)
+            }
+        })
+    }
+
     async updateLastMessage(chatId, data) {
         return this._executeTransaction('readwrite', async (store) => {
             try {
@@ -125,6 +154,45 @@ export class ChatsStore extends BaseStore {
                     throw new Error(`Chat with id ${chatId} not found`)
                 }
             } catch (error) {}
+        })
+    }
+
+    async getChat(id) {
+        return this._executeTransaction('readwrite', async (store) => {
+            try {
+                const request = store.get(id);
+                const chat = await new Promise((resolve, reject) => {
+                    request.onsuccess = () => resolve(request.result);
+                    request.onerror = () => reject(request.error);
+                });
+                return chat;
+            } catch (error) {
+                console.error('Error inserting chats:', error)
+            }
+        })
+    }
+    async updateChat(id,data) {
+        return this._executeTransaction('readwrite', async (store) => {
+            try {
+                const request = store.get(id);
+                const existingChat = await new Promise((resolve, reject) => {
+                    request.onsuccess = () => resolve(request.result);
+                    request.onerror = () => reject(request.error);
+                });
+    
+                if (existingChat) {
+                    const newChat = { ...existingChat, ...data };
+                    const updateRequest = store.put(newChat);
+                    await new Promise((resolve, reject) => {
+                        updateRequest.onsuccess = () => resolve();
+                        updateRequest.onerror = () => reject(updateRequest.error);
+                    });
+                } else {
+                    throw new Error(`Message with id ${id} not found.`);
+                }
+            } catch (error) {
+                console.error('Error inserting chats:', error)
+            }
         })
     }
 
