@@ -36,11 +36,13 @@ export const ChatProvider = ({ children }) => {
     const { setActivePage } = useSidebar()
     const [chatAltered, setChatAltered] = useState(false)
     const [isThreadOpenned, setIsThreadOpenned] = useState(false)
+    const [threadMessage, setThreadMessage] = useState(null)
 
 
     const selectChat = (chat) => {
         setCurrentChat(chat)
         setIsThreadOpenned(false)
+        setThreadMessage(null)
         setParentMessage(null)
     }
 
@@ -241,6 +243,7 @@ export const ChatProvider = ({ children }) => {
             if (userId === user.id) {
                 await dbRef.current.removeChat(chatId)
                 setCurrentChat(null)
+                setThreadMessage(null)
                 setIsThreadOpenned(false)
                 SetReloadChats(true)
             }
@@ -286,6 +289,7 @@ export const ChatProvider = ({ children }) => {
             await dbRef.current.removeChat(chatData.chatId)
             if (currentChat && currentChat.id === chatData.chatId) {
                 setCurrentChat(null)
+                setThreadMessage(null)
                 setIsThreadOpenned(false)
             }
             setChatAltered(true)
@@ -425,6 +429,7 @@ export const ChatProvider = ({ children }) => {
             if (groupLeft.userName === user.userName) {
                 await dbRef.current.removeChat(groupLeft.chatId)
                 setCurrentChat(null)
+                setThreadMessage(null)
                 setIsThreadOpenned(false)
             }
             else {
@@ -504,6 +509,7 @@ export const ChatProvider = ({ children }) => {
                         participantKeys:participantKeys
                     })
                     setIsThreadOpenned(false)
+                    setThreadMessage(null)
                 }
                 setChatAltered(true);
                 return;
@@ -744,6 +750,7 @@ export const ChatProvider = ({ children }) => {
                 try {
                     const updatedChat = await dbRef.current.getChat(currentChat.id)
                     setCurrentChat({...updatedChat})
+                    setThreadMessage(null)
                     setIsThreadOpenned(false)
                     setChatAltered(false)
                 } catch (error) {
@@ -764,6 +771,8 @@ export const ChatProvider = ({ children }) => {
                 messageReceived,
                 pinnedMessages,
                 chatAltered,
+                threadMessage,
+                setThreadMessage,
                 setChatAltered,
                 pinMessage,
                 unPinMessage,
