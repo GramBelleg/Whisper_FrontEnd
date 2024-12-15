@@ -67,7 +67,7 @@ const ChannelInfo = ({ currentChat, onClose }) => {
                 <h4 className="text-lg text-center">{currentChat.name}</h4>
                 <p className="text-center text-sm text-gray-400">{currentChat.type}</p>
             </div>
-            <h3 className='text-left text-lg'>Invitation Link</h3>
+            <h3 className='text-left text-sm text-gray-400'>Invitation Link</h3>
             <div className='flex flex-row justify-between'>
                     <h3 className='pr-6'>{channelInvite}</h3>
                     <CopyButton content={channelInvite} />
