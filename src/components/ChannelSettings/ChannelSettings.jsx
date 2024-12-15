@@ -6,11 +6,11 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 
 const ChannelSettings = ({initialPrivacy}) => {
     const [privacy, setPrivacy] = useState(initialPrivacy || "Public");
-
+    const {saveChannelPrivacy} = useChat();
     const { pop } = useStackedNavigation(); 
 
-    const handlePrivacySubmit = () => {
-        //TODO: Save Changes
+    const handlePrivacySubmit = async () => {
+        await saveChannelPrivacy(privacy)
     };
 
     return (
