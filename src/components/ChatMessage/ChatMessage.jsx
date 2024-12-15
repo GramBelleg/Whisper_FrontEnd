@@ -24,7 +24,7 @@ const ChatMessage = ({ id, message, hideActions }) => {
     const [objectLink, setObjectLink] = useState(null)
     const { openModal, openConfirmationModal } = useModal()
     const menuOverlayGutter = 40
-    const { currentChat, pinMessage, unPinMessage, deleteMessage, updateParentMessage, setIsThreadOpenned } = useChat()
+    const { currentChat, pinMessage, unPinMessage, deleteMessage, updateParentMessage, setIsThreadOpenned, threadMessage, setThreadMessage } = useChat()
     const { user } = useAuth()
     const colors = ['purple', 'aqua', 'lightgreen'];
     const [randomColor, setRandomColor] = useState('');
@@ -49,6 +49,7 @@ const ChatMessage = ({ id, message, hideActions }) => {
     }
 
     const handleThread = () => {
+        setThreadMessage({...message})
         setIsThreadOpenned(true)
     }
 
@@ -83,9 +84,6 @@ const ChatMessage = ({ id, message, hideActions }) => {
 
     }, [])
 
-    useEffect(() => {
-        console.log(randomColor)
-    }, [randomColor])
     const messageTime = useMemo(() => {
         const date = new Date(message.time)
         let hours = date.getHours()
@@ -135,7 +133,7 @@ const ChatMessage = ({ id, message, hideActions }) => {
                 {renderMessageContent}
 
                 <div className='message-info'>
-                    {message.edited ? <span className='text-sm opacity-60'>edited</span> : null}
+                    {message?.edited ? <span className='text-sm opacity-60'>edited</span> : null}
                     <span className='time opacity-60'>{messageTime}</span>
                     {message.senderId === user.userId && (
                         <span className='message-status'>
@@ -148,7 +146,7 @@ const ChatMessage = ({ id, message, hideActions }) => {
                 </div>
             </div>
 
-            {isMenuOpen && (
+            {isMenuOpen && (!threadMessage) && (
                 <div
                     className='message-actions-overlay'
                     onMouseLeave={() => setIsMenuOpen(false)}
@@ -165,7 +163,7 @@ const ChatMessage = ({ id, message, hideActions }) => {
                         </button>
                         <button onClick={handleThread}>
                             <FontAwesomeIcon style={{ height: '18px' }} icon={faCommentDots} />
-                            <span>New thread</span>
+                            <span>Open thread</span>
                         </button>
                         {message.content.length && message.senderId === user.id &&  (
                             <button onClick={handleEdit}>

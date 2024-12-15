@@ -8,7 +8,7 @@ import { faTimes } from "@fortawesome/free-solid-svg-icons";
 import ChatActions from "../ChatActions/ChatActions";
 
 const ThreadsBar = ({ onClose }) => {
-    const { currentChat } = useChat()
+    const { currentChat, threadMessage } = useChat()
     const [isVisible, setIsVisible] = useState(false);
     const { user } = useAuth()
     const handleClose = () => {
@@ -58,7 +58,10 @@ const ThreadsBar = ({ onClose }) => {
             className={`fixed top-[2.5%] right-[4.5%] w-[30%] h-[95%] bg-dark text-light shadow-lg z-1000 p-4 rounded-md transition-transform transform ${
                 isVisible ? "translate-x-0" : "translate-x-[200%]"
             }`}
-            style={{ backgroundColor: 'var(--accent-color-threads)' }}
+            style={{ 
+                backgroundColor: 'var(--accent-color-threads)',
+                
+             }}
         >
             <div className="flex justify-between items-center mb-4">
                 <h3 className="text-xl font-semibold">Thread</h3>
@@ -74,12 +77,13 @@ const ThreadsBar = ({ onClose }) => {
                 style={{
                     backgroundColor:
                         threadMessages?.length > 0 ? "var(--threads-color)" : "transparent",
+                        backgroundImage: "url('./assets/images/chat-background-pattern.svg')"
                 }}
             >
                 <div
                     className="flex flex-col-reverse h-[100%] gap-4 overflow-y-auto"
                 >
-                    {threadMessages?.map((message, index) => (
+                    {threadMessage.replies?.map((message, index) => (
                         <div
                             key={message.id}
                             className={`flex ${

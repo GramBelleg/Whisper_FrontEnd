@@ -14,8 +14,6 @@ const SingleChatSection = () => {
     const { currentChat, pinnedMessages, isThreadOpenned, setIsThreadOpenned } = useChat()
     const [infoOpen, setInfoOpen] = useState(false)
 
-    useEffect(() => {}, [pinnedMessages])
-
     const handlePinnedClick = (event) => {
         const messageId = event.messageId; 
     
@@ -67,7 +65,10 @@ const SingleChatSection = () => {
                 </div>
             </div>
             <div className='Threads'>
-                    {isThreadOpenned && <ThreadsBar onClose={()=> setIsThreadOpenned(false)}/>}
+                {isThreadOpenned && <ThreadsBar onClose={() => {
+                    setThreadMessage(null)
+                    setIsThreadOpenned(false)}
+                }/>}
             </div>
         </div>
     )

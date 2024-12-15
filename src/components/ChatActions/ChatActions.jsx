@@ -32,7 +32,7 @@ import { getFileExtension } from '@/utils/getFileExtension'
 const ChatActions = () => {
     const [textMessage, setTextMessage] = useState('')
     const { isRecording, duration, startRecording, stopRecording, discardRecording } = useVoiceRecorder()
-    const { sendMessage, sending, parentMessage, setChatAltered } = useChat()
+    const { sendMessage, sending, parentMessage, setChatAltered, threadMessage } = useChat()
 
     const [attachedFile, setAttachedFile] = useState(null)
     const [showAttachMenu, setShowAttachMenu] = useState(false)
@@ -120,6 +120,9 @@ const ChatActions = () => {
     }
 
     const triggerSendMessage = async () => {
+        if (threadMessage) {
+            // TODO: call the corresponding socket
+        }
         if (isRecording) {
             stopRecording(async (audioBlob) => {
                 const blobName = await uploadMedia({
