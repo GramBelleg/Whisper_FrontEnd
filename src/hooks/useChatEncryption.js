@@ -49,11 +49,17 @@ const useChatEncryption = () => {
     let othersPublicKey = await importPublicKey(othersPublicKeyBase64);
     let sharedSecret = await deriveSharedSecret(myKey, othersPublicKey);
     const symmetricKey = await deriveSymmetricKeyWithHKDF(sharedSecret);
-    console.log('Symmetric key', symmetricKey);
-    console.log('chat key ids', chat.participantKeys);
     setChatKey(symmetricKey);
     setChatId(chat.id);
     return symmetricKey;
+  }
+
+  const getVoiceCallSymmetricKey = async (chat) => {
+    const symmetricKey = await getChatSymmetricKey(chat);
+    if(!symmetricKey) {
+        console.error('Symmetric key not found must probably your device is not participant in the chat');
+    }
+    return btoa(String.fromCharCode(...new Uint8Array(symmetricKey)));
   }
 
   const encryptMessage = async (message, chat) => {
@@ -82,7 +88,9 @@ const useChatEncryption = () => {
   return {
     generateKeyIfNotExists,
     encryptMessage,
-    decryptMessage
+    decryptMessage,
+    getChatSymmetricKey,
+    getVoiceCallSymmetricKey
   };
 };
 
