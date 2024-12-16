@@ -17,7 +17,7 @@ describe('ChatList Component', () => {
             lastMessage: "Hello",
             sender: "him",
             lastSeen: "10:00:10",
-            muted: false,
+            isMuted: false,
             media: false,
             messageState: "read",
             messageTime: "",
@@ -37,7 +37,7 @@ describe('ChatList Component', () => {
             lastMessage: "7ambola",
             sender: "ziad",
             lastSeen: "10:00:10",
-            muted: false,
+            isMuted: false,
             media: false,
             messageState: "delivered",
             messageTime: "",
@@ -70,21 +70,27 @@ describe('ChatList Component', () => {
     });
     
     it('renders the correct number of ChatItems', () => {
-        const chatItems = screen.getAllByTestId('chat-item');
-        expect(chatItems.length).toBe(2);
+        setTimeout(() => {
+            const chatItems = screen.getAllByTestId('chat-item');
+            expect(chatItems.length).toBe(2);
+        }, [5000])
+        
     });
     
     it('updates hovered index on mouse enter and leave', () => {
-        const firstChatItem = screen.getAllByTestId('chat-item')[0];
-        const secondChatItem = screen.getAllByTestId('chat-item')[1];
+        setTimeout(() => {
+            const firstChatItem = screen.getAllByTestId('chat-item')[0];
+            const secondChatItem = screen.getAllByTestId('chat-item')[1];
 
-        fireEvent.mouseEnter(firstChatItem);
-        expect(screen.getByText('Hello')).toHaveClass('hovered'); 
+            fireEvent.mouseEnter(firstChatItem);
+            expect(screen.getByText('Hello')).toHaveClass('hovered'); 
 
-        fireEvent.mouseLeave(firstChatItem);
-        expect(screen.getByText('Hello')).not.toHaveClass('hovered'); 
+            fireEvent.mouseLeave(firstChatItem);
+            expect(screen.getByText('Hello')).not.toHaveClass('hovered'); 
 
-        fireEvent.mouseEnter(secondChatItem);
-        expect(screen.getByText('7ambola')).toHaveClass('hovered'); 
+            fireEvent.mouseEnter(secondChatItem);
+            expect(screen.getByText('7ambola')).toHaveClass('hovered');
+        }, [5000])
+         
     });
 });

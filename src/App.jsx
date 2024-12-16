@@ -1,4 +1,4 @@
-import SampleHome from './components/SampleHome/SampleHome'
+import Home from './components/Home/Home'
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom'
 import './App.css'
 import LoginPage from './pages/LoginPage'
@@ -18,13 +18,14 @@ import { getUsersWithStoriesCleaned } from './services/storiesservice/getStories
 import useChatEncryption from './hooks/useChatEncryption'
 import axiosInstance from './services/axiosInstance'
 import { useChat } from './contexts/ChatContext'
+import { getAllUsers } from './services/userservices/getAllUsers'
 
 function App() {
     const { user, token, handleUpdateUser } = useAuth()
     const [loading, setLoading] = useState(true)
     const { dbRef } = useWhisperDB()
     const { user: authUser } = useAuth()
-    const {sendJoinChat} = useChat();
+    const { sendJoinChat } = useChat();
     const {decryptMessage, generateKeyIfNotExists} = useChatEncryption();
 
     if (import.meta.env.VITE_APP_USE_MOCKS === 'true') {
@@ -32,52 +33,72 @@ function App() {
     }
 
     useEffect(() => {
-        const init = async () => {
-            await loadChats()
-            await loadMessages()
-            await loadPinnedMessages()
-            await loadStories()
-            setLoading(false)
+        const init = async () => { 
+            try {
+                await loadChats()
+                await loadMessages()
+                await loadPinnedMessages()
+                await loadStories()
+                await loadUsers()
+            } catch (error) {
+                console.log(error)
+            } finally {
+                setLoading(false)
+            }
+        }
+
+        const loadUsers = async () => {
+            try {
+                let allUsers = await getAllUsers()
+                if (allUsers) {
+                    await dbRef.current.insertUsers(allUsers)
+                }
+            } catch (error) {
+                console.error(error)
+            }
+
         }
 
         const loadChats = async () => {
-            let allChats = await getChatsCleaned()
-            let myDeviceChats = [];
-            const getAllmyKeys = await dbRef.current.getKeysStore().getAll();
-            const keyIds = getAllmyKeys.map(keyData => keyData.id);
-            
-            for (const chat of allChats) {
-                if (chat.type === 'DM' && chat.participantKeys.some(key => keyIds.includes(key))) {
-                    myDeviceChats.push(chat);
-                } else if (chat.type === 'DM' && (!chat.participantKeys[1] || !chat.participantKeys[0])) {
-                    // I am the second participant in the chat and I have to generate the key
-                    let joinedChat = { ...chat };
-                    // this will send key to the server and store its' private part in the indexedDB
-                    let keyId = await generateKeyIfNotExists(chat, dbRef.current.getKeysStore());
-                    if (keyId) {
-                        if(!joinedChat.participantKeys[1]) {
-                            joinedChat.participantKeys[1] = keyId;
-                        }
-                        if(!joinedChat.participantKeys[0]) {
-                            joinedChat.participantKeys[0] = keyId;
-                        }
-                        // associate my key with the chat
-                        await axiosInstance.put(`/api/encrypt/${joinedChat.id}?keyId=${keyId}`, {
-                            keyId: keyId,
-                            userId: authUser.id
-                        });
-                        sendJoinChat(joinedChat, keyId);
-                    }
-                    myDeviceChats.push(joinedChat);
-                } else if (chat.type != 'DM') {
-                    myDeviceChats.push(chat);
-                }
+            try {
+                let allChats = await getChatsCleaned()
+                let myDeviceChats = [];
+                const getAllmyKeys = await dbRef.current.getKeysStore().getAll();
+                const keyIds = getAllmyKeys.map(keyData => keyData.id);
                 
+                for (const chat of allChats) {
+                    if (chat.type === 'DM' && chat.participantKeys.some(key => keyIds.includes(key))) {
+                        myDeviceChats.push(chat);
+                    } else if (chat.type === 'DM' && (!chat.participantKeys[1] || !chat.participantKeys[0])) {
+                        // I am the second participant in the chat and I have to generate the key
+                        let joinedChat = { ...chat };
+                        // this will send key to the server and store its' private part in the indexedDB
+                        let keyId = await generateKeyIfNotExists(chat, dbRef.current.getKeysStore());
+                        if (keyId) {
+                            if(!joinedChat.participantKeys[1]) {
+                                joinedChat.participantKeys[1] = keyId;
+                            }
+                            if(!joinedChat.participantKeys[0]) {
+                                joinedChat.participantKeys[0] = keyId;
+                            }
+                            // associate my key with the chat
+                            await axiosInstance.put(`/api/encrypt/${joinedChat.id}?keyId=${keyId}`, {
+                                keyId: keyId,
+                                userId: authUser.id
+                            });
+                            sendJoinChat(joinedChat, keyId);
+                        }
+                        myDeviceChats.push(joinedChat);
+                    } else if (chat.type != 'DM') {
+                        myDeviceChats.push(chat);
+                    }
+                    console.log(myDeviceChats)
+                }
+                await dbRef.current.insertChats(myDeviceChats)
+            } catch (error) {
+                console.log(error)
             }
-            await dbRef.current.insertChats(myDeviceChats)
         }
-
-       
 
         const loadMessages = async () => {
             try {
@@ -152,11 +173,14 @@ function App() {
         }
 
         try {
-            init()
+            if (user) {
+                setLoading(true)
+                init()
+            }
         } catch (error) {
             console.error(error)
         }
-    }, [dbRef])
+    }, [dbRef, user])
 
     return (
         <div className='App'>
@@ -166,7 +190,7 @@ function App() {
                         token && token !== 'undefined' ? (
                             user.role !== 'admin' ? (
                                 <>
-                                    {!loading ? <Route path='/' element={<SampleHome />} /> : <Route path='/' element={<LoadingData />} />}
+                                    {!loading ? <Route path='/' element={<Home />} /> : <Route path='/' element={<LoadingData />} />}
                                     <Route path='/*' element={<Navigate to='/' />} />
                                 </>
                             ) : (

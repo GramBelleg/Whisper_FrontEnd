@@ -193,7 +193,7 @@ export const getProfilePic = async (userID, blobName) => {
         }
 
         const blobResponse = await axiosInstance.post(
-            'api/media/read',
+            `${apiUrl}/api/media/read`,
             { blobName: blobName },
             {
                 headers: {

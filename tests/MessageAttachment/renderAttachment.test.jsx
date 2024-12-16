@@ -1,5 +1,5 @@
 import { render, screen, waitFor, fireEvent } from '@testing-library/react'
-import MessageAttachmentRenderer from '../MessageAttachment/MessageAttachementRenderer'
+import MessageAttachmentRenderer from '../../src/components/MessageAttachment/MessageAttachementRenderer'
 
 global.fetch = vi.fn(() =>
     Promise.resolve({
@@ -21,7 +21,18 @@ describe('MessageAttachmentRenderer', () => {
     vi.mock('@/services/chatservice/media', () => ({
         readMedia: vi.fn(() => Promise.resolve('mocked-presigned-url'))
     }))
-
+    vi.mock('@/hooks/useAuth', () => {
+        const mockUseAuth = () => ({
+          user: {
+            id: '1',
+            autoDownloadSize: 12
+          }
+        });
+        return {
+          default: mockUseAuth,
+          useAuth: mockUseAuth
+        }
+      })
     vi.mock('./fileServices', () => ({
         downloadAttachment: vi.fn(() =>
             Promise.resolve({

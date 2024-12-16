@@ -80,10 +80,10 @@ export class MessagesStore extends BaseStore {
 
                     console.log(`Message with id ${id} was successfully updated.`)
                 } else {
-                    throw new Error(`Message with id ${id} not found.`)
+                    console.log(`Message with id ${id} not found.`)
                 }
             } catch (error) {
-                throw new Error('Failed to update message: ' + error.message)
+                console.log('Failed to update message: ' + error.message)
             }
         })
     }

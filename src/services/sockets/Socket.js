@@ -31,8 +31,8 @@ class Socket {
     }
 
     disconnect() {
-        console.log(`Disconnecting from ${this.serverUrl}`)
-        this.socket.disconnect()
+        // console.log(`Disconnecting from ${this.serverUrl}`)
+        // this.socket.disconnect()
     }
 }
 

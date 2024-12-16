@@ -1,4 +1,3 @@
-import { io } from 'socket.io-client'
 import Socket from './Socket'
 
 class UserSocket extends Socket {
@@ -10,9 +9,6 @@ class UserSocket extends Socket {
             return UserSocket.instance
         }
         super()
-        this.socket.on('connect', () => {
-            console.log(`Connected to ${this.serverUrl}`)
-        })
 
         UserSocket.instance = this
     }

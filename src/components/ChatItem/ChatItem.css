@@ -1,5 +1,5 @@
 :root {
-    --primary-color: #0A122F; /* Define the color as a CSS variable */
+    --primary-color: #0A122F; 
     --dots-color: #0A122F;
     --secondary-color: #0A254A;
     --third-color:#8D6AEE;
@@ -10,7 +10,7 @@
     border: 1px solid var(--secondary-color);
     height: 100%;
     width: 100%;
-    box-sizing: border-box; /* This prevents border from exceeding required */
+    box-sizing: border-box; 
 }
 
 .single-chat:hover {
@@ -27,25 +27,25 @@
 
 
 .profile-pic-wrapper {
-    display: flex; /* Use flexbox to center the inner circle */
-    justify-content: center; /* Horizontally center the profile image */
-    align-items: center; /* Vertically center the profile image */
-    border-radius: 50%; /* Make it circular */
-    width: 70px;
-    height: 70px;
+    display: flex;
+    justify-content: center; 
+    align-items: center; 
+    border-radius: 50%; 
+    width: 65px;
+    height: 65px;
     flex-shrink: 0;
     margin-left: 1%;
-    border: none; /* Default: no border */
+    border: none; 
 }
 .profile-pic-wrapper.has-story {
-    border: 1px solid var(--third-color); /* Apply third color if story is true */
+    border: 1px solid var(--third-color); 
 }
 
 .profile-pic {
-    border-radius: 50%; /* Make it circular */
-    width: 65px;
-    height: 65px;
-    border: none; /* Default: no border */
+    border-radius: 50%; 
+    width: 55px;
+    height: 55px;
+    border: none; 
 }
 
 
@@ -55,7 +55,7 @@
     width: 85%;
     height: 100%;
     margin-left: 3%;
-    box-sizing: border-box; /* This prevents border from exceeding required */
+    box-sizing: border-box;
 }
 
 .user-info {
@@ -63,27 +63,27 @@
     height: 50%;
     width: 100%;
     align-items: center;
-    justify-content: space-between; /* Ensure the ticks stay at the right */
+    justify-content: space-between; 
 }
 
 .name-container {
-    width: 75%;     /* Limit the width to 75% of its parent */
+    width: 60%;     
     height: 100%;
     display: flex;
     flex-grow: 1;
-    flex-shrink: 1; /* Allow shrinking */
-    justify-content: flex-start; /* Align items to the start (optional) */
+    flex-shrink: 1; 
+    justify-content: flex-start; 
     align-items: center;
     margin-top: 2%;
 }
 
 
 .ticks-info {
-    min-width: 25%; /* Maintain a fixed size for tick info */
-    width: 25%;
+    min-width: 40%; 
+    width: 40%;
     height: 100%;
     display: flex;
-    flex-shrink: 0;  /* Prevent shrinking of ticks */
+    flex-shrink: 0;  
     justify-content: center;
     align-items: center;
     margin-top: 5%;
@@ -101,39 +101,39 @@
 }
 
 .unread-time {
-    color: var(--third-color); /* Use the third color for unread messages */
+    color: var(--third-color); 
     margin: 0;
 }
 
 .user-name {
-    text-overflow: ellipsis; /* Adds ... at the end of overflowing text */
-    font-size: clamp(15px, 5vw, 20px); /* Responsive font size */
+    text-overflow: ellipsis; 
+    font-size: clamp(15px, 5vw, 20px); 
     color: white;
     height: 100%;
     display: flex;
-    white-space: nowrap; /* Prevent wrapping */
-    overflow: hidden; /* Hide overflow text */
-    position: relative; /* Position relative for the pseudo-element */
+    white-space: nowrap; 
+    overflow: hidden; 
+    position: relative; 
 }
 
 .user-name::after {
-    content: '...'; /* Show dots as a pseudo-element */
-    position: absolute; /* Position it absolutely */
-    right: 0; /* Align to the right */
-    background: var(--primary-color); /* Match the background color */
-    visibility: hidden; /* Hide by default */
+    content: '...'; 
+    position: absolute; 
+    right: 0; 
+    background: var(--primary-color); 
+    visibility: hidden; 
 }
 
 .user-name.hovered::after {
-    content: '...'; /* Show dots as a pseudo-element */
-    position: absolute; /* Position it absolutely */
-    right: 0; /* Aign to the right */
-    background: var(--secondary-color); /* Match the background color */
-    visibility: hidden; /* Hide by default */
+    content: '...'; 
+    position: absolute; 
+    right: 0; 
+    background: var(--secondary-color); 
+    visibility: hidden; 
 }
 
 .user-name.overflow::after {
-    visibility: visible; /* Show dots when overflow occurs */
+    visibility: visible; 
 }
 
 .muted-bell {
@@ -147,6 +147,49 @@
     height: 50%;
     align-items: center;
     width: 100%;
-    position: relative; /* Enables absolute positioning for the .info div */
+    position: relative; 
 }
 
+:root {
+    --primary-color: #0A122F; 
+    --dots-color: #0A122F;
+    --secondary-color: #0A254A;
+    --third-color:#8D6AEE;
+}
+
+.unread {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 40px; 
+    height: 40px; 
+    margin-left: 8%;
+}
+
+.unread-count {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 25px; 
+    height: 25px; 
+    color: white;
+    background-color: var(--third-color); 
+    border-radius: 50%; 
+    font-size: 8px; 
+    font-weight: bold;
+    text-align: center;
+}
+
+.unread-at {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 25px; 
+    height: 25px; 
+    color: white;
+    background-color: var(--third-color); 
+    border-radius: 50%; 
+    font-size: 8px; 
+    font-weight: bold;
+    text-align: center;
+}

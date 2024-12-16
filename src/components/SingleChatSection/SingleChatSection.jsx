@@ -10,15 +10,19 @@ import { useChat } from '@/contexts/ChatContext'
 import NoChatOpened from '../NoChatOpened/NoChatOpened'
 import PinnedMessages from '../PinnedMessages/PinnedMessages'
 import SearchSingleChat from '../SearchSingleChat/SearchSingleChat'
-import { useEffect } from 'react'
+import { useEffect, useState } from 'react'
 import { generateVoiceCallToken } from '@/services/voiceCall/generateToken'
 import useAuth from '@/hooks/useAuth'
 import useVoiceCall from '@/hooks/useVoiceCall'
 import VoiceCallHeader from '../VoiceCall/VoiceCallHeader'
 import useChatEncryption from '@/hooks/useChatEncryption'
+import ChatHeader from '../ChatHeader/ChatHeader'
+import GroupInfoContainer from '../GroupInfo/GroupInfoContainer'
+import ChannelInfoContainer from '../ChannelInfo/ChannelInfoContainer'
 
 const SingleChatSection = () => {
     const { currentChat, pinnedMessages } = useChat()
+    const [infoOpen, setInfoOpen] = useState(false)
     useEffect(() => {}, [pinnedMessages])
 
     const { startCall, inCall } = useVoiceCall();
@@ -42,8 +46,7 @@ const SingleChatSection = () => {
     }
 
     const handlePinnedClick = (event) => {
-        const messageId = event.messageId; // Retrieve the data-message-id
-        console.log("Clicked on pinned message with ID:", messageId);
+        const messageId = event.messageId; 
     
         const targetElement = document.getElementById(`message-${messageId}`);
         if (targetElement) {
@@ -62,24 +65,11 @@ const SingleChatSection = () => {
         )
     }
 
-
+    console.log(currentChat,"curr")
 
     return (
         <div className='single-chat-container'>
-            <div className='single-chat-header shadow-md'>
-                <div className='header-avatar'>
-                    <img src={currentChat.profilePic} alt={currentChat.name} />
-                </div>
-                <div className='header-details'>
-                    <span className='header-title'>{currentChat.name}</span>
-                    <span className='header-subtitle'>Last seen at {currentChat.lastSeen}</span>
-                </div>
-                <SearchSingleChat />
-                <div className='header-icons'>
-                    <FontAwesomeIcon onClick={handleVoiceCall} style={{ height: '24px' }} className='icon' icon={faPhone} />
-                    <FontAwesomeIcon style={{ height: '24px' }} className='icon' icon={faEllipsisV} />
-                </div>
-            </div>
+            <ChatHeader infoOpen={infoOpen}  handleVoiceCall={handleVoiceCall} handleInfoOpen={ () => setInfoOpen(true) }/>
             {inCall && <VoiceCallHeader />}
             <div className='messages'>
                 <SingleChatMessagesList />
@@ -89,13 +79,24 @@ const SingleChatSection = () => {
                     </div>
                 )}
             </div>
-
+            {/*TODO: when channel is implemented, switch the conditions */}
             <div className='w-full flex items-center justify-center'>
-                {((currentChat.participantKeys[0] && currentChat.participantKeys[1]) || currentChat.type != "DM") ? <ChatActions /> : 
-                <div className='flex items-center justify-center mb-3 p-4 text-white'>
-                    Waiting for the other participant to join the chat to exchange keys for secure communication
-                </div>
+                {((currentChat.participantKeys && currentChat.participantKeys[0] && currentChat.participantKeys[1]) || currentChat.type === "GROUP" || (currentChat.type === "CHANNEL" && currentChat.isAdmin)) ? <ChatActions /> : 
+                    (
+                        (currentChat.type === "CHANNEL") ? <div className='flex items-center justify-center mb-3 p-4 text-light bg-dark shadow-lg rounded-lg'>Only admins can post to channels</div>
+                        : (
+                            <div className='flex items-center justify-center mb-3 p-4 text-white'>
+                                Waiting for the other participant to join the chat to exchange keys for secure communication
+                            </div>
+                        )
+                    )
                 }
+            </div>
+            <div>
+            {infoOpen && currentChat.type === "GROUP" && 
+            <GroupInfoContainer currentChat={currentChat} onClose={()=>setInfoOpen(false)} />}
+            {infoOpen && currentChat.type === "CHANNEL" && 
+            <ChannelInfoContainer currentChat={currentChat} onClose={()=>setInfoOpen(false)} />}
             </div>
         </div>
     )

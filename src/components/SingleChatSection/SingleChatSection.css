@@ -13,54 +13,14 @@
     background-color: var(--chat-background-color);
 }
 
-.single-chat-header {
-    background-color: var(--primary-color);
-    display: flex;
-    justify-content: space-between;
-    color: var(--text-color);
-    align-items: center;
-    gap: 1rem;
-    padding: 10px 16px;
-}
-
-.header-avatar img {
-    width: 40px;
-    height: 40px;
-    border-radius: 50%;
-}
-
-.header-details {
-    flex-grow: 1;
-    display: flex;
-    align-items: flex-start;
-    flex-direction: column;
-    margin-left: 10px;
-}
-
-.header-title {
-    font-size: 18px;
-    font-weight: 500;
-}
-
-.header-subtitle {
-    font-size: 14px;
-    color: rgba(var(--text-color-rgb), 0.6);
-}
-
-.header-icons {
-    display: flex;
-    gap: 1.5rem;
-    font-size: 24px;
-    margin-right: 1rem;
-}
-.header-icons .icon {
+.icon {
     cursor: pointer;
     color: var(--accent-color);
 
 }
 
 .icon {
-    font-size: 20px; /* or whatever size you prefer */
+    font-size: 20px; 
     width: 20px;
     height: 20px;
 }
@@ -69,15 +29,15 @@
 .messages {
     display: flex;
     overflow-y: auto;
-    scrollbar-width: none; /* For Firefox */
-    -ms-overflow-style: none; /* For Internet Explorer and Edge */
+    scrollbar-width: none; 
+    -ms-overflow-style: none; 
     flex-grow: 1;
     gap: 1rem;
-    flex-direction: column-reverse; /* Makes the newest messages appear at the bottom */
+    flex-direction: column-reverse; 
 }
 
 .messages::-webkit-scrollbar {
-    display: none; /* For Chrome, Safari, and Edge */
+    display: none; 
 }
 
 

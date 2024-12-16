@@ -30,9 +30,9 @@ const ChatMessage = ({ id, message, hideActions }) => {
 
     const toggleMenu = (e) => {
         if (hideActions) return
-        e.preventDefault() // Prevent default behavior (for long-press or right-click)
-        setMenuPosition({ x: e.clientX, y: e.clientY }) // Set the position of the menu
-        setIsMenuOpen(!isMenuOpen) // Toggle menu visibility
+        e.preventDefault() 
+        setMenuPosition({ x: e.clientX, y: e.clientY }) 
+        setIsMenuOpen(!isMenuOpen) 
     }
 
     const handleDelete = () => {
@@ -74,15 +74,12 @@ const ChatMessage = ({ id, message, hideActions }) => {
     }
 
     const messageTime = useMemo(() => {
-        // Assuming message.time is "2024-11-01 18:24:00"
         const date = new Date(message.time)
         let hours = date.getHours()
         let minutes = date.getMinutes()
 
-        // If minutes are 0, display as "00" instead
         minutes = minutes === 0 ? '00' : minutes.toString().padStart(2, '0')
 
-        // Format time as HH:MM
         return `${hours}:${minutes}`
     }, [message.time])
 
