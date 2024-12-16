@@ -106,8 +106,9 @@ export const ChatProvider = ({ children }) => {
 
     const sendMessage = async (data, chat = null) => {
         setSending(true);
+        const usedChat = chat ? chat.id : currentChat.id
         const newMessage = {
-            chatId: chat ? chat.id : currentChat.id,
+            chatId: usedChat.id,
             forwarded: false,
             selfDestruct: true,
             expiresAfter: 5,
@@ -129,10 +130,10 @@ export const ChatProvider = ({ children }) => {
 
         const newMessageForBackend = { ...newMessage }
 
-        if (!chat && currentChat && currentChat.type === 'DM') {
+        if (usedChat.type === 'DM' && newMessage.type != "EVENT") {
             newMessage.isSecret = true
             newMessageForBackend.isSecret = true
-            newMessageForBackend.content = await encryptMessage(newMessage.content, currentChat)
+            newMessageForBackend.content = await encryptMessage(newMessage.content, usedChat)
         }
 
         newMessage.senderId = user.userId
@@ -207,6 +208,7 @@ export const ChatProvider = ({ children }) => {
             const myMessageData = {
                 ...messageData
             }
+            console.log(myMessageData)
             const chat = await dbRef.current.getChat(myMessageData.chatId)
 
             if(myMessageData.type == "EVENT") {
@@ -232,7 +234,7 @@ export const ChatProvider = ({ children }) => {
                 return;
             }
             
-            if (chat.type == "DM") {
+            if (chat.type == "DM" && myMessageData.type != "CALL") {
                 myMessageData.content = await decryptMessage(myMessageData.content, chat)
                 if(myMessageData.parentMessage) {
                     const parent = {...myMessageData.parentMessage}
@@ -342,7 +344,11 @@ export const ChatProvider = ({ children }) => {
             const chat = await dbRef.current.getChat(messageData.chatId)
             let finalContent = messageData.content
             if (chat.type == "DM") {
+                try {
                 finalContent = await decryptMessage(messageData.content, chat)
+                } catch (error) {
+                    finalContent = messageData.content
+                }
             }
             await dbRef.current.updateMessage(messageData.id, {
                 content: finalContent,
