@@ -288,6 +288,30 @@ class WhisperDB {
         }
     }
 
+    async updateReplyCount(messageId) {
+        if (this._messages !== null) {
+            return this._messages.updateReplyCount(messageId)
+        } else {
+            throw new Error('Messages store is not initiaslized.')
+        }
+    }
+
+    async insertReply(replyData) {
+        if (this._messages !== null) {
+            return this._messages.insertReply(replyData)
+        } else {
+            throw new Error('Messages store is not initiaslized.')
+        }
+    }
+
+    async getThread(messageId) {
+        if (this._messages !== null) {
+            return this._messages.getThread(messageId)
+        } else {
+            throw new Error('Messages store is not initiaslized.')
+        }
+    }
+
     async updateMessage(id, data) {
         if (this._messages !== null) {
             return this._messages.updateMessage(id, data)
