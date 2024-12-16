@@ -6,7 +6,7 @@ let myStories = []
 export const getStoriesAPI = async (id) => {
     try {
         const token = localStorage.getItem("token")
-        const user = localStorage.getItem("user")
+        const user = JSON.parse(localStorage.getItem("user"))
         const response = await axios.get(`${apiUrl}/api/user/story/${id}`, {
             headers: {
                 Authorization: `Bearer ${token}`  
@@ -75,13 +75,14 @@ export const getUsersWithStoriesAPI = async () => {
     }
 }
 
-export const getUsersWithStoriesCleaned = async (iHaveStory) => {
+export const getUsersWithStoriesCleaned = async () => {
     try {
         const stories = await getUsersWithStoriesAPI()
         myStories = []
-        const user = localStorage.getItem("user")
-        iHaveStory = false
-        stories.users.users.map((story) => {
+        const user = JSON.parse(localStorage.getItem("user"))
+        let iHaveStory = false
+        console.log(stories)
+        stories.users.map((story) => {
             if (story.id === user.id) {
                 iHaveStory = true
             }
@@ -92,8 +93,9 @@ export const getUsersWithStoriesCleaned = async (iHaveStory) => {
             }
             myStories.push(flattenedStory)
         })
-        return myStories
+        return [myStories, iHaveStory]
     } catch (error) {
         console.log('Error ', error.message)
+        return [[], []]
     }
 }
