@@ -15,6 +15,13 @@
     background-color: var(--accent-color);
 }
 
+.message.sender.thread {
+    align-self: flex-end;
+    text-align: right;
+    border-bottom-right-radius: 0;
+    background-color: #48357a;
+}
+
 .message.reciever {
     align-self: flex-start;
     text-align: left;

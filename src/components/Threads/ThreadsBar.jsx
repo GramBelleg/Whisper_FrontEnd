@@ -8,7 +8,7 @@ import { faTimes } from "@fortawesome/free-solid-svg-icons";
 import ChatActions from "../ChatActions/ChatActions";
 
 const ThreadsBar = ({ onClose }) => {
-    const { currentChat, threadMessage } = useChat()
+    const { threadMessage } = useChat()
     const [isVisible, setIsVisible] = useState(false);
     const { user } = useAuth()
     const handleClose = () => {
@@ -17,45 +17,18 @@ const ThreadsBar = ({ onClose }) => {
             onClose()
         }, 300); 
     };
-    const threadMessages = [
-        {
-            id: 1,
-            content: "Hello",
-            sender: "John Doe",
-            time: "2022-01-01 12:00:00",
-            profilePic: noUser,
-            type: "TEXT",
-            state: 0,
-            senderId: 1
-        },
-        {
-            id: 2,
-            content: "Ahmed",
-            sender: "Ashraf",
-            time: "2022-01-01 12:00:00",
-            profilePic: noUser,
-            type: "TEXT",
-            state: 0,
-            senderId: 3
-        },
-        {
-            id: 3,
-            content: "hello there",
-            sender: "ziad",
-            time: "2022-01-01 12:00:00",
-            profilePic: noUser,
-            type: "TEXT",
-            state: 0,
-            senderId: 4
-        },
-    ]
+
     useEffect(() => {
         setIsVisible(true); 
     }, []);
+
+    useEffect(() => {
+        console.log(threadMessage)
+    }, [threadMessage])
     
     return ( 
         <div
-            className={`fixed top-[2.5%] right-[4.5%] w-[30%] h-[95%] bg-dark text-light shadow-lg z-1000 p-4 rounded-md transition-transform transform ${
+            className={`fixed top-[2.5%] right-[4.5%] w-[30%] h-[95%] bg-dark text-light shadow-lg z-999 p-4 rounded-md transition-transform transform ${
                 isVisible ? "translate-x-0" : "translate-x-[200%]"
             }`}
             style={{ 
@@ -68,7 +41,7 @@ const ThreadsBar = ({ onClose }) => {
                 <div className="flex justify-between items-center space-x-4 ">
                
                     <button className="text-white" onClick={handleClose} data-testid="close-button">
-                        <FontAwesomeIcon icon={faTimes} styke={{ heigth: "25px"}}/>
+                        <FontAwesomeIcon icon={faTimes} style={{ heigth: "25px"}}/>
                     </button>
                 </div>
             </div>
@@ -76,14 +49,15 @@ const ThreadsBar = ({ onClose }) => {
             <div className="flex flex-col h-[95%] rounded-md"
                 style={{
                     backgroundColor:
-                        threadMessages?.length > 0 ? "var(--threads-color)" : "transparent",
+                        threadMessage.replies?.length > 0 ? "var(--accent-color-threads)" : "transparent",
                         backgroundImage: "url('./assets/images/chat-background-pattern.svg')"
                 }}
             >
                 <div
                     className="flex flex-col-reverse h-[100%] gap-4 overflow-y-auto"
+                    style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}
                 >
-                    {threadMessage.replies?.map((message, index) => (
+                    {threadMessage.replies && [...threadMessage.replies].reverse().map((message, index) => (
                         <div
                             key={message.id}
                             className={`flex ${
@@ -95,7 +69,7 @@ const ThreadsBar = ({ onClose }) => {
                             <ChatMessage
                                 id={`thread-message-${message.id}`}
                                 message={message}
-                                hideActions={true}
+                                hideActions={false}
                                 style={{
                                     marginLeft: message.senderId !== user.id ? "1rem" : "0",
                                     marginRight: message.senderId === user.id ? "1rem" : "0",
@@ -105,7 +79,6 @@ const ThreadsBar = ({ onClose }) => {
                     ))}
                 </div>
 
-                {/* Chat actions at the bottom */}
                 <div className="w-full flex items-center justify-center mt-4">
                     <ChatActions />
                 </div>

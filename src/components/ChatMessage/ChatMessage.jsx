@@ -24,7 +24,7 @@ const ChatMessage = ({ id, message, hideActions }) => {
     const [objectLink, setObjectLink] = useState(null)
     const { openModal, openConfirmationModal } = useModal()
     const menuOverlayGutter = 40
-    const { currentChat, pinMessage, unPinMessage, deleteMessage, updateParentMessage, setIsThreadOpenned, threadMessage, setThreadMessage } = useChat()
+    const { currentChat, pinMessage, unPinMessage, deleteMessage, updateParentMessage, setIsThreadOpenned, isThreadOpenned, threadMessage, setThreadMessage } = useChat()
     const { user } = useAuth()
     const colors = ['purple', 'aqua', 'lightgreen'];
     const [randomColor, setRandomColor] = useState('');
@@ -49,8 +49,9 @@ const ChatMessage = ({ id, message, hideActions }) => {
     }
 
     const handleThread = () => {
-        setThreadMessage({...message})
+        setIsMenuOpen(false)
         setIsThreadOpenned(true)
+        setThreadMessage({...message})
     }
 
     const handleForward = () => {
@@ -68,10 +69,12 @@ const ChatMessage = ({ id, message, hideActions }) => {
     }
 
     const handlePin = () => {
+        setIsMenuOpen(false)
         pinMessage(message.id)
     }
 
     const handleUnPin = () => {
+        setIsMenuOpen(false)
         unPinMessage(message.id)
     }
 
@@ -81,8 +84,8 @@ const ChatMessage = ({ id, message, hideActions }) => {
 
     useEffect(() => {
         setRandomColor(colors[Math.floor(Math.random() * colors.length)])
-
     }, [])
+
 
     const messageTime = useMemo(() => {
         const date = new Date(message.time)
@@ -95,11 +98,11 @@ const ChatMessage = ({ id, message, hideActions }) => {
     }, [message.time])
 
     const renderMessageContent = useMemo(() => {
-        switch (message.type) {
+        switch (message.type.toUpperCase()) {
             case messageTypes.TEXT:
                 return (
                     <div className='message-text' style={{ whiteSpace: 'pre-line' }}>
-                        {message.media && <MessageAttachmentRenderer myMessage={message} />}
+                        {message?.media && <MessageAttachmentRenderer myMessage={message} />}
                         {message.content}
                     </div>
                 )
@@ -119,34 +122,35 @@ const ChatMessage = ({ id, message, hideActions }) => {
     return (
         <div
             id={id}
-            className={`message shadow ${message.senderId === user.userId ? 'sender' : 'reciever'}`}
-            onContextMenu={toggleMenu} // Right-click or long-press to open menu
+            className={`message shadow ${message.senderId === user.userId 
+                ? (isThreadOpenned ? 'sender thread' : 'sender') 
+                : 'reciever'}`}
+            onContextMenu={toggleMenu} 
         >
             <MessageRelationshipsViewer message={message} />
 
             <div className='flex flex-col justify-between'>
-            {currentChat.type !== "DM" && message.sender !== user.userName && (
-                <div style={{color: randomColor}}>
-                    {message.sender}
-                </div>
-            )}
+                {currentChat.type !== "DM" && message.sender !== user.userName && (
+                    <div style={{color: randomColor}}>
+                        {message.sender}
+                    </div>
+                )}
                 {renderMessageContent}
-
                 <div className='message-info'>
                     {message?.edited ? <span className='text-sm opacity-60'>edited</span> : null}
                     <span className='time opacity-60'>{messageTime}</span>
                     {message.senderId === user.userId && (
                         <span className='message-status'>
-                            {message.state === 0 && <SentTicks width='12px' />}
-                            {message.state === 1 && <DeliveredTicks width='12px' />}
-                            {message.state === 2 && <ReadTicks width='12px' />}
-                            {message.state === 4 && <PendingSend width='12px' />}
+                            {message?.state === 0 && <SentTicks width='12px' />}
+                            {message?.state === 1 && <DeliveredTicks width='12px' />}
+                            {message?.state === 2 && <ReadTicks width='12px' />}
+                            {message?.state === 4 && <PendingSend width='12px' />}
                         </span>
                     )}
                 </div>
             </div>
 
-            {isMenuOpen && (!threadMessage) && (
+            {isMenuOpen && (
                 <div
                     className='message-actions-overlay'
                     onMouseLeave={() => setIsMenuOpen(false)}
@@ -157,36 +161,36 @@ const ChatMessage = ({ id, message, hideActions }) => {
                     }}
                 >
                     <div className='message-actions-menu shadow-lg'>
-                        <button onClick={handleReply}>
+                        {(!isThreadOpenned) && <button onClick={handleReply}>
                             <FontAwesomeIcon style={{ height: '18px' }} icon={faReply} />
                             <span>Reply</span>
-                        </button>
-                        <button onClick={handleThread}>
+                        </button>}
+                        {(!isThreadOpenned) && <button onClick={handleThread}>
                             <FontAwesomeIcon style={{ height: '18px' }} icon={faCommentDots} />
                             <span>Open thread</span>
-                        </button>
-                        {message.content.length && message.senderId === user.id &&  (
+                        </button>}
+                        { (!isThreadOpenned) && message.content.length && message.senderId === user.id &&  (
                             <button onClick={handleEdit}>
                                 <FontAwesomeIcon style={{ height: '18px' }} icon={faEdit} />
                                 <span>Edit</span>
                             </button>
                         )}
-                        <button onClick={handleForward}>
+                        {(!isThreadOpenned) && <button onClick={handleForward}>
                             <FontAwesomeIcon style={{ height: '18px' }} icon={faShare} />
                             <span>Forward</span>
-                        </button>
-                        {message.senderId === user.userId && (
+                        </button>}
+                        {(!isThreadOpenned) && message.senderId === user.userId && (
                             <button onClick={handleMessageInfo}>
                                 <FontAwesomeIcon height={18} icon={faCircleInfo} />
                                 <span>Info</span>
                             </button>
                         )}
-                        {!message.pinned ? (
+                        {!message.pinned && (!isThreadOpenned) ? (
                             <button onClick={handlePin}>
                                 <FontAwesomeIcon style={{ height: '18px' }} icon={faThumbtack} />
                                 <span>Pin</span>
                             </button>
-                        ) : (
+                        ) : ( (!isThreadOpenned) && 
                             <button onClick={handleUnPin}>
                                 <FontAwesomeIcon style={{ height: '18px' }} icon={faThumbtackSlash} />
                                 <span>UnPin</span>
