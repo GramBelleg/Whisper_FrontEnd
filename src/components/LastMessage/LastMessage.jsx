@@ -8,6 +8,8 @@ import DeletedMessage from '../DeletedMessage/DeletedMessage'
 import DraftedMessage from '../DraftedMessage/DraftedMessage'
 import { useEffect } from 'react'
 import AwaitingJoinMessage from '../AwaitingJoinMessage/AwaitingJoinMessage'
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
+import { faPhone } from '@fortawesome/free-solid-svg-icons'
 
 const LastMessage = ({ myChat }) => {
 
@@ -35,7 +37,11 @@ const LastMessage = ({ myChat }) => {
                     )}
                     {myChat.messageType?.toLowerCase() === 'video'.toLowerCase() && <VideoMessage messageState={myChat.messageState} />}
                     {myChat.messageType?.toLowerCase() === 'sticker'.toLowerCase() && <StickerMessage messageState={myChat.messageState} />}
-                    {myChat.type == 'DM' && myChat.participantKeys && (!myChat.participantKeys[0] || !myChat.participantKeys[1]) && (
+                    {myChat.messageType?.toLowerCase() === 'call'.toLowerCase() && (<span className='flex gap-2 items-baseline'>
+                        <FontAwesomeIcon icon={faPhone} />
+                        {myChat.lastMessage}
+                    </span>)}
+                    {myChat.type == 'DM' && myChat.messageType == null && myChat.participantKeys && (!myChat.participantKeys[0] || !myChat.participantKeys[1]) && (
                             <AwaitingJoinMessage chat={myChat} />
                         )}
                 </>

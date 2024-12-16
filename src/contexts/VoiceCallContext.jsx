@@ -1,6 +1,6 @@
 import CallSocket from '@/services/sockets/CallSocket'
 import { getUserInfo } from '@/services/userservices/getUserInfo'
-import { useJoin, useLocalMicrophoneTrack, usePublish, useRemoteUsers, useRTCClient } from 'agora-rtc-react'
+import AgoraRTC, { useJoin, useLocalMicrophoneTrack, usePublish, useRemoteUsers, useRTCClient } from 'agora-rtc-react'
 import React, { createContext, useEffect, useState } from 'react'
 import useAuth from '@/hooks/useAuth'
 import useChatEncryption from '@/hooks/useChatEncryption'
@@ -133,6 +133,7 @@ export function VoiceCallProvider({ children }) {
     
 
     const startCall = (_chatId, _token, secretKey = "") => {
+      setShowJoinCallModal(false);
       console.log('secretKey',secretKey)
         setChannel(`chat-${_chatId}`)  
         setToken(_token)
@@ -169,7 +170,6 @@ export function VoiceCallProvider({ children }) {
 
 
       const joinCall = async (token, chat) => {
-        console.log('joinCall,chat',chat)
         let symmetricKey = "";
         if(chat.type == "DM") {
           symmetricKey = await getVoiceCallSymmetricKey(chat);
@@ -192,7 +192,6 @@ export function VoiceCallProvider({ children }) {
         if(data.chatId == callChatId && inCall){
           return;
         }
-
 
         const chat = await dbRef.current.getChat(parseInt(data.chatId));
 

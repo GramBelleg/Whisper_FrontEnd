@@ -11,6 +11,11 @@ import { WhisperDBProvider } from './contexts/WhisperDBContext.jsx'
 import { StoriesProvider } from './contexts/StoryContext.jsx'
 import { ChatProvider } from './contexts/ChatContext.jsx'
 import { SidebarProvider } from './contexts/SidebarContext.jsx'
+import AgoraRTC, { AgoraRTCProvider } from 'agora-rtc-react';
+
+AgoraRTC.setLogLevel(3)
+const agoraClient = AgoraRTC.createClient({ mode: 'rtc', codec: 'vp8' })
+    
 
 createRoot(document.getElementById('root')).render(
     <ProfileSettingsProvider>
@@ -21,7 +26,9 @@ createRoot(document.getElementById('root')).render(
                         <StoriesProvider>
                             <SidebarProvider>
                                 <ChatProvider>
-                                    <App />
+                                    <AgoraRTCProvider client={agoraClient}>
+                                        <App />
+                                    </AgoraRTCProvider>
                                 </ChatProvider>
                             </SidebarProvider>
                         </StoriesProvider>
