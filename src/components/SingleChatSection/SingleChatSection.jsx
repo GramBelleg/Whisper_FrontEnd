@@ -11,7 +11,7 @@ import ChannelInfoContainer from '../ChannelInfo/ChannelInfoContainer'
 import ThreadsBar from '../Threads/ThreadsBar'
 
 const SingleChatSection = () => {
-    const { currentChat, pinnedMessages, isThreadOpenned, setIsThreadOpenned } = useChat()
+    const { currentChat, pinnedMessages, isThreadOpenned, setIsThreadOpenned, setThreadMessage } = useChat()
     const [infoOpen, setInfoOpen] = useState(false)
 
     const handlePinnedClick = (event) => {
@@ -47,7 +47,7 @@ const SingleChatSection = () => {
                 <div className='w-full flex items-center justify-center'>
                     {((currentChat.participantKeys && currentChat.participantKeys[0] && currentChat.participantKeys[1]) || currentChat.type === "GROUP" || (currentChat.type === "CHANNEL" && currentChat.isAdmin)) ? (<ChatActions />) : 
                         (
-                            (currentChat.type === "CHANNEL") ? <div className='flex items-center justify-center mb-3 p-4 text-light bg-dark shadow-lg rounded-lg'>Only admins can post to channels</div>
+                            (currentChat.type === "CHANNEL" && !currentChat.isAdmin) ? <div className='flex items-center justify-center mb-3 p-4 text-light bg-dark shadow-lg rounded-lg'>Only admins can post to channels</div>
                             : (
                                 <div className='flex items-center justify-center mb-3 p-4 text-white'>
                                     Waiting for the other participant to join the chat to exchange keys for secure communication
