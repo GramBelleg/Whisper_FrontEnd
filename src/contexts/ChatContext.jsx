@@ -37,6 +37,7 @@ export const ChatProvider = ({ children }) => {
     const [chatAltered, setChatAltered] = useState(false)
     const [isThreadOpenned, setIsThreadOpenned] = useState(false)
     const [threadMessage, setThreadMessage] = useState(null)
+    const threadRef = useRef(threadMessage)
 
 
     const selectChat = (chat) => {
@@ -96,6 +97,10 @@ export const ChatProvider = ({ children }) => {
         currentChatRef.current = currentChat
     }, [currentChat])
 
+    useEffect(() => {
+        threadRef.current = threadMessage
+    }, [threadMessage])
+
     const updateMessage = async (messageId, content) => {
         let finalContent = content;
         if (currentChat.type === 'DM') {
@@ -120,6 +125,24 @@ export const ChatProvider = ({ children }) => {
             content: keyId.toString(),
             type: "EVENT",
         },chat);
+    }
+
+    const sendThread = async (content) => {
+        setSending(true)
+        const newReply = {
+            content: content,
+            sentAt:new Date().toISOString(),
+            chatId: currentChat.id,
+            parentCommentId: null,
+            messageId: threadMessage.id
+        }
+
+        try {
+            messagesSocket.sendReply({...newReply})
+        } catch (error) {
+            console.log(error)
+        }
+        setSending(false)
     }
 
     const sendMessage = async (data, chat = null) => {
@@ -467,10 +490,17 @@ export const ChatProvider = ({ children }) => {
             }
             // otherwise I am the first participant in the chat how created the chat and I have the key already
             const newChat = await cleanChat({...data})
-            if (newChat.type === "GROUP") {
-                const members = await getMembers(newChat.id)
-                const admin = members.filter((member) => member.isAdmin)[0]
-                const isAdmin = admin.id === user.id 
+            console.log(newChat)
+            if (newChat.type === "GROUP" || newChat.type === "CHANNEL") {
+                let isAdmin = false
+                let members = []
+                try {
+                    members = await getMembers(newChat.id)
+                    const admin = members.filter((member) => member.isAdmin)[0]
+                    isAdmin = admin.id === user.id 
+                } catch (error) {
+                    console.log(error)
+                }
                 await dbRef.current.insertChat({...newChat, members: members, isAdmin: isAdmin})
             } else {
                 await dbRef.current.insertChat({...newChat, members: [], isAdmin: false})
@@ -525,7 +555,8 @@ export const ChatProvider = ({ children }) => {
             }
             
             try {
-                await dbRef.current.insertMessageWrapper({ ...mapMessage(myMessageData), drafted: false })
+                const mappedMessage = await mapMessage(myMessageData)
+                await dbRef.current.insertMessageWrapper({ ...mappedMessage, drafted: false })
                 setMessageReceived(true)
                 setChatAltered(true)
                 SetReloadChats(true)
@@ -563,6 +594,26 @@ export const ChatProvider = ({ children }) => {
             setMessageReceived(false)
         } catch (error) {
             console.error(error)
+        }
+    }
+
+    const handleReceiveReply = async (replyData) => {
+        try {
+            const currentThread = threadRef.current
+            console.log(currentThread)
+            await dbRef.current.updateReplyCount(replyData.messageId)
+            await dbRef.current.insertReply({
+                ...replyData,
+                sender: replyData.userName,
+                type: 'text'
+            })
+            if (currentThread && currentThread.id === replyData.messageId) {
+                const newThread = await dbRef.current.getThread(currentThread.id)
+                console.log(newThread)
+                setThreadMessage({...newThread})
+            }
+        }  catch (error) {
+            console.log(error)
         }
     }
 
@@ -717,6 +768,7 @@ export const ChatProvider = ({ children }) => {
             messagesSocket.onUnPinMessage(handleUnpinMessage)
             messagesSocket.onDeliverMessage(handleDeliverMessage)
             messagesSocket.onReadMessage(handleReadMessage)
+            messagesSocket.onRecieveReply(handleReceiveReply)
         }
 
         return () => {
@@ -773,6 +825,7 @@ export const ChatProvider = ({ children }) => {
                 chatAltered,
                 threadMessage,
                 setThreadMessage,
+                sendThread,
                 setChatAltered,
                 pinMessage,
                 unPinMessage,

@@ -17,6 +17,10 @@ class MessagingSocket extends Socket {
         this.socket.emit('message', data)
     }
 
+    sendReply(data) {
+        this.socket.emit('comment', data)
+    }
+
     updateData(data) {
         this.socket.emit('editMessage', data)
     }
@@ -45,7 +49,9 @@ class MessagingSocket extends Socket {
         this.socket.off('readMessage', callback)
     }
 
-
+    onRecieveReply(callback) {
+        this.socket.on('comment', callback)
+    }
 
     pinMessage(data) {
         this.socket.emit('pinMessage', data)
