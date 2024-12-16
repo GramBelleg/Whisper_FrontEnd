@@ -30,7 +30,6 @@ const mapMessageState = (read, delivered) => {
 }
 
 export const mapMessage = async (message) => {
-    
     const tempMessage = {
         id: message.id,
         chatId: message.chatId,
@@ -60,7 +59,6 @@ export const mapMessage = async (message) => {
         replyCount: message.replyCount ? message.replyCount : 0,
         replies : message.replyCount && message.replyCount > 0 ? await getMessageRepliesCleaned(message.id) : []
     }
-    console.log(tempMessage)
     return tempMessage
 }
 
