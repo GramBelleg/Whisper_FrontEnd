@@ -179,7 +179,9 @@ export function VoiceCallProvider({ children }) {
       }
 
       const rejectCall = async (chat) => {
-        await leaveVoiceCall(chat.id, "CANCELED");
+        if(chat.type == "DM") {
+          await leaveVoiceCall(chat.id, "CANCELED");
+        }
       }
 
       const handleReceiveRejection = async (data) => {

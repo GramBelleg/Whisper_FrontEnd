@@ -3,7 +3,6 @@
     justify-content: space-between;
     align-items: center;
     padding: 10px 16px;
-    height: 56px;
     background-color: #f5f5f5;
 }
 
@@ -11,4 +10,12 @@
     display: flex;
     align-items: center;
     gap: 1.5rem;
+}
+
+.participants {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    max-width: 60%;
+    flex-wrap: wrap;
 }
