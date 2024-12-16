@@ -7,4 +7,5 @@ export const messageTypes = {
     SICKER: 'SICKER',
     GIF: 'GIF',
     EVENT: 'EVENT',
+    CALL: 'CALL',
 }

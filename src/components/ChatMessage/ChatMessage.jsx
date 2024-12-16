@@ -17,6 +17,7 @@ import parentRelationshipTypes from '@/services/chatservice/parentRelationshipTy
 import MessageAttachmentRenderer from '../MessageAttachment/MessageAttachementRenderer'
 import MessageInfo from '../MessageInfo/MessageInfo'
 import useAuth from '@/hooks/useAuth'
+import CallLog from '../CallLog/CallLog'
 
 const ChatMessage = ({ id, message, hideActions }) => {
     const [isMenuOpen, setIsMenuOpen] = useState(false) // Track menu state
@@ -96,6 +97,8 @@ const ChatMessage = ({ id, message, hideActions }) => {
                 )
             case messageTypes.AUDIO:
                 return <AudioVoiceMessage blobName={message.media} />
+            case messageTypes.CALL:
+                return <CallLog message={message} />
             case messageTypes.IMAGE:
                 return <img src={message.content} alt='message' className='message-image' />
             default:
