@@ -15,6 +15,8 @@ import { getGroupSettings, setPrivacy } from '@/services/chatservice/groupSettin
 import { setGroupLimit } from '@/services/chatservice/groupSettings'
 import ProfilePic from '@/components/ProfileSettings/ProfilePicture/ProfilePic'
 import { getChannelSettings } from '@/services/chatservice/channelSettings'
+import axios from 'axios'
+import axiosInstance from '@/services/axiosInstance'
 
 
 export const ChatContext = createContext()
@@ -444,15 +446,16 @@ export const ChatProvider = ({ children }) => {
     const handleChatCreate = async (chatData) => {
         try {
             let data = { ...chatData };
+            console.log("chatData",chatData)
             if (chatData && chatData.type === "DM") {
                 let keyId = await generateKeyIfNotExists(chatData);
                 if (keyId) {
                     // then I am the second participant in the chat
                     if(!chatData.participantKeys[1]) chatData.participantKeys[1] = keyId;
                     if(!chatData.participantKeys[0]) chatData.participantKeys[0] = keyId;
-                    await axios.put(`${apiUrl}/api/encrypt/${chatData.id}?keyId=${keyId}`, {
+                    await axiosInstance.put(`${apiUrl}/api/encrypt/${chatData.id}?keyId=${keyId}`, {
                         keyId: keyId,
-                        userId: authUser.id
+                        userId: user.id
                     });
                     sendJoinChat(chatData, keyId);
                 }
@@ -730,7 +733,10 @@ export const ChatProvider = ({ children }) => {
             chatSocket.onReceiveAddUser(handleReceiveAddUser)
             chatSocket.onReceiveDeleteChat(handleReceiveDeleteChat)
         }
-    }, [chatSocket])
+        return () => {
+            chatSocket.offReceiveCreateChat(handleChatCreate)
+        }
+    }, [chatSocket,handleChatCreate])
 
     useEffect(() => {}, [messages, pinnedMessages])
 
