@@ -12,7 +12,6 @@ const ChannelInfo = ({ currentChat, onClose }) => {
     const { push } = useStackedNavigation()
     const {handleGetChannelSettings} = useChat();
     const [channelInvite,setChannelInvite] = useState("http://ayhaga:5173/")
-    const [privacy,setPrivacy] = useState("Public")
 
     const handleClose = () => {
         setIsVisible(false); 
@@ -22,12 +21,11 @@ const ChannelInfo = ({ currentChat, onClose }) => {
     };
 
     useEffect(() => {
-        setIsVisible(true); 
+        setIsVisible(true)
         const getChannelInvite = async () => {
             try {
                 const response = await handleGetChannelSettings()
-                console.log(response)
-                //TODO set invite link and privacy
+                setChannelInvite(response.inviteLink)
             } catch (error) {
                 console.error('Error fetching members:', error)
             }
@@ -38,7 +36,7 @@ const ChannelInfo = ({ currentChat, onClose }) => {
 
     
     const handleEdit = () => {
-        push( <ChannelSettings initialPrivacy={privacy}/> )
+        push( <ChannelSettings/> )
     }
 
     return (
@@ -68,10 +66,13 @@ const ChannelInfo = ({ currentChat, onClose }) => {
                 <p className="text-center text-sm text-gray-400">{currentChat.type}</p>
             </div>
             <h3 className='text-left text-sm text-gray-400'>Invitation Link</h3>
-            <div className='flex flex-row justify-between'>
-                    <h3 className='pr-6'>{channelInvite}</h3>
-                    <CopyButton content={channelInvite} />
-                </div>
+            <div className="flex flex-row justify-between">
+                <h3 className="pr-6 truncate max-w-[calc(100%-3rem)]" title={channelInvite}>
+                    {channelInvite}
+                </h3>
+                <CopyButton content={channelInvite} />
+            </div>
+
             <div className="border-t border-gray-600 pt-4">
                 {/* TODO: Channel members */}
             </div>
