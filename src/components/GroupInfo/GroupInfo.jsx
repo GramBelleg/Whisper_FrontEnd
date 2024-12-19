@@ -59,7 +59,6 @@ const GroupInfo = ({ currentChat, onClose }) => {
             </div>
             <div className="border-t border-gray-600 pt-4">
                     <GroupMembersContainer chatType={"group"}/>
-                
             </div>
         </div>
     );

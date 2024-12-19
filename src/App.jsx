@@ -141,8 +141,8 @@ function App() {
 
         const loadStories = async () => {
             try {
-                let iHaveStoryFlag = false
-                let data = await getUsersWithStoriesCleaned(iHaveStoryFlag)
+                let [data,iHaveStoryFlag]  = await getUsersWithStoriesCleaned()
+                console.log(iHaveStoryFlag)
                 if (data && data.length > 0) {
                     data = data.map((item) => {
                         const { id, ...rest } = item
@@ -182,7 +182,7 @@ function App() {
         } catch (error) {
             console.error(error)
         }
-    }, [dbRef, user])
+    }, [dbRef, user?.id])
 
     return (
         <div className='App'>

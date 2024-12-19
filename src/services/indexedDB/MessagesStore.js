@@ -15,7 +15,6 @@ export class MessagesStore extends BaseStore {
                         messageRequest.onsuccess = () => resolve(messageRequest.result)
                         messageRequest.onerror = () => reject(messageRequest.error)
                     })
-                    console.log(response)
                 })
                 console.log('Messages inserted successfully!')
             } catch (error) {
@@ -39,6 +38,7 @@ export class MessagesStore extends BaseStore {
     async insertMessage(message) {
         return this._executeTransaction('readwrite', async (store) => {
             try {
+                console.log(message)
                 const check = store.get(message.id)
                 const res = await new Promise((resolve, reject) => {
                     check.onsuccess = () => resolve()
@@ -57,6 +57,99 @@ export class MessagesStore extends BaseStore {
             } catch (error) {
                 console.error('Failed to insert messag:', error)
                 throw new Error('Failed to insert message or update chat: ' + error.message)
+            }
+        })
+    }
+
+    async updateReplyCount(messageId) {
+        return this._executeTransaction('readwrite', async (store) => {
+            try {
+                const request = store.get(messageId)
+                const existingMessage = await new Promise((resolve, reject) => {
+                    request.onsuccess = () => resolve(request.result)
+                    request.onerror = () => reject(request.error)
+                })
+                if (existingMessage) {
+                    existingMessage.replyCount++
+                    const newRequest = store.put(existingMessage)
+                    await new Promise((resolve, reject) => {
+                        newRequest.onsuccess = () => resolve(newRequest.result)
+                        newRequest.onerror = () => reject(newRequest.error)
+                    })
+                }
+
+            } catch (error) {
+                console.error('Failed to insert messag:', error)
+                throw new Error('Failed to insert message or update chat: ' + error.message)
+            }
+        })
+    }
+
+    async insertReply(replyData) {
+        return this._executeTransaction('readwrite', async (store) => {
+            try {
+                const request = store.get(replyData.messageId)
+                const existingMessage = await new Promise((resolve, reject) => {
+                    request.onsuccess = () => resolve(request.result)
+                    request.onerror = () => reject(request.error)
+                })
+                if (existingMessage) {
+                    existingMessage.replies.push({...replyData})
+                    const newRequest = store.put(existingMessage)
+                    await new Promise((resolve, reject) => {
+                        newRequest.onsuccess = () => resolve(newRequest.result)
+                        newRequest.onerror = () => reject(newRequest.error)
+                    })
+                }
+                
+                console.log('Reply inserted and message updated successfully.')
+            } catch (error) {
+                console.error('Failed to insert message:', error)
+                throw new Error('Failed to insert message or update chat: ' + error.message)
+            }
+        })
+    }
+
+    async deleteComment(parentMessageId, replyId) {
+        return this._executeTransaction('readwrite', async (store) => {
+            try {
+                const request = store.get(parentMessageId)
+                const existingMessage = await new Promise((resolve, reject) => {
+                    request.onsuccess = () => resolve(request.result)
+                    request.onerror = () => reject(request.error)
+                })
+                if (existingMessage) {
+                    existingMessage.replies = existingMessage.replies.filter(reply => reply.id !== replyId)
+                    const updateRequest = store.put(existingMessage)
+                    await new Promise((resolve, reject) => {
+                        updateRequest.onsuccess = () => resolve(updateRequest.result);
+                        updateRequest.onerror = () => reject(updateRequest.error);
+                    })
+                }
+                
+                console.log('Reply deleted and message updated successfully.')
+            } catch (error) {
+                console.error('Failed to delete reply:', error)
+                throw new Error('Failed to delete reply or update chat: ' + error.message)
+            }
+        })
+    }
+
+    async getThread(messageId) {
+        return this._executeTransaction('readwrite', async (store) => {
+            try {
+                const request = store.get(messageId)
+                const existingMessage = await new Promise((resolve, reject) => {
+                    request.onsuccess = () => resolve(request.result)
+                    request.onerror = () => reject(request.error)
+                })
+                if (existingMessage) {
+                    return existingMessage
+                }
+                return null
+            } catch (error) {
+                console.error('Failed to insert messag:', error)
+                return null
             }
         })
     }

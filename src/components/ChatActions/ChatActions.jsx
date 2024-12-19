@@ -32,7 +32,7 @@ import { getFileExtension } from '@/utils/getFileExtension'
 const ChatActions = () => {
     const [textMessage, setTextMessage] = useState('')
     const { isRecording, duration, startRecording, stopRecording, discardRecording } = useVoiceRecorder()
-    const { sendMessage, sending, parentMessage, setChatAltered } = useChat()
+    const { sendMessage, sending, parentMessage, setChatAltered, threadMessage, sendThread, isThreadOpenned } = useChat()
 
     const [attachedFile, setAttachedFile] = useState(null)
     const [showAttachMenu, setShowAttachMenu] = useState(false)
@@ -120,6 +120,13 @@ const ChatActions = () => {
     }
 
     const triggerSendMessage = async () => {
+        if (threadMessage) {
+            if (textMessage.trim()) {
+                sendThread(textMessage)
+                setTextMessage('')
+            }
+            return
+        }
         if (isRecording) {
             stopRecording(async (audioBlob) => {
                 const blobName = await uploadMedia({
@@ -290,7 +297,7 @@ const ChatActions = () => {
                             ref={audioInputRef}
                             data-testid='input-audio'
                         />
-                        <UnifiedPicker onGifSelect={handleGifAttach} onStickerSelect={handleStickerAttach} />
+                        {!isThreadOpenned && <UnifiedPicker onGifSelect={handleGifAttach} onStickerSelect={handleStickerAttach} />}
                     </div>
 
                     { currentChat && currentChat.type === 'GROUP' &&
@@ -308,7 +315,7 @@ const ChatActions = () => {
                         </div>
                     ) : (
                         <div className='attachements-container relative'>
-                            <FontAwesomeIcon icon={faPaperclip} onClick={toggleAttachMenu} data-testid='attach-icon' />
+                            {!isThreadOpenned && <FontAwesomeIcon icon={faPaperclip} onClick={toggleAttachMenu} data-testid='attach-icon' />}
                             {showAttachMenu && (
                                 <div
                                     className='attach-menu absolute bottom-full left-0 bg-white shadow-md rounded-md p-2'
@@ -338,7 +345,12 @@ const ChatActions = () => {
                 className={`voice-send-container ${showSendIcon ? 'active' : ''}`}
                 onClick={showSendIcon ? triggerSendMessage : startRecording}
             >
-                <FontAwesomeIcon icon={showSendIcon ? faPaperPlane : faMicrophoneAlt} />
+                {
+                    !isThreadOpenned ? 
+                    <FontAwesomeIcon icon={showSendIcon ? faPaperPlane : faMicrophoneAlt} /> :
+                    <FontAwesomeIcon icon={faPaperPlane}/>
+                }
+                
             </div>
         </div>
     )

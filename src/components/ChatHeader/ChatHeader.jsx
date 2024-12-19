@@ -5,13 +5,11 @@ import SearchSingleChat from '../SearchSingleChat/SearchSingleChat'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faBell, faBellSlash, faClock, faEllipsisV, faGear, faInfo, faPhone, faTrash, faUsers } from '@fortawesome/free-solid-svg-icons'
 import { useModal } from '@/contexts/ModalContext'
-import GroupMembersContainer from '../GroupMembers/GroupMembersContainer'
-import GroupSettings from '../GroupSettings/GroupSettings'
 import GroupInfoContainer from '../GroupInfo/GroupInfoContainer'
 import SelfDestructModal from '../Modals/SelfDestructModel/SelfDestructModal'
 
 const ChatHeader = ({ handleInfoOpen, infoOpen }) => {
-    const { currentChat, leaveGroup, handleMute, handleUnMute, deleteChat } = useChat()
+    const { currentChat, leaveGroup, handleMute, handleUnMute, deleteChat, isThreadOpenned } = useChat()
     const [isDropdownOpen, setIsDropdownOpen] = useState(false)
     const [isChatInfoOpen, setIsChatInfoOpen] = useState(false)
     const [isMuteDropdownOpen, setMuteIsDropdownOpen] = useState(false)
@@ -89,7 +87,7 @@ const ChatHeader = ({ handleInfoOpen, infoOpen }) => {
             <div className='header-icons'>
                 <FontAwesomeIcon style={{ height: '24px' }} className='icon' icon={faPhone} />
                 <div className='dropdown-container'>
-                    {!infoOpen  && <FontAwesomeIcon
+                    {!infoOpen && !isThreadOpenned && <FontAwesomeIcon
                         style={{ height: "30px" , marginTop: "5px"}}
                         className="icon"
                         data-testid="test-ellipses"
@@ -154,6 +152,7 @@ const ChatHeader = ({ handleInfoOpen, infoOpen }) => {
             </div>
             {isChatInfoOpen && currentChat.type === "GROUP" && 
             <GroupInfoContainer currentChat={currentChat}  onClose={()=>setIsChatInfoOpen(false)}/>}
+            {}
         </div>
     )
 }
