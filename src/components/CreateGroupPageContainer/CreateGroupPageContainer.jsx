@@ -91,7 +91,7 @@ const CreateGroupPageContainer = () => {
         <div className="create-new-group">
             <div className="flex gap-4 items-center header">
                 <FontAwesomeIcon data-testid="back-icon" className="back-icon" icon={faArrowLeft} onClick={handleGoBackward} />
-                {pageOrder === 0 ? <h1>Choose Members</h1> : <h1>New Group</h1>}
+                {pageOrder === 0 ? <h1>Choose Members</h1> : (type === "GROUP" ? <h1>New Group</h1> : <h1>New Channel</h1>)}
             </div>
             <div className="content">
                 {pageOrder === 0 ? <ChooseGroupMembers selectedUsers={selectedUsers} setSelectedUsers={setSelectedUsers}/> 
