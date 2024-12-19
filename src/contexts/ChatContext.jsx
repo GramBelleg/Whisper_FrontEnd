@@ -625,7 +625,6 @@ export const ChatProvider = ({ children }) => {
         }
     }
 
-    // TODO
     const handleReceiveDeleteReply = async (deletedData) => { 
         try {
             const currentThread = threadRef.current
