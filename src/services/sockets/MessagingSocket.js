@@ -33,6 +33,14 @@ class MessagingSocket extends Socket {
         this.socket.off('deliverMessage', callback)
     }
 
+    onExpireMessage(callback) {
+        this.socket.on('expireMessage', callback)
+    }
+
+    offExpireMessage(callback) {
+        this.socket.off('expireMessage', callback)
+    }
+
     readAllMessages(data) {
         console.log(data)
         this.socket.emit('readAllMessages', data)
