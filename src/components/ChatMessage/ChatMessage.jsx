@@ -32,7 +32,12 @@ const ChatMessage = ({ id, message, hideActions }) => {
     const toggleMenu = (e) => {
         if (hideActions) return
         e.preventDefault() 
-        setMenuPosition({ x: e.clientX, y: e.clientY }) 
+        if (threadMessage) {
+            setMenuPosition({x: "10px", y: "10px"})
+        }
+        else {
+            setMenuPosition({ x: e.clientX, y: e.clientY }) 
+        }
         setIsMenuOpen(!isMenuOpen) 
     }
 
@@ -120,89 +125,99 @@ const ChatMessage = ({ id, message, hideActions }) => {
     }
 
     return (
-        <div
-            id={id}
-            className={`message shadow ${message.senderId === user.userId 
-                ? (isThreadOpenned ? 'sender thread' : 'sender') 
-                : 'reciever'}`}
-            onContextMenu={toggleMenu} 
-        >
-            <MessageRelationshipsViewer message={message} />
+        <div className={`message-container ${isThreadOpenned ? 'thread': ''}`}>
+            <div
+                id={id}
+                className={`message shadow ${message.senderId === user.userId 
+                    ? (isThreadOpenned ? 'sender thread' : 'sender') 
+                    : 'reciever'}`}
+                onContextMenu={toggleMenu} 
+            >
+                <MessageRelationshipsViewer message={message} />
 
-            <div className='flex flex-col justify-between'>
-                {currentChat.type !== "DM" && message.sender !== user.userName && (
-                    <div style={{color: randomColor}}>
-                        {message.sender}
+                <div className='flex flex-col justify-between'>
+                    {currentChat.type !== "DM" && message.sender !== user.userName && (
+                        <div style={{color: randomColor}}>
+                            {message.sender}
+                        </div>
+                    )}
+                    
+                    {renderMessageContent}
+                    
+                    <div className='message-info'>
+                        {message?.edited ? <span className='text-sm opacity-60'>edited</span> : null}
+                        <span className='time opacity-60'>{messageTime}</span>
+                        {message.senderId === user.userId && (
+                            <span className='message-status'>
+                                {message?.state === 0 && <SentTicks width='12px' />}
+                                {message?.state === 1 && <DeliveredTicks width='12px' />}
+                                {message?.state === 2 && <ReadTicks width='12px' />}
+                                {message?.state === 4 && <PendingSend width='12px' />}
+                            </span>
+                        )}
+                    </div>
+                    
+                </div>
+
+                {isMenuOpen && (
+                    <div
+                        className='message-actions-overlay'
+                        onMouseLeave={() => setIsMenuOpen(false)}
+                        style={{
+                            top: menuPosition.y - menuOverlayGutter,
+                            left: menuPosition.x - menuOverlayGutter,
+                            padding: `${menuOverlayGutter}px`
+                        }}
+                    >
+                        <div className='message-actions-menu shadow-lg'>
+                            {(!isThreadOpenned) && <button onClick={handleReply}>
+                                <FontAwesomeIcon style={{ height: '18px' }} icon={faReply} />
+                                <span>Reply</span>
+                            </button>}
+                            {(!isThreadOpenned) && <button onClick={handleThread}>
+                                <FontAwesomeIcon style={{ height: '18px' }} icon={faCommentDots} />
+                                <span>Open thread</span>
+                            </button>}
+                            { (!isThreadOpenned) && message.content.length && message.senderId === user.id &&  (
+                                <button onClick={handleEdit}>
+                                    <FontAwesomeIcon style={{ height: '18px' }} icon={faEdit} />
+                                    <span>Edit</span>
+                                </button>
+                            )}
+                            {(!isThreadOpenned) && <button onClick={handleForward}>
+                                <FontAwesomeIcon style={{ height: '18px' }} icon={faShare} />
+                                <span>Forward</span>
+                            </button>}
+                            {(!isThreadOpenned) && message.senderId === user.userId && (
+                                <button onClick={handleMessageInfo}>
+                                    <FontAwesomeIcon height={18} icon={faCircleInfo} />
+                                    <span>Info</span>
+                                </button>
+                            )}
+                            {!message.pinned && (!isThreadOpenned) ? (
+                                <button onClick={handlePin}>
+                                    <FontAwesomeIcon style={{ height: '18px' }} icon={faThumbtack} />
+                                    <span>Pin</span>
+                                </button>
+                            ) : ( (!isThreadOpenned) && 
+                                <button onClick={handleUnPin}>
+                                    <FontAwesomeIcon style={{ height: '18px' }} icon={faThumbtackSlash} />
+                                    <span>UnPin</span>
+                                </button>
+                            )}
+                            {message.senderId === user.id &&  (<button className='danger' onClick={handleDelete}>
+                                <FontAwesomeIcon style={{ height: '18px' }} icon={faTrash} />
+                                <span>Delete</span>
+                            </button>)}
+                        </div>
                     </div>
                 )}
-                {renderMessageContent}
-                <div className='message-info'>
-                    {message?.edited ? <span className='text-sm opacity-60'>edited</span> : null}
-                    <span className='time opacity-60'>{messageTime}</span>
-                    {message.senderId === user.userId && (
-                        <span className='message-status'>
-                            {message?.state === 0 && <SentTicks width='12px' />}
-                            {message?.state === 1 && <DeliveredTicks width='12px' />}
-                            {message?.state === 2 && <ReadTicks width='12px' />}
-                            {message?.state === 4 && <PendingSend width='12px' />}
-                        </span>
-                    )}
-                </div>
             </div>
-
-            {isMenuOpen && (
-                <div
-                    className='message-actions-overlay'
-                    onMouseLeave={() => setIsMenuOpen(false)}
-                    style={{
-                        top: menuPosition.y - menuOverlayGutter,
-                        left: menuPosition.x - menuOverlayGutter,
-                        padding: `${menuOverlayGutter}px`
-                    }}
-                >
-                    <div className='message-actions-menu shadow-lg'>
-                        {(!isThreadOpenned) && <button onClick={handleReply}>
-                            <FontAwesomeIcon style={{ height: '18px' }} icon={faReply} />
-                            <span>Reply</span>
-                        </button>}
-                        {(!isThreadOpenned) && <button onClick={handleThread}>
-                            <FontAwesomeIcon style={{ height: '18px' }} icon={faCommentDots} />
-                            <span>Open thread</span>
-                        </button>}
-                        { (!isThreadOpenned) && message.content.length && message.senderId === user.id &&  (
-                            <button onClick={handleEdit}>
-                                <FontAwesomeIcon style={{ height: '18px' }} icon={faEdit} />
-                                <span>Edit</span>
-                            </button>
-                        )}
-                        {(!isThreadOpenned) && <button onClick={handleForward}>
-                            <FontAwesomeIcon style={{ height: '18px' }} icon={faShare} />
-                            <span>Forward</span>
-                        </button>}
-                        {(!isThreadOpenned) && message.senderId === user.userId && (
-                            <button onClick={handleMessageInfo}>
-                                <FontAwesomeIcon height={18} icon={faCircleInfo} />
-                                <span>Info</span>
-                            </button>
-                        )}
-                        {!message.pinned && (!isThreadOpenned) ? (
-                            <button onClick={handlePin}>
-                                <FontAwesomeIcon style={{ height: '18px' }} icon={faThumbtack} />
-                                <span>Pin</span>
-                            </button>
-                        ) : ( (!isThreadOpenned) && 
-                            <button onClick={handleUnPin}>
-                                <FontAwesomeIcon style={{ height: '18px' }} icon={faThumbtackSlash} />
-                                <span>UnPin</span>
-                            </button>
-                        )}
-                        {message.senderId === user.id &&  (<button className='danger' onClick={handleDelete}>
-                            <FontAwesomeIcon style={{ height: '18px' }} icon={faTrash} />
-                            <span>Delete</span>
-                        </button>)}
-                    </div>
-                </div>
-            )}
+            {message.replies && message.replies.length > 0 &&<div className={`num-replies ${message.senderId === user.userId 
+                    ? (isThreadOpenned ? 'sender thread' : 'sender') 
+                    : 'reciever'}`}>
+                {message.replies?.length} replies
+            </div>}
         </div>
     )
 }
