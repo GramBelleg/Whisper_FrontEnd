@@ -110,6 +110,31 @@ export class MessagesStore extends BaseStore {
         })
     }
 
+    async deleteComment(parentMessageId, replyId) {
+        return this._executeTransaction('readwrite', async (store) => {
+            try {
+                const request = store.get(parentMessageId)
+                const existingMessage = await new Promise((resolve, reject) => {
+                    request.onsuccess = () => resolve(request.result)
+                    request.onerror = () => reject(request.error)
+                })
+                if (existingMessage) {
+                    existingMessage.replies = existingMessage.replies.filter(reply => reply.id !== replyId)
+                    const updateRequest = store.put(existingMessage)
+                    await new Promise((resolve, reject) => {
+                        updateRequest.onsuccess = () => resolve(updateRequest.result);
+                        updateRequest.onerror = () => reject(updateRequest.error);
+                    })
+                }
+                
+                console.log('Reply deleted and message updated successfully.')
+            } catch (error) {
+                console.error('Failed to delete reply:', error)
+                throw new Error('Failed to delete reply or update chat: ' + error.message)
+            }
+        })
+    }
+
     async getThread(messageId) {
         return this._executeTransaction('readwrite', async (store) => {
             try {

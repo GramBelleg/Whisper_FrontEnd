@@ -35,6 +35,7 @@ export const ChatProvider = ({ children }) => {
     const { generateKeyIfNotExists } = useChatEncryption()
     const { setActivePage } = useSidebar()
     const [chatAltered, setChatAltered] = useState(false)
+    const [threadAltered, setThreadAltered] = useState(false)
     const [isThreadOpenned, setIsThreadOpenned] = useState(false)
     const [threadMessage, setThreadMessage] = useState(null)
     const threadRef = useRef(threadMessage)
@@ -117,6 +118,14 @@ export const ChatProvider = ({ children }) => {
         messagesSocket.deleteMessage({
             chatId: currentChat.id,
             messages: [messageId]
+        })
+    }
+
+    const deleteComment = async (messageId) => {
+        messagesSocket.deleteComment({
+            ids: [messageId],
+            chatId: currentChat.id,
+            messageId: threadRef.current.id
         })
     }
     
@@ -600,7 +609,6 @@ export const ChatProvider = ({ children }) => {
     const handleReceiveReply = async (replyData) => {
         try {
             const currentThread = threadRef.current
-            console.log(currentThread)
             await dbRef.current.updateReplyCount(replyData.messageId)
             await dbRef.current.insertReply({
                 ...replyData,
@@ -609,11 +617,27 @@ export const ChatProvider = ({ children }) => {
             })
             if (currentThread && currentThread.id === replyData.messageId) {
                 const newThread = await dbRef.current.getThread(currentThread.id)
-                console.log(newThread)
+                setThreadAltered(true)
                 setThreadMessage({...newThread})
             }
         }  catch (error) {
             console.log(error)
+        }
+    }
+
+    // TODO
+    const handleReceiveDeleteReply = async (deletedData) => { 
+        try {
+            const currentThread = threadRef.current
+            await dbRef.current.deleteComment(deletedData.messageId, deletedData.ids[0])
+            if (currentThread && currentThread.id === deletedData.messageId) {
+                const newThread = await dbRef.current.getThread(currentThread.id)
+                setThreadAltered(true)
+                setThreadMessage({...newThread})
+            }
+            
+        } catch (error) {
+            console.error(error)
         }
     }
 
@@ -769,6 +793,7 @@ export const ChatProvider = ({ children }) => {
             messagesSocket.onDeliverMessage(handleDeliverMessage)
             messagesSocket.onReadMessage(handleReadMessage)
             messagesSocket.onRecieveReply(handleReceiveReply)
+            messagesSocket.onReceiveDeleteComment(handleReceiveDeleteReply)
         }
 
         return () => {
@@ -798,20 +823,25 @@ export const ChatProvider = ({ children }) => {
 
     useEffect(() => {
         const loadSingleChat = async () => {
-            if (chatAltered && currentChat) {
+            if ((chatAltered || threadAltered) && currentChat) {
                 try {
                     const updatedChat = await dbRef.current.getChat(currentChat.id)
                     setCurrentChat({...updatedChat})
-                    setThreadMessage(null)
-                    setIsThreadOpenned(false)
-                    setChatAltered(false)
+                    if (!threadAltered) {
+                        setThreadMessage(null)
+                        setIsThreadOpenned(false)
+                        setChatAltered(false)
+                    }
+                    else {
+                        setThreadAltered(false)
+                    }
                 } catch (error) {
                     console.error(error)
                 }
             }
         }
         loadSingleChat()
-    }, [chatAltered])
+    }, [chatAltered, threadAltered])
 
 
     return (
@@ -847,6 +877,7 @@ export const ChatProvider = ({ children }) => {
                 updateParentMessage,
                 clearParentMessage,
                 deleteMessage,
+                deleteComment,
                 removeFromChat,
                 sending,
                 handleGetMembers,

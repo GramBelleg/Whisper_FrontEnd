@@ -45,6 +45,7 @@ class MessagingSocket extends Socket {
     onReadMessage(callback) {
         this.socket.on('readMessage', callback)
     }
+
     offReadMessage(callback) {
         this.socket.off('readMessage', callback)
     }
@@ -107,6 +108,18 @@ class MessagingSocket extends Socket {
 
     offReceiveDeleteMessage(callback) {
         this.socket.off('deleteMessage', callback)
+    }
+
+    deleteComment(data) {
+        this.socket.emit('deleteComment', data)
+    }
+
+    onReceiveDeleteComment(callback) {
+        this.socket.on('deleteComment', callback)
+    }
+
+    offReceiveDeleteComment(callback) {
+        this.socket.off('deleteComment', callback)
     }
 
     disconnect() {

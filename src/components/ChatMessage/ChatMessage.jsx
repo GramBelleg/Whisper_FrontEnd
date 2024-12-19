@@ -24,7 +24,10 @@ const ChatMessage = ({ id, message, hideActions }) => {
     const [objectLink, setObjectLink] = useState(null)
     const { openModal, openConfirmationModal } = useModal()
     const menuOverlayGutter = 40
-    const { currentChat, pinMessage, unPinMessage, deleteMessage, updateParentMessage, setIsThreadOpenned, isThreadOpenned, threadMessage, setThreadMessage } = useChat()
+    const { currentChat, pinMessage, unPinMessage, 
+            deleteMessage, deleteComment, updateParentMessage, 
+            setIsThreadOpenned, isThreadOpenned, 
+            threadMessage, setThreadMessage } = useChat()
     const { user } = useAuth()
     const colors = ['purple', 'aqua', 'lightgreen'];
     const [randomColor, setRandomColor] = useState('');
@@ -43,7 +46,11 @@ const ChatMessage = ({ id, message, hideActions }) => {
 
     const handleDelete = () => {
         openConfirmationModal('Are you sure you want to delete this message?', () => {
-            deleteMessage(message.id)
+            if (threadMessage) {
+                deleteComment(message.id)
+            } else {
+                deleteMessage(message.id)
+            }
         })
         setIsMenuOpen(false)
     }
