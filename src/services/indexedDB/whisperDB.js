@@ -269,6 +269,7 @@ class WhisperDB {
         } else {
             throw new Error('Messages store is not initiaslized.')
         }
+        console.log("storingParent MEssage", messages.at(-1))
         return await this.insertMessageInChat(messages.at(-1))
     }
 

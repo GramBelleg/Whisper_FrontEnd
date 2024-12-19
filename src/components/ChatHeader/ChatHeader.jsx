@@ -3,9 +3,10 @@ import { useChat } from '@/contexts/ChatContext'
 import './ChatHeader.css'
 import SearchSingleChat from '../SearchSingleChat/SearchSingleChat'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import { faBell, faBellSlash, faEllipsisV, faGear, faInfo, faPhone, faTrash, faUsers } from '@fortawesome/free-solid-svg-icons'
+import { faBell, faBellSlash, faClock, faEllipsisV, faGear, faInfo, faPhone, faTrash, faUsers } from '@fortawesome/free-solid-svg-icons'
 import { useModal } from '@/contexts/ModalContext'
 import GroupInfoContainer from '../GroupInfo/GroupInfoContainer'
+import SelfDestructModal from '../Modals/SelfDestructModel/SelfDestructModal'
 
 const ChatHeader = ({ handleInfoOpen, infoOpen }) => {
     const { currentChat, leaveGroup, handleMute, handleUnMute, deleteChat, isThreadOpenned } = useChat()
@@ -21,6 +22,10 @@ const ChatHeader = ({ handleInfoOpen, infoOpen }) => {
         } catch (error) {
             console.log(error)
         }
+    }
+
+    const handleSetSelfDestruct = () => {
+        openModal(<SelfDestructModal />)
     }
 
     const muteDuration = () => {
@@ -56,7 +61,10 @@ const ChatHeader = ({ handleInfoOpen, infoOpen }) => {
             <div className="header-details" onClick={handleInfoOpen}>
                 <span className="header-title">{currentChat.name}</span>
                 {currentChat.type === "DM" ? (
-                    <span className="header-subtitle">Last seen at {currentChat.lastSeen}</span>
+                    <span className="header-subtitle">
+                        Last seen at {currentChat.lastSeen}
+                        {currentChat.selfDestruct && <span> - Self Destruct in {currentChat.selfDestruct} seconds</span>}
+                    </span>
                 ):(
                     currentChat.type === "GROUP" ?
                     (
@@ -107,6 +115,10 @@ const ChatHeader = ({ handleInfoOpen, infoOpen }) => {
                                     <span style={{color:"red"}} >Delete Chat</span>
                                 </div>
                             }
+                            <div className="dropdown-item" onClick={handleSetSelfDestruct}>
+                                <FontAwesomeIcon style={{ height: "20px"}} className="menu-icon" icon={faClock} />
+                                <span >Set Self Destruct Timer</span>
+                            </div>
                             { 
                                 (currentChat.type === "GROUP" || currentChat.type === "CHANNEL") && currentChat.isAdmin && 
                                 <div className="dropdown-item" onClick={handleDelete}>
