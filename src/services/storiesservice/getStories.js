@@ -81,7 +81,6 @@ export const getUsersWithStoriesCleaned = async () => {
         myStories = []
         const user = JSON.parse(localStorage.getItem("user"))
         let iHaveStory = false
-        console.log(stories)
         stories.users.map((story) => {
             if (story.id === user.id) {
                 iHaveStory = true
