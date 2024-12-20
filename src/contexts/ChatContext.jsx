@@ -14,6 +14,8 @@ import { muteChat, unMuteChat } from '@/services/chatservice/muteUnmuteChat'
 import { getGroupSettings, setPrivacy } from '@/services/chatservice/groupSettings'
 import { setGroupLimit } from '@/services/chatservice/groupSettings'
 import { getChannelSettings } from '@/services/chatservice/channelSettings'
+import axios from 'axios'
+import axiosInstance from '@/services/axiosInstance'
 
 
 export const ChatContext = createContext()
@@ -159,8 +161,7 @@ export const ChatProvider = ({ children }) => {
         const newMessage = {
             chatId: chat ? chat.id : currentChat.id,
             forwarded: false,
-            selfDestruct: true,
-            expiresAfter: 5,
+            expiresAfter: currentChat.selfDestruct ? currentChat.selfDestruct : null,
             sentAt: new Date().toISOString(),
             media: '',
             extension: '',
@@ -490,9 +491,9 @@ export const ChatProvider = ({ children }) => {
                     // then I am the second participant in the chat
                     if(!chatData.participantKeys[1]) chatData.participantKeys[1] = keyId;
                     if(!chatData.participantKeys[0]) chatData.participantKeys[0] = keyId;
-                    await axios.put(`${apiUrl}/api/encrypt/${chatData.id}?keyId=${keyId}`, {
+                    await axiosInstance.put(`${apiUrl}/api/encrypt/${chatData.id}?keyId=${keyId}`, {
                         keyId: keyId,
-                        userId: authUser.id
+                        userId: user.id
                     });
                     sendJoinChat(chatData, keyId);
                 }
@@ -516,6 +517,25 @@ export const ChatProvider = ({ children }) => {
             }
             SetReloadChats(true)
             setActivePage("chat")
+        } catch (error) {
+            console.error(error);
+        }
+    };
+
+    const handleChatUpdate = async (chatData) => {
+        try {
+            
+            const oldChat  = await dbRef.current.getChat(chatData.id)
+            const newChat = {...oldChat}
+            if (oldChat) {
+                newChat.selfDestruct = chatData.selfDestruct ? chatData.selfDestruct : null
+                await dbRef.current.insertChat(newChat)
+                SetReloadChats(true)
+                if (currentChat && currentChat.id === chatData.id) {
+                    setCurrentChat(newChat)
+                }
+            }
+            
         } catch (error) {
             console.error(error);
         }
@@ -733,6 +753,22 @@ export const ChatProvider = ({ children }) => {
             console.error(error)
         }
     }
+    const handleExpireMessage = async (deletedData) => {
+        try {
+            await dbRef.current.deleteMessage(deletedData.id)
+            const activeChat = currentChatRef.current
+            console.log("currentChat",activeChat)
+            console.log("deletedData",deletedData)
+            console.log("booll ",activeChat.id == deletedData.chatId)
+            if(activeChat && activeChat.id == deletedData.chatId) {
+                setMessages((prevMessages) => {
+                    return prevMessages.filter((message) => message.id != deletedData.id)
+                })
+            }
+        } catch (error) {
+            console.error(error)
+        }
+    }
 
     const handlePinMessage = async (pinData) => {
         try {
@@ -785,6 +821,7 @@ export const ChatProvider = ({ children }) => {
     useEffect(() => {
         if (messagesSocket) {
             messagesSocket.onReceiveMessage(handleReceiveMessage)
+            messagesSocket.onExpireMessage(handleExpireMessage)
             messagesSocket.onReceiveEditMessage(handleReceiveEditMessage)
             messagesSocket.onReceiveDeleteMessage(handleReceiveDeleteMessage)
             messagesSocket.onPinMessage(handlePinMessage)
@@ -797,6 +834,7 @@ export const ChatProvider = ({ children }) => {
 
         return () => {
             messagesSocket.offReceiveMessage(handleReceiveMessage)
+            messagesSocket.offExpireMessage(handleExpireMessage)
             messagesSocket.offReceiveEditMessage(handleReceiveEditMessage)
             messagesSocket.offReceiveDeleteMessage(handleReceiveDeleteMessage)
             messagesSocket.offPinMessage(handlePinMessage)
@@ -810,13 +848,18 @@ export const ChatProvider = ({ children }) => {
     useEffect(() => {
         if (chatSocket) {
             chatSocket.onReceiveCreateChat(handleChatCreate)
+            chatSocket.onReceiveUpdateChat(handleChatUpdate)
             chatSocket.onReceiveLeaveChat(handleReceiveLeaveGroup)
             chatSocket.onReceiveAddAdmin(handleReceiveAddAdmin)
             chatSocket.onReceiveRemoveFromChat(handleReceiveRemoveFromChat)
             chatSocket.onReceiveAddUser(handleReceiveAddUser)
             chatSocket.onReceiveDeleteChat(handleReceiveDeleteChat)
         }
-    }, [chatSocket])
+        return () => {
+            chatSocket.offReceiveCreateChat(handleChatCreate)
+            chatSocket.offReceiveUpdateChat(handleChatUpdate)
+        }
+    }, [chatSocket,handleChatCreate,handleChatUpdate])
 
     useEffect(() => {}, [messages, pinnedMessages])
 

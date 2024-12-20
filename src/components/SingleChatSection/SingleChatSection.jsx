@@ -14,6 +14,8 @@ const SingleChatSection = () => {
     const { currentChat, pinnedMessages, isThreadOpenned, setIsThreadOpenned, setThreadMessage } = useChat()
     const [infoOpen, setInfoOpen] = useState(false)
 
+    console.log(currentChat,"curr")
+
     const handlePinnedClick = (event) => {
         const messageId = event.messageId; 
     

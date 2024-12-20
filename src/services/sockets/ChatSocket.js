@@ -50,6 +50,14 @@ class ChatSocket extends Socket {
         this.socket.on('createChat', callback);
     }
 
+    onReceiveUpdateChat(callback) {
+        this.socket.on('updateChat', callback);
+    }
+
+    offReceiveUpdateChat(callback) {
+        this.socket.off('updateChat', callback);
+    }
+
     onReceiveAddUser(callback) {
         this.socket.on('addUser', callback);
     }

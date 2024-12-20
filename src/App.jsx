@@ -120,7 +120,9 @@ function App() {
                                             parentMessage.content = await decryptMessage(message.parentMessage.content, chat);
                                             decryptedMessage.parentMessage = parentMessage;
                                         }
-                                        } catch (error) {}
+                                        } catch (error) {
+                                            console.log(error);
+                                        }
 
                                         return decryptedMessage;
                                     })

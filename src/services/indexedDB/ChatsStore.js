@@ -45,28 +45,26 @@ export class ChatsStore extends BaseStore {
                 chatRequest.onerror = () => reject(chatRequest.error)
             })
             if (chat) {
-                if (message.senderId === user.id || (chat.drafted === false && message.senderId !== user.id)) {
-                    chat.lastMessageId = message.id
-                    chat.lastMessage = message.content
-                    chat.messageTime = message.time
-                    chat.senderId = message.senderId
-                    chat.sender = message.sender
-                    chat.messageType = message.type
-                    chat.messageState = message.state
-                    chat.media = message.media ? message.media : null
-                    chat.drafted = false
-                    chat.attachmentName = message.attachmentName ? message.attachmentName : null
-                    chat.attachmentType = message.attachmentType ? message.attachmentType : null
-                    chat.size = message.size ? message.size : null
-                    chat.objectLink = message.objectLink ? message.objectLink : null
-                    chat.extension = message.extension ? message.extension : null
+                chat.lastMessageId = message.id
+                chat.lastMessage = message.content
+                chat.messageTime = message.time
+                chat.senderId = message.senderId
+                chat.sender = message.sender
+                chat.messageType = message.type
+                chat.messageState = message.state
+                chat.media = message.media ? message.media : null
+                chat.drafted = false
+                chat.attachmentName = message.attachmentName ? message.attachmentName : null
+                chat.attachmentType = message.attachmentType ? message.attachmentType : null
+                chat.size = message.size ? message.size : null
+                chat.objectLink = message.objectLink ? message.objectLink : null
+                chat.extension = message.extension ? message.extension : null
 
-                    const updateRequest = store.put(chat)
-                    await new Promise((resolve, reject) => {
-                        updateRequest.onsuccess = () => resolve()
-                        updateRequest.onerror = () => reject(updateRequest.error)
-                    })
-                }
+                const updateRequest = store.put(chat)
+                await new Promise((resolve, reject) => {
+                    updateRequest.onsuccess = () => resolve()
+                    updateRequest.onerror = () => reject(updateRequest.error)
+                })
             } else {
                 throw new Error(`Chat with id ${message.chatId} not found`)
             }
