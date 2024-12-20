@@ -14,7 +14,7 @@ import LoadingData from './components/LoadingData/LoadingData'
 import { getChatsCleaned } from './services/chatservice/getChats'
 import { useWhisperDB } from './contexts/WhisperDBContext'
 import { getMessagesForChatCleaned, getPinnedMessagesForChat } from './services/chatservice/getMessagesForChat'
-import { getUsersWithStoriesCleaned } from './services/storiesservice/getStories'
+import { getStories, getUsersWithStoriesCleaned } from './services/storiesservice/getStories'
 import useChatEncryption from './hooks/useChatEncryption'
 import axiosInstance from './services/axiosInstance'
 import { useChat } from './contexts/ChatContext'
@@ -141,19 +141,22 @@ function App() {
 
         const loadStories = async () => {
             try {
-                let [data,iHaveStoryFlag]  = await getUsersWithStoriesCleaned()
+                let [data, iHaveStoryFlag] = await getUsersWithStoriesCleaned();
                 if (data && data.length > 0) {
-                    data = data.map((item) => {
-                        const { id, ...rest } = item
-                        return { userId: id, ...rest }
-                    })
-                    await dbRef.current.insertStories(data)
-                    handleUpdateUser('hasStory', iHaveStoryFlag)
+                    const storiesPromises = data.map(async (item) => {
+                        const { id, ...rest } = item;
+                        const stories = await getStories(id);
+                        await dbRef.current.insertUserStories(stories, id)
+                        return { userId: id, ...rest }; 
+                    });
+                    const resolvedData = await Promise.all(storiesPromises);
+                    await dbRef.current.insertStories(resolvedData);
+                    handleUpdateUser('hasStory', iHaveStoryFlag);
                 }
             } catch (error) {
-                console.log(error)
+                console.log(error);
             }
-        }
+        };
 
         const loadPinnedMessages = async () => {
             try {

@@ -54,22 +54,18 @@ export const StoriesProvider = ({ children }) => {
 
     const loadUserStories = async (id = null) => {
         let data
-        let userId = id || currentUser.userId
+        let userId = id || currentUserRef.current.userId
         try {
             try {
                 const hasStories = await dbRef.current.userHasStories(userId)
                 if (hasStories) {
                     data = await dbRef.current.getUserStories(userId)
-                } else {
-                    throw new Error('No stories found')
-                }
+                    setStories([...data])
+                } 
             } catch (error) {
                 console.log(error)
-                data = await getStories(userId)
-                console.log(data)
-                await dbRef.current.insertUserStories(data, userId)
             }
-            setStories([...data])
+            
         } catch (error) {
             setStories([])
             console.log(error)
@@ -249,12 +245,13 @@ export const StoriesProvider = ({ children }) => {
     }
 
     useEffect(() => {
+        currentUserRef.current = currentUser
         if (currentUser) {
             loadUserStories()
         } else {
             setStories([])
         }
-        currentUserRef.current = currentUser
+        
     }, [currentUser])
 
     useEffect(() => {
