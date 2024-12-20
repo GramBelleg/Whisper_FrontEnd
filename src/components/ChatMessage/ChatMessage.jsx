@@ -146,7 +146,7 @@ const ChatMessage = ({ id, message, hideActions }) => {
                 <MessageRelationshipsViewer message={message} />
 
                 <div className='flex flex-col justify-between'>
-                    {currentChat.type !== "DM" && message.sender !== user.userName && (
+                    {currentChat && currentChat.type && currentChat.type !== "DM" && message.sender !== user.userName && (
                         <div style={{color: randomColor}}>
                             {message.sender}
                         </div>
@@ -157,7 +157,7 @@ const ChatMessage = ({ id, message, hideActions }) => {
                     <div className='message-info'>
                         {message?.edited ? <span className='text-sm opacity-60'>edited</span> : null}
                         <span className='time opacity-60'>{messageTime}</span>
-                        {message.senderId === user.userId && currentChat.type !== "CHANNEL" && (
+                        {message.senderId === user.userId && currentChat && currentChat.type !== "CHANNEL" && (
                             <span className='message-status'>
                                 {message?.state === 0 && <SentTicks width='12px' />}
                                 {message?.state === 1 && <DeliveredTicks width='12px' />}

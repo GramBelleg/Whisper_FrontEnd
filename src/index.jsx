@@ -22,7 +22,6 @@ createRoot(document.getElementById('root')).render(
         <WhisperDBProvider>
             <AuthProvider>
                 <GoogleOAuthProvider clientId={import.meta.env.VITE_APP_GOOGLE_CLIENT_ID}>
-                    
                         <StoriesProvider>
                             <SidebarProvider>
                                 <ChatProvider>
