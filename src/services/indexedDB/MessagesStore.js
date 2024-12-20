@@ -35,6 +35,17 @@ export class MessagesStore extends BaseStore {
         })
     }
 
+    async getMessage(id) {
+        return this._executeTransaction('readonly', async (store) => {
+            const request = store.get(id)
+            const message = await new Promise((resolve, reject) => {
+                request.onsuccess = () => resolve(request.result)
+                request.onerror = () => reject(request.error)
+            })
+            return message
+        })
+    }
+
     async getAllImages(query) {
         return this._executeTransaction('readonly', async (store) => {
             const request = store.getAll()

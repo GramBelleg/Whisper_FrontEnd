@@ -45,7 +45,6 @@ export const StoriesProvider = ({ children }) => {
         if (dbRef && dbRef.current) {
             try {
                 const data = await dbRef.current.getStories()
-                console.log("sahshajvshjas", data)
                 setStoriesTab([...data])
             } catch (error) {
                 setStoriesTab([])

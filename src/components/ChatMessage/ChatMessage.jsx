@@ -112,7 +112,7 @@ const ChatMessage = ({ id, message, hideActions }) => {
 
     const renderMessageContent = useMemo(() => {
         switch (message.type.toUpperCase()) {
-            case messageTypes.TEXT:
+            case messageTypes.TEXT: 
                 return (
                     <div className='message-text' style={{ whiteSpace: 'pre-line' }}>
                         {message?.media && <MessageAttachmentRenderer myMessage={message} />}

@@ -8,6 +8,7 @@ import ChatItem from "../ChatItem/ChatItem";
 import ChatMessage from "../ChatMessage/ChatMessage";
 import { useChat } from "@/contexts/ChatContext";
 import { useSidebar } from "@/contexts/SidebarContext";
+import { chatsGlobalSearch, messagesGlobalSearch } from "@/services/search/search";
 
 const SearchSideBar = () => {
     const [activeFilters, setActiveFilters] = useState([false, false, false, false])
@@ -38,24 +39,40 @@ const SearchSideBar = () => {
 
     const test = async () => {
         if (activeFilters[0]) {
-            // TODO: make the API call
             try {
-                const chats = await dbRef.current.getChats()
+                const results = await chatsGlobalSearch(searchQuery)
+                const chats = [];
+                const loop = results.map(async (result) => {
+                    const chat = await dbRef.current.getChat(result.id)
+                    chats.push(chat)
+                })
+                await Promise.all(loop)
                 setSearchResults(chats)
             } catch (error) {
                 console.log(error)
             }
         }
         else if (activeFilters[1] || activeFilters[2] || activeFilters[3]) {
-            // TODO: make the API call
             try {
-                const messages = await dbRef.current.getMessagesForChat(17) // Back Mock
+                const response = await messagesGlobalSearch(searchQuery,
+                    activeFilters[1] ? 'TEXT' :
+                    activeFilters[2] ? 'IMAGE' :
+                    activeFilters[3] ? 'VIDEO' : ''
+                ) 
+                const messages = [];
+                const loop = response.map(async (singleResponse) => {
+                    const message = await dbRef.current.getMessage(singleResponse.id)
+                    if (message) {
+                        messages.push(message)
+                    }
+                })
+                await Promise.all(loop)
                 const chatDms = await dbRef.current.getAllDMs()
-                const searchResultsSet = new Set();
+                console.log(chatDms)
+                const searchResultsSet = new Set(messages)
                 const resultsPromises = chatDms.map(async (chatDM) => {
                     try {
                         const results = await searchChat(searchQuery, chatDM)
-                        console.log(results)
                         if (results)
                             results.map((result) => {
                                 if(result.extension) {
@@ -94,11 +111,7 @@ const SearchSideBar = () => {
             } catch (error) {
                 console.log(error)
             }
-        }
-        else {
-            // TODO: make the Users API call
-        }
-       
+        }      
     };
 
 

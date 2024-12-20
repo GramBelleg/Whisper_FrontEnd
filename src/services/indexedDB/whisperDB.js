@@ -289,6 +289,14 @@ class WhisperDB {
         }
     }
 
+    async getMessage(id) {
+        if (this._messages !== null) {
+            return this._messages.getMessage(id)
+        } else {
+            throw new Error('Messages store is not initiaslized.')
+        }
+    }
+
     async getAllImages(query) {
         if (this._messages !== null) {
             return this._messages.getAllImages(query)
