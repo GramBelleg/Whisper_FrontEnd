@@ -19,6 +19,13 @@ import useChatEncryption from './hooks/useChatEncryption'
 import axiosInstance from './services/axiosInstance'
 import { useChat } from './contexts/ChatContext'
 import { getAllUsers } from './services/userservices/getAllUsers'
+import { getToken } from "firebase/messaging";
+import { messaging } from "./firebase/firebaseConfig";
+import { handleRegisterFCMToken } from './services/userservices/notifications'
+import { toast, ToastContainer } from "react-toastify";
+import NotificationMessage from './components/NotificationMessage/NotificationMessage'
+import "react-toastify/dist/ReactToastify.css";
+import { onMessage } from "firebase/messaging";
 
 function App() {
     const { user, token, handleUpdateUser } = useAuth()
@@ -27,14 +34,34 @@ function App() {
     const { user: authUser } = useAuth()
     const { sendJoinChat } = useChat();
     const {decryptMessage, generateKeyIfNotExists} = useChatEncryption();
+    const { VITE_APP_VAPID_KEY } = import.meta.env;
 
     if (import.meta.env.VITE_APP_USE_MOCKS === 'true') {
         initializeMock()
     }
+    onMessage(messaging, (payload) => {
+        toast(<NotificationMessage notification={payload.notification} />);
+      });
+    const requestPermission= async ()=> {
+        const permission = await Notification.requestPermission();
+    
+        if (permission === "granted") {
+          const token = await getToken(messaging, {
+            vapidKey: VITE_APP_VAPID_KEY,
+          });
+
+          console.log("Token generated : ", token);
+            handleRegisterFCMToken(token);
+
+        } else if (permission === "denied") {
+          alert("You denied for the notification");
+        }
+      }
 
     useEffect(() => {
         const init = async () => { 
             try {
+                requestPermission();
                 await loadChats()
                 await loadMessages()
                 await loadPinnedMessages()
@@ -219,6 +246,18 @@ function App() {
                     <Route path='/facebook-callback' element={<FacebookCallback />} />
                 </Routes>
             </Router>
+            <ToastContainer 
+                position="top-right" // Adjust position if needed
+                autoClose={5000}     // Toast disappears after 5 seconds
+                hideProgressBar={false}
+                newestOnTop={true}
+                closeOnClick
+                rtl={false}
+                pauseOnFocusLoss
+                draggable
+                pauseOnHover
+                theme="light"        // Options: light, dark, colored
+            />
         </div>
     )
 }
