@@ -42,6 +42,9 @@ const ChatActions = () => {
     const [attachmentType, setAttachmentType] = useState(-1)
     const [isAnnouncement, setIsAnnouncement] = useState(false)
     const isTyping = useMemo(() => textMessage.length > 0, [textMessage])
+    const { currentChat } = useChat()
+    const { dbRef } = useWhisperDB()
+    const [chatId, setChatId] = useState(-1)
 
     const showSendIcon = useMemo(
         () => (parentMessage && parentMessage.relationship === parentRelationshipTypes.FORWARD) || isTyping || isRecording,
@@ -59,10 +62,6 @@ const ChatActions = () => {
         setAttachedFile(file)
         setAttachmentType(1)
     }
-
-    const { currentChat } = useChat()
-    const { dbRef } = useWhisperDB()
-    const [chatId, setChatId] = useState(-1)
 
     const toggleAttachMenu = () => {
         setShowAttachMenu(!showAttachMenu)

@@ -80,14 +80,8 @@ export class ChatsStore extends BaseStore {
                     chatRequest.onerror = () => reject(chatRequest.error)
                 })
                 if (chat) {
-                    chat.lastMessageId = null
-                    chat.lastMessage = draftedMessage.draftContent
-                    chat.messageTime = draftedMessage.draftTime
-                    chat.senderId = null
-                    chat.sender = null
-                    chat.messageType = null
-                    chat.messageState = null
-                    chat.media = null
+                    chat.draftMessageContent = draftedMessage.draftContent
+                    chat.draftMessageTime = draftedMessage.draftTime
                     chat.drafted = true
                     const updateRequest = store.put(chat)
                     await new Promise((resolve, reject) => {
@@ -291,7 +285,7 @@ export class ChatsStore extends BaseStore {
                     request.onsuccess = () => resolve(request.result)
                     request.onerror = () => reject(request.error)
                 })
-                if (chat && chat.drafted) return chat.lastMessage
+                if (chat && chat.draftMessageContent.length) return chat.draftMessageContent
                 else return null
             } catch (error) {
                 throw new Error('Failed to get message from indexed db: ' + error.message)
@@ -330,7 +324,7 @@ export class ChatsStore extends BaseStore {
 
                 if (chat) {
                     chat.drafted = false
-                    chat.lastMessage = ''
+                    chat.draftMessageContent = ''
                     const updateRequest = store.put(chat)
                     await new Promise((resolve, reject) => {
                         updateRequest.onsuccess = () => resolve()
