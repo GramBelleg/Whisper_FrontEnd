@@ -23,15 +23,6 @@ const CreateGroupPageContainer = () => {
     const { openModal, closeModal } = useModal()
     const [loading, setLoading] = useState(false)
 
-    const renderContent = () => {
-        if (loading) {
-            return (
-                <div className='flex items-center justify-center w-full h-full'>
-                    <div className='animate-spin rounded-full h-8 w-8 border-b-2 border-white' />
-                </div>
-            )
-        }
-    }
     const createBatch = async () => {
         try {
             if (batchName.length > 0) {
@@ -74,8 +65,11 @@ const CreateGroupPageContainer = () => {
         if (pageOrder === 0) {
             setPageOrder((prev) => prev + 1)
         } else {
-            createBatch()
-            
+            try {
+                await createBatch()  
+            } catch (error) {
+                console.log("couldn't create batch")
+            }
         }
     };
 
@@ -97,11 +91,19 @@ const CreateGroupPageContainer = () => {
                 {pageOrder === 0 ? <ChooseGroupMembers selectedUsers={selectedUsers} setSelectedUsers={setSelectedUsers}/> 
                 : <ChooseGroupInfo selectedUsers={selectedUsers} setBatchName={setBatchName} setGroupPicFileData={setGroupPicFileData}/>}
             </div>
-            <div className="forward-icon" onClick={handleGoForward}>
-                <FontAwesomeIcon icon={faArrowRight} />
-            </div>
-            {renderContent()}
-            
+            {!loading ?
+                <div className="forward-icon" onClick={handleGoForward}>
+                    <FontAwesomeIcon icon={faArrowRight} />
+                </div>
+                :
+                <div className='flex items-center justify-center'>
+                    <div 
+                        className='animate-spin rounded-full border-b-2' 
+                        style={{ height: '20px', width: '20px', borderColor: 'var(--accent-color)' }} 
+                    />
+                </div>
+
+            }            
         </div>
     );
 };
