@@ -22,11 +22,9 @@ import ChannelInfoContainer from '../ChannelInfo/ChannelInfoContainer'
 import ThreadsBar from '../Threads/ThreadsBar'
 
 const SingleChatSection = () => {
-    const { currentChat, pinnedMessages, isThreadOpenned, setIsThreadOpenned, setThreadMessage } = useChat()
+    const { currentChat, pinnedMessages, handlePinnedClick,
+         isThreadOpenned, setIsThreadOpenned, setThreadMessage } = useChat()
     const [infoOpen, setInfoOpen] = useState(false)
-
-    console.log(currentChat,"curr")
-
     const { startCall, inCall } = useVoiceCall();
     const {user} = useAuth();
     const {getVoiceCallSymmetricKey} = useChatEncryption()
@@ -47,16 +45,12 @@ const SingleChatSection = () => {
         startCall(currentChat.id, token, symmetricKey);
     }
 
-    const handlePinnedClick = (event) => {
+    const handleMyPinnedClick = (event) => {
         const messageId = event.messageId; 
-    
-        const targetElement = document.getElementById(`message-${messageId}`);
-        if (targetElement) {
-            targetElement.scrollIntoView({ behavior: "smooth", block: "center" });
-        } else {
-            console.log("Target message not found:", messageId);
-        }
+        handlePinnedClick(messageId)
     };
+
+
        
     if (!currentChat) {
         return (
@@ -77,7 +71,7 @@ const SingleChatSection = () => {
                     <SingleChatMessagesList />
                     {pinnedMessages.length > 0 && (
                         <div>
-                            <PinnedMessages onGoToMessage={handlePinnedClick} />
+                            <PinnedMessages onGoToMessage={handleMyPinnedClick} />
                         </div>
                     )}
                 </div>

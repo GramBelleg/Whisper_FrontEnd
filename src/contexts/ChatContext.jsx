@@ -83,6 +83,15 @@ export const ChatProvider = ({ children }) => {
         }
     }
 
+    const handlePinnedClick = (messageId) => {
+        const targetElement = document.getElementById(`message-${messageId}`);
+        if (targetElement) {
+            targetElement.scrollIntoView({ behavior: "smooth", block: "center" });
+        } else {
+            console.log("Target message not found:", messageId);
+        }
+    };
+
     useEffect(() => {
         if (currentChat) {
             try {
@@ -946,6 +955,7 @@ export const ChatProvider = ({ children }) => {
                 deleteComment,
                 removeFromChat,
                 sending,
+                handlePinnedClick,
                 handleGetMembers,
                 saveGroupSettings,
                 handleGetGroupSettings,
