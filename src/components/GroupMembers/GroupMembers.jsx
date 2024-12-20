@@ -41,7 +41,7 @@ const GroupMembers = ({ filteredMembers, handleQueryChange, amIAdmin, handleAddA
             document.removeEventListener('mousedown', handleClickOutside);
         };
     }, [menuState])
-    if(chatType === 'CHANNEL' && !amIAdmin) return null;
+    if(type === 'channel' && !amIAdmin) return null;
     return (
         <div className='p-4 rounded-md' onClick={handleCloseMenu}>
             <h2 className='text-lg text-light text-left mb-6'>{type.charAt(0).toUpperCase() + type.slice(1)} {type === 'group' ? 'Members' : 'Subscribers'}</h2>
@@ -60,7 +60,7 @@ const GroupMembers = ({ filteredMembers, handleQueryChange, amIAdmin, handleAddA
                         <label htmlFor={`user-${member.id}`}>{member.userName || 'Unknown User'}</label>
 
                         {   
-                            chatType === "GROUP" && amIAdmin && !member.isAdmin && member.id !== user.id && <FontAwesomeIcon
+                            amIAdmin && !member.isAdmin && member.id !== user.id && <FontAwesomeIcon
                                 icon={faChevronDown}
                                 className='chevron-icon'
                                 onClick={(e) => handleChevronClick(e, member)} 
@@ -71,7 +71,7 @@ const GroupMembers = ({ filteredMembers, handleQueryChange, amIAdmin, handleAddA
                             />
                         }
 
-                        { chatType === "GROUP" && menuState.isVisible && menuState.selectedUser === member && (
+                        { menuState.isVisible && menuState.selectedUser === member && (
                             <div
                                 className="absolute top-full left-0 bg-[#081d3c] shadow-lg rounded-md z-50 mt-1 cursor-pointer text-white transition-all duration-300 ease-in-out"
                                 ref={menuRef}
