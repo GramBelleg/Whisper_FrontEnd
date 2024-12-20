@@ -44,6 +44,7 @@ const ChannelSettings = () => {
                                 value='Public'
                                 checked={privacy === 'Public'}
                                 onChange={() => setPrivacy("Public")}
+                                data-testid='public'
                             />
                             Public
                         </label>

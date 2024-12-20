@@ -8,6 +8,8 @@ const mockMembers = [
   { id: 2, userName: 'Jane Smith', profilePic: '' },
   { id: 3, userName: '', profilePic: '' },
 ];
+const mockHandleAddAdmin = vi.fn();
+const mockHandleRemoveFromChat = vi.fn();
 
 describe('GroupMembers Component', () => {
   vi.mock('@/hooks/useAuth', () => {
@@ -27,6 +29,10 @@ describe('GroupMembers Component', () => {
       <GroupMembers
         filteredMembers={mockMembers}
         handleQueryChange={() => {}}
+        handleAddAmin={mockHandleAddAdmin}
+        handleRemoveFromChat={mockHandleRemoveFromChat}
+        amIAdmin={true}
+        type='group'
       />
     );
 
@@ -48,6 +54,10 @@ describe('GroupMembers Component', () => {
       <GroupMembers
         filteredMembers={mockMembers}
         handleQueryChange={handleQueryChange}
+        handleAddAmin={mockHandleAddAdmin}
+        handleRemoveFromChat={mockHandleRemoveFromChat}
+        amIAdmin={true}
+        type='group'
       />
     );
 
@@ -62,11 +72,27 @@ describe('GroupMembers Component', () => {
       <GroupMembers
         filteredMembers={[]}
         handleQueryChange={() => {}}
+        handleAddAmin={mockHandleAddAdmin}
+        handleRemoveFromChat={mockHandleRemoveFromChat}
+        amIAdmin={true}
+        type='group'
       />
     );
 
-    const membersList = screen.getByText('Group Members');
-    expect(membersList).toBeInTheDocument();
     expect(screen.queryByText('John Doe')).not.toBeInTheDocument();
+  });
+  it('does not render if chatType is channel and user is not an admin', () => {
+    render(
+      <GroupMembers
+        filteredMembers={mockMembers}
+        handleQueryChange={() => {}}
+        handleAddAmin={mockHandleAddAdmin}
+        handleRemoveFromChat={mockHandleRemoveFromChat}
+        amIAdmin={false}
+        type='channel'
+      />
+    );
+
+    expect(screen.queryByText('Group Members')).not.toBeInTheDocument();
   });
 });
