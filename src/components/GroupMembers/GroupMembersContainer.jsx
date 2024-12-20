@@ -3,7 +3,7 @@ import { useChat } from '@/contexts/ChatContext'
 import GroupMembers from './GroupMembers'
 import useAuth from '@/hooks/useAuth'
 
-const GroupMembersContainer = () => {
+const GroupMembersContainer = ({chatType}) => {
     const [query, setQuery] = useState('')
     const [members, setMembers] = useState([])
     const { handleGetMembers, addAdmin, removeFromChat, currentChat } = useChat()
@@ -57,7 +57,7 @@ const GroupMembersContainer = () => {
             handleAddAmin={handleAddAmin}
             handleRemoveFromChat={handleRemoveFromChat}
             amIAdmin={amIAdmin}
-            chatType={currentChat.type}
+            type={chatType}
         />
     )
 }

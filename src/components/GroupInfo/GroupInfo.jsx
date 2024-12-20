@@ -21,7 +21,7 @@ const GroupInfo = ({ currentChat, onClose }) => {
         setIsVisible(true); 
     }, []);
     const handleAddUsers = () => {
-        push(<GroupAddMembers /> )
+        push(<GroupAddMembers type={"group"}/> )
     }
     
     const handleEdit = () => {
@@ -58,8 +58,7 @@ const GroupInfo = ({ currentChat, onClose }) => {
                 <p className="text-center text-sm text-gray-400">{currentChat.type}</p>
             </div>
             <div className="border-t border-gray-600 pt-4">
-                    <GroupMembersContainer />
-                
+                    <GroupMembersContainer chatType={"group"}/>
             </div>
         </div>
     );

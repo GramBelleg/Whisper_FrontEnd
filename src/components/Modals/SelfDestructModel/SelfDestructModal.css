@@ -1,0 +1,59 @@
+.self-destructing-modal {
+    width: 420px;
+    max-width: 480px;
+    padding: 0 0.5rem;
+    background-color: var(--primary-color);
+    color: #fff;
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+}
+  
+.radio-option {
+    margin-bottom: 10px;
+}
+  
+.radio-option label {
+    margin-left: 8px;
+    color: white;
+}
+
+input[type="radio"]:checked {
+    accent-color: var(--accent-color); /* Change the circle color when selected */
+}
+
+
+.modal-buttons {
+    display: flex;
+    justify-content: center;
+    margin-top: 15px;
+    gap: 1rem;
+    margin-bottom: 1.5rem;
+}
+  
+.set-button, .cancel-button {
+    padding: 8px 16px;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 14px;
+}
+  
+.set-button {
+    background-color: var(--accent-color);
+    color: #fff;
+}
+  
+.set-button:hover {
+    background-color: var(--accent-color-darker);
+    color: white;
+}
+  
+.cancel-button {
+    background-color: #6c757d;
+  color: #fff;
+  }
+  
+.cancel-button:hover {
+    background-color: #5a6268;
+}

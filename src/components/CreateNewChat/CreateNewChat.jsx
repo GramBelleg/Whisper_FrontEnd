@@ -1,7 +1,7 @@
 import { faUserGroup, faBullhorn, faUser } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import "./CreateNewChat.css"
-const CreateNewChat = ({ myOnMouseLeave, handleCreateGroupClick, handleCreatePrivateClick, handleCreateChannelClick }) => {
+const CreateNewChat = ({ myOnMouseLeave, handleCreateGroupClick, handleCreatePrivateClick, handleCreateChannelClick, handleAddNewContact }) => {
     return (
         <div
             className="create-new-chat-drop-down"
@@ -19,7 +19,11 @@ const CreateNewChat = ({ myOnMouseLeave, handleCreateGroupClick, handleCreatePri
                 <li onClick={handleCreatePrivateClick}>
                         <FontAwesomeIcon icon={faUser} />
                         <span>New Private Chat</span>
-                </li>
+                </li> 
+                <li onClick={handleAddNewContact}>
+                        <FontAwesomeIcon icon={faUser} />
+                        <span>New Contact</span>
+                </li> 
             </ul>
         </div>
     );
