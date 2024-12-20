@@ -437,6 +437,16 @@ export const ChatProvider = ({ children }) => {
         }
     }
 
+    const saveChannelPrivacy = async (privacy) =>
+        {
+            try {
+                await setPrivacy(currentChat.id, privacy)
+            } catch (error) {
+                console.log(error)
+                throw new Error ("failed to update group settings")
+            }
+        }
+
     const handleGetMembers = async () => {
         try {
             const members = await dbRef.current.getChatMembers(currentChat.id)
@@ -935,6 +945,7 @@ export const ChatProvider = ({ children }) => {
                 saveGroupSettings,
                 handleGetGroupSettings,
                 handleGetChannelSettings,
+                saveChannelPrivacy,
                 addNewContactByUser
             }}
         >

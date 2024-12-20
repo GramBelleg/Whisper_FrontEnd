@@ -14,7 +14,7 @@ const GroupSettings = () => {
             try {
                 const response = await handleGetGroupSettings()
                 console.log(response)
-                setPrivacy(response.privacy?'Public':'Private')
+                setPrivacy(response.public?'Private':'Public')
                 setGroupLimit(response.maxSize)
             } catch (error) {
                 console.error('Error fetching members:', error)

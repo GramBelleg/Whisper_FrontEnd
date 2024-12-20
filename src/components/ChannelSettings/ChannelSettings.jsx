@@ -4,13 +4,26 @@ import { useStackedNavigation } from "@/contexts/StackedNavigationContext/Stacke
 import { faArrowLeft } from '@fortawesome/free-solid-svg-icons'
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 
-const ChannelSettings = ({initialPrivacy}) => {
+const ChannelSettings = () => {
     const [privacy, setPrivacy] = useState(initialPrivacy || "Public");
-
+    const {saveChannelPrivacy,handleGetChannelSettings} = useChat();
     const { pop } = useStackedNavigation(); 
 
-    const handlePrivacySubmit = () => {
-        //TODO: Save Changes
+    useEffect(() => {
+        const getChannelPrivacy = async () => {
+            try {
+                const response = await handleGetChannelSettings()
+                setPrivacy(response.public ? 'Private' : 'Public')
+            } catch (error) {
+                console.error('Error fetching members:', error)
+            }
+        }
+
+        getChannelPrivacy()
+    }, [])
+
+    const handlePrivacySubmit = async () => {
+        await saveChannelPrivacy(privacy)
     };
 
     return (

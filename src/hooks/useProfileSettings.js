@@ -87,6 +87,15 @@ export const useProfileSettings = () => {
         const nameRegex = /^(?! )[a-zA-Z\p{L}\s]+(?<! )$/u
         const consecutiveSpacesRegex = /^(?!.*\s{2,})/
 
+        if(newName.length<8)
+        {
+            setErrors((prevErrors) => ({
+                ...prevErrors,
+                name: 'Name must be at least 8 characters'
+            }))
+            throw new Error()
+        }
+
         if (!nameRegex.test(newName)) {
             setErrors((prevErrors) => ({
                 ...prevErrors,
@@ -118,6 +127,25 @@ export const useProfileSettings = () => {
     }
 
     const handleUserNameUpdate = async (newUserName) => {
+        const usernameRegex = /^[a-zA-Z0-9]+$/;
+
+        if(newUserName.length <8)
+            {
+                setErrors((prevErrors) => ({
+                    ...prevErrors,
+                    userName: 'Username must be at least 8 characters'
+                }))
+                throw new Error()
+            }
+
+        if (!usernameRegex.test(newUserName)) {
+            setErrors((prevErrors) => ({
+                ...prevErrors,
+                userName: 'User name can only contain letters and numbers'
+            }))
+            throw new Error()
+        }
+
         try {
             setErrors((prevErrors) => ({ ...prevErrors, userName: null }))
             const response = await updateUserName(newUserName)
