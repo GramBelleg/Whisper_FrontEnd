@@ -5,7 +5,7 @@ import { faArrowLeft } from '@fortawesome/free-solid-svg-icons'
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 
 const ChannelSettings = () => {
-    const [privacy, setPrivacy] = useState(initialPrivacy || "Public");
+    const [privacy, setPrivacy] = useState(null);
     const {saveChannelPrivacy,handleGetChannelSettings} = useChat();
     const { pop } = useStackedNavigation(); 
 

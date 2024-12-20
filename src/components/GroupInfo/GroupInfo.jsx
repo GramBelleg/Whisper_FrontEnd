@@ -37,12 +37,18 @@ const GroupInfo = ({ currentChat, onClose }) => {
             <div className="flex justify-between items-center mb-4">
                 <h3 className="text-xl font-semibold">Group Info</h3>
                 <div className="flex justify-between items-center space-x-4 ">
-                <button className="text-light" onClick={handleAddUsers} data-testid="add-button">
-                    <FontAwesomeIcon icon={faAdd} />
-                </button>
-                <button className="text-light" onClick={handleEdit} data-testid="edit-button">
-                    <FontAwesomeIcon icon={faEdit} />
-                </button>
+                {
+                    currentChat.isAdmin &&
+                (
+                    <div>
+                        <button className="text-light" onClick={handleAddUsers} data-testid="add-button">
+                            <FontAwesomeIcon icon={faAdd} />
+                        </button>
+                        <button className="text-light" onClick={handleEdit} data-testid="edit-button">
+                            <FontAwesomeIcon icon={faEdit} />
+                        </button>
+                    </div>
+                )}
                 <button className="text-white" onClick={handleClose} data-testid="close-button">
                     <FontAwesomeIcon icon={faTimes} />
                 </button>
