@@ -50,6 +50,7 @@ const MessageAttachmentRenderer = ({ myMessage }) => {
                         await dbRef.current.updateMessage(myMessage.id, {
                             blobData: attachment.blob
                         })
+                        myMessage.blobData = attachment.blob
                         setIsLoading(false)
                         setAutoDownload(true)
                         setIsLoading(false)
@@ -66,7 +67,7 @@ const MessageAttachmentRenderer = ({ myMessage }) => {
                     await dbRef.current.updateMessage(myMessage.id, {
                         blobData: attachment.blob
                     })
-
+                    myMessage.blobData = attachment.blob
                     setIsLoading(false)
                 }
             } catch (error) {

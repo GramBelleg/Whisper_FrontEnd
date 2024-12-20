@@ -12,18 +12,18 @@ import { StoriesProvider } from './contexts/StoryContext.jsx'
 import { ChatProvider } from './contexts/ChatContext.jsx'
 import { SidebarProvider } from './contexts/SidebarContext.jsx'
 import AgoraRTC, { AgoraRTCProvider } from 'agora-rtc-react';
-
+import { ModalProvider } from './contexts/ModalContext.jsx';
 AgoraRTC.setLogLevel(3)
 const agoraClient = AgoraRTC.createClient({ mode: 'rtc', codec: 'vp8' })
     
 
 createRoot(document.getElementById('root')).render(
+    <ModalProvider>
     <ProfileSettingsProvider>
         <WhisperDBProvider>
             <AuthProvider>
                 <GoogleOAuthProvider clientId={import.meta.env.VITE_APP_GOOGLE_CLIENT_ID}>
-                    
-                        <StoriesProvider>
+                    <StoriesProvider>
                             <SidebarProvider>
                                 <ChatProvider>
                                     <AgoraRTCProvider client={agoraClient}>
@@ -31,9 +31,11 @@ createRoot(document.getElementById('root')).render(
                                     </AgoraRTCProvider>
                                 </ChatProvider>
                             </SidebarProvider>
-                        </StoriesProvider>
+                    </StoriesProvider>
                 </GoogleOAuthProvider>
             </AuthProvider>
         </WhisperDBProvider>
     </ProfileSettingsProvider>
+    </ModalProvider>
+
 )
