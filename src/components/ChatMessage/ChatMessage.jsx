@@ -157,7 +157,7 @@ const ChatMessage = ({ id, message, hideActions }) => {
                     <div className='message-info'>
                         {message?.edited ? <span className='text-sm opacity-60'>edited</span> : null}
                         <span className='time opacity-60'>{messageTime}</span>
-                        {message.senderId === user.userId && (
+                        {message.senderId === user.userId && currentChat.type !== "CHANNEL" && (
                             <span className='message-status'>
                                 {message?.state === 0 && <SentTicks width='12px' />}
                                 {message?.state === 1 && <DeliveredTicks width='12px' />}
@@ -184,7 +184,7 @@ const ChatMessage = ({ id, message, hideActions }) => {
                                 <FontAwesomeIcon style={{ height: '18px' }} icon={faReply} />
                                 <span>Reply</span>
                             </button>}
-                            {(!isThreadOpenned) && <button onClick={handleThread}>
+                            {(!isThreadOpenned) && (currentChat && currentChat.type === "CHANNEL") && <button onClick={handleThread}>
                                 <FontAwesomeIcon style={{ height: '18px' }} icon={faCommentDots} />
                                 <span>Open thread</span>
                             </button>}

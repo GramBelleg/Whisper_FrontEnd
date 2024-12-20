@@ -88,7 +88,7 @@ const ChatItem = ({ index, standaloneChat }) => {
                         </div>
                         <div className='ticks-info'>
                             <div className='tick'>
-                                {(myChat.messageState != null && myChat.messageState === 0 && <SentTicks data-testid='sent-tick' />) ||
+                                {myChat.type !== "CHANNEL" && (myChat.messageState != null && myChat.messageState === 0 && <SentTicks data-testid='sent-tick' />) ||
                                     (myChat.messageState != null && myChat.messageState === 1 && (
                                         <DeliveredTicks data-testid='delivered-tick' />
                                     )) ||

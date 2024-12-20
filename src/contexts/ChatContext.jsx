@@ -159,7 +159,7 @@ export const ChatProvider = ({ children }) => {
 
     const sendMessage = async (data, chat = null) => {
         setSending(true);
-        const usedChat = chat ? chat.id : currentChat.id
+        const usedChat = chat ? chat : currentChat
         const newMessage = {
             chatId: usedChat.id,
             forwarded: false,
