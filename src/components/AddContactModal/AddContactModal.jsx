@@ -1,7 +1,7 @@
 import EditableField from "../ProfileSettings/EditFields/EditableField";
 
 
-const AddContactModal = ({ onAddUser }) => {
+const AddContactModal = ({ onAddUser, onClose }) => {
     let tempUserName = ''
     return ( 
         <div>
@@ -17,7 +17,10 @@ const AddContactModal = ({ onAddUser }) => {
             />
             <button 
                 className="rounded bg-[var(--accent-color)] hover:bg-opacity-80 text-white w-[20%]"
-                onClick={async () => await onAddUser(tempUserName)}
+                onClick={async () => {
+                    await onAddUser(tempUserName)
+                    onClose()
+                }}
             >
                         Add
             </button>
