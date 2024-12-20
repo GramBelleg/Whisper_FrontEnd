@@ -53,9 +53,9 @@ export const mapMessage = async (message) => {
         sender: message.sender.userName,
         senderId: message.sender.id,
         profilePic: noUser,
+        attachmentName: message.attachmentName,
         attachmentType: message.attachmentType,
         size: message.size,
-        attachmentName: message.attachmentName,
         replyCount: message.replyCount ? message.replyCount : 0,
         replies : message.replyCount && message.replyCount > 0 ? await getMessageRepliesCleaned(message.id) : []
     }

@@ -549,7 +549,6 @@ export const ChatProvider = ({ children }) => {
             const myMessageData = {
                 ...messageData
             }
-            console.log(myMessageData)
             const chat = await dbRef.current.getChat(myMessageData.chatId)
 
             if(myMessageData.type == "EVENT") {
