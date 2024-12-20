@@ -58,6 +58,7 @@ export const cleanChat = async (chat) => {
             othersId: chat.othersId, //
             name: chat.name, //
             type: chat.type, //
+            selfDestruct: chat.selfDestruct ? chat.selfDestruct : null, //
             lastMessage: chat.lastMessage ? chat.lastMessage.content : null, //
             draftMessageContent: chat.draftMessage ? chat.draftMessage.draftContent : "", //
             draftMessageTime: chat.draftMessage ? chat.draftMessage.draftTime : "", //

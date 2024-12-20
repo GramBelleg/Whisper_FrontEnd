@@ -269,6 +269,7 @@ class WhisperDB {
         } else {
             throw new Error('Messages store is not initiaslized.')
         }
+        console.log("storingParent MEssage", messages.at(-1))
         return await this.insertMessageInChat(messages.at(-1))
     }
 
@@ -283,6 +284,38 @@ class WhisperDB {
     async insertMessage(message) {
         if (this._messages !== null) {
             return this._messages.insertMessage(message)
+        } else {
+            throw new Error('Messages store is not initiaslized.')
+        }
+    }
+
+    async updateReplyCount(messageId) {
+        if (this._messages !== null) {
+            return this._messages.updateReplyCount(messageId)
+        } else {
+            throw new Error('Messages store is not initiaslized.')
+        }
+    }
+
+    async insertReply(replyData) {
+        if (this._messages !== null) {
+            return this._messages.insertReply(replyData)
+        } else {
+            throw new Error('Messages store is not initiaslized.')
+        }
+    } 
+
+    async deleteComment(parentMessageId, replyId) {
+        if (this._messages !== null) {
+            return this._messages.deleteComment(parentMessageId, replyId)
+        } else {
+            throw new Error('Messages store is not initiaslized.')
+        }
+    }
+
+    async getThread(messageId) {
+        if (this._messages !== null) {
+            return this._messages.getThread(messageId)
         } else {
             throw new Error('Messages store is not initiaslized.')
         }

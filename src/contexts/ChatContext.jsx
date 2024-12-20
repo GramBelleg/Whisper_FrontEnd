@@ -13,8 +13,10 @@ import { getMembers } from '@/services/chatservice/getChatMembers'
 import { muteChat, unMuteChat } from '@/services/chatservice/muteUnmuteChat'
 import { getGroupSettings, setPrivacy } from '@/services/chatservice/groupSettings'
 import { setGroupLimit } from '@/services/chatservice/groupSettings'
-import ProfilePic from '@/components/ProfileSettings/ProfilePicture/ProfilePic'
 import { getChannelSettings } from '@/services/chatservice/channelSettings'
+import axios from 'axios'
+import axiosInstance from '@/services/axiosInstance'
+import { addNewContact } from '@/services/userservices/addNewContact'
 
 
 export const ChatContext = createContext()
@@ -36,11 +38,16 @@ export const ChatProvider = ({ children }) => {
     const { generateKeyIfNotExists } = useChatEncryption()
     const { setActivePage } = useSidebar()
     const [chatAltered, setChatAltered] = useState(false)
-
+    const [threadAltered, setThreadAltered] = useState(false)
+    const [isThreadOpenned, setIsThreadOpenned] = useState(false)
+    const [threadMessage, setThreadMessage] = useState(null)
+    const threadRef = useRef(threadMessage)
 
 
     const selectChat = (chat) => {
         setCurrentChat(chat)
+        setIsThreadOpenned(false)
+        setThreadMessage(null)
         setParentMessage(null)
     }
 
@@ -94,6 +101,10 @@ export const ChatProvider = ({ children }) => {
         currentChatRef.current = currentChat
     }, [currentChat])
 
+    useEffect(() => {
+        threadRef.current = threadMessage
+    }, [threadMessage])
+
     const updateMessage = async (messageId, content) => {
         let finalContent = content;
         if (currentChat.type === 'DM') {
@@ -112,6 +123,14 @@ export const ChatProvider = ({ children }) => {
             messages: [messageId]
         })
     }
+
+    const deleteComment = async (messageId) => {
+        messagesSocket.deleteComment({
+            ids: [messageId],
+            chatId: currentChat.id,
+            messageId: threadRef.current.id
+        })
+    }
     
     const sendJoinChat = async (chat, keyId) => {
         sendMessage({
@@ -120,14 +139,31 @@ export const ChatProvider = ({ children }) => {
         },chat);
     }
 
+    const sendThread = async (content) => {
+        setSending(true)
+        const newReply = {
+            content: content,
+            sentAt:new Date().toISOString(),
+            chatId: currentChat.id,
+            parentCommentId: null,
+            messageId: threadMessage.id
+        }
+
+        try {
+            messagesSocket.sendReply({...newReply})
+        } catch (error) {
+            console.log(error)
+        }
+        setSending(false)
+    }
+
     const sendMessage = async (data, chat = null) => {
         setSending(true);
         const usedChat = chat ? chat.id : currentChat.id
         const newMessage = {
             chatId: usedChat.id,
             forwarded: false,
-            selfDestruct: true,
-            expiresAfter: 5,
+            expiresAfter: currentChat.selfDestruct ? currentChat.selfDestruct : null,
             sentAt: new Date().toISOString(),
             media: '',
             extension: '',
@@ -242,6 +278,8 @@ export const ChatProvider = ({ children }) => {
             if (userId === user.id) {
                 await dbRef.current.removeChat(chatId)
                 setCurrentChat(null)
+                setThreadMessage(null)
+                setIsThreadOpenned(false)
                 SetReloadChats(true)
             }
             else { 
@@ -286,6 +324,8 @@ export const ChatProvider = ({ children }) => {
             await dbRef.current.removeChat(chatData.chatId)
             if (currentChat && currentChat.id === chatData.chatId) {
                 setCurrentChat(null)
+                setThreadMessage(null)
+                setIsThreadOpenned(false)
             }
             setChatAltered(true)
             SetReloadChats(true)
@@ -424,6 +464,8 @@ export const ChatProvider = ({ children }) => {
             if (groupLeft.userName === user.userName) {
                 await dbRef.current.removeChat(groupLeft.chatId)
                 setCurrentChat(null)
+                setThreadMessage(null)
+                setIsThreadOpenned(false)
             }
             else {
                 const members = await dbRef.current.getChatMembers(groupLeft.chatId)
@@ -451,25 +493,51 @@ export const ChatProvider = ({ children }) => {
                     // then I am the second participant in the chat
                     if(!chatData.participantKeys[1]) chatData.participantKeys[1] = keyId;
                     if(!chatData.participantKeys[0]) chatData.participantKeys[0] = keyId;
-                    await axios.put(`${apiUrl}/api/encrypt/${chatData.id}?keyId=${keyId}`, {
+                    await axiosInstance.put(`${apiUrl}/api/encrypt/${chatData.id}?keyId=${keyId}`, {
                         keyId: keyId,
-                        userId: authUser.id
+                        userId: user.id
                     });
                     sendJoinChat(chatData, keyId);
                 }
             }
             // otherwise I am the first participant in the chat how created the chat and I have the key already
             const newChat = await cleanChat({...data})
-            if (newChat.type === "GROUP") {
-                const members = await getMembers(newChat.id)
-                const admin = members.filter((member) => member.isAdmin)[0]
-                const isAdmin = admin.id === user.id 
+            console.log(newChat)
+            if (newChat.type === "GROUP" || newChat.type === "CHANNEL") {
+                let isAdmin = false
+                let members = []
+                try {
+                    members = await getMembers(newChat.id)
+                    const admin = members.filter((member) => member.isAdmin)[0]
+                    isAdmin = admin.id === user.id 
+                } catch (error) {
+                    console.log(error)
+                }
                 await dbRef.current.insertChat({...newChat, members: members, isAdmin: isAdmin})
             } else {
                 await dbRef.current.insertChat({...newChat, members: [], isAdmin: false})
             }
             SetReloadChats(true)
             setActivePage("chat")
+        } catch (error) {
+            console.error(error);
+        }
+    };
+
+    const handleChatUpdate = async (chatData) => {
+        try {
+            
+            const oldChat  = await dbRef.current.getChat(chatData.id)
+            const newChat = {...oldChat}
+            if (oldChat) {
+                newChat.selfDestruct = chatData.selfDestruct ? chatData.selfDestruct : null
+                await dbRef.current.insertChat(newChat)
+                SetReloadChats(true)
+                if (currentChat && currentChat.id === chatData.id) {
+                    setCurrentChat(newChat)
+                }
+            }
+            
         } catch (error) {
             console.error(error);
         }
@@ -501,7 +569,9 @@ export const ChatProvider = ({ children }) => {
                     setCurrentChat({
                         ...chat,
                         participantKeys:participantKeys
-                    });
+                    })
+                    setIsThreadOpenned(false)
+                    setThreadMessage(null)
                 }
                 setChatAltered(true);
                 return;
@@ -517,7 +587,8 @@ export const ChatProvider = ({ children }) => {
             }
             
             try {
-                await dbRef.current.insertMessageWrapper({ ...mapMessage(myMessageData), drafted: false })
+                const mappedMessage = await mapMessage(myMessageData)
+                await dbRef.current.insertMessageWrapper({ ...mappedMessage, drafted: false })
                 setMessageReceived(true)
                 setChatAltered(true)
                 SetReloadChats(true)
@@ -553,6 +624,40 @@ export const ChatProvider = ({ children }) => {
                 }
             }
             setMessageReceived(false)
+        } catch (error) {
+            console.error(error)
+        }
+    }
+
+    const handleReceiveReply = async (replyData) => {
+        try {
+            const currentThread = threadRef.current
+            await dbRef.current.updateReplyCount(replyData.messageId)
+            await dbRef.current.insertReply({
+                ...replyData,
+                sender: replyData.userName,
+                type: 'text'
+            })
+            if (currentThread && currentThread.id === replyData.messageId) {
+                const newThread = await dbRef.current.getThread(currentThread.id)
+                setThreadAltered(true)
+                setThreadMessage({...newThread})
+            }
+        }  catch (error) {
+            console.log(error)
+        }
+    }
+
+    const handleReceiveDeleteReply = async (deletedData) => { 
+        try {
+            const currentThread = threadRef.current
+            await dbRef.current.deleteComment(deletedData.messageId, deletedData.ids[0])
+            if (currentThread && currentThread.id === deletedData.messageId) {
+                const newThread = await dbRef.current.getThread(currentThread.id)
+                setThreadAltered(true)
+                setThreadMessage({...newThread})
+            }
+            
         } catch (error) {
             console.error(error)
         }
@@ -655,6 +760,22 @@ export const ChatProvider = ({ children }) => {
             console.error(error)
         }
     }
+    const handleExpireMessage = async (deletedData) => {
+        try {
+            await dbRef.current.deleteMessage(deletedData.id)
+            const activeChat = currentChatRef.current
+            console.log("currentChat",activeChat)
+            console.log("deletedData",deletedData)
+            console.log("booll ",activeChat.id == deletedData.chatId)
+            if(activeChat && activeChat.id == deletedData.chatId) {
+                setMessages((prevMessages) => {
+                    return prevMessages.filter((message) => message.id != deletedData.id)
+                })
+            }
+        } catch (error) {
+            console.error(error)
+        }
+    }
 
     const handlePinMessage = async (pinData) => {
         try {
@@ -703,20 +824,32 @@ export const ChatProvider = ({ children }) => {
         }
     }
 
+    const addNewContactByUser = async (userName) => {
+        try {
+            await addNewContact(userName)
+        } catch (error) {
+            console.log(error)
+        }
+    }
+
 
     useEffect(() => {
         if (messagesSocket) {
             messagesSocket.onReceiveMessage(handleReceiveMessage)
+            messagesSocket.onExpireMessage(handleExpireMessage)
             messagesSocket.onReceiveEditMessage(handleReceiveEditMessage)
             messagesSocket.onReceiveDeleteMessage(handleReceiveDeleteMessage)
             messagesSocket.onPinMessage(handlePinMessage)
             messagesSocket.onUnPinMessage(handleUnpinMessage)
             messagesSocket.onDeliverMessage(handleDeliverMessage)
             messagesSocket.onReadMessage(handleReadMessage)
+            messagesSocket.onRecieveReply(handleReceiveReply)
+            messagesSocket.onReceiveDeleteComment(handleReceiveDeleteReply)
         }
 
         return () => {
             messagesSocket.offReceiveMessage(handleReceiveMessage)
+            messagesSocket.offExpireMessage(handleExpireMessage)
             messagesSocket.offReceiveEditMessage(handleReceiveEditMessage)
             messagesSocket.offReceiveDeleteMessage(handleReceiveDeleteMessage)
             messagesSocket.offPinMessage(handlePinMessage)
@@ -730,30 +863,42 @@ export const ChatProvider = ({ children }) => {
     useEffect(() => {
         if (chatSocket) {
             chatSocket.onReceiveCreateChat(handleChatCreate)
+            chatSocket.onReceiveUpdateChat(handleChatUpdate)
             chatSocket.onReceiveLeaveChat(handleReceiveLeaveGroup)
             chatSocket.onReceiveAddAdmin(handleReceiveAddAdmin)
             chatSocket.onReceiveRemoveFromChat(handleReceiveRemoveFromChat)
             chatSocket.onReceiveAddUser(handleReceiveAddUser)
             chatSocket.onReceiveDeleteChat(handleReceiveDeleteChat)
         }
-    }, [chatSocket])
+        return () => {
+            chatSocket.offReceiveCreateChat(handleChatCreate)
+            chatSocket.offReceiveUpdateChat(handleChatUpdate)
+        }
+    }, [chatSocket,handleChatCreate,handleChatUpdate])
 
     useEffect(() => {}, [messages, pinnedMessages])
 
     useEffect(() => {
         const loadSingleChat = async () => {
-            if (chatAltered && currentChat) {
+            if ((chatAltered || threadAltered) && currentChat) {
                 try {
                     const updatedChat = await dbRef.current.getChat(currentChat.id)
                     setCurrentChat({...updatedChat})
-                    setChatAltered(false)
+                    if (!threadAltered) {
+                        setThreadMessage(null)
+                        setIsThreadOpenned(false)
+                        setChatAltered(false)
+                    }
+                    else {
+                        setThreadAltered(false)
+                    }
                 } catch (error) {
                     console.error(error)
                 }
             }
         }
         loadSingleChat()
-    }, [chatAltered])
+    }, [chatAltered, threadAltered])
 
 
     return (
@@ -765,6 +910,9 @@ export const ChatProvider = ({ children }) => {
                 messageReceived,
                 pinnedMessages,
                 chatAltered,
+                threadMessage,
+                setThreadMessage,
+                sendThread,
                 setChatAltered,
                 pinMessage,
                 unPinMessage,
@@ -773,23 +921,27 @@ export const ChatProvider = ({ children }) => {
                 handleUnMute,
                 sendMessage,
                 updateMessage,
+                setIsThreadOpenned,
                 sendJoinChat,
                 searchChat,
                 addAdmin,
                 addUser,
                 deleteChat,
                 reloadChats,
+                isThreadOpenned,
                 SetReloadChats,
                 parentMessage,
                 updateParentMessage,
                 clearParentMessage,
                 deleteMessage,
+                deleteComment,
                 removeFromChat,
                 sending,
                 handleGetMembers,
                 saveGroupSettings,
                 handleGetGroupSettings,
-                handleGetChannelSettings
+                handleGetChannelSettings,
+                addNewContactByUser
             }}
         >
             {children}

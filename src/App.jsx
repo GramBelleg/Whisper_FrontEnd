@@ -120,7 +120,9 @@ function App() {
                                             parentMessage.content = await decryptMessage(message.parentMessage.content, chat);
                                             decryptedMessage.parentMessage = parentMessage;
                                         }
-                                        } catch (error) {}
+                                        } catch (error) {
+                                            console.log(error);
+                                        }
 
                                         return decryptedMessage;
                                     })
@@ -139,8 +141,7 @@ function App() {
 
         const loadStories = async () => {
             try {
-                let iHaveStoryFlag = false
-                let data = await getUsersWithStoriesCleaned(iHaveStoryFlag)
+                let [data,iHaveStoryFlag]  = await getUsersWithStoriesCleaned()
                 if (data && data.length > 0) {
                     data = data.map((item) => {
                         const { id, ...rest } = item
@@ -180,7 +181,7 @@ function App() {
         } catch (error) {
             console.error(error)
         }
-    }, [dbRef, user])
+    }, [dbRef, user?.id])
 
     return (
         <div className='App'>

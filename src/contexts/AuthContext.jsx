@@ -67,6 +67,11 @@ export const AuthProvider = ({ children }) => {
             const data = await signUp(userData)
             console.log('user data', data)
             setUser(data.userData)
+            try {
+                await dbRef.current.clearDB()
+            } catch (error) {
+                console.log(error)
+            }
             setAuthData(data.userData, data.userToken)
             return { data: data, success: true }
         } catch (err) {
@@ -89,6 +94,11 @@ export const AuthProvider = ({ children }) => {
                 userId: data.user.id,
             })
             setToken(data.userToken)
+            try {
+                await dbRef.current.clearDB()
+            } catch (error) {
+                console.log(error)
+            }
             setAuthData(data.user, data.userToken)
         } catch (err) {
             setError(err.message)
@@ -105,6 +115,11 @@ export const AuthProvider = ({ children }) => {
             console.log(data)
             setUser(data.user)
             setToken(data.userToken)
+            try {
+                await dbRef.current.clearDB()
+            } catch (error) {
+                console.log(error)
+            }
             setAuthData(data.user, data.userToken)
         } catch (err) {
             setError(err.message)
@@ -124,6 +139,11 @@ export const AuthProvider = ({ children }) => {
                 userId: data.user.id,
             })
             setToken(data.userToken)
+            try {
+                await dbRef.current.clearDB()
+            } catch (error) {
+                console.log(error)
+            }
             setAuthData(data.user, data.userToken)
         } catch (err) {
             setError(err.message)
@@ -142,6 +162,11 @@ export const AuthProvider = ({ children }) => {
                 userId: data.data.user.id,
             })
             setToken(data.data.userToken)
+            try {
+                await dbRef.current.clearDB()
+            } catch (error) {
+                console.log(error)
+            }
             setAuthData(data.data.user, data.data.userToken)
             return { data: data, success: true }
         } catch (err) {
@@ -176,6 +201,11 @@ export const AuthProvider = ({ children }) => {
                 ...data.user,
                 userId: data.user.id,
             })
+            try {
+                await dbRef.current.clearDB()
+            } catch (error) {
+                console.log(error)
+            }
             setAuthData(data.user, data.userToken)
             if (userData.logoutCheck) {
                 await handleLogoutAll()
@@ -200,6 +230,11 @@ export const AuthProvider = ({ children }) => {
                 ...data.user,
                 userId: data.user.id,
             })
+            try {
+                await dbRef.current.clearDB()
+            } catch (error) {
+                console.log(error)
+            }
             setAuthData(data.user, data.userToken)
 
             return { data, success: true }

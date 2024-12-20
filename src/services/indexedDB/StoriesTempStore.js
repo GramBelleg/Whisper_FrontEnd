@@ -9,8 +9,13 @@ export class StoriesTempStore extends BaseStore {
     async insertStories(stories) {
         return this._executeTransaction('readwrite', async (store) => {
             try {
-                stories.forEach((story) => {
-                    store.add(story)
+                stories.forEach(async (story) => {
+                    const storyyRequest = store.put(story)
+                    console.log(story)
+                    await new Promise((resolve, reject) => {
+                        storyyRequest.onsuccess = () => resolve(storyyRequest.result)
+                        storyyRequest.onerror = () => reject(storyyRequest.error)
+                    })
                 })
 
                 console.log('stories inserted successfully!')

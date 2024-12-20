@@ -17,6 +17,10 @@ class MessagingSocket extends Socket {
         this.socket.emit('message', data)
     }
 
+    sendReply(data) {
+        this.socket.emit('comment', data)
+    }
+
     updateData(data) {
         this.socket.emit('editMessage', data)
     }
@@ -33,6 +37,14 @@ class MessagingSocket extends Socket {
         this.socket.off('deliverMessage', callback)
     }
 
+    onExpireMessage(callback) {
+        this.socket.on('expireMessage', callback)
+    }
+
+    offExpireMessage(callback) {
+        this.socket.off('expireMessage', callback)
+    }
+
     readAllMessages(data) {
         console.log(data)
         this.socket.emit('readAllMessages', data)
@@ -41,11 +53,14 @@ class MessagingSocket extends Socket {
     onReadMessage(callback) {
         this.socket.on('readMessage', callback)
     }
+
     offReadMessage(callback) {
         this.socket.off('readMessage', callback)
     }
 
-
+    onRecieveReply(callback) {
+        this.socket.on('comment', callback)
+    }
 
     pinMessage(data) {
         this.socket.emit('pinMessage', data)
@@ -101,6 +116,18 @@ class MessagingSocket extends Socket {
 
     offReceiveDeleteMessage(callback) {
         this.socket.off('deleteMessage', callback)
+    }
+
+    deleteComment(data) {
+        this.socket.emit('deleteComment', data)
+    }
+
+    onReceiveDeleteComment(callback) {
+        this.socket.on('deleteComment', callback)
+    }
+
+    offReceiveDeleteComment(callback) {
+        this.socket.off('deleteComment', callback)
     }
 
     disconnect() {
