@@ -6,9 +6,8 @@ import parentRelationshipTypes from '@/services/chatservice/parentRelationshipTy
 import useChatEncryption from '@/hooks/useChatEncryption'
 import useAuth from '@/hooks/useAuth'
 import ChatSocket from '@/services/sockets/ChatSocket'
-import { cleanChat } from '@/services/chatservice/getChats'
+import { cleanChat, mapPicture } from '@/services/chatservice/getChats'
 import apiUrl from '@/config'
-
 import { useSidebar } from './SidebarContext'
 import { getMembers } from '@/services/chatservice/getChatMembers'
 import { getMemberPermissions, getSubscriberPermissions } from '@/services/chatservice/getChatMemberPermissions'
@@ -579,6 +578,9 @@ export const ChatProvider = ({ children }) => {
             const newChat = {...oldChat}
             if (oldChat) {
                 newChat.selfDestruct = chatData.selfDestruct ? chatData.selfDestruct : null
+                newChat.isBlocked = chatData.isBlocked ? chatData.isBlocked : false
+                newChat.makeBlocked = chatData.makeBlocked ? chatData.makeBlocked : false
+                newChat.profilePic = await mapPicture(chatData.picture, newChat.isBlocked || newChat.makeBlocked);
                 await dbRef.current.insertChat(newChat)
                 SetReloadChats(true)
                 if (currentChat && currentChat.id === chatData.id) {
