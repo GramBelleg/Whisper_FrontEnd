@@ -19,6 +19,7 @@ import useChatEncryption from './hooks/useChatEncryption'
 import axiosInstance from './services/axiosInstance'
 import { useChat } from './contexts/ChatContext'
 import { getAllUsers } from './services/userservices/getAllUsers'
+import { useStories } from './contexts/StoryContext'
 
 function App() {
     const { user, token, handleUpdateUser } = useAuth()
@@ -27,6 +28,7 @@ function App() {
     const { user: authUser } = useAuth()
     const { sendJoinChat } = useChat();
     const {decryptMessage, generateKeyIfNotExists} = useChatEncryption();
+    const { setAppLoaded } = useStories()
 
     if (import.meta.env.VITE_APP_USE_MOCKS === 'true') {
         initializeMock()
@@ -35,6 +37,7 @@ function App() {
     useEffect(() => {
         const init = async () => { 
             try {
+                await dbRef.current.clearDB()
                 await loadChats()
                 await loadMessages()
                 await loadPinnedMessages()
@@ -44,6 +47,7 @@ function App() {
                 console.log(error)
             } finally {
                 setLoading(false)
+                setAppLoaded(true)
             }
         }
 

@@ -27,6 +27,7 @@ export const StoriesProvider = ({ children }) => {
     const [error, setError] = useState(null)
     const { dbRef } = useWhisperDB()
     const { user, handleUpdateUser } = useAuth()
+    const [appLoaded, setAppLoaded] = useState(false)
 
     const selectUser = (userIn) => {
         setCurrentUser(userIn)
@@ -44,6 +45,7 @@ export const StoriesProvider = ({ children }) => {
         if (dbRef && dbRef.current) {
             try {
                 const data = await dbRef.current.getStories()
+                console.log("sahshajvshjas", data)
                 setStoriesTab([...data])
             } catch (error) {
                 setStoriesTab([])
@@ -316,7 +318,8 @@ export const StoriesProvider = ({ children }) => {
 
     useEffect(() => {
         localGetStories()
-    }, [dbRef])
+        setAppLoaded(false)
+    }, [dbRef, appLoaded])
 
     useEffect(() => {
         if (currentIndex > -1 && stories) {
@@ -346,7 +349,9 @@ export const StoriesProvider = ({ children }) => {
                 uploadStory,
                 handleDeleteStory,
                 storiesSocket,
-                selectStory
+                selectStory,
+                appLoaded,
+                setAppLoaded
             }}
         >
             {children}
