@@ -22,10 +22,13 @@ firebase.initializeApp(firebaseConfig);
 const messaging = firebase.messaging();
 
 messaging.onBackgroundMessage((payload) => {
+  console.log("lol")
+  console.log(payload)
+
   const notificationTitle = payload.notification.title;
   const notificationOptions = {
-    body: payload.notification.body,
-    icon: payload.notification.image,
+    body: payload.notification.body || "",
+    icon: payload.notification?.image,
   };
 
   self.registration.showNotification(notificationTitle, notificationOptions);

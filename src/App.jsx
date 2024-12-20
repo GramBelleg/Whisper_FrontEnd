@@ -40,7 +40,12 @@ function App() {
         initializeMock()
     }
     onMessage(messaging, (payload) => {
-        toast(<NotificationMessage notification={payload.notification} />);
+        console.log(payload,"from socket")
+        if(payload.data.type!=="clear_message")
+        {
+            toast(<NotificationMessage notification={payload.notification} />);
+        }
+        
       });
     const requestPermission= async ()=> {
         const permission = await Notification.requestPermission();
