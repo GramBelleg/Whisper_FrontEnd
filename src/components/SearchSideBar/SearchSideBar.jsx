@@ -15,7 +15,7 @@ const SearchSideBar = () => {
     const [searchResults, setSearchResults] = useState([])
     const { openModal, closeModal } = useModal()
     const { dbRef } = useWhisperDB()
-    const { selectChat, handlePinnedClick } = useChat()
+    const { selectChat, handlePinnedClick, searchChat } = useChat()
     const { setActivePage } = useSidebar()
 
     const handleSearchMessageClick = async (result) => {
@@ -37,18 +37,7 @@ const SearchSideBar = () => {
     };
 
     const test = async () => {
-        if (
-            activeFilters.filter((activeFilter) => activeFilter).length === 0
-        ) {
-            openModal(
-                <ErrorMesssage
-                    errorMessage={"You didn't select a filter"}
-                    appearFor={3000}
-                    onClose={closeModal}
-                />
-            )
-        }
-        else if (activeFilters[0]) {
+        if (activeFilters[0]) {
             // TODO: make the API call
             try {
                 const chats = await dbRef.current.getChats()
@@ -57,14 +46,29 @@ const SearchSideBar = () => {
                 console.log(error)
             }
         }
-        else if (activeFilters[1]) {
+        else if (activeFilters[1] || activeFilters[2] || activeFilters[3]) {
             // TODO: make the API call
             try {
-                const messages = await dbRef.current.getMessagesForChat(17)
-                setSearchResults(messages)
+                const messages = await dbRef.current.getMessagesForChat(17) // Back Mock
+                const chatDms = await dbRef.current.getAllDMs()
+                let dms = []
+                const resultsPromises = chatDms.map(async (chatDM) => {
+                    try {
+                        const results = await searchChat(searchQuery, chatDM)
+                        if (results)
+                            results.map((result) => dms.push(result))
+                    } catch (error) {
+                        console.log(error)
+                    }
+                });
+                await Promise.all(resultsPromises);
+                setSearchResults([...messages, ...dms])
             } catch (error) {
                 console.log(error)
             }
+        }
+        else {
+            // TODO: make the Users API call
         }
        
     };

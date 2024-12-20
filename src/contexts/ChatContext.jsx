@@ -343,11 +343,12 @@ export const ChatProvider = ({ children }) => {
         }
     }
 
-    const searchChat = async (query) => {
+    const searchChat = async (query, incomingChat = null) => {
+        let onGoingChat = incomingChat ? incomingChat : currentChat
         try {
-            if (currentChat) {
-                console.log("curretChat",currentChat)
-                const response = await dbRef.current.getMessagesForChat(currentChat.id)
+            if (onGoingChat) {
+                console.log("onGoingChat",onGoingChat)
+                const response = await dbRef.current.getMessagesForChat(onGoingChat.id)
                 const filteredMessages = response.filter((message) => message.content.toLowerCase().includes(query.toLowerCase()))
                 return filteredMessages
             } else {

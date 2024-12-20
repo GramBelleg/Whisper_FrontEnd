@@ -176,6 +176,14 @@ class WhisperDB {
         }
     }
 
+    async getAllDMs() {
+        if (this._chats !== null) {
+            return this._chats.getAllDMs()
+        } else {
+            throw new Error('Chats store is not initiaslized.')
+        }
+    }
+
     async getDraftedMessage(chatId) {
         if (this._chats != null) {
             return this._chats.getDraftedMessage(chatId)
