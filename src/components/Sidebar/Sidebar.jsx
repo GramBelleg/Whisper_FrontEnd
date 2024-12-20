@@ -8,6 +8,7 @@ import SettingsPage from '@/pages/SettingsPage'
 import ChooseUsersGroupPage from '@/pages/CreateGroupPage'
 import ChatPage from '../ChatPage/ChatPage'
 import CreateGroupPage from '@/pages/CreateGroupPage'
+import SearchSideBar from '../SearchSideBar/SearchSideBar'
 
 const pages = [
     {
@@ -33,6 +34,10 @@ const pages = [
     {
         id: 'create_group',
         Component: CreateGroupPage 
+    },
+    {
+        id: 'search',
+        Component: SearchSideBar 
     }
 ]
 
