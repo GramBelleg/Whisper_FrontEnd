@@ -92,6 +92,7 @@ export const getUsersWithStoriesCleaned = async () => {
             }
             myStories.push(flattenedStory)
         })
+        console.log("STORIES", myStories)
         return [myStories, iHaveStory]
     } catch (error) {
         console.log('Error ', error.message)
