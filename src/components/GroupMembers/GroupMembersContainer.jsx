@@ -6,7 +6,7 @@ import useAuth from '@/hooks/useAuth'
 const GroupMembersContainer = ({chatType}) => {
     const [query, setQuery] = useState('')
     const [members, setMembers] = useState([])
-    const { handleGetMembers, addAdmin, removeFromChat } = useChat()
+    const { handleGetMembers, addAdmin, removeFromChat, currentChat } = useChat()
     const [amIAdmin, setAmIAdmin] = useState(false)
     const { user } = useAuth()
 
