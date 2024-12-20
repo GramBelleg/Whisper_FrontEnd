@@ -16,6 +16,7 @@ import { setGroupLimit } from '@/services/chatservice/groupSettings'
 import { getChannelSettings } from '@/services/chatservice/channelSettings'
 import axios from 'axios'
 import axiosInstance from '@/services/axiosInstance'
+import { addNewContact } from '@/services/userservices/addNewContact'
 
 
 export const ChatContext = createContext()
@@ -817,6 +818,14 @@ export const ChatProvider = ({ children }) => {
         }
     }
 
+    const addNewContactByUser = async (userName) => {
+        try {
+            await addNewContact(userName)
+        } catch (error) {
+            console.log(error)
+        }
+    }
+
 
     useEffect(() => {
         if (messagesSocket) {
@@ -925,7 +934,8 @@ export const ChatProvider = ({ children }) => {
                 handleGetMembers,
                 saveGroupSettings,
                 handleGetGroupSettings,
-                handleGetChannelSettings
+                handleGetChannelSettings,
+                addNewContactByUser
             }}
         >
             {children}

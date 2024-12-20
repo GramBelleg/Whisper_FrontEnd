@@ -13,10 +13,13 @@ import CreateNewChat from '../CreateNewChat/CreateNewChat'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faTimes } from '@fortawesome/free-solid-svg-icons'
 import { useSidebar } from '@/contexts/SidebarContext'
+import EditableField from '../ProfileSettings/EditFields/EditableField'
+import AddContactModal from '../AddContactModal/AddContactModal'
 
 const ChatPage = () => {
-    const { selectChat, chatAltered, reloadChats, SetReloadChats } = useChat()
+    const { selectChat, chatAltered, reloadChats, SetReloadChats, addNewContactByUser } = useChat()
     const [chatList, setChatList] = useState([])
+    
     const { dbRef } = useWhisperDB()
     const { openModal, closeModal } = useModal()
     const [dropDownVisible, setDropDownVisible] = useState(false)
@@ -39,6 +42,17 @@ const ChatPage = () => {
         setDropDownVisible(false)
         setType("CHANNEL")
         setActivePage("create_group")
+    }
+
+    const handleAddNewContact = () => {
+        setDropDownVisible(false)
+        
+        openModal(
+            <AddContactModal
+                onAddUser={addNewContactByUser}
+                onClose={closeModal}
+            />
+        )
     }
 
     const loadChats = async () => {
@@ -81,6 +95,7 @@ const ChatPage = () => {
                             handleCreatePrivateClick={handleCreatePrivateClick}
                             handleCreateGroupClick={handleCreateGroupClick}
                             handleCreateChannelClick={handleCreateChannelClick}
+                            handleAddNewContact={handleAddNewContact}
                         />
                         <div className="close-create" onClick={() => setDropDownVisible(false)}>
                             <FontAwesomeIcon icon={faTimes}/>
