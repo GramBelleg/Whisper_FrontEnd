@@ -1,3 +1,4 @@
+import axiosInstance from "../axiosInstance"
 export const handleRegisterFCMToken = async (token) => 
 {
     try {
@@ -7,7 +8,7 @@ export const handleRegisterFCMToken = async (token) =>
             },
             withCredentials: true
         })
-        return res.data
+        console.log(res)
     } catch (error) {
         console.log(error)
         throw new Error('failed' + error.response.data.message)

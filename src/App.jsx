@@ -46,17 +46,17 @@ function App() {
         const permission = await Notification.requestPermission();
     
         if (permission === "granted") {
-          const token = await getToken(messaging, {
-            vapidKey: VITE_APP_VAPID_KEY,
-          });
+            const token = await getToken(messaging, {
+                vapidKey: VITE_APP_VAPID_KEY,
+            });
 
-          console.log("Token generated : ", token);
-            handleRegisterFCMToken(token);
+            console.log("Token generated : ", token);
+            await handleRegisterFCMToken(token);
 
-        } else if (permission === "denied") {
-          alert("You denied for the notification");
-        }
-      }
+            } else if (permission === "denied") {
+            alert("You denied for the notification");
+            }
+    }
 
     useEffect(() => {
         const init = async () => { 
@@ -247,8 +247,8 @@ function App() {
                 </Routes>
             </Router>
             <ToastContainer 
-                position="top-right" // Adjust position if needed
-                autoClose={5000}     // Toast disappears after 5 seconds
+                position="top-right" 
+                autoClose={5000}     
                 hideProgressBar={false}
                 newestOnTop={true}
                 closeOnClick
@@ -256,7 +256,7 @@ function App() {
                 pauseOnFocusLoss
                 draggable
                 pauseOnHover
-                theme="light"        // Options: light, dark, colored
+                theme="light"        
             />
         </div>
     )
