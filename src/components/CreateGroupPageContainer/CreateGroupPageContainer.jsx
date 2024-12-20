@@ -31,13 +31,6 @@ const CreateGroupPageContainer = () => {
                 if (groupPicFileData) {
                     blobName = await uploadMedia(groupPicFileData)
                 }
-                console.log({
-                    type: type,
-                    name: batchName,
-                    users: [...selectedUsers.map((selectedUser) => selectedUser.id), user.id],
-                    picture: blobName,
-                    senderKey: null
-                })
                 chatsSocket.createChat({
                     type: type,
                     name: batchName,
