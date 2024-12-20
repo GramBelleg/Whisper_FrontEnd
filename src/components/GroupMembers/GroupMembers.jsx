@@ -5,7 +5,7 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faChevronDown } from '@fortawesome/free-solid-svg-icons';
 import useAuth from '@/hooks/useAuth';
 
-const GroupMembers = ({ filteredMembers, handleQueryChange, amIAdmin, handleAddAmin, handleRemoveFromChat }) => {
+const GroupMembers = ({ filteredMembers, handleQueryChange, amIAdmin, handleAddAmin, handleRemoveFromChat, chatType }) => {
     const [menuState, setMenuState] = useState({
         isVisible: false,
         selectedUser: null, 
@@ -41,10 +41,14 @@ const GroupMembers = ({ filteredMembers, handleQueryChange, amIAdmin, handleAddA
             document.removeEventListener('mousedown', handleClickOutside);
         };
     }, [menuState])
-
+    if(chatType === 'CHANNEL' && !amIAdmin) return null;
     return (
         <div className='p-4 rounded-md' onClick={handleCloseMenu}>
-            <h2 className='text-lg text-light text-left mb-6'>Group Members</h2>
+            <h2 className='text-lg text-light text-left mb-6'>
+                {
+                    chatType === 'GROUP' ? 'Group Members' : 'Channel Members'
+                }
+            </h2>
             <SearchBar handleQueryChange={handleQueryChange} className='pd-4' />
 
             <div className='members-list mg-4'>
@@ -60,7 +64,7 @@ const GroupMembers = ({ filteredMembers, handleQueryChange, amIAdmin, handleAddA
                         <label htmlFor={`user-${member.id}`}>{member.userName || 'Unknown User'}</label>
 
                         {   
-                            amIAdmin && !member.isAdmin && member.id !== user.id && <FontAwesomeIcon
+                            chatType === "GROUP" && amIAdmin && !member.isAdmin && member.id !== user.id && <FontAwesomeIcon
                                 icon={faChevronDown}
                                 className='chevron-icon'
                                 onClick={(e) => handleChevronClick(e, member)} 
@@ -71,7 +75,7 @@ const GroupMembers = ({ filteredMembers, handleQueryChange, amIAdmin, handleAddA
                             />
                         }
 
-                        {menuState.isVisible && menuState.selectedUser === member && (
+                        { chatType === "GROUP" && menuState.isVisible && menuState.selectedUser === member && (
                             <div
                                 className="absolute top-full left-0 bg-[#081d3c] shadow-lg rounded-md z-50 mt-1 cursor-pointer text-white transition-all duration-300 ease-in-out"
                                 ref={menuRef}

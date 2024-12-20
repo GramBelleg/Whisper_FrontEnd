@@ -5,6 +5,7 @@ import { useStackedNavigation } from "@/contexts/StackedNavigationContext/Stacke
 import CopyButton from "../CopyButton/CopyButton";
 import { useChat } from "@/contexts/ChatContext";
 import ChannelSettings from "../ChannelSettings/ChannelSettings";
+import GroupMembersContainer from "../GroupMembers/GroupMembersContainer";
 
 
 const ChannelInfo = ({ currentChat, onClose }) => {
@@ -74,7 +75,7 @@ const ChannelInfo = ({ currentChat, onClose }) => {
             </div>
 
             <div className="border-t border-gray-600 pt-4">
-                {/* TODO: Channel members */}
+                <GroupMembersContainer />
             </div>
         </div>
     );
