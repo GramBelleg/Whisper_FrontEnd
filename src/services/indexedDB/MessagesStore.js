@@ -35,6 +35,47 @@ export class MessagesStore extends BaseStore {
         })
     }
 
+    async getAllImages(query) {
+        return this._executeTransaction('readonly', async (store) => {
+            const request = store.getAll()
+            const messages = await new Promise((resolve, reject) => {
+                request.onsuccess = () => resolve(request.result)
+                request.onerror = () => reject(request.error)
+            })
+            const imageExtensions = ['jpg', 'jpeg', 'png', 'gif', 'bmp', 'webp'];
+            const images = messages.filter(message => {
+                if (message.attachmentName && message.attachmentName.length > 0) {
+                    const extension = message.attachmentName.split('.').pop().toLowerCase();
+                    const containsQuery = message.attachmentName.split('.')[0].toLowerCase().includes(query.toLowerCase());
+                    return imageExtensions.includes(extension) && containsQuery;
+                }
+                return false
+            });
+            return images
+        })
+    }
+
+    async getAllVideos(query) {
+        return this._executeTransaction('readonly', async (store) => {
+            const request = store.getAll()
+            const messages = await new Promise((resolve, reject) => {
+                request.onsuccess = () => resolve(request.result)
+                request.onerror = () => reject(request.error)
+            })
+            const videoExtensions = ['mp4', 'mkv', 'avi', 'mov', 'flv', 'wmv', 'webm'];
+            const videos = messages.filter(message => {
+                if (message.attachmentName) {
+                    const extension = message.attachmentName.split('.').pop().toLowerCase();
+                    const containsQuery = message.attachmentName.toLowerCase().includes(query.toLowerCase());
+                    return videoExtensions.includes(extension) && containsQuery;
+                }
+                return false;
+            });
+
+            return videos
+        })
+    }
+
     async insertMessage(message) {
         return this._executeTransaction('readwrite', async (store) => {
             try {

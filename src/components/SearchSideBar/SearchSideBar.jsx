@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import SearchBar from "../SearchBar/SearchBar";
 import "./SearchSideBar.css";
 import { useModal } from "@/contexts/ModalContext";
@@ -51,18 +51,46 @@ const SearchSideBar = () => {
             try {
                 const messages = await dbRef.current.getMessagesForChat(17) // Back Mock
                 const chatDms = await dbRef.current.getAllDMs()
-                let dms = []
+                const searchResultsSet = new Set();
                 const resultsPromises = chatDms.map(async (chatDM) => {
                     try {
                         const results = await searchChat(searchQuery, chatDM)
+                        console.log(results)
                         if (results)
-                            results.map((result) => dms.push(result))
+                            results.map((result) => {
+                                if(result.extension) {
+                                    console.log(result.extension.split('/')[0])
+                                }
+                                if (activeFilters[1] ||
+                                     (activeFilters[2] && result.extension && result.extension.split('/')[0] === 'image')
+                                     ||
+                                     (activeFilters[3] && result.extension && result.extension.split('/')[0] === 'video')
+                                    )
+                                    searchResultsSet.add(result)
+                            })
                     } catch (error) {
                         console.log(error)
                     }
                 });
                 await Promise.all(resultsPromises);
-                setSearchResults([...messages, ...dms])
+                if (activeFilters[2]) {
+                    try {
+                        const images = await dbRef.current.getAllImages(searchQuery)
+                        images.map((image) => searchResultsSet.add(image))
+                    } catch (error) {
+                        console.log(error)
+                    }
+                }
+                else if (activeFilters[3]) {
+                    try {
+                        const videos = await dbRef.current.getAllVideos(searchQuery)
+                        videos.map((video) => searchResultsSet.add(video))
+                    } catch (error) {
+                        console.log(error)
+                    }
+                }
+                console.log(Array.from(searchResultsSet))
+                setSearchResults(Array.from(searchResultsSet))
             } catch (error) {
                 console.log(error)
             }
@@ -72,6 +100,7 @@ const SearchSideBar = () => {
         }
        
     };
+
 
     return (
         <div className="search-side-bar">
@@ -101,7 +130,7 @@ const SearchSideBar = () => {
                 {activeFilters[0] && searchResults?.map((searchResult) => (
                     <ChatItem index={false} standaloneChat={searchResult} />
                 ))} 
-                {activeFilters[1] &&  !activeFilters[0] && searchResults?.map((searchResult) => (
+                {(activeFilters[1] || activeFilters[2] || activeFilters[3]) &&  !activeFilters[0] && searchResults?.map((searchResult) => (
                     <div className="message-search-result" 
                         onClick={() => handleSearchMessageClick(searchResult)}>
                         <ChatMessage message={searchResult} hideActions={true} />

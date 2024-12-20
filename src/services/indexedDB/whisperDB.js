@@ -289,6 +289,22 @@ class WhisperDB {
         }
     }
 
+    async getAllImages(query) {
+        if (this._messages !== null) {
+            return this._messages.getAllImages(query)
+        } else {
+            throw new Error('Messages store is not initiaslized.')
+        }
+    }
+
+    async getAllVideos(query) {
+        if (this._messages !== null) {
+            return this._messages.getAllVideos(query)
+        } else {
+            throw new Error('Messages store is not initiaslized.')
+        }
+    }
+
     async insertMessage(message) {
         if (this._messages !== null) {
             return this._messages.insertMessage(message)
