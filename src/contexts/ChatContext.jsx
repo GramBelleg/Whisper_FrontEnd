@@ -441,6 +441,16 @@ export const ChatProvider = ({ children }) => {
         }
     }
 
+    const saveChannelPrivacy = async (privacy) =>
+        {
+            try {
+                await setPrivacy(currentChat.id, privacy)
+            } catch (error) {
+                console.log(error)
+                throw new Error ("failed to update group settings")
+            }
+        }
+
     const handleGetMembers = async () => {
         try {
             const members = await dbRef.current.getChatMembers(currentChat.id)
@@ -581,7 +591,6 @@ export const ChatProvider = ({ children }) => {
             const myMessageData = {
                 ...messageData
             }
-            console.log(myMessageData)
             const chat = await dbRef.current.getChat(myMessageData.chatId)
 
             if(myMessageData.type == "EVENT") {
@@ -982,7 +991,9 @@ export const ChatProvider = ({ children }) => {
                 handleGetChannelSettings,
                 addNewContactByUser,
                 handleGetMembersPermissions,
-                handleGetSubscribersPermissions
+                handleGetSubscribersPermissions,
+                saveChannelPrivacy,
+                addNewContactByUser
             }}
         >
             {children}

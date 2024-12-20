@@ -100,8 +100,8 @@ const GroupMembers = ({ filteredMembers, handleQueryChange, amIAdmin, handleAddA
         return () => {
             document.removeEventListener('mousedown', handleClickOutside);
         };
-    }, [menuState]);
-
+    }, [menuState])
+    if(type === 'channel' && !amIAdmin) return null;
     return (
         <div className='p-4 rounded-md' onClick={handleCloseMenu}>
             <h2 className='text-lg text-light text-left mb-6'>{type.charAt(0).toUpperCase() + type.slice(1)} {type === 'group' ? 'Members' : 'Subscribers'}</h2>

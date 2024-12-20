@@ -64,7 +64,6 @@ export const cleanChat = async (chat) => {
             draftMessageTime: chat.draftMessage ? chat.draftMessage.draftTime : "", //
             draftMessageParentId: chat.draftMessage ? chat.draftMessage.draftParentMessageId : "", //
             draftMessageParent: chat.draftMessage ? chat.draftMessage.parentMessage : "", //
-            draftMessageTime: chat.draftMessage ? chat.draftMessage.draftTime : "", //
             messageTime: chat.lastMessage && chat.lastMessage.sentAt ? chat.lastMessage.sentAt.slice(0, 19).replace('T', ' ') : null,
             senderId: chat.lastMessage ? chat.lastMessage.sender.id : null,
             messageType: chat.lastMessage ? chat.lastMessage.type : null,

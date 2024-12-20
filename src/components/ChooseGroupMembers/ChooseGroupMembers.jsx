@@ -1,31 +1,24 @@
 import { useEffect, useState } from "react"
 import "./ChooseGroupMembers.css"
 import { useWhisperDB } from "@/contexts/WhisperDBContext"
+import { getAllUsers } from "@/services/userservices/getAllUsers"
 
 const ChooseGroupMembers = ({ selectedUsers, setSelectedUsers, Users }) => {
     const [allUsers, setAllUsers] = useState([])
     const [searchTerm, setSearchTerm] = useState("")
-    
-    const { dbRef } = useWhisperDB()
-    
+        
     useEffect(() => {
-        const getAllUsers = async () => {
+        const myGetAllUsers = async () => {
             try {
-                const response = await dbRef.current.getUsers()
+                const response = await getAllUsers()
                 console.log("Users", response)
                 setAllUsers(response)
             } catch (error) {
                 console.log(error)
             }
         }
-        if (!Users) {
-            getAllUsers()
-        }
-        else
-        {   console.log("Users", Users)
-            setAllUsers(Users)
-        }
-    }, [dbRef])
+        myGetAllUsers() 
+    }, [])
 
     const handleCheckboxChange = (user) => {
         console.log(user)
