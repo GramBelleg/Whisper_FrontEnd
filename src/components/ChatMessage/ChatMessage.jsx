@@ -81,7 +81,7 @@ const ChatMessage = ({ id, message, hideActions }) => {
         setIsMenuOpen(false)
     }
     const handleDownload = async () => {
-        if (currentChat.type === "CHANNEL" || currentChat.type === "GROUP" && message.senderId !== user.userId) {
+        if ((currentChat.type === "CHANNEL" || currentChat.type === "GROUP") && message.senderId !== user.userId) {
             let permissions;
             if (currentChat.type === "GROUP") {
                 permissions = await getMemberPermissions(currentChat.id, user.userId)

@@ -123,6 +123,7 @@ const GroupMembers = ({ filteredMembers, handleQueryChange, amIAdmin, handleAddA
                             amIAdmin && !member.isAdmin && member.id !== user.id && <FontAwesomeIcon
                                 icon={faChevronDown}
                                 className='chevron-icon'
+                                data-testid="chevron-icon"
                                 onClick={(e) => handleChevronClick(e, member)} 
                                 style={{ 
                                     cursor: 'pointer',
@@ -159,6 +160,7 @@ const GroupMembers = ({ filteredMembers, handleQueryChange, amIAdmin, handleAddA
                                         type="checkbox" 
                                         checked={permissionsState[member.id]?.canPost || false} 
                                         onChange={() => handlePermissionsToggle('canPost', member.id)} 
+                                        data-testid="can-post"
                                     />
                                     Can Post
                                 </label>
@@ -169,6 +171,7 @@ const GroupMembers = ({ filteredMembers, handleQueryChange, amIAdmin, handleAddA
                                         type="checkbox" 
                                         checked={permissionsState[member.id]?.canEdit || false} 
                                         onChange={() => handlePermissionsToggle('canEdit', member.id)} 
+                                        data-testid="can-edit"
                                     />
                                     Can Edit
                                 </label>
@@ -179,6 +182,7 @@ const GroupMembers = ({ filteredMembers, handleQueryChange, amIAdmin, handleAddA
                                         type="checkbox" 
                                         checked={permissionsState[member.id]?.canDelete || false} 
                                         onChange={() => handlePermissionsToggle('canDelete', member.id)} 
+                                        data-testid="can-delete"
                                     />
                                     Can Delete
                                 </label>
@@ -189,6 +193,7 @@ const GroupMembers = ({ filteredMembers, handleQueryChange, amIAdmin, handleAddA
                                         type="checkbox" 
                                         checked={permissionsState[member.id]?.canDownload || false} 
                                         onChange={() => handlePermissionsToggle('canDownload', member.id)} 
+                                        data-testid="can-download"
                                     />
                                     Can Download
                                 </label>
@@ -199,6 +204,7 @@ const GroupMembers = ({ filteredMembers, handleQueryChange, amIAdmin, handleAddA
                                         type="checkbox" 
                                         checked={permissionsState[member.id]?.canComment || false} 
                                         onChange={() => handlePermissionsToggle('canComment', member.id)} 
+                                        data-testid="can-comment"
                                     />
                                     Can Comment
                                 </label>
@@ -208,8 +214,8 @@ const GroupMembers = ({ filteredMembers, handleQueryChange, amIAdmin, handleAddA
                         }
 
 
-                                <p className='w-full rounded-md hover:bg-[var(--accent-color)] hover:shadow-xl p-2' onClick={() => handleAddAmin(member.id)}>Promote to admin</p>
-                                <p className='w-full rounded-md hover:bg-[var(--accent-color)] hover:shadow-xl p-2' onClick={() => handleRemoveFromChat(member)}>Remove from {type}</p>
+                                <p className='w-full rounded-md hover:bg-[var(--accent-color)] hover:shadow-xl p-2' data-testid="promote-to-admin" onClick={() => handleAddAmin(member.id)}>Promote to admin</p>
+                                <p className='w-full rounded-md hover:bg-[var(--accent-color)] hover:shadow-xl p-2' data-testid="remove-from-chat" onClick={() => handleRemoveFromChat(member)}>Remove from {type}</p>
                             </div>
                         )}
 

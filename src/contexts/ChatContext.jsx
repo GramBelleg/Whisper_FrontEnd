@@ -313,6 +313,12 @@ export const ChatProvider = ({ children }) => {
                 isAdmin: false,
                 hasStory: false
             }
+            /// sockets get received many time
+            const allMembers = await dbRef.current.getChatMembers(userData.chatId)
+            if (allMembers.some((member) => member.id === userData.user.id)) {
+                return;
+            }
+
             console.log("member",member)
             await dbRef.current.addChatMember(userData.chatId,member)
             console.log("will reload")
@@ -992,8 +998,7 @@ export const ChatProvider = ({ children }) => {
                 addNewContactByUser,
                 handleGetMembersPermissions,
                 handleGetSubscribersPermissions,
-                saveChannelPrivacy,
-                addNewContactByUser
+                saveChannelPrivacy
             }}
         >
             {children}

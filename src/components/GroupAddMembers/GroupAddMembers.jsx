@@ -23,6 +23,9 @@ const GroupAddMembers = ({type}) => {
             setCurrentMembers(groupMembers)
             setAllUsers(allUsers)
             const canBeAdded = allUsers.filter(user => !groupMembers.some(member => member.id === user.id))
+            console.log("canBeAdded", canBeAdded)
+            console.log("allUsers", allUsers)
+            console.log("groupMembers", groupMembers)
             setCanBeAddedUsers(canBeAdded)
         } catch (error) {
             console.error('Error fetching members:', error)
