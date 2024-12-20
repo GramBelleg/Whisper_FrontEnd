@@ -7,7 +7,7 @@ import AudioVoiceMessage from '../AudioVoiceMessage/AudioVoiceMessage'
 import { messageTypes } from '@/services/sendTypeEnum'
 import { useEffect, useMemo, useState } from 'react'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import { faReply, faShare, faTrash, faThumbtack, faThumbtackSlash, faCircleInfo, faEdit, faCommentDots } from '@fortawesome/free-solid-svg-icons'
+import { faReply, faShare, faTrash, faThumbtack, faThumbtackSlash, faCircleInfo, faEdit, faCircleArrowDown, faCommentDots } from '@fortawesome/free-solid-svg-icons'
 import { useModal } from '@/contexts/ModalContext'
 import ForwardMessageModal from '../Modals/ForwardMessageModal/ForwardMessageModal'
 import { useChat } from '@/contexts/ChatContext'
@@ -18,12 +18,13 @@ import MessageAttachmentRenderer from '../MessageAttachment/MessageAttachementRe
 import MessageInfo from '../MessageInfo/MessageInfo'
 import useAuth from '@/hooks/useAuth'
 import CallLog from '../CallLog/CallLog'
-
+import { getMemberPermissions, getSubscriberPermissions } from '@/services/chatservice/getChatMemberPermissions'
+import ErrorMessage from '../ErrorMessage/ErrorMessage'
 const ChatMessage = ({ id, message, hideActions }) => {
     const [isMenuOpen, setIsMenuOpen] = useState(false) // Track menu state
     const [menuPosition, setMenuPosition] = useState({ x: 0, y: 0 })
     const [objectLink, setObjectLink] = useState(null)
-    const { openModal, openConfirmationModal } = useModal()
+    const { openModal, openConfirmationModal, closeModal } = useModal()
     const menuOverlayGutter = 40
     const { currentChat, pinMessage, unPinMessage, 
             deleteMessage, deleteComment, updateParentMessage, 
@@ -32,7 +33,6 @@ const ChatMessage = ({ id, message, hideActions }) => {
     const { user } = useAuth()
     const colors = ['purple', 'aqua', 'lightgreen'];
     const [randomColor, setRandomColor] = useState('');
-
     const toggleMenu = (e) => {
         if (hideActions) return
         e.preventDefault() 
@@ -78,6 +78,30 @@ const ChatMessage = ({ id, message, hideActions }) => {
 
     const handleEdit = () => {
         openModal(<EditMessageModal message={message} />)
+        setIsMenuOpen(false)
+    }
+    const handleDownload = async () => {
+        if (currentChat.type === "CHANNEL" || currentChat.type === "GROUP" && message.senderId !== user.userId) {
+            let permissions;
+            if (currentChat.type === "GROUP") {
+                permissions = await getMemberPermissions(currentChat.id, user.userId)
+            }
+            if (currentChat.type === "CHANNEL") {
+                permissions = await getSubscriberPermissions(currentChat.id, user.userId)
+            }
+            if(!permissions.canDownload) {
+                openModal(<ErrorMessage errorMessage="You do not have permission to download files in this chat." onClose={closeModal} appearFor={3000}/>)
+                return
+            }
+        }
+        const blobUrl = URL.createObjectURL(message.blobData);
+        const link = document.createElement("a");
+        link.href = blobUrl;
+        link.download = message.attachmentName || "download"; 
+        document.body.appendChild(link);
+        link.click();
+        URL.revokeObjectURL(blobUrl);
+        document.body.removeChild(link);
         setIsMenuOpen(false)
     }
 
@@ -192,6 +216,12 @@ const ChatMessage = ({ id, message, hideActions }) => {
                                 <button onClick={handleEdit}>
                                     <FontAwesomeIcon style={{ height: '18px' }} icon={faEdit} />
                                     <span>Edit</span>
+                                </button>
+                            )}
+                            { (!isThreadOpenned) && message.blobData && message.attachmentType !== "0" && (
+                                <button onClick={handleDownload}>
+                                    <FontAwesomeIcon style={{ height: '18px' }} icon={faCircleArrowDown} />
+                                    <span>Download</span>
                                 </button>
                             )}
                             {(!isThreadOpenned) && <button onClick={handleForward}>
