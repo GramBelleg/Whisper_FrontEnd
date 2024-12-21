@@ -176,6 +176,14 @@ class WhisperDB {
         }
     }
 
+    async getAllDMs() {
+        if (this._chats !== null) {
+            return this._chats.getAllDMs()
+        } else {
+            throw new Error('Chats store is not initiaslized.')
+        }
+    }
+
     async getDraftedMessage(chatId) {
         if (this._chats != null) {
             return this._chats.getDraftedMessage(chatId)
@@ -276,6 +284,30 @@ class WhisperDB {
     async getMessagesForChat(chatId) {
         if (this._messages !== null) {
             return this._messages.getMessagesForChat(chatId)
+        } else {
+            throw new Error('Messages store is not initiaslized.')
+        }
+    }
+
+    async getMessage(id) {
+        if (this._messages !== null) {
+            return this._messages.getMessage(id)
+        } else {
+            throw new Error('Messages store is not initiaslized.')
+        }
+    }
+
+    async getAllImages(query) {
+        if (this._messages !== null) {
+            return this._messages.getAllImages(query)
+        } else {
+            throw new Error('Messages store is not initiaslized.')
+        }
+    }
+
+    async getAllVideos(query) {
+        if (this._messages !== null) {
+            return this._messages.getAllVideos(query)
         } else {
             throw new Error('Messages store is not initiaslized.')
         }

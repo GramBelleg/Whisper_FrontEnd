@@ -15,13 +15,13 @@ vi.mock('@/contexts/WhisperDBContext', () => ({
 }));
 
 describe("LastMessage component", () => {
-    it("renders DraftedMessage when myChat.drafted is true", () => {
+    it("renders DraftedMessage when myChat.draftMessageContent has value", () => {
         const myChat = {
-            drafted: true,
+            draftMessageContent: "ahmed",
             lastMessage: "Drafted message"
         };
         render(<LastMessage myChat={myChat} />);
-        expect(screen.getByText("Drafted message")).toBeInTheDocument();
+        expect(screen.getByText("ahmed")).toBeInTheDocument();
     });
 
     it("renders DeletedMessage when myChat.messageState is 3", () => {
@@ -49,6 +49,7 @@ describe("LastMessage component", () => {
         const myChat = {
             drafted: false,
             messageState: 1,
+            attachmentName: "elsa.jpg",
             messageType: "image"
         };
         render(<LastMessage myChat={myChat} />);
@@ -59,6 +60,7 @@ describe("LastMessage component", () => {
         const myChat = {
             drafted: false,
             messageState: 1,
+            attachmentName: "elsa.mp4",
             messageType: "video"
         };
         render(<LastMessage myChat={myChat} />);

@@ -17,7 +17,7 @@ const LastMessage = ({ myChat }) => {
     
     return (
         <div className='last-message'>
-            {myChat.draftMessageContent.length > 0 ? (
+            {myChat.draftMessageContent && myChat.draftMessageContent.length > 0 ? (
                 <DraftedMessage message={myChat.draftMessageContent} />
             ) : myChat.messageState === 3 ? (
                 <DeletedMessage sender={myChat.sender} /> 

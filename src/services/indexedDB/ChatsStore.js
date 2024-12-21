@@ -150,7 +150,7 @@ export class ChatsStore extends BaseStore {
     }
 
     async getChat(id) {
-        return this._executeTransaction('readwrite', async (store) => {
+        return this._executeTransaction('readonly', async (store) => {
             try {
                 const request = store.get(id);
                 const chat = await new Promise((resolve, reject) => {
@@ -159,10 +159,28 @@ export class ChatsStore extends BaseStore {
                 });
                 return chat;
             } catch (error) {
-                console.error('Error inserting chats:', error)
+                console.error('Error getting chat:', error)
             }
         })
     }
+
+    async getAllDMs() {
+        return this._executeTransaction('readonly', async (store) => {
+            try {
+                const request = store.getAll();
+                const chats = await new Promise((resolve, reject) => {
+                    request.onsuccess = () => resolve(request.result);
+                    request.onerror = () => reject(request.error);
+                });
+                const filteredChats = chats?.filter((chat) => chat.type === "DM")
+                return filteredChats
+            } catch (error) {
+                console.error('Error inserting chats:', error)
+                return []
+            }
+        })
+    }
+
     async updateChat(id,data) {
         return this._executeTransaction('readwrite', async (store) => {
             try {

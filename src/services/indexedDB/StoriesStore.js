@@ -30,12 +30,13 @@ export class StoriesStore extends BaseStore {
         return this._executeTransaction('readwrite', async (store) => {
             try {
                 if (stories) {
-                    stories.forEach((story) => {
-                        store.add({
+                    const result = stories.map(async (story) => {
+                        await store.put({
                             ...story,
                             userId: userId
                         })
                     })
+                    await Promise.all(result)
                 }
                 console.log('stories inserted successfully!')
             } catch (error) {

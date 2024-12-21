@@ -12,6 +12,7 @@ import PendingSend from '../PendingSend/PendingSend'
 import { useChat } from '@/contexts/ChatContext'
 import useAuth from '@/hooks/useAuth'
 import LoadingData from '../LoadingData/LoadingData'
+import { useSidebar } from '@/contexts/SidebarContext'
 
 const ChatItem = ({ index, standaloneChat }) => {
     const { selectChat } = useChat()
@@ -19,6 +20,7 @@ const ChatItem = ({ index, standaloneChat }) => {
     const [isOverflowing, setIsOverflowing] = useState(false)
     const [myChat, setMyChat] = useState(null)
     const userNameRef = useRef(null)
+    const { activePage , setActivePage } = useSidebar()
     const maxLength = standaloneChat.isMuted ? 33 : standaloneChat.name === user.name ? 30 : 15
 
     const trimName = (name) => {
@@ -29,7 +31,12 @@ const ChatItem = ({ index, standaloneChat }) => {
     const handleClick = (e) => {
         const infoElement = e.target.closest('.info')
         if (!infoElement) {
-            selectChat(standaloneChat)
+            if (activePage === 'search') {
+                if (standaloneChat.id !== null)
+                    setActivePage('chat')
+            }
+            if (standaloneChat.id !== null)
+                selectChat(standaloneChat)
         }
     }
 
@@ -37,7 +44,7 @@ const ChatItem = ({ index, standaloneChat }) => {
         setMyChat((prevChat) => ({
             ...prevChat,
             ...standaloneChat,
-            messageTime: checkDisplayTime(standaloneChat.messageTime),
+            messageTime: standaloneChat.messageTime ? checkDisplayTime(standaloneChat.messageTime) : null,
             name: trimName(standaloneChat.name)
         }))
 
@@ -88,7 +95,7 @@ const ChatItem = ({ index, standaloneChat }) => {
                         </div>
                         <div className='ticks-info'>
                             <div className='tick'>
-                                {myChat.type !== "CHANNEL" && (myChat.messageState != null && myChat.messageState === 0 && <SentTicks data-testid='sent-tick' />) ||
+                                {myChat.type && myChat.type !== "CHANNEL" && (myChat.messageState != null && myChat.messageState === 0 && <SentTicks data-testid='sent-tick' />) ||
                                     (myChat.messageState != null && myChat.messageState === 1 && (
                                         <DeliveredTicks data-testid='delivered-tick' />
                                     )) ||
@@ -99,9 +106,9 @@ const ChatItem = ({ index, standaloneChat }) => {
                                         <PendingSend data-testid='pending-tick' />
                                     ))}
                             </div>
-                            <div className='message-time'>
+                            {myChat.messageTime && <div className='message-time'>
                                 <span className={myChat.unreadMessageCount ? 'unread-time' : ''}>{myChat.messageTime}</span>
-                            </div>
+                            </div>}
                         </div>
                     </div>
                     <div className='messaging-info'>

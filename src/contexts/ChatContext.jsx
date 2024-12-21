@@ -85,6 +85,15 @@ export const ChatProvider = ({ children }) => {
         }
     }
 
+    const handlePinnedClick = (messageId) => {
+        const targetElement = document.getElementById(`message-${messageId}`);
+        if (targetElement) {
+            targetElement.scrollIntoView({ behavior: "smooth", block: "center" });
+        } else {
+            console.log("Target message not found:", messageId);
+        }
+    };
+
     useEffect(() => {
         if (currentChat) {
             try {
@@ -161,11 +170,11 @@ export const ChatProvider = ({ children }) => {
 
     const sendMessage = async (data, chat = null) => {
         setSending(true);
-        const usedChat = chat ? chat : currentChat
+        const usedChat = chat ? chat : currentChatRef.current
         const newMessage = {
             chatId: usedChat.id,
             forwarded: false,
-            expiresAfter: currentChat.selfDestruct ? currentChat.selfDestruct : null,
+            expiresAfter: usedChat.selfDestruct ? usedChat.selfDestruct : null,
             sentAt: new Date().toISOString(),
             media: '',
             extension: '',
@@ -193,7 +202,7 @@ export const ChatProvider = ({ children }) => {
         newMessage.deliveredAt = ''
         newMessage.readAt = ''
         newMessage.deleted = false
-        newMessage.sender = user.name
+        newMessage.sender = user.userName
         newMessage.state = 4
         newMessage.time = new Date()
 
@@ -204,7 +213,7 @@ export const ChatProvider = ({ children }) => {
                     if (prevMessages) {
                         return [{ id: Date.now(), ...newMessage }, ...prevMessages]
                     }
-                    return [newMessage]
+                    return [{...newMessage}]
                 })
                 setParentMessage(null)
             }
@@ -342,11 +351,12 @@ export const ChatProvider = ({ children }) => {
         }
     }
 
-    const searchChat = async (query) => {
+    const searchChat = async (query, incomingChat = null) => {
+        let onGoingChat = incomingChat ? incomingChat : currentChat
         try {
-            if (currentChat) {
-                console.log("curretChat",currentChat)
-                const response = await dbRef.current.getMessagesForChat(currentChat.id)
+            if (onGoingChat) {
+                console.log("onGoingChat",onGoingChat)
+                const response = await dbRef.current.getMessagesForChat(onGoingChat.id)
                 const filteredMessages = response.filter((message) => message.content.toLowerCase().includes(query.toLowerCase()))
                 return filteredMessages
             } else {
@@ -601,7 +611,7 @@ export const ChatProvider = ({ children }) => {
             }
             const chat = await dbRef.current.getChat(myMessageData.chatId)
 
-            if(myMessageData.type == "EVENT") {
+            if(myMessageData.type === "EVENT") {
                 let participantKeys = chat.participantKeys;
                 if(!participantKeys[1]) {
                     participantKeys[1] = parseInt(myMessageData.content);
@@ -636,6 +646,7 @@ export const ChatProvider = ({ children }) => {
             }
             
             try {
+                
                 const mappedMessage = await mapMessage(myMessageData)
                 await dbRef.current.insertMessageWrapper({ ...mappedMessage, drafted: false })
                 setMessageReceived(true)
@@ -993,6 +1004,7 @@ export const ChatProvider = ({ children }) => {
                 deleteComment,
                 removeFromChat,
                 sending,
+                handlePinnedClick,
                 handleGetMembers,
                 saveGroupSettings,
                 handleGetGroupSettings,

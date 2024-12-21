@@ -132,23 +132,7 @@ const GroupMembers = ({ filteredMembers, handleQueryChange, amIAdmin, handleAddA
                             />
                         }
 
-                        {/* Member permissions button */}
-                        {amIAdmin && !member.isAdmin && member.id !== user.id && (
-                            <button 
-                                className="permissions-btn"
-                                onClick={(e) => {
-                                    e.stopPropagation();  // Prevent closing menu on click
-                                    setMenuState({
-                                        isVisible: !menuState.isVisible,
-                                        selectedUser: member,
-                                    });
-                                }}
-                            >
-                            </button>
-                        )}
-
-                        {/* Permission checkboxes */}
-                        {menuState.isVisible && menuState.selectedUser === member && (
+                        { menuState.isVisible && menuState.selectedUser === member && (
                             <div
                                 className="absolute top-full left-0 bg-[#081d3c] shadow-lg rounded-md z-50 mt-1 cursor-pointer text-white transition-all duration-300 ease-in-out"
                                 ref={menuRef}

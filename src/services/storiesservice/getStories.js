@@ -39,12 +39,20 @@ export const getStories = async (id) => {
                 }
 
                 try {
-                    const { iLiked, likes, iViewed, views } = await getStoryLikesAndViews(story.id)
-                    flattenedStory.liked = iLiked
-                    flattenedStory.viewed = iViewed
-                    flattenedStory.likes = likes
-                    flattenedStory.views = views
+                    // const { iLiked, likes, iViewed, views } = await getStoryLikesAndViews(story.id)
+                    // flattenedStory.liked = iLiked
+                    // flattenedStory.viewed = iViewed
+                    // flattenedStory.likes = likes
+                    // flattenedStory.views = views
+                    flattenedStory.liked = false
+                    flattenedStory.viewed = false
+                    flattenedStory.likes = 0
+                    flattenedStory.views = 0
                 } catch (error) {
+                    flattenedStory.liked = false
+                    flattenedStory.viewed = false
+                    flattenedStory.likes = 0
+                    flattenedStory.views = 0
                     console.error(`Error fetching likes and views for story ID ${story.id}:`, error)
                 }
 
@@ -92,6 +100,7 @@ export const getUsersWithStoriesCleaned = async () => {
             }
             myStories.push(flattenedStory)
         })
+        console.log("STORIES", myStories)
         return [myStories, iHaveStory]
     } catch (error) {
         console.log('Error ', error.message)

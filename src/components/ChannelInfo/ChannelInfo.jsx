@@ -80,7 +80,7 @@ const ChannelInfo = ({ currentChat, onClose }) => {
             </div>
 
             <div className="border-t border-gray-600 pt-4">
-                <GroupMembersContainer chatType={"channel"}/>
+                <GroupMembersContainer chatType={'channel'}/>
             </div>
         </div>
     );

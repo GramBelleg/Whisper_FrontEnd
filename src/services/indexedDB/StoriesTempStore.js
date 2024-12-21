@@ -11,7 +11,6 @@ export class StoriesTempStore extends BaseStore {
             try {
                 stories.forEach(async (story) => {
                     const storyyRequest = store.put(story)
-                    console.log(story)
                     await new Promise((resolve, reject) => {
                         storyyRequest.onsuccess = () => resolve(storyyRequest.result)
                         storyyRequest.onerror = () => reject(storyyRequest.error)
