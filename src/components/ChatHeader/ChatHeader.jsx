@@ -5,7 +5,6 @@ import SearchSingleChat from '../SearchSingleChat/SearchSingleChat'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faBell, faBellSlash, faClock, faEllipsisV, faGear, faInfo, faPhone, faTrash, faUsers } from '@fortawesome/free-solid-svg-icons'
 import { useModal } from '@/contexts/ModalContext'
-import GroupInfoContainer from '../GroupInfo/GroupInfoContainer'
 import SelfDestructModal from '../Modals/SelfDestructModel/SelfDestructModal'
 
 const ChatHeader = ({ handleInfoOpen, infoOpen, handleVoiceCall }) => {
@@ -150,9 +149,6 @@ const ChatHeader = ({ handleInfoOpen, infoOpen, handleVoiceCall }) => {
                     )}
                 </div>
             </div>
-            {isChatInfoOpen && currentChat.type === "GROUP" && 
-            <GroupInfoContainer currentChat={currentChat}  onClose={()=>setIsChatInfoOpen(false)}/>}
-            {}
         </div>
     )
 }
