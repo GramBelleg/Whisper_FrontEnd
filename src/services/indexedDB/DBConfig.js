@@ -35,6 +35,16 @@ export const DB_CONFIG = {
             name: 'stories_temp',
             keyPath: 'userId',
             indexes: [{ name: 'userId', keyPath: 'userId', options: { unique: true } }]
-        }
+        },
+        usersadmin: {
+            name: 'usersadmin',
+            keyPath: 'id',
+            indexes: []
+        },
+        groups: {
+            name: 'groups',
+            keyPath: 'chatId',
+            indexes: []
+        },
     }
 }

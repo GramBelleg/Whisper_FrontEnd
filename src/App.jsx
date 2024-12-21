@@ -12,6 +12,7 @@ import { initializeMock } from './mocks/mock'
 import { useEffect, useState } from 'react'
 import LoadingData from './components/LoadingData/LoadingData'
 import { getChatsCleaned } from './services/chatservice/getChats'
+import { getUsers, getGroups } from './services/adminservice/getData'
 import { useWhisperDB } from './contexts/WhisperDBContext'
 import { getMessagesForChatCleaned, getPinnedMessagesForChat } from './services/chatservice/getMessagesForChat'
 import { getStories, getUsersWithStoriesCleaned } from './services/storiesservice/getStories'
@@ -27,6 +28,8 @@ import { toast, ToastContainer } from "react-toastify";
 import NotificationMessage from './components/NotificationMessage/NotificationMessage'
 import "react-toastify/dist/ReactToastify.css";
 import { onMessage } from "firebase/messaging";
+import { getUsersWithStoriesCleaned } from './services/storiesservice/getStories'
+import AdminPage from './pages/AdminPage'
 
 function App() {
     const { user, token, handleUpdateUser } = useAuth()
@@ -66,33 +69,16 @@ function App() {
     }
 
     useEffect(() => {
-        const init = async () => { 
-            try {
-                await dbRef.current.clearDB()
-                requestPermission();
-                await loadChats()
-                await loadMessages()
-                await loadPinnedMessages()
-                await loadStories()
-                await loadUsers()
-            } catch (error) {
-                console.log(error)
-            } finally {
-                setLoading(false)
-                setAppLoaded(true)
-            }
-        }
 
-        const loadUsers = async () => {
+        const loadGroups = async () => {
             try {
-                let allUsers = await getAllUsers()
-                if (allUsers) {
-                    await dbRef.current.insertUsers(allUsers)
+                let data = await getGroups()
+                if (data && data.length > 0) {
+                    await dbRef.current.insertGroups(data)
                 }
             } catch (error) {
-                console.error(error)
+                console.log(error)
             }
-
         }
 
         const loadChats = async () => {
@@ -212,6 +198,54 @@ function App() {
                 console.log(error)
             }
         }
+        
+        const loadUsers = async () => {
+            try {
+                let allUsers = await getAllUsers()
+                if (allUsers) {
+                    await dbRef.current.insertUsers(allUsers)
+                }
+            } catch (error) {
+                console.error(error)
+            }
+        }
+
+        const loadAdminUsers = async () => {
+            try {
+                let data = await getUsers()
+                if (data && data.length > 0) {
+                    console.log("data",data)
+                    await dbRef.current.insertUsersAdminStore(data)
+                }
+            } catch (error) {
+                console.log(error)
+            }
+        }
+
+        const init = async () => { 
+            try {
+                await dbRef.current.clearDB()
+                requestPermission();
+                if(user.role !== 'Admin')
+                {   
+                    await loadChats()
+                    await loadMessages()
+                    await loadPinnedMessages()
+                    await loadStories()
+                    await loadUsers()
+                }
+                else
+                {
+                    await loadGroups()
+                    await loadAdminUsers()
+                }
+            } catch (error) {
+                console.log(error)
+            } finally {
+                setLoading(false)
+                setAppLoaded(true)
+            }
+        }
 
         try {
             if (user) {
@@ -228,15 +262,16 @@ function App() {
             <Router>
                 <Routes>
                     {user ? (
+                        console.log("user",user),
                         token && token !== 'undefined' ? (
-                            user.role !== 'admin' ? (
+                            user.role !== 'Admin' ? (
                                 <>
                                     {!loading ? <Route path='/' element={<Home />} /> : <Route path='/' element={<LoadingData />} />}
                                     <Route path='/*' element={<Navigate to='/' />} />
                                 </>
                             ) : (
                                 <>
-                                    <Route path='/dashboard' element={<div>Dashboard</div>} />
+                                    <Route path='/dashboard' element={ <AdminPage />} />
                                     <Route path='/' element={<Navigate to='/dashboard' />} />
                                     <Route path='/*' element={<Navigate to='/dashboard' />} />
                                 </>
