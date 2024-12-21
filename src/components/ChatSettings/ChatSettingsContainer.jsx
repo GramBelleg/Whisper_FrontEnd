@@ -33,7 +33,7 @@ const ChatSettingsContainer = ({chatType}) => {
                     : await handleGetChannelSettings();
 
                 console.log(response)
-                setPrivacy(response.public?'Public':'Private')
+                setPrivacy(response.public?'Private':'Public')
                 if(chatType === "group")
                 setGroupLimit(response.maxSize)
             } catch (error) {
