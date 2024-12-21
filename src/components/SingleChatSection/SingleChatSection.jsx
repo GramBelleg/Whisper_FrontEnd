@@ -20,11 +20,13 @@ import ChatHeader from '../ChatHeader/ChatHeader'
 import GroupInfoContainer from '../GroupInfo/GroupInfoContainer'
 import ChannelInfoContainer from '../ChannelInfo/ChannelInfoContainer'
 import ThreadsBar from '../Threads/ThreadsBar'
+import SingleChatSearchContainer from '../SingleChatSearch/SingleChatSearchContainer'
 
 const SingleChatSection = () => {
     const { currentChat, pinnedMessages, handlePinnedClick,
          isThreadOpenned, setIsThreadOpenned, setThreadMessage } = useChat()
     const [infoOpen, setInfoOpen] = useState(false)
+    const [searchOpen, setSearchOpen] = useState(false)
     const { startCall, inCall } = useVoiceCall();
     const {user} = useAuth();
     const {getVoiceCallSymmetricKey} = useChatEncryption()
@@ -65,7 +67,8 @@ const SingleChatSection = () => {
     return (
         <div className="threads-chat-container">
             <div className='single-chat-container'>
-            <ChatHeader infoOpen={infoOpen}  handleVoiceCall={handleVoiceCall} handleInfoOpen={ () => setInfoOpen(true) }/>
+            <ChatHeader infoOpen={infoOpen}  handleVoiceCall={handleVoiceCall} handleInfoOpen={ () => setInfoOpen(true) } 
+                handleSearchOpen={ () => setSearchOpen(true) } isSearchOpen={searchOpen}/>
             {inCall && <VoiceCallHeader />}
                 <div className='messages'>
                     <SingleChatMessagesList />
@@ -94,7 +97,8 @@ const SingleChatSection = () => {
                 <GroupInfoContainer currentChat={currentChat} onClose={()=>setInfoOpen(false)} />}
                 {infoOpen && currentChat.type === "CHANNEL" && 
                 <ChannelInfoContainer currentChat={currentChat} onClose={()=>setInfoOpen(false)} />}
-                
+                {searchOpen && currentChat.type === "DM" && 
+                <SingleChatSearchContainer onClose={()=>setSearchOpen(false)} />}
                 </div>
             </div>
             <div className='Threads'>
