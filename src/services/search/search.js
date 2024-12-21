@@ -1,5 +1,6 @@
 import apiUrl from "@/config"
 import axios from "axios"
+import axiosInstance from "../axiosInstance"
 
 
 
@@ -56,14 +57,18 @@ export const chatsLocalSearch = async (chatId, query) => {
 
 export const messagesLocalSearch = async (chatId, query, type) => {
     try {
+        console.log("heree", chatId, query, type)
         const token = localStorage.getItem('token')
-        const response = await axios.get(`${apiUrl}/api/messages/${chatId}/search?query=${query}&type=${type}`,
-                { withCredentials: true }, {
-                headers: {
-                    Authorization: `Bearer ${token}`
-                }
+        const response = await axios.get(`${apiUrl}/api/messages/${chatId}/searchMessages`, {
+            withCredentials: true,
+            headers: {
+                Authorization: `Bearer ${token}`
             },
-        )
+            params: {
+                query: query,
+                type: type
+            }
+        });
         return response.data.messages
     } catch (error) {
         console.log(error)

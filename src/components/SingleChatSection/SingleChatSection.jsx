@@ -16,11 +16,13 @@ import useChatEncryption from '@/hooks/useChatEncryption'
 import ChatHeader from '../ChatHeader/ChatHeader'
 import ThreadsBar from '../Threads/ThreadsBar'
 import ChatInfoPage from '@/pages/ChatInfoPage'
+import ChatSearchContainer from '../ChatSearch/ChatSearchContainer'
 
 const SingleChatSection = () => {
     const { currentChat, pinnedMessages, handlePinnedClick,
          isThreadOpenned, setIsThreadOpenned, setThreadMessage } = useChat()
     const [infoOpen, setInfoOpen] = useState(false)
+    const [searchOpen, setSearchOpen] = useState(false)
     const { startCall, inCall } = useVoiceCall();
     const {user} = useAuth();
     const {getVoiceCallSymmetricKey} = useChatEncryption()
@@ -45,6 +47,11 @@ const SingleChatSection = () => {
         const messageId = event.messageId; 
         handlePinnedClick(messageId)
     };
+    const handleInfoOpen = ()=>
+    {
+        setInfoOpen(true)
+        setSearchOpen(false)
+    }
 
 
        
@@ -60,8 +67,9 @@ const SingleChatSection = () => {
     return (
         <div className='threads-chat-container'>
             <div className='single-chat-container'>
-                <ChatHeader infoOpen={infoOpen} handleVoiceCall={handleVoiceCall} handleInfoOpen={() => setInfoOpen(true)} />
-                {inCall && <VoiceCallHeader />}
+            <ChatHeader infoOpen={infoOpen}  handleVoiceCall={handleVoiceCall} handleInfoOpen={handleInfoOpen} 
+                handleSearchOpen={ () => setSearchOpen(true) } isSearchOpen={searchOpen}/>
+            {inCall && <VoiceCallHeader />}
                 <div className='messages'>
                     <SingleChatMessagesList />
                     {pinnedMessages.length > 0 && (
@@ -92,7 +100,11 @@ const SingleChatSection = () => {
                 <div>
                 {infoOpen && (currentChat.type === "GROUP" || currentChat.type === "CHANNEL") && 
                 <ChatInfoPage currentChat={currentChat} onClose={()=>setInfoOpen(false)} />}
-                
+                { searchOpen &&
+                    <ChatSearchContainer 
+                        onClose={()=>setSearchOpen(false)} 
+                        handleSearchMessageClick={handlePinnedClick}/>
+                    }
                 </div>
             </div>
             <div className='Threads'>
