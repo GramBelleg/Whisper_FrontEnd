@@ -11,6 +11,7 @@ const GroupMembersContainer = ({chatType}) => {
     const [permissionsState, setPermissionsState] = useState({});
     const { user } = useAuth()
     const filteredMembers = members?.filter((member) => member.userName?.toLowerCase().includes(query.toLowerCase()))
+    // console.log(filteredMembers)
     const {
         handleGetMembers,
         addAdmin,
@@ -114,11 +115,12 @@ const GroupMembersContainer = ({chatType}) => {
     }, [])
 
 
-    const handleQueryChange = (event) => {
-        setQuery(event.target.value)
+    const handleQueryChange = (value) => {
+        setQuery(value)
     }
     return (
         <GroupMembers 
+            query={query}
             filteredMembers={filteredMembers} 
             handleQueryChange={handleQueryChange}
             handleAddAmin={handleAddAmin}

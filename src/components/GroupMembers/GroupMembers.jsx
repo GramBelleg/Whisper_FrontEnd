@@ -8,6 +8,7 @@ import './GroupMembers.css';
 
 
 const GroupMembers = ({
+    query,
     filteredMembers,
     handleQueryChange,
     amIAdmin,
@@ -57,7 +58,7 @@ const GroupMembers = ({
     return (
         <div className='p-4 rounded-md' onClick={handleCloseMenu}>
             <h2 className='text-lg text-light text-left mb-6'>{type.charAt(0).toUpperCase() + type.slice(1)} {type === 'group' ? 'Members' : 'Subscribers'}</h2>
-            <SearchBar handleQueryChange={handleQueryChange} className='pd-4' />
+            <SearchBar searchQuery={query} setSearchQuery={handleQueryChange} className='pd-4' />
 
             <div className='members-list mg-4'>
                 {filteredMembers?.map((member) => (
@@ -72,7 +73,7 @@ const GroupMembers = ({
                         <label htmlFor={`user-${member.id}`}>{member.userName || 'Unknown User'}</label>
 
                         {   
-                            type === "group" && amIAdmin && !member.isAdmin && member.id !== user.id && <FontAwesomeIcon
+                            amIAdmin && !member.isAdmin && member.id !== user.id && <FontAwesomeIcon
                                 icon={faChevronDown}
                                 className='chevron-icon'
                                 data-testid="chevron-icon"
