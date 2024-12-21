@@ -12,8 +12,8 @@ import { toggleGroupFilter } from '@/services/adminservice/adminActions'
 const AllGroups = ({ groups, setReload }) => {
     const { pop } = useStackedNavigation()
     const [groupList, setGroupList] = useState(() => {
-        const uniqueGroups = Array.from(new Set(groups.map(g => g.id)))
-            .map(id => groups.find(g => g.id === id))
+        const uniqueGroups = Array.from(new Set(groups.map(g => g.chatId)))
+            .map(chatId => groups.find(g => g.chatId === chatId))
             .map(group => ({
                 ...group,
                 objectLink: null,

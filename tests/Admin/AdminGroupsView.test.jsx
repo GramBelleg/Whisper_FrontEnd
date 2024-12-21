@@ -35,6 +35,8 @@ vi.mock('@fortawesome/react-fontawesome', () => ({
 describe('AllGroups Component', () => {
   const mockGroups = [
     { chatId: 1, name: 'Group 1', filter: false, picture: null, blobData: null },
+    { chatId: 2, name: 'Group 2', filter: false, picture: null, blobData: null },
+
   ];
 
   beforeEach(() => {
@@ -45,6 +47,8 @@ describe('AllGroups Component', () => {
   it('renders groups correctly', async () => {
     render(<AllGroups groups={mockGroups} setReload={mockSetReload} />);
     expect(screen.getByText('Group 1')).toBeInTheDocument();
+    expect(screen.getByText('Group 2')).toBeInTheDocument();
+
   });
 
   it('filters groups based on search input', () => {
