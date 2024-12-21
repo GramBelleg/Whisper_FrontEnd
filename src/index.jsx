@@ -15,24 +15,23 @@ import AgoraRTC, { AgoraRTCProvider } from 'agora-rtc-react';
 
 AgoraRTC.setLogLevel(3)
 const agoraClient = AgoraRTC.createClient({ mode: 'rtc', codec: 'vp8' })
-    
 
 createRoot(document.getElementById('root')).render(
-    <ProfileSettingsProvider>
-        <WhisperDBProvider>
-            <AuthProvider>
-                <GoogleOAuthProvider clientId={import.meta.env.VITE_APP_GOOGLE_CLIENT_ID}>
-                        <StoriesProvider>
-                            <SidebarProvider>
-                                <ChatProvider>
-                                    <AgoraRTCProvider client={agoraClient}>
-                                        <App />
-                                    </AgoraRTCProvider>
-                                </ChatProvider>
-                            </SidebarProvider>
-                        </StoriesProvider>
-                </GoogleOAuthProvider>
-            </AuthProvider>
-        </WhisperDBProvider>
-    </ProfileSettingsProvider>
+    <WhisperDBProvider>
+        <AuthProvider>
+            <GoogleOAuthProvider clientId={import.meta.env.VITE_APP_GOOGLE_CLIENT_ID}>
+                <ProfileSettingsProvider>
+                    <StoriesProvider>
+                        <SidebarProvider>
+                            <ChatProvider>
+                                <AgoraRTCProvider client={agoraClient}>
+                                    <App />
+                                </AgoraRTCProvider>
+                            </ChatProvider>
+                        </SidebarProvider>
+                    </StoriesProvider>
+                </ProfileSettingsProvider>
+            </GoogleOAuthProvider>
+        </AuthProvider>
+    </WhisperDBProvider>
 )
