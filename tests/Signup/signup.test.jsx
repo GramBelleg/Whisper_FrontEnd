@@ -26,6 +26,7 @@ describe('SignupContainer', () => {
 
     beforeEach(() => {
         vi.clearAllMocks()
+        process.env.NODE_ENV = 'development'
         useAuth.default.mockReturnValue({
             handleSignUp: mockHandleSignUp,
             loading: false,
