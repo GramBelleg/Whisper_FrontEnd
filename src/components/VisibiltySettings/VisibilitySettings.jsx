@@ -226,7 +226,6 @@ const VisibilitySettings = () => {
                 <div className='who-can-item'>
                     <h2>Notifications</h2>
                     <div className='flex justify-between'>
-                        {/* <label> */}
                             Message Preview
                             <div className='toggle-switch'>
                             <input
@@ -238,7 +237,6 @@ const VisibilitySettings = () => {
                             />
                             <label htmlFor='messagePreview' className='toggle-label'></label>
                         </div>
-                        {/* </label> */}
                     </div>
                 </div>
             </div>
