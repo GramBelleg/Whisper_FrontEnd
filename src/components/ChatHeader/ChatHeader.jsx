@@ -1,7 +1,6 @@
 import { useEffect, useState } from 'react'
 import { useChat } from '@/contexts/ChatContext'
 import './ChatHeader.css'
-import SearchSingleChat from '../SearchSingleChat/SearchSingleChat'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faBell, faBellSlash, faClock, faEllipsisV, faGear, faInfo, faPhone, faSearch, faTrash, faUsers } from '@fortawesome/free-solid-svg-icons'
 import { useModal } from '@/contexts/ModalContext'
