@@ -1,15 +1,16 @@
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faClose, faSearch } from '@fortawesome/free-solid-svg-icons'
 import SearchBar from '../SearchBar/SearchBar'
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import { useChat } from '@/contexts/ChatContext'
+import { chatsLocalSearch } from '@/services/search/search'
 
 const SearchSingleChat = () => {
     const [showSearchBar, setShowSearchBar] = useState(false)
     const [searchResults, setSearchResults] = useState([])
     const [query, setQuery] = useState('')
     const [isDropdownVisible, setIsDropdownVisible] = useState(false)
-    const { searchChat } = useChat()
+    const { searchChat, currentChat } = useChat()
 
     const handleSearchedClick = (event) => {
         const messageId = event.target.getAttribute('data-message-id')
@@ -24,30 +25,42 @@ const SearchSingleChat = () => {
         setIsDropdownVisible(false)
     };
 
-    const onSearch = async (searchText) => {
+    const onSearch = async () => {
         try {
-            const results = await searchChat(searchText)
+            const results = await chatsLocalSearch(currentChat.id, query)// searchChat(searchText)
             setSearchResults(results)
             console.log(results)
         } catch (error) {
             console.log(error)
         }
     }
-    const handleQueryChange = (e) => {
-        setQuery(e.target.value)
-        if (e.target.value.length > 0) {
+
+    // useEffect(() => {
+    //     if (query && query.length > 0) {
+    //         setIsDropdownVisible(true)
+    //         //onSearch(query)
+    //     } else {
+    //         setIsDropdownVisible(false)
+    //     }
+    // }, [query])
+
+    useEffect(() => {
+        if (searchResults && searchResults.length > 0) {
             setIsDropdownVisible(true)
-            onSearch(e.target.value)
         } else {
             setIsDropdownVisible(false)
         }
-    }
+    }, [searchResults])
+
+    useEffect(() => {
+        setSearchResults([])
+    },[])
 
     return (
         <div className='relative flex items-center'>
             {showSearchBar && (
                 <div className='absolute left-0 transform -translate-x-full w-full sm:w-80 shadow-lg rounded-md p-2 z-10'>
-                    <SearchBar handleQueryChange={handleQueryChange} />
+                    <SearchBar setSearchQuery={setQuery} onEnter={onSearch}/>
                     {isDropdownVisible && searchResults && searchResults.length > 0 && (
                         <ul className='absolute left-0 mt-2 w-full bg-dark shadow-lg rounded-md max-h-60 overflow-y-auto'>
                             {searchResults.map((result, index) => (

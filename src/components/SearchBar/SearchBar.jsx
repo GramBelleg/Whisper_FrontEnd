@@ -4,7 +4,7 @@ import './SearchBar.css';
 
 const SearchBar = ({ searchQuery, setSearchQuery, onEnter }) => {
     
-
+    
     const handleInputChange = (e) => {
         setSearchQuery(e.target.value);
     };
