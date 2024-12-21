@@ -1,10 +1,10 @@
 import { StackedNavigationProvider } from '@/contexts/StackedNavigationContext/StackedNavigationContext'
 import ChatSearch from './ChatSearch'
 
-const ChatSearchContainer = ({onClose}) => {
+const ChatSearchContainer = ({onClose, handleSearchMessageClick}) => {
   return (
     <StackedNavigationProvider>
-        <ChatSearch onClose={onClose}/>
+        <ChatSearch onClose={onClose} handleSearchMessageClick={handleSearchMessageClick}/>
     </StackedNavigationProvider>
 
   )

@@ -7,7 +7,7 @@ import { useChat } from '@/contexts/ChatContext';
 import ChatMessage from '../ChatMessage/ChatMessage';
 import { messagesLocalSearch } from '@/services/search/search';
 
-const ChatSearch = ({ onClose }) => {
+const ChatSearch = ({ onClose, handleSearchMessageClick }) => {
     const [isVisible, setIsVisible] = useState(false);
     const [query, setQuery] = useState('');
     const [filter, setFilter] = useState('text');
@@ -21,6 +21,11 @@ const ChatSearch = ({ onClose }) => {
             onClose();
         }, 300);
     };
+    const onMessageClick = (messageId) =>
+    {
+        handleSearchMessageClick(messageId);
+        handleClose();
+    }
 
 
     const handleGroupSearch = async () =>
@@ -119,7 +124,7 @@ const ChatSearch = ({ onClose }) => {
             <div className="search-results">
                 {searchResults?.map((searchResult) => (
                     <div className="message-search-result" 
-                        onClick={() => handleSearchMessageClick(searchResult)}>
+                        onClick={() => onMessageClick(searchResult.id)}>
                         <ChatMessage message={searchResult} hideActions={true} />
                     </div>
                 ))}

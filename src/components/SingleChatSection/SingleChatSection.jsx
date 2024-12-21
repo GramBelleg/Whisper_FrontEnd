@@ -98,7 +98,9 @@ const SingleChatSection = () => {
                 {infoOpen && currentChat.type === "CHANNEL" && 
                 <ChannelInfoContainer currentChat={currentChat} onClose={()=>setInfoOpen(false)} />}
                 { searchOpen &&
-                <ChatSearchContainer onClose={()=>setSearchOpen(false)} />
+                <ChatSearchContainer 
+                    onClose={()=>setSearchOpen(false)} 
+                    handleSearchMessageClick={handlePinnedClick}/>
                 }
                 </div>
             </div>
