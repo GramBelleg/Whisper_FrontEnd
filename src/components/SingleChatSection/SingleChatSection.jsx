@@ -20,7 +20,7 @@ import ChatHeader from '../ChatHeader/ChatHeader'
 import GroupInfoContainer from '../GroupInfo/GroupInfoContainer'
 import ChannelInfoContainer from '../ChannelInfo/ChannelInfoContainer'
 import ThreadsBar from '../Threads/ThreadsBar'
-import SingleChatSearchContainer from '../SingleChatSearch/SingleChatSearchContainer'
+import ChatSearchContainer from '../ChatSearch/ChatSearchContainer'
 
 const SingleChatSection = () => {
     const { currentChat, pinnedMessages, handlePinnedClick,
@@ -97,8 +97,8 @@ const SingleChatSection = () => {
                 <GroupInfoContainer currentChat={currentChat} onClose={()=>setInfoOpen(false)} />}
                 {infoOpen && currentChat.type === "CHANNEL" && 
                 <ChannelInfoContainer currentChat={currentChat} onClose={()=>setInfoOpen(false)} />}
-                {searchOpen && currentChat.type === "DM" && 
-                <SingleChatSearchContainer onClose={()=>setSearchOpen(false)} />}
+                
+                <ChatSearchContainer onClose={()=>setSearchOpen(false)} />
                 </div>
             </div>
             <div className='Threads'>
