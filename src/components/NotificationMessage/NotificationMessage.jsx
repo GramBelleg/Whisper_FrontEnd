@@ -3,15 +3,9 @@ const NotificationMessage = ({ notification }) => {
     return (
       <>
         <div id="notificationHeader">
-          {/* image is optional */}
-          {/* {notification.image && (
-            <div id="imageContainer">
-              <img src={notification.image} width={100} />
-            </div>
-          )} */}
-          <span>{notification.title}</span>
+          <h3 className="font-bold">{notification.title}:</h3>
         </div>
-        <div id="notificationBody">"notification.body"</div>
+        <div id="notificationBody">{notification.body}</div>
       </>
     );
   };
