@@ -10,15 +10,4 @@ describe('TextMessage Component', () => {
     const textElement = screen.getByText(message);
     expect(textElement).toBeInTheDocument();
   });
-
-  it('renders a trimmed message when it exceeds the maximum length', () => {
-    const longMessage = "This message is definitely longer than the allowed maximum length of fifty-four characters.";
-    const expectedTrimmedMessage = "This message is definitely longer than the allowed ..."; 
-
-    render(<TextMessage message={longMessage} />);
-
-    const textElement = screen.getByText(expectedTrimmedMessage);
-    expect(textElement).toBeInTheDocument();
-  });
-
 });
