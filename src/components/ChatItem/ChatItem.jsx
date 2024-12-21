@@ -13,6 +13,8 @@ import { useChat } from '@/contexts/ChatContext'
 import useAuth from '@/hooks/useAuth'
 import LoadingData from '../LoadingData/LoadingData'
 import { useSidebar } from '@/contexts/SidebarContext'
+import noUser from '../../assets/images/no-user.png'
+
 
 const ChatItem = ({ index, standaloneChat }) => {
     const { selectChat } = useChat()
@@ -72,7 +74,7 @@ const ChatItem = ({ index, standaloneChat }) => {
             <div className='single-chat-content'>
                 <div className={`profile-pic-wrapper ${myChat.hasStory ? 'has-story' : ''}`}>
                     <img
-                        src={myChat.profilePic}
+                        src={myChat.profilePic ? myChat.profilePic : noUser}
                         className={`profile-pic`} 
                         onError={(e) => handleNoUserImage(e)}
                     />

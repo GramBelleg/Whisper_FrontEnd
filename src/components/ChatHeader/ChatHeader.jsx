@@ -62,7 +62,7 @@ const ChatHeader = ({ handleInfoOpen, infoOpen, handleVoiceCall }) => {
                 <span className="header-title">{currentChat.name}</span>
                 {currentChat.type === "DM" ? (
                     <span className="header-subtitle">
-                        Last seen at {currentChat.lastSeen}
+                        {currentChat.lastSeen && <span>Last seen at {currentChat.lastSeen}</span>}
                         {currentChat.selfDestruct && <span> - Self Destruct in {currentChat.selfDestruct} seconds</span>}
                     </span>
                 ):(
