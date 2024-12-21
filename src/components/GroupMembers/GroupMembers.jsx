@@ -4,51 +4,27 @@ import noUser from '../../assets/images/no-user.png';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faChevronDown } from '@fortawesome/free-solid-svg-icons';
 import useAuth from '@/hooks/useAuth';
-import { useChat } from '@/contexts/ChatContext'
 import './GroupMembers.css';
-import { updateGroupMemberPermissions, updateChannelMemberPermissions } from '@/services/chatservice/updateChatMemberPermissions';
 
-const GroupMembers = ({ filteredMembers, handleQueryChange, amIAdmin, handleAddAmin, handleRemoveFromChat, type }) => {
+
+const GroupMembers = ({
+    filteredMembers,
+    handleQueryChange,
+    amIAdmin,
+    handleAddAmin,
+    handleRemoveFromChat,
+    handlePermissionsToggle,
+    permissionsState,
+    type
+  }) => {
+  
     const [menuState, setMenuState] = useState({
         isVisible: false,
         selectedUser: null, 
     });
     const { user } = useAuth();
-    const { currentChat, handleGetMembersPermissions, handleGetSubscribersPermissions} = useChat();
-    const [permissionsState, setPermissionsState] = useState({});
-    useEffect(() => {
-        const fetchPermissions = async () => {
-            if (amIAdmin) {
-                try {
-                    let permissionsState;
-                    if (type === 'group') {
-                        permissionsState = await handleGetMembersPermissions();
-                    }
-                    else if (type === 'channel') {
-                        permissionsState = await handleGetSubscribersPermissions();
-                    }
-                    else
-                    {
-                        console.log('Invalid type');
-                        return;
-                    }
-                    console.log(permissionsState);
 
-                    const initialState = {};
-                    filteredMembers.forEach((member) => {
-                        initialState[member.id] = permissionsState[member.id] || {};
-                    });
 
-                    setPermissionsState(initialState);
-                    console.log(initialState);
-                } catch (error) {
-                    console.error('Error fetching permissions:', error);
-                }
-            }
-        };
-
-        fetchPermissions();
-    }, [filteredMembers, amIAdmin, handleGetMembersPermissions]);
     const menuRef = useRef(null);
 
     const handleChevronClick = (event, member) => {
@@ -62,30 +38,6 @@ const GroupMembers = ({ filteredMembers, handleQueryChange, amIAdmin, handleAddA
 
     const handleCloseMenu = () => {
         setMenuState({ ...menuState, isVisible: false });
-    };
-
-    const handlePermissionsToggle = async (permission, memberId) => {
-        const currentPermissions = permissionsState[memberId];
-        console.log(currentPermissions);
-        currentPermissions[permission] = !currentPermissions[permission];
-        console.log(currentPermissions,"after");
-        try {
-            let response;
-            if (type === 'group') {
-                response = await updateGroupMemberPermissions(currentChat.id, memberId, currentPermissions);
-            }
-            else if (type === 'channel') {
-                response = await updateChannelMemberPermissions(currentChat.id, memberId, currentPermissions);
-            }
-            setPermissionsState((prevState) => ({
-                ...prevState,
-                [memberId]: currentPermissions,
-            }));
-            console.log(response);
-        }
-        catch (error) {
-            console.error('Error updating permissions:', error);
-        }
     };
 
     useEffect(() => {
