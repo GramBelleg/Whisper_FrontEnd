@@ -19,14 +19,15 @@ const CustomStickersPicker = ({ handleStickerClick }) => {
         }
 
         fetchStickers()
-    }, [])
+    }, [stickers])
 
     const handleFileChange = async (event) => {
         const file = event.target.files[0]
         console.log(file)
         if (file) {
             try {
-                await addStickers(file)
+                const blobName = await addStickers(file)
+                setStickers([...stickers,blobName])
             } catch (error) {
                 console.log("error adding stickers")
             }

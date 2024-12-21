@@ -75,7 +75,7 @@ export const addStickers = async (file) => {
 
         console.log(response)
 
-        return response
+        return blobName
     } catch (error) {
         console.error('Error fetching stickers:', error)
         return []
