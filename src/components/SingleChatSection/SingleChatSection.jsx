@@ -17,9 +17,8 @@ import useVoiceCall from '@/hooks/useVoiceCall'
 import VoiceCallHeader from '../VoiceCall/VoiceCallHeader'
 import useChatEncryption from '@/hooks/useChatEncryption'
 import ChatHeader from '../ChatHeader/ChatHeader'
-import GroupInfoContainer from '../GroupInfo/GroupInfoContainer'
-import ChannelInfoContainer from '../ChannelInfo/ChannelInfoContainer'
 import ThreadsBar from '../Threads/ThreadsBar'
+import ChatInfoPage from '@/pages/ChatInfoPage'
 
 const SingleChatSection = () => {
     const { currentChat, pinnedMessages, isThreadOpenned, setIsThreadOpenned, setThreadMessage } = useChat()
@@ -96,10 +95,8 @@ const SingleChatSection = () => {
                     }
                 </div>
                 <div>
-                {infoOpen && currentChat.type === "GROUP" && 
-                <GroupInfoContainer currentChat={currentChat} onClose={()=>setInfoOpen(false)} />}
-                {infoOpen && currentChat.type === "CHANNEL" && 
-                <ChannelInfoContainer currentChat={currentChat} onClose={()=>setInfoOpen(false)} />}
+                {infoOpen && (currentChat.type === "GROUP" || currentChat.type === "CHANNEL") && 
+                <ChatInfoPage currentChat={currentChat} onClose={()=>setInfoOpen(false)} />}
                 
                 </div>
             </div>
