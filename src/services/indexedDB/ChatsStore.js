@@ -243,6 +243,7 @@ export class ChatsStore extends BaseStore {
                     request.onerror = () => reject(request.error) 
                 })
                 if (chat) {
+                    if (chat.members.some(m => m.id === member.id)) return
                     chat.members = [...chat.members, member]
                     const updateRequest = store.put(chat)
                     await new Promise((resolve, reject) => {
