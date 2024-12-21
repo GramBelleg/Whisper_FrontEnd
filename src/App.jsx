@@ -43,7 +43,7 @@ function App() {
         console.log(payload,"from socket")
         if(payload.data.type!=="clear_message")
         {
-            toast(<NotificationMessage notification={payload.notification} />);
+            toast(<NotificationMessage notification={payload.notification} type={payload.data.type} />);
         }
         
       });
