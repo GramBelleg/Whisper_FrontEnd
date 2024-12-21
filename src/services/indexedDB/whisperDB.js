@@ -56,7 +56,7 @@ class WhisperDB {
         })
     }
 
-    async clearDB() {
+    async clearDB(clearKeys = false) {
         if (this.db) {
             console.log(Object.keys(DB_CONFIG.stores))
             const transaction = this.db.transaction(Object.keys(DB_CONFIG.stores), "readwrite");
@@ -70,6 +70,9 @@ class WhisperDB {
             };
         
             Object.values(DB_CONFIG.stores).forEach((storeConfig) => {
+                if (storeConfig.name === 'keys' && !clearKeys) {
+                    return;
+                }
                 const store = transaction.objectStore(storeConfig.name);
                 store.clear();
             });

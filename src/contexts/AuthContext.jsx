@@ -68,7 +68,7 @@ export const AuthProvider = ({ children }) => {
             console.log('user data', data)
             setUser(data.userData)
             try {
-                await dbRef.current.clearDB()
+                await dbRef.current.clearDB(true)
             } catch (error) {
                 console.log(error)
             }
@@ -95,7 +95,7 @@ export const AuthProvider = ({ children }) => {
             })
             setToken(data.userToken)
             try {
-                await dbRef.current.clearDB()
+                await dbRef.current.clearDB(true)
             } catch (error) {
                 console.log(error)
             }
@@ -116,7 +116,7 @@ export const AuthProvider = ({ children }) => {
             setUser(data.user)
             setToken(data.userToken)
             try {
-                await dbRef.current.clearDB()
+                await dbRef.current.clearDB(true)
             } catch (error) {
                 console.log(error)
             }
@@ -140,7 +140,7 @@ export const AuthProvider = ({ children }) => {
             })
             setToken(data.userToken)
             try {
-                await dbRef.current.clearDB()
+                await dbRef.current.clearDB(true)
             } catch (error) {
                 console.log(error)
             }
@@ -163,7 +163,7 @@ export const AuthProvider = ({ children }) => {
             })
             setToken(data.data.userToken)
             try {
-                await dbRef.current.clearDB()
+                await dbRef.current.clearDB(true)
             } catch (error) {
                 console.log(error)
             }
@@ -202,7 +202,7 @@ export const AuthProvider = ({ children }) => {
                 userId: data.user.id,
             })
             try {
-                await dbRef.current.clearDB()
+                await dbRef.current.clearDB(true)
             } catch (error) {
                 console.log(error)
             }
@@ -231,7 +231,7 @@ export const AuthProvider = ({ children }) => {
                 userId: data.user.id,
             })
             try {
-                await dbRef.current.clearDB()
+                await dbRef.current.clearDB(true)
             } catch (error) {
                 console.log(error)
             }
@@ -271,7 +271,7 @@ export const AuthProvider = ({ children }) => {
             localStorage.removeItem('token')
             localStorage.removeItem('user')
             try {
-                await dbRef.current.clearDB()
+                await dbRef.current.clearDB(true)
             } catch (error) {
                 console.log(error)
             }

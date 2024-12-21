@@ -609,6 +609,16 @@ export const ChatProvider = ({ children }) => {
             const myMessageData = {
                 ...messageData
             }
+
+            console.log("myMessageData",myMessageData.isSafe)
+
+            if(myMessageData.isSafe == false) {
+                openModal(<ErrorMesssage errorMessage={"Inapropriate Message this incident will be reported"} onClose={closeModal} appearFor={3000} />)
+                setChatAltered(true)
+                setMessageReceived(true)
+                return;
+            }
+
             const chat = await dbRef.current.getChat(myMessageData.chatId)
 
             if(myMessageData.type === "EVENT") {

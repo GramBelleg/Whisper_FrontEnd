@@ -213,7 +213,7 @@ const ChatMessage = ({ id, message, hideActions }) => {
                                 <FontAwesomeIcon style={{ height: '18px' }} icon={faCommentDots} />
                                 <span>Open thread</span>
                             </button>}
-                            { (!isThreadOpenned) && message.content.length && message.senderId === user.id &&  (
+                            { (!isThreadOpenned) && message.content.length > 0 && message.senderId === user.id &&  (
                                 <button onClick={handleEdit}>
                                     <FontAwesomeIcon style={{ height: '18px' }} icon={faEdit} />
                                     <span>Edit</span>
@@ -225,7 +225,7 @@ const ChatMessage = ({ id, message, hideActions }) => {
                                     <span>Download</span>
                                 </button>
                             )}
-                            {(!isThreadOpenned) && <button onClick={handleForward}>
+                            {(!isThreadOpenned) && currentChat.type != "DM" && <button onClick={handleForward}>
                                 <FontAwesomeIcon style={{ height: '18px' }} icon={faShare} />
                                 <span>Forward</span>
                             </button>}

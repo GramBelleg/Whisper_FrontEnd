@@ -128,7 +128,7 @@ const SearchSideBar = () => {
             <div
                 className="outer-search-bar"
                 style={{
-                    height: "5%",
+                    height: "50px",
                     width: "95%",
                 }}
             >

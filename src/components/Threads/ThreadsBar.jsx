@@ -82,7 +82,7 @@ const ThreadsBar = ({ onClose }) => {
                 </div>
 
                 <div className="w-full flex items-center justify-center mt-4">
-                    <ChatActions />
+                    <ChatActions fullWidth={true} />
                 </div>
             </div>
 

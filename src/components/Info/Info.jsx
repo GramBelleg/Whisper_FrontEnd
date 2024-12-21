@@ -97,8 +97,6 @@ const Info = ({index,  myChat }) => {
                                 ) : (
                                     <li onClick={myHandleUnMute}>Unmute notifications</li>
                                 )}
-                                <li onClick={() => handleAction('Block')}>Block</li>
-                                <li onClick={() => handleAction('Archive')}>Archive</li>
                                 {myChat.type !== "DM" && (
                                     myChat.isAdmin ? (
                                         <li

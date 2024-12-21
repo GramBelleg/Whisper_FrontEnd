@@ -4,5 +4,6 @@
     width: 50%;
     white-space: nowrap;
     text-overflow: ellipsis;
+    text-align: left;
     overflow: hidden;
 }

@@ -81,9 +81,9 @@ const ChatPage = () => {
     return (
         <div className='chat-page'>
             <div className='outer-search-bar'
-                onClick={() => setActivePage('search')}
+               onClick={() => setActivePage('search')} 
                 style={{
-                    height: "5%",
+                    height: "50px",
                     width: "95%"
                 }}
             >

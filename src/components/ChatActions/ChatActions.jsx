@@ -29,7 +29,7 @@ import { draftMessage, unDraftMessage } from '@/services/chatservice/draftMessag
 import { useWhisperDB } from '@/contexts/WhisperDBContext'
 import ErrorMesssage from '../ErrorMessage/ErrorMessage'
 import { parseMentions } from '@/services/chatservice/parseMentions'
-const ChatActions = () => {
+const ChatActions = ({fullWidth = false}) => {
     const [textMessage, setTextMessage] = useState('')
     const [mentions, setMentions] = useState([])
 
@@ -264,7 +264,7 @@ const ChatActions = () => {
     }, [currentChat])
 
     return (
-        <div className='chat-actions-container'>
+        <div className={`chat-actions-container ${fullWidth ? 'w-full' : ''}`}>
             <div className='input-container shadow transition-all duration-300'>
                 <ParentMessage />
                 <div className='actions-row'>

@@ -12,10 +12,6 @@
     outline: none;
 }
 
-.search-bar:focus {
-    border-color: var(--accent-color);
-}
-
 .user-list {
     overflow-y: auto;
     max-height: 400px; 

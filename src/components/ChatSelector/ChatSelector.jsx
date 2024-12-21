@@ -6,7 +6,7 @@ import { useModal } from '@/contexts/ModalContext'
 import { getChatsCleaned } from '@/services/chatservice/getChats'
 
 const ChatSelector = ({ onChatSelect, searchPlaceholder = 'Search chats...', renderCustomHeader, className = '' }) => {
-    const [filters, setFilters] = useState({ keyword: '', usersOnly: 1, unblockedOnly: 1 })
+    const [filters, setFilters] = useState({ keyword: '', unblockedOnly: 1 })
     const [chatList, setChatList] = useState([])
     const [loadingChats, setLoadingChats] = useState(false)
     const [errorChats, setErrorChats] = useState(null)
