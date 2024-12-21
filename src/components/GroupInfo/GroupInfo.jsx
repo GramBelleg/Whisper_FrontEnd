@@ -5,6 +5,7 @@ import GroupSettings from "../GroupSettings/GroupSettings";
 import GroupAddMembers from "../GroupAddMembers/GroupAddMembers";
 import GroupMembersContainer from "../GroupMembers/GroupMembersContainer";
 import { useStackedNavigation } from "@/contexts/StackedNavigationContext/StackedNavigationContext";
+import ChatSettingsContainer from "../ChatSettings/ChatSettingsContainer";
 
 
 const GroupInfo = ({ currentChat, onClose }) => {
@@ -25,7 +26,7 @@ const GroupInfo = ({ currentChat, onClose }) => {
     }
     
     const handleEdit = () => {
-        push( <GroupSettings /> )
+        push( <ChatSettingsContainer chatType={"group"} /> )
     }
 
     return (
