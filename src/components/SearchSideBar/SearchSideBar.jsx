@@ -14,7 +14,6 @@ const SearchSideBar = () => {
     const [activeFilters, setActiveFilters] = useState([false, false, false, false])
     const [searchQuery, setSearchQuery] = useState("")
     const [searchResults, setSearchResults] = useState([])
-    const { openModal, closeModal } = useModal()
     const { dbRef } = useWhisperDB()
     const { selectChat, handlePinnedClick, searchChat } = useChat()
     const { setActivePage } = useSidebar()

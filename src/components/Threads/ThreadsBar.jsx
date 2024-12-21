@@ -60,6 +60,7 @@ const ThreadsBar = ({ onClose }) => {
                     {threadMessage.replies && [...threadMessage.replies].reverse().map((message, index) => (
                         <div
                             key={message.id}
+                            
                             className={`flex ${
                                 message.senderId === user.id 
                                     ? "justify-end mr-4" 
@@ -69,6 +70,7 @@ const ThreadsBar = ({ onClose }) => {
                             <ChatMessage
                                 id={`thread-message-${message.id}`}
                                 message={message}
+                                data-testid="chat-message"
                                 hideActions={false}
                                 style={{
                                     marginLeft: message.senderId !== user.id ? "1rem" : "0",
