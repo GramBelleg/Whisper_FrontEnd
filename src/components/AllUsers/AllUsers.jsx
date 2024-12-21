@@ -82,12 +82,12 @@ const AllUsers = ({ users, setReload}) => {
 
     const handleToggleUserBan = async (userId, isBanning) => {
         try {
-            // await axiosInstance.put(
-            //     `/api/admin/ban/${isBanning}/users/${userId}`,
-            //     {
-            //         withCredentials: true
-            //     }
-            // )
+            await axiosInstance.put(
+                `/api/admin/ban/${isBanning}/user/${userId}`,
+                {
+                    withCredentials: true
+                }
+            )
             if (isBanning) {
                 await dbRef.current.banUser(userId)
             }

@@ -26,10 +26,11 @@ const AdminSettings = () => {
 
     const loadData = useCallback(async () => {
         try {
-            let allUsers = await dbRef.current.getUsers()
+            let allUsers = await dbRef.current.getUsersAdminStore()
             setUsers(allUsers)
             let allGroups = await dbRef.current.getGroups()
             setGroups(allGroups)
+            console.log(allUsers, allGroups)
             setLoading(false)
         } catch (error) {
             openModal(<ErrorMesssage errorMessage={error.message} appearFor={3000} onClose={closeModal} />)

@@ -1,9 +1,9 @@
 import { BaseStore } from './BaseStore'
 
 
-export class UsersStore extends BaseStore {
+export class UsersAdminStore extends BaseStore {
     constructor(db) {
-        super(db, 'users')
+        super(db, 'usersadmin')
     }
 
     async insertUsers(users) {

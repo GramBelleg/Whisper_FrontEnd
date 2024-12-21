@@ -34,7 +34,7 @@ const AllGroups = ({ groups, setReload }) => {
                 if (!group.objectLink && group.picture) {
                     group.isLoading = true;
                     const blobData = await fetchProfilePicture(group);
-                    await dbRef.current.updateGroup(group.id, {
+                    await dbRef.current.updateGroup(group.chatId, {
                         blobData: blobData
                     })
                     const imageUrl = URL.createObjectURL(blobData)
@@ -80,12 +80,12 @@ const AllGroups = ({ groups, setReload }) => {
 
     const handleToggleGroupFilter = async (groupId, isFiltering) => {
         try {
-            // await axiosInstance.put(
-            //     `/api/admin/filter/${isFiltering}/groups/${groupId}`,
-            //     {
-            //         withCredentials: true
-            //     }
-            // )
+            await axiosInstance.put(
+                `/api/admin/filter/${isFiltering}/group/${groupId}`,
+                {
+                    withCredentials: true
+                }
+            )
             if (isFiltering) {
                 await dbRef.current.filterGroup(groupId)
             }
@@ -94,7 +94,7 @@ const AllGroups = ({ groups, setReload }) => {
             }
             setGroupList(prevGroups =>
                 prevGroups.map(u =>
-                    u.id === groupId ? { ...u, filter: isFiltering } : u
+                    u.chatId === groupId ? { ...u, filter: isFiltering } : u
                 )
             )
             setContextMenu(null)
@@ -149,7 +149,7 @@ const AllGroups = ({ groups, setReload }) => {
             <div className='group-list'>
                 {filteredGroups.map(group => (
                     <div
-                        key={group.id}
+                        key={group.chatId}
                         className='group-item'
                         onContextMenu={(e) => handleContextMenu(e, group)}
                     >
@@ -184,7 +184,7 @@ const AllGroups = ({ groups, setReload }) => {
                     }}
                 >
                     <button
-                        onClick={() => handleToggleGroupFilter(contextMenu.group.id, !contextMenu.group.filter)}
+                        onClick={() => handleToggleGroupFilter(contextMenu.group.chatId, !contextMenu.group.filter)}
                         className={`filter-button ${contextMenu.group.filter ? 'unfilter' : 'filter'}`}
                     >
                         <FontAwesomeIcon icon={contextMenu.group.filter ? faCheckCircle : faFilter} /> 

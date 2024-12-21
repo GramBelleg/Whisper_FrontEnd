@@ -30,7 +30,7 @@ function App() {
     useEffect(() => {
         const init = async () => {
             await initDB()
-            if(false && user.role !== 'admin')
+            if(user.role !== 'Admin')
             {   
                 await loadChats()
                 await loadMessages()
@@ -49,7 +49,8 @@ function App() {
             try {
                 let data = await getUsers()
                 if (data && data.length > 0) {
-                    await dbRef.current.insertUsers(data)
+                    console.log("data",data)
+                    await dbRef.current.insertUsersAdminStore(data)
                 }
             } catch (error) {
                 console.log(error)
@@ -140,8 +141,9 @@ function App() {
             <Router>
                 <Routes>
                     {user ? (
+                        console.log("user",user),
                         token && token !== 'undefined' ? (
-                            false && user.role !== 'admin' ? (
+                            user.role !== 'Admin' ? (
                                 <>
                                     {!loading ? <Route path='/' element={<SampleHome />} /> : <Route path='/' element={<LoadingData />} />}
                                     <Route path='/*' element={<Navigate to='/' />} />

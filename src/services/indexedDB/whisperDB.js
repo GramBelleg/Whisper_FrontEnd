@@ -3,7 +3,7 @@ import { ChatsStore } from './ChatsStore'
 import { StoriesStore } from './StoriesStore'
 import { StoriesTempStore } from './StoriesTempStore'
 import { PinnedMessagesStore } from './PinnedMessagesStore'
-import { UsersStore } from './UsersStore'
+import { UsersAdminStore } from './UsersAdminStore'
 import { GroupsStore } from './GroupsStore'
 import { DB_CONFIG } from './DBConfig'
 
@@ -17,7 +17,7 @@ class WhisperDB {
         this._chats = null
         this._messages = null
         this._stories = null
-        this._users = null
+        this._usersAdmin = null
         this._groups = null
 
         WhisperDB.instance = this
@@ -53,7 +53,7 @@ class WhisperDB {
     }
 
     _initializeStores() {
-        this._users = new UsersStore(this.db)
+        this._usersAdmin = new UsersAdminStore(this.db)
         this._groups = new GroupsStore(this.db)
         this._chats = new ChatsStore(this.db)
         this._messages = new MessagesStore(this.db)
@@ -123,17 +123,17 @@ class WhisperDB {
             throw new Error('Chats store is not initiaslized.')
         }
     }
-    async insertUsers(users) {
-        if (this._users != null) {
-            return this._users.insertUsers(users)
+    async insertUsersAdminStore(users) {
+        if (this._usersAdmin != null) {
+            return this._usersAdmin.insertUsers(users)
         } else {
             throw new Error('Users Store is not initialized')
         }
     }
 
-    async getUsers() {
-        if (this._users !== null) {
-            return this._users.getUsers()
+    async getUsersAdminStore() {
+        if (this._usersAdmin !== null) {
+            return this._usersAdmin.getUsers()
         } else {
             throw new Error('Users store is not initiaslized.')
         }
@@ -154,15 +154,15 @@ class WhisperDB {
         }
     }
     async banUser(id) {
-        if (this._users !== null) {
-            return this._users.banUser(id)
+        if (this._usersAdmin !== null) {
+            return this._usersAdmin.banUser(id)
         } else {
             throw new Error('Users store is not initiaslized.')
         }
     }
     async unBanUser(id) {
-        if (this._users !== null) {
-            return this._users.unBanUser(id)
+        if (this._usersAdmin !== null) {
+            return this._usersAdmin.unBanUser(id)
         } else {
             throw new Error('Users store is not initiaslized.')
         }
@@ -182,8 +182,8 @@ class WhisperDB {
         }
     }
     async updateUser(id, data) {
-        if (this._users !== null) {
-            return this._users.updateUser(id, data)
+        if (this._usersAdmin !== null) {
+            return this._usersAdmin.updateUser(id, data)
         } else {
             throw new Error('Users store is not initiaslized.')
         }

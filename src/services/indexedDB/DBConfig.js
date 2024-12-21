@@ -27,14 +27,14 @@ export const DB_CONFIG = {
             keyPath: 'userId',
             indexes: [{ name: 'userId', keyPath: 'userId', options: { unique: true } }]
         },
-        users: {
-            name: 'users',
+        usersadmin: {
+            name: 'usersadmin',
             keyPath: 'id',
             indexes: []
         },
         groups: {
             name: 'groups',
-            keyPath: 'id',
+            keyPath: 'chatId',
             indexes: []
         },
     }
