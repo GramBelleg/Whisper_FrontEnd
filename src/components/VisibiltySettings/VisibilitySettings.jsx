@@ -229,7 +229,7 @@ const VisibilitySettings = () => {
                             Message Preview
                             <div className='toggle-switch'>
                             <input
-                                data-testid='toggle-switch-test'
+                                data-testid='toggle-switch-message-preview'
                                 type='checkbox'
                                 id='messagePreview'
                                 checked={msgPreviewEnabled}
