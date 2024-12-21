@@ -1,70 +1,41 @@
-import { render, fireEvent, screen } from '@testing-library/react';
+import { render, screen } from '@testing-library/react';
+import userEvent from '@testing-library/user-event';
 import ChannelSettings from '@/components/ChannelSettings/ChannelSettings';
-import { describe, it, vi, expect, beforeAll } from 'vitest';
-import { useChat } from '@/contexts/ChatContext';
-import { useStackedNavigation } from '@/contexts/StackedNavigationContext/StackedNavigationContext';
-
-vi.mock('@/contexts/ChatContext', () => ({
-    useChat: vi.fn(),
-}));
-
-vi.mock('@/contexts/StackedNavigationContext/StackedNavigationContext', () => ({
-    useStackedNavigation: vi.fn(),
-}));
 
 describe('ChannelSettings', () => {
-    const mockPop = vi.fn();
-    const mockSaveChannelPrivacy = vi.fn();
+    const mockHandlePrivacyChange = vi.fn();
+    const mockHandlePrivacySubmit = vi.fn();
 
-    beforeAll(() => {
-        useStackedNavigation.mockReturnValue({ pop: mockPop });
-        useChat.mockReturnValue({ saveChannelPrivacy: mockSaveChannelPrivacy });
+    beforeEach(() => {
+        render(
+            <ChannelSettings
+                privacy="Public"
+                handlePrivacyChange={mockHandlePrivacyChange}
+                handlePrivacySubmit={mockHandlePrivacySubmit}
+            />
+        );
     });
 
-    it('renders with initial privacy set to "Public"', () => {
-        render(<ChannelSettings initialPrivacy="Public" />);
-        const publicRadio = screen.getByLabelText('Public');
-        const privateRadio = screen.getByLabelText('Private');
-
-        expect(publicRadio.checked).toBe(true);
-        expect(privateRadio.checked).toBe(false);
+    it('renders the title "Channel Settings"', () => {
+        expect(screen.getAllByText(/Channel Settings/i)[0]).toBeInTheDocument();
     });
 
-    it('renders with initial privacy set to "Private"', () => {
-        render(<ChannelSettings initialPrivacy="Private" />);
-        const publicRadio = screen.getByLabelText('Public');
-        const privateRadio = screen.getByLabelText('Private');
-
-        expect(publicRadio.checked).toBe(false);
-        expect(privateRadio.checked).toBe(true);
+    it('renders the ChatPrivacy component', () => {
+        expect(screen.getByText(/Public/i)).toBeInTheDocument();
+        expect(screen.getByText(/Private/i)).toBeInTheDocument();
     });
 
-    it('allows changing privacy from "Public" to "Private"', () => {
-        render(<ChannelSettings initialPrivacy="Public" />);
-        const privateRadio = screen.getByLabelText('Private');
+    it('calls handlePrivacyChange when a privacy option is selected', async () => {
+        const privateRadio = screen.getByTestId('private');
+        await userEvent.click(privateRadio);
 
-        fireEvent.click(privateRadio);
-
-        expect(privateRadio.checked).toBe(true);
-        expect(screen.getByLabelText('Public').checked).toBe(false);
+        expect(mockHandlePrivacyChange).toHaveBeenCalled();
     });
 
-    it('calls saveChannelPrivacy when "Save" is clicked', async () => {
-        render(<ChannelSettings initialPrivacy="Public" />);
+    it('calls handlePrivacySubmit when the Save button is clicked', async () => {
         const saveButton = screen.getByTestId('save-privacy');
+        await userEvent.click(saveButton);
 
-        fireEvent.click(screen.getByLabelText('Private')); 
-        fireEvent.click(saveButton);
-
-        expect(mockSaveChannelPrivacy).toHaveBeenCalledWith('Private');
-    });
-
-    it('calls pop when back button is clicked', () => {
-        render(<ChannelSettings initialPrivacy="Public" />);
-        const backButton = screen.getByTestId('back');
-
-        fireEvent.click(backButton);
-
-        expect(mockPop).toHaveBeenCalled();
+        expect(mockHandlePrivacySubmit).toHaveBeenCalled();
     });
 });

@@ -1,89 +1,140 @@
-import { render, screen, fireEvent, waitFor } from '@testing-library/react';
-import { describe, it, expect, vi, beforeEach } from 'vitest';
-import GroupSettings from '@/components/GroupSettings/GroupSettings';
-import { useChat } from '@/contexts/ChatContext';
-import { useStackedNavigation } from '@/contexts/StackedNavigationContext/StackedNavigationContext';
-
-vi.mock('@/contexts/ChatContext', () => ({
-  useChat: vi.fn(),
-}));
-
-vi.mock('@/contexts/StackedNavigationContext/StackedNavigationContext', () => ({
-  useStackedNavigation: vi.fn(),
-}));
+import { render, screen, fireEvent } from '@testing-library/react'
+import userEvent from '@testing-library/user-event'
+import GroupSettings from '@/components/GroupSettings/GroupSettings'
 
 describe('GroupSettings Component', () => {
-  let mockHandleGetGroupSettings;
-  let mockSaveGroupSettings;
-  let mockPop;
+    const mockHandlePrivacyChange = vi.fn()
+    const mockHandlePrivacySubmit = vi.fn()
+    const mockHandleLimitSubmit = vi.fn()
 
-  beforeEach(() => {
-    mockHandleGetGroupSettings = vi.fn().mockResolvedValue({ privacy: true, maxSize: 100 });
-    mockSaveGroupSettings = vi.fn();
-    mockPop = vi.fn();
+    let limit = 500
+    const mockHandleLimitChange = vi.fn((event) => {
+        if (event.target.value > 0 && event.target.value < 1000) {
+            limit = event.target.value
+        }
+    })
 
-    useChat.mockReturnValue({
-      handleGetGroupSettings: mockHandleGetGroupSettings,
-      saveGroupSettings: mockSaveGroupSettings,
-    });
+    const setup = (props = {}) => {
+        const utils = render(
+            <GroupSettings
+                privacy='Public'
+                limit={limit} // Use the updated limit
+                handlePrivacyChange={mockHandlePrivacyChange}
+                handlePrivacySubmit={mockHandlePrivacySubmit}
+                handleLimitChange={mockHandleLimitChange}
+                handleLimitSubmit={mockHandleLimitSubmit}
+                {...props}
+            />
+        )
+        return utils
+    }
 
-    useStackedNavigation.mockReturnValue({
-      pop: mockPop,
-    });
-  });
+    afterEach(() => {
+        vi.clearAllMocks()
+        limit = 500
+    })
 
-  it('renders correctly with initial data from handleGetGroupSettings', async () => {
-    render(<GroupSettings />);
+    it('renders correctly with provided props', () => {
+        setup()
+        expect(screen.getByText(/Group Settings/i)).toBeInTheDocument()
+        expect(screen.getByLabelText(/Group Limit/i)).toBeInTheDocument()
+        expect(screen.getAllByText(/Save/i)[0]).toBeInTheDocument()
+    })
 
-    expect(screen.getByText('Group Settings')).toBeInTheDocument();
-    await waitFor(() => {
-      expect(mockHandleGetGroupSettings).toHaveBeenCalled();
-    });
+    it('respects min and max values for the group limit input', async () => {
+        const { rerender } = setup()
+        const limitInput = screen.getByLabelText(/Group Limit/i)
 
-    expect(screen.getByLabelText('Group Limit:')).toHaveValue(100);
-    expect(screen.getByLabelText('Public')).toBeChecked();
-  });
+        await userEvent.clear(limitInput)
+        await userEvent.type(limitInput, '0')
 
-  it('handles privacy changes correctly', async () => {
-    render(<GroupSettings />);
-    await waitFor(() => {
-      expect(mockHandleGetGroupSettings).toHaveBeenCalled();
-    });
+        rerender(
+            <GroupSettings
+                privacy='Public'
+                limit={limit}
+                handlePrivacyChange={mockHandlePrivacyChange}
+                handlePrivacySubmit={mockHandlePrivacySubmit}
+                handleLimitChange={mockHandleLimitChange}
+                handleLimitSubmit={mockHandleLimitSubmit}
+            />
+        )
 
-    const privateRadio = screen.getByTestId('private');
-    fireEvent.click(privateRadio);
-    expect(privateRadio).toBeChecked();
+        expect(mockHandleLimitChange).toHaveBeenLastCalledWith(
+            expect.objectContaining({
+                target: expect.objectContaining({ value: '500' })
+            })
+        )
 
-    const saveButton = screen.getByTestId('save-privacy');
-    fireEvent.click(saveButton);
+        await userEvent.clear(limitInput)
+        await userEvent.type(limitInput, '1500')
+        fireEvent.blur(limitInput)
 
-    expect(mockSaveGroupSettings).toHaveBeenCalledWith(null, 'Private');
-  });
+        rerender(
+            <GroupSettings
+                privacy='Public'
+                limit={limit}
+                handlePrivacyChange={mockHandlePrivacyChange}
+                handlePrivacySubmit={mockHandlePrivacySubmit}
+                handleLimitChange={mockHandleLimitChange}
+                handleLimitSubmit={mockHandleLimitSubmit}
+            />
+        )
+        expect(mockHandleLimitChange).toHaveBeenLastCalledWith(
+            expect.objectContaining({
+                target: expect.objectContaining({ value: '150' })
+            })
+        )
+    })
 
-  it('handles group limit changes correctly', async () => {
-    render(<GroupSettings />);
-    await waitFor(() => {
-      expect(mockHandleGetGroupSettings).toHaveBeenCalled();
-    });
+    it('calls handleLimitSubmit when the save button is clicked', async () => {
+        setup()
+        const saveButton = screen.getByTestId('save-limit')
+        await userEvent.click(saveButton)
 
-    const limitInput = screen.getByLabelText('Group Limit:');
-    fireEvent.change(limitInput, { target: { value: '50' } });
-    expect(limitInput).toHaveValue(50);
+        expect(mockHandleLimitSubmit).toHaveBeenCalledTimes(1)
+    })
 
-    const saveButton = screen.getByTestId('save-limit');
-    fireEvent.click(saveButton);
+    it('interacts with the ChatPrivacy child component', async () => {
+        setup()
+        const privateRadio = screen.getByLabelText(/Private/i)
 
-    expect(mockSaveGroupSettings).toHaveBeenCalledWith(50, null);
-    expect(mockPop).toHaveBeenCalled();
-  });
+        await userEvent.click(privateRadio)
+        expect(mockHandlePrivacyChange).toHaveBeenCalledWith(
+            expect.objectContaining({
+                target: expect.objectContaining({ value: 'Private' })
+            })
+        )
 
-  it('handles back navigation correctly', () => {
-    render(<GroupSettings />);
+        const savePrivacyButton = screen.getByTestId('save-privacy')
+        await userEvent.click(savePrivacyButton)
 
-    const backButton = screen.getByTestId('back');
-    fireEvent.click(backButton);
+        expect(mockHandlePrivacySubmit).toHaveBeenCalledTimes(1)
+    })
 
-    expect(mockPop).toHaveBeenCalled();
-  });
+    it('calls handleLimitChange and updates the input value with rerendering', async () => {
+        const { rerender } = setup()
+        const limitInput = screen.getByTestId('group-limit')
 
-});
+        await userEvent.clear(limitInput)
+        await userEvent.type(limitInput, '750')
+
+        rerender(
+            <GroupSettings
+                privacy='Public'
+                limit={limit}
+                handlePrivacyChange={mockHandlePrivacyChange}
+                handlePrivacySubmit={mockHandlePrivacySubmit}
+                handleLimitChange={mockHandleLimitChange}
+                handleLimitSubmit={mockHandleLimitSubmit}
+            />
+        )
+
+        expect(limitInput.value).toBe('750')
+        expect(mockHandleLimitChange).toHaveBeenCalledTimes(4)
+        expect(mockHandleLimitChange).toHaveBeenLastCalledWith(
+            expect.objectContaining({
+                target: expect.objectContaining({ value: '750' })
+            })
+        )
+    })
+})

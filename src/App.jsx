@@ -20,6 +20,13 @@ import axiosInstance from './services/axiosInstance'
 import { useChat } from './contexts/ChatContext'
 import { getAllUsers } from './services/userservices/getAllUsers'
 import { useStories } from './contexts/StoryContext'
+import { getToken } from "firebase/messaging";
+import { messaging } from "./firebase/firebaseConfig";
+import { handleRegisterFCMToken } from './services/userservices/notifications'
+import { toast, ToastContainer } from "react-toastify";
+import NotificationMessage from './components/NotificationMessage/NotificationMessage'
+import "react-toastify/dist/ReactToastify.css";
+import { onMessage } from "firebase/messaging";
 
 function App() {
     const { user, token, handleUpdateUser } = useAuth()
@@ -29,15 +36,40 @@ function App() {
     const { sendJoinChat } = useChat();
     const {decryptMessage, generateKeyIfNotExists} = useChatEncryption();
     const { setAppLoaded } = useStories()
+    const { VITE_APP_VAPID_KEY } = import.meta.env;
 
     if (import.meta.env.VITE_APP_USE_MOCKS === 'true') {
         initializeMock()
+    }
+    onMessage(messaging, (payload) => {
+        console.log(payload,"from socket")
+        if(payload.data.type!=="clear_message")
+        {
+            toast(<NotificationMessage notification={payload.notification} type={payload.data.type} />);
+        }
+        
+      });
+    const requestPermission= async ()=> {
+        const permission = await Notification.requestPermission();
+    
+        if (permission === "granted") {
+            const token = await getToken(messaging, {
+                vapidKey: VITE_APP_VAPID_KEY,
+            });
+
+            console.log("Token generated : ", token);
+            await handleRegisterFCMToken(token);
+
+            } else if (permission === "denied") {
+            alert("You denied for the notification");
+            }
     }
 
     useEffect(() => {
         const init = async () => { 
             try {
                 await dbRef.current.clearDB()
+                requestPermission();
                 await loadChats()
                 await loadMessages()
                 await loadPinnedMessages()
@@ -227,6 +259,18 @@ function App() {
                     <Route path='/facebook-callback' element={<FacebookCallback />} />
                 </Routes>
             </Router>
+            <ToastContainer 
+                position="top-right" 
+                autoClose={5000}     
+                hideProgressBar={false}
+                newestOnTop={true}
+                closeOnClick
+                rtl={false}
+                pauseOnFocusLoss
+                draggable
+                pauseOnHover
+                theme="light"        
+            />
         </div>
     )
 }
