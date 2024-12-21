@@ -32,9 +32,11 @@ const ChatItem = ({ index, standaloneChat }) => {
         const infoElement = e.target.closest('.info')
         if (!infoElement) {
             if (activePage === 'search') {
-                setActivePage('chat')
+                if (standaloneChat.id !== null)
+                    setActivePage('chat')
             }
-            selectChat(standaloneChat)
+            if (standaloneChat.id !== null)
+                selectChat(standaloneChat)
         }
     }
 
@@ -42,7 +44,7 @@ const ChatItem = ({ index, standaloneChat }) => {
         setMyChat((prevChat) => ({
             ...prevChat,
             ...standaloneChat,
-            messageTime: checkDisplayTime(standaloneChat.messageTime),
+            messageTime: standaloneChat.messageTime ? checkDisplayTime(standaloneChat.messageTime) : null,
             name: trimName(standaloneChat.name)
         }))
 
@@ -104,9 +106,9 @@ const ChatItem = ({ index, standaloneChat }) => {
                                         <PendingSend data-testid='pending-tick' />
                                     ))}
                             </div>
-                            <div className='message-time'>
+                            {myChat.messageTime && <div className='message-time'>
                                 <span className={myChat.unreadMessageCount ? 'unread-time' : ''}>{myChat.messageTime}</span>
-                            </div>
+                            </div>}
                         </div>
                     </div>
                     <div className='messaging-info'>

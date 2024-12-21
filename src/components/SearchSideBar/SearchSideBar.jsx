@@ -41,12 +41,21 @@ const SearchSideBar = () => {
         if (activeFilters[0]) {
             try {
                 const results = await chatsGlobalSearch(searchQuery)
+                console.log(results)
                 const chats = [];
                 const loop = results.map(async (result) => {
-                    const chat = await dbRef.current.getChat(result.id)
-                    chats.push(chat)
+                    if (result) {
+                        if (result.id === null)
+                            chats.push(result)
+                        else {
+                            const chat = await dbRef.current.getChat(result.id)
+                            if (chat)
+                                chats.push(chat)
+                        }
+                    }
                 })
                 await Promise.all(loop)
+                console.log(chats)
                 setSearchResults(chats)
             } catch (error) {
                 console.log(error)
