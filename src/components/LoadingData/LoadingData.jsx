@@ -1,5 +1,5 @@
 import './LoadingData.css'
-import whisper_logo from '/assets/images/whisper_logo.png' 
+import whisper_logo from '../../assets/images/whisper_logo.png' 
 
 const LoadingData = () => {
     return (
