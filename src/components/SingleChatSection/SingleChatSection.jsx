@@ -97,8 +97,9 @@ const SingleChatSection = () => {
                 <GroupInfoContainer currentChat={currentChat} onClose={()=>setInfoOpen(false)} />}
                 {infoOpen && currentChat.type === "CHANNEL" && 
                 <ChannelInfoContainer currentChat={currentChat} onClose={()=>setInfoOpen(false)} />}
-                
+                { searchOpen &&
                 <ChatSearchContainer onClose={()=>setSearchOpen(false)} />
+                }
                 </div>
             </div>
             <div className='Threads'>
