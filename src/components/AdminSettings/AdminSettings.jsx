@@ -35,7 +35,7 @@ const AdminSettings = () => {
             console.log("norrr")
         } catch (error) {
             console.log("err")
-            openModal(<ErrorMesssage errorMessage={error.message} appearFor={3000} onClose={closeModal} />)
+            // openModal(<ErrorMesssage errorMessage={error.message} appearFor={3000} onClose={closeModal} />)
         }
     }, [dbRef, openModal, closeModal])
 

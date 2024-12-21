@@ -73,7 +73,7 @@ const GroupMembers = ({
                         <label htmlFor={`user-${member.id}`}>{member.userName || 'Unknown User'}</label>
 
                         {   
-                            type === "group" && amIAdmin && !member.isAdmin && member.id !== user.id && <FontAwesomeIcon
+                            amIAdmin && !member.isAdmin && member.id !== user.id && <FontAwesomeIcon
                                 icon={faChevronDown}
                                 className='chevron-icon'
                                 data-testid="chevron-icon"

@@ -893,7 +893,11 @@ export const ChatProvider = ({ children }) => {
     }
     const handleErrorReceival = (errorReceived) => {
         try{
-            openModal(<ErrorMesssage errorMessage={errorReceived.message} onClose={closeModal} appearFor={3000} />)
+            if (errorReceived.message.toLowerCase().includes("permission")) {
+                openModal(<ErrorMesssage errorMessage={errorReceived.message} onClose={closeModal} appearFor={3000} />)
+            }
+
+            
         }
         catch(error){
             console.log(error)
