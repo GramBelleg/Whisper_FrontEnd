@@ -71,7 +71,8 @@ describe('GroupMembers Component', () => {
     render(
       <GroupMembers
         filteredMembers={mockMembers}
-        handleQueryChange={handleQueryChange}amIAdmin={true}
+        handleQueryChange={handleQueryChange}
+        amIAdmin={true}
         handleAddAmin={() => {
             
         }}

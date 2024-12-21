@@ -150,6 +150,7 @@ function App() {
                     const storiesPromises = data.map(async (item) => {
                         const { id, ...rest } = item;
                         const stories = await getStories(id);
+                        console.log("STORIEEES", stories);
                         await dbRef.current.insertUserStories(stories, id)
                         return { userId: id, ...rest }; 
                     });

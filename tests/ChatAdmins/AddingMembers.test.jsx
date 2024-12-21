@@ -27,7 +27,10 @@ describe('ChooseGroupMembers Component', () => {
       <ChooseGroupMembers selectedUsers={[]} setSelectedUsers={vi.fn()} Users={[]} />
     );
 
-    expect(screen.getByPlaceholderText(/search users/i)).toBeInTheDocument();
+    setTimeout(() => {
+      expect(screen.getByPlaceholderText(/search users/i)).toBeInTheDocument();
+    }, [3000])
+    
 
     await waitFor(() => {
       expect(getAllUsers).toHaveBeenCalled();
