@@ -51,6 +51,11 @@ const SingleChatSection = () => {
         const messageId = event.messageId; 
         handlePinnedClick(messageId)
     };
+    const handleInfoOpen = ()=>
+    {
+        setInfoOpen(true)
+        setSearchOpen(false)
+    }
 
 
        
@@ -67,7 +72,7 @@ const SingleChatSection = () => {
     return (
         <div className="threads-chat-container">
             <div className='single-chat-container'>
-            <ChatHeader infoOpen={infoOpen}  handleVoiceCall={handleVoiceCall} handleInfoOpen={ () => setInfoOpen(true) } 
+            <ChatHeader infoOpen={infoOpen}  handleVoiceCall={handleVoiceCall} handleInfoOpen={handleInfoOpen} 
                 handleSearchOpen={ () => setSearchOpen(true) } isSearchOpen={searchOpen}/>
             {inCall && <VoiceCallHeader />}
                 <div className='messages'>
