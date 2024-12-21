@@ -3,7 +3,7 @@
 import { render, screen, fireEvent } from '@testing-library/react';
 import '@testing-library/jest-dom';
 import { vi } from 'vitest';
-import { putLastSeenVisibilitySettings, putProfilePicVisibilitySettings, putReadReceiptsSetting, putStoriesVisibilitySettings } from "@/services/privacy/privacy";
+import { putLastSeenVisibilitySettings, putProfilePicVisibilitySettings, putReadReceiptsSetting,putMessagePreviewSetting, putStoriesVisibilitySettings } from "@/services/privacy/privacy";
 import VisibilitySettings from '@/components/VisibiltySettings/VisibilitySettings';
 
 vi.mock('@/hooks/useAuth', () => ({
@@ -13,7 +13,8 @@ vi.mock('@/hooks/useAuth', () => ({
             pfpPrivacy: "Everyone",
             storyPrivacy:'Everyone',
             lastSeenPrivacy: 'Everyone',
-            readReceipts: false
+            readReceipts: false,
+            messagePreview:false
         }, 
         handleUpdateUser: vi.fn()
     }),
@@ -23,6 +24,7 @@ vi.mock('@/services/privacy/privacy', () => ({
     putLastSeenVisibilitySettings: vi.fn(),
     putProfilePicVisibilitySettings: vi.fn(),
     putReadReceiptsSetting: vi.fn(),
+    putMessagePreviewSetting: vi.fn(),
     putStoriesVisibilitySettings: vi.fn(),
 }));
 
@@ -90,6 +92,21 @@ describe('VisibilitySettings Component', () => {
         fireEvent.click(toggle);
         setTimeout(() => {
             expect(putReadReceiptsSetting).toHaveBeenCalledWith(false);
+            expect(toggle).not.toBeChecked();
+        }, [5000])
+        
+    });
+
+    it('renders message preview toggle with initial state', () => {
+        const toggle = screen.getByTestId('toggle-switch-message-preview');
+        expect(toggle).not.toBeChecked();
+    });
+
+    it('toggles message preview setting when the switch is clicked', async () => {
+        const toggle = screen.getByTestId('toggle-switch-message-preview');
+        fireEvent.click(toggle);
+        setTimeout(() => {
+            expect(putMessagePreviewSetting).toHaveBeenCalledWith(false);
             expect(toggle).not.toBeChecked();
         }, [5000])
         
