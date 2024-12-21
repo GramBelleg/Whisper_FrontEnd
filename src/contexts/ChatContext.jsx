@@ -608,7 +608,6 @@ export const ChatProvider = ({ children }) => {
             try {
                 
                 const mappedMessage = await mapMessage(myMessageData)
-                console.log(mappedMessage)
                 await dbRef.current.insertMessageWrapper({ ...mappedMessage, drafted: false })
                 setMessageReceived(true)
                 setChatAltered(true)
