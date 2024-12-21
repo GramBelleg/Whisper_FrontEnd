@@ -20,6 +20,7 @@ import useAuth from '@/hooks/useAuth'
 import CallLog from '../CallLog/CallLog'
 import { getMemberPermissions, getSubscriberPermissions } from '@/services/chatservice/getChatMemberPermissions'
 import ErrorMessage from '../ErrorMessage/ErrorMessage'
+import MessageRenderer from './MessageRenderer'
 const ChatMessage = ({ id, message, hideActions }) => {
     const [isMenuOpen, setIsMenuOpen] = useState(false) // Track menu state
     const [menuPosition, setMenuPosition] = useState({ x: 0, y: 0 })
@@ -140,7 +141,7 @@ const ChatMessage = ({ id, message, hideActions }) => {
                 return (
                     <div className='message-text' style={{ whiteSpace: 'pre-line' }}>
                         {message?.media && <MessageAttachmentRenderer myMessage={message} />}
-                        {message.content}
+                        <MessageRenderer content={message.content} />
                     </div>
                 )
             case messageTypes.AUDIO:
