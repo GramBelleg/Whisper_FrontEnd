@@ -1,9 +1,6 @@
 import './SingleChatSection.css'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import {
-    faEllipsisV,
-    faPhone,
-} from '@fortawesome/free-solid-svg-icons'
+import { faEllipsisV, faPhone } from '@fortawesome/free-solid-svg-icons'
 import SingleChatMessagesList from '../SingleChatMessagesList/SingleChatMessagesList'
 import ChatActions from '../ChatActions/ChatActions'
 import { useChat } from '@/contexts/ChatContext'
@@ -30,19 +27,19 @@ const SingleChatSection = () => {
     const {getVoiceCallSymmetricKey} = useChatEncryption()
 
     const handleVoiceCall = async () => {
-        let token = await generateVoiceCallToken(currentChat.id, user.id);
-        
+        let token = await generateVoiceCallToken(currentChat.id, user.id)
+
         if (!token) {
-            console.error("Failed to generate voice call token");
-            return;
+            console.error('Failed to generate voice call token')
+            return
         }
 
-        let symmetricKey = "";
-        if(currentChat.type == "DM") {
-          symmetricKey = await getVoiceCallSymmetricKey(currentChat);
+        let symmetricKey = ''
+        if (currentChat.type == 'DM') {
+            symmetricKey = await getVoiceCallSymmetricKey(currentChat)
         }
 
-        startCall(currentChat.id, token, symmetricKey);
+        startCall(currentChat.id, token, symmetricKey)
     }
 
     const handleMyPinnedClick = (event) => {
@@ -61,12 +58,11 @@ const SingleChatSection = () => {
         )
     }
 
-
     return (
-        <div className="threads-chat-container">
+        <div className='threads-chat-container'>
             <div className='single-chat-container'>
-            <ChatHeader infoOpen={infoOpen}  handleVoiceCall={handleVoiceCall} handleInfoOpen={ () => setInfoOpen(true) }/>
-            {inCall && <VoiceCallHeader />}
+                <ChatHeader infoOpen={infoOpen} handleVoiceCall={handleVoiceCall} handleInfoOpen={() => setInfoOpen(true)} />
+                {inCall && <VoiceCallHeader />}
                 <div className='messages'>
                     <SingleChatMessagesList />
                     {pinnedMessages.length > 0 && (
@@ -75,33 +71,43 @@ const SingleChatSection = () => {
                         </div>
                     )}
                 </div>
-                
+
                 {/*TODO: when channel is implemented, switch the conditions */}
                 <div className='w-full flex items-center justify-center'>
-                    {((currentChat.participantKeys && currentChat.participantKeys[0] && currentChat.participantKeys[1]) || currentChat.type === "GROUP" || (currentChat.type === "CHANNEL" && currentChat.isAdmin)) ? (<ChatActions />) : 
-                        (
-                            (currentChat.type === "CHANNEL" && !currentChat.isAdmin) ? <div className='flex items-center justify-center mb-3 p-4 text-light bg-dark shadow-lg rounded-lg'>Only admins can post to channels</div>
-                            : (
-                                <div className='flex items-center justify-center mb-3 p-4 text-white'>
-                                    Waiting for the other participant to join the chat to exchange keys for secure communication
-                                </div>
-                            )
-                        )
-                    }
+                    {(!currentChat.isBlocked && !currentChat.makeBlocked && currentChat.participantKeys && currentChat.participantKeys[0] && currentChat.participantKeys[1]) ||
+                    currentChat.type === 'GROUP' ||
+                    (currentChat.type === 'CHANNEL' && currentChat.isAdmin) ? (
+                        <ChatActions />
+                    ) : currentChat.type === 'CHANNEL' && !currentChat.isAdmin ? (
+                        <div className='flex items-center justify-center mb-3 p-4 text-light bg-dark shadow-lg rounded-lg'>
+                            Only admins can post to channels
+                        </div>
+                    ) : !currentChat.isBlocked && !currentChat.makeBlocked ? (
+                        <div className='flex items-center justify-center mb-3 p-4 text-white'>
+                            Waiting for the other participant to join the chat to exchange keys for secure communication
+                        </div>
+                    ) : (
+                        <div className='flex items-center justify-center mb-3 p-4 text-white'>You can't communicate with this user due to a block</div>
+                    )}
                 </div>
                 <div>
-                {infoOpen && currentChat.type === "GROUP" && 
-                <GroupInfoContainer currentChat={currentChat} onClose={()=>setInfoOpen(false)} />}
-                {infoOpen && currentChat.type === "CHANNEL" && 
-                <ChannelInfoContainer currentChat={currentChat} onClose={()=>setInfoOpen(false)} />}
-                
+                    {infoOpen && currentChat.type === 'GROUP' && (
+                        <GroupInfoContainer currentChat={currentChat} onClose={() => setInfoOpen(false)} />
+                    )}
+                    {infoOpen && currentChat.type === 'CHANNEL' && (
+                        <ChannelInfoContainer currentChat={currentChat} onClose={() => setInfoOpen(false)} />
+                    )}
                 </div>
             </div>
             <div className='Threads'>
-                {isThreadOpenned && <ThreadsBar onClose={() => {
-                    setThreadMessage(null)
-                    setIsThreadOpenned(false)}
-                }/>}
+                {isThreadOpenned && (
+                    <ThreadsBar
+                        onClose={() => {
+                            setThreadMessage(null)
+                            setIsThreadOpenned(false)
+                        }}
+                    />
+                )}
             </div>
         </div>
     )

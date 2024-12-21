@@ -1,42 +1,28 @@
 import { useEffect, useMemo, useState } from "react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faTimes } from "@fortawesome/free-solid-svg-icons";
-import { handleNoUserImage } from "@/services/chatservice/addDefaultImage";
+import NoProfile from '@/assets/images/no-profile.svg?react'
 import { useModal } from "@/contexts/ModalContext";
-import { searchUsers } from "@/services/userservices/searchUsers";
 import "./CreatePrivateChatModal.css";
 import ChatSocket from "@/services/sockets/ChatSocket";
 import useAuth from "@/hooks/useAuth";
 import { generateKeyPair } from "@/services/encryption/keyManager";
 import axiosInstance from "@/services/axiosInstance";
 import { useWhisperDB } from "@/contexts/WhisperDBContext";
+import { getAllUsers } from "@/services/userservices/getAllUsers";
 
 
 const CreatePrivateChatModal = () => {
   const { user:authUser } = useAuth();
-  const [keyword, setKeyword] = useState('');
-  
   const { dbRef } = useWhisperDB();
   const chatSocket = useMemo(() => new ChatSocket(),[]);
-  const [usersList, setUsersList] = useState([
-    {
-      id: 2,
-      screenName: "terrell herman",
-      email: "",
-      profilePic: "",
-      userName: "joelle61",
-    },
-  ]);
+  const [usersList, setUsersList] = useState([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
 
   const { closeModal } = useModal();
 
-  const handleSearch = (e) => {
-    setKeyword(e.target.value);
-  };
-
-  const createSecretChat = async (user) => {
+  const createSecretChat = async (userId) => {
       let {privateKey, publicKey} = await generateKeyPair();
 
       let response = await axiosInstance.post('/api/encrypt',{
@@ -50,7 +36,7 @@ const CreatePrivateChatModal = () => {
 
       chatSocket.createChat({
         type: "DM",
-        users: [authUser.id, user.id],
+        users: [authUser.id, userId],
         senderKey: keyId,
       });
 
@@ -62,8 +48,8 @@ const CreatePrivateChatModal = () => {
     const loadUsers = async () => {
         setLoading(true);
       try {
-        let users = await searchUsers(keyword)
-        setUsersList(users); 
+        let users = await getAllUsers()
+        setUsersList(users);
       } catch (error) {
         console.log(error)
         setError(error.message);
@@ -71,9 +57,8 @@ const CreatePrivateChatModal = () => {
         setLoading(false);
       }
     }
-
-    // loadUsers();
-  }, [keyword]);
+    loadUsers();
+  }, []);
 
 
   
@@ -83,22 +68,21 @@ const CreatePrivateChatModal = () => {
       <div
         key={index}
         className="chat-item"
-        onClick={() => {createSecretChat(user)}}
+        onClick={() => {createSecretChat(user.id)}}
       >
         <div className="chat-avatar">
-          <img
-            src={user.profilePic}
-            alt={user.screenName}
-            onError={handleNoUserImage}
-          />
+          {
+            user.profilePic ? (
+              <img src={user.profilePic} alt={user.userName} />
+            ) : (
+              <NoProfile className='w-40 h-40 rounded-full object-cover' />
+            )
+          }
         </div>
         <div className="chat-info">
           <div className="chat-header">
-            <h3>{user.screenName}</h3>
+            <h3>{user.userName}</h3>
           </div>
-          <span>
-            {user.email}
-          </span>
         </div>
       </div>
     );
@@ -112,13 +96,6 @@ const CreatePrivateChatModal = () => {
         <span className="close-icon">
         <FontAwesomeIcon icon={faTimes} onClick={closeModal} />
         </span>
-        <input
-          type="text"
-          placeholder={'Search Users...'}
-          value={keyword}
-          onChange={handleSearch}
-          className="search-input"
-        />
       </div>
       
       <div className="chats-container">

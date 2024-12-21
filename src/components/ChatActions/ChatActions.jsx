@@ -28,9 +28,11 @@ import UnifiedPicker from '../UnifiedPicker/UnifiedPicker'
 import { draftMessage, unDraftMessage } from '@/services/chatservice/draftMessage'
 import { useWhisperDB } from '@/contexts/WhisperDBContext'
 import ErrorMesssage from '../ErrorMessage/ErrorMessage'
-import { getFileExtension } from '@/utils/getFileExtension'
+import { parseMentions } from '@/services/chatservice/parseMentions'
 const ChatActions = () => {
     const [textMessage, setTextMessage] = useState('')
+    const [mentions, setMentions] = useState([])
+
     const { isRecording, duration, startRecording, stopRecording, discardRecording } = useVoiceRecorder()
     const { sendMessage, sending, parentMessage, setChatAltered, threadMessage, sendThread, isThreadOpenned } = useChat()
 
@@ -52,6 +54,15 @@ const ChatActions = () => {
     )
     const { openModal, closeModal } = useModal()
     const [uploadingAttachment, setUploadingAttachment] = useState(false)
+
+    useEffect(() => {
+        const foundMentions = parseMentions(textMessage);
+        const userIds = [];
+        foundMentions.forEach((mention) => {
+            userIds.push(mention.userId);
+        })
+        setMentions(userIds);
+    }, [textMessage])
 
     const handleGifAttach = (gifFile) => {
         setAttachedFile(gifFile)
@@ -156,9 +167,11 @@ const ChatActions = () => {
                     attachmentPayload.blobName = blobName
                 }
             }
+
             sendMessage({
                 type: messageTypes.TEXT,
                 content: textMessage,
+                mentions: mentions,
                 attachmentType: attachmentPayload ? attachmentPayload.type.toString() : null,
                 attachmentName: attachmentPayload ? attachmentPayload.file.name : null,
                 media: attachmentPayload ? attachmentPayload.blobName : null,

@@ -24,7 +24,9 @@ class MessagingSocket extends Socket {
     updateData(data) {
         this.socket.emit('editMessage', data)
     }
-
+    onDeliverError(callback) {
+        this.socket.on('error', callback)
+    }
     sendDeliverMessage(data) {
         this.socket.emit('deliverMessage', data)
     }

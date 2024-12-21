@@ -1,8 +1,6 @@
 import { useEffect, useState } from 'react'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faTimes, faUsers } from '@fortawesome/free-solid-svg-icons'
-import useFetch from '@/services/useFetch'
-import { handleNoUserImage } from '@/services/chatservice/addDefaultImage'
 import './ChatSelector.css'
 import { useModal } from '@/contexts/ModalContext'
 import { getChatsCleaned } from '@/services/chatservice/getChats'
@@ -39,7 +37,7 @@ const ChatSelector = ({ onChatSelect, searchPlaceholder = 'Search chats...', ren
         return (
             <div key={index} className='chat-item' onClick={() => onChatSelect(chat)}>
                 <div className='chat-avatar'>
-                    <img src={chat.picture} alt={chat.name} onError={handleNoUserImage} />
+                    <img src={chat.profilePic} alt={chat.name} />
                     {chat.group && (
                         <span className='group-indicator'>
                             <FontAwesomeIcon icon={faUsers} />
