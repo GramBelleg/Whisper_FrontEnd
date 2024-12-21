@@ -112,7 +112,7 @@ export class StoriesStore extends BaseStore {
                 throw new Error('Failed to post story into indexed db: ' + error.message)
             }
         })
-    }
+    } 
 
     async deleteStory(storyId) {
         return this._executeTransaction('readwrite', async (store) => {
@@ -122,6 +122,29 @@ export class StoriesStore extends BaseStore {
                     request.onsuccess = () => resolve(request.result)
                     request.onerror = () => reject(request.error)
                 })
+            } catch (error) {
+                throw new Error('Failed to post story into indexed db: ' + error.message)
+            }
+        })
+    }
+
+    async updateStoryVisibility(storyId, setting) {
+        return this._executeTransaction('readwrite', async (store) => {
+            try {
+                const request = store.get(storyId)
+                const story = await new Promise((resolve, reject) => {
+                    request.onsuccess = () => resolve(request.result)
+                    request.onerror = () => reject(request.error)
+                })
+                if (story) {
+                    console.log(setting)
+                    story.privacy = setting
+                    const request2 = store.put(story)
+                    await new Promise((resolve, reject) => {
+                        request2.onsuccess = () => resolve(request2.result)
+                        request2.onerror = () => reject(request2.error)
+                    })
+                }
             } catch (error) {
                 throw new Error('Failed to post story into indexed db: ' + error.message)
             }

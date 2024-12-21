@@ -425,6 +425,14 @@ class WhisperDB {
         }
     }
 
+    async updateStoryVisibility(storyId, setting) {
+        if (this._stories !== null) {
+            return this._stories.updateStoryVisibility(storyId, setting)
+        } else {
+            throw new Error('Stories store is not initialized')
+        }
+    }
+
     async addStoryBlob(storyId, blob) {
         if (this._stories !== null) {
             return this._stories.addStoryBlob(storyId, blob)
