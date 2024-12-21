@@ -61,16 +61,14 @@ describe('ChatSettingsContainer', () => {
     it('submits privacy changes for a channel', async () => {
         render(<ChatSettingsContainer chatType="channel" />);
 
-        // const radio = screen.getAllByTestId('private');
-        const privateRadio = screen.getByLabelText(/Private/i);
+        const privateRadio = screen.getByLabelText(/Public/i);
         await userEvent.click(privateRadio);
-        // await userEvent.click(radio);
         expect(saveChannelPrivacyMock).not.toHaveBeenCalled();
 
         const submitButton = screen.getByTestId('save-privacy');
         await userEvent.click(submitButton);
 
-        expect(saveChannelPrivacyMock).toHaveBeenCalledWith('Private');
+        expect(saveChannelPrivacyMock).toHaveBeenCalledWith('Public');
     });
 
     it('submits privacy and limit changes for a group', async () => {
