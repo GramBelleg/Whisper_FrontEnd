@@ -41,10 +41,11 @@ const ChatSearch = ({ onClose, handleSearchMessageClick }) => {
         console.log("res",response)
         const updatedResults = response.map(result => ({
             ...result,
-            sender: result.sender.username, 
+            sender: result.sender.userName,
+            senderId: result.sender.id 
         }));
         setSearchResults(updatedResults)
-
+        console.log("upda",updatedResults)
     }
 
     const handleOnSearch = async () => {
