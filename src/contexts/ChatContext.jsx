@@ -854,16 +854,20 @@ export const ChatProvider = ({ children }) => {
 
     useEffect(() => {
         if (messagesSocket) {
-            messagesSocket.onReceiveMessage(handleReceiveMessage)
-            messagesSocket.onExpireMessage(handleExpireMessage)
-            messagesSocket.onReceiveEditMessage(handleReceiveEditMessage)
-            messagesSocket.onReceiveDeleteMessage(handleReceiveDeleteMessage)
-            messagesSocket.onPinMessage(handlePinMessage)
-            messagesSocket.onUnPinMessage(handleUnpinMessage)
-            messagesSocket.onDeliverMessage(handleDeliverMessage)
-            messagesSocket.onReadMessage(handleReadMessage)
-            messagesSocket.onRecieveReply(handleReceiveReply)
-            messagesSocket.onReceiveDeleteComment(handleReceiveDeleteReply)
+            try {
+                messagesSocket.onReceiveMessage(handleReceiveMessage)
+                messagesSocket.onExpireMessage(handleExpireMessage)
+                messagesSocket.onReceiveEditMessage(handleReceiveEditMessage)
+                messagesSocket.onReceiveDeleteMessage(handleReceiveDeleteMessage)
+                messagesSocket.onPinMessage(handlePinMessage)
+                messagesSocket.onUnPinMessage(handleUnpinMessage)
+                messagesSocket.onDeliverMessage(handleDeliverMessage)
+                messagesSocket.onReadMessage(handleReadMessage)
+                messagesSocket.onRecieveReply(handleReceiveReply)
+                messagesSocket.onReceiveDeleteComment(handleReceiveDeleteReply)
+            } catch (error) {
+                console.error(error)
+            }
         }
 
         return () => {
@@ -881,13 +885,17 @@ export const ChatProvider = ({ children }) => {
 
     useEffect(() => {
         if (chatSocket) {
-            chatSocket.onReceiveCreateChat(handleChatCreate)
-            chatSocket.onReceiveUpdateChat(handleChatUpdate)
-            chatSocket.onReceiveLeaveChat(handleReceiveLeaveGroup)
-            chatSocket.onReceiveAddAdmin(handleReceiveAddAdmin)
-            chatSocket.onReceiveRemoveFromChat(handleReceiveRemoveFromChat)
-            chatSocket.onReceiveAddUser(handleReceiveAddUser)
-            chatSocket.onReceiveDeleteChat(handleReceiveDeleteChat)
+            try {
+                chatSocket.onReceiveCreateChat(handleChatCreate)
+                chatSocket.onReceiveUpdateChat(handleChatUpdate)
+                chatSocket.onReceiveLeaveChat(handleReceiveLeaveGroup)
+                chatSocket.onReceiveAddAdmin(handleReceiveAddAdmin)
+                chatSocket.onReceiveRemoveFromChat(handleReceiveRemoveFromChat)
+                chatSocket.onReceiveAddUser(handleReceiveAddUser)
+                chatSocket.onReceiveDeleteChat(handleReceiveDeleteChat)
+            } catch (error) {
+                console.error(error)
+            }
         }
         return () => {
             chatSocket.offReceiveCreateChat(handleChatCreate)
