@@ -28,7 +28,6 @@ import { toast, ToastContainer } from "react-toastify";
 import NotificationMessage from './components/NotificationMessage/NotificationMessage'
 import "react-toastify/dist/ReactToastify.css";
 import { onMessage } from "firebase/messaging";
-import { getUsersWithStoriesCleaned } from './services/storiesservice/getStories'
 import AdminPage from './pages/AdminPage'
 
 function App() {

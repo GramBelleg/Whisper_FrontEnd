@@ -20,7 +20,7 @@ const SearchBar = ({ searchQuery, setSearchQuery, onEnter }) => {
                 height: "100%",
                 width: "100%",                
             }}>
-            <Search data-testid='search-bar-test' className='search-icon cursor-pointer' />
+            {/*<Search data-testid='search-bar-test' className='search-icon cursor-pointer' />*/}
             <input 
                 type='text' 
                 placeholder='Search' 
