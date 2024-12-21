@@ -124,7 +124,7 @@ const ChatSearch = ({ onClose, handleSearchMessageClick }) => {
                 <h3>No results found</h3>}
             <div className="search-results">
                 {searchResults?.map((searchResult) => (
-                    <div className="message-search-result" 
+                    <div className="message-search-result" data-testid="message-search-result"
                         onClick={() => onMessageClick(searchResult.id)}>
                         <ChatMessage message={searchResult} hideActions={true} />
                     </div>
