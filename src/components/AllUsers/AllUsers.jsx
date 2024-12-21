@@ -7,6 +7,7 @@ import axiosInstance from '@/services/axiosInstance'
 import { readMedia } from '@/services/chatservice/media'
 import { getBlobUrl } from '@/services/blobs/blob'
 import { useWhisperDB } from '@/contexts/WhisperDBContext'
+import { toggleUserBan } from '@/services/adminservice/adminActions'
 
 const AllUsers = ({ users, setReload}) => {
 
@@ -82,12 +83,10 @@ const AllUsers = ({ users, setReload}) => {
 
     const handleToggleUserBan = async (userId, isBanning) => {
         try {
-            await axiosInstance.put(
-                `/api/admin/ban/${isBanning}/user/${userId}`,
-                {
-                    withCredentials: true
-                }
-            )
+            let status = toggleUserBan(userId, isBanning);
+            if (!status) {
+                return;
+            }
             if (isBanning) {
                 await dbRef.current.banUser(userId)
             }
@@ -172,7 +171,7 @@ const AllUsers = ({ users, setReload}) => {
                             <span className='user-name'>{user.name}</span>
                             <span className='user-email'>{user.email}</span>
                         </div>
-                        {user.ban && <span className='banned-badge'>Banned</span>}
+                        {user.ban && <span data-testid ='banned-badge' className='banned-badge'>Banned</span>}
                     </div>
                 ))}
             </div>
@@ -187,6 +186,7 @@ const AllUsers = ({ users, setReload}) => {
                     }}
                 >
                     <button
+                        data-testid='toggle-ban-button'
                         onClick={() => handleToggleUserBan(contextMenu.user.id, !contextMenu.user.ban)}
                         className={`ban-button ${contextMenu.user.ban ? 'unban' : 'ban'}`}
                     >

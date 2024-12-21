@@ -7,6 +7,7 @@ import axiosInstance from '@/services/axiosInstance'
 import { readMedia } from '@/services/chatservice/media'
 import { getBlobUrl } from '@/services/blobs/blob'
 import { useWhisperDB } from '@/contexts/WhisperDBContext'
+import { toggleGroupFilter } from '@/services/adminservice/adminActions'
 
 const AllGroups = ({ groups, setReload }) => {
     const { pop } = useStackedNavigation()
@@ -80,12 +81,10 @@ const AllGroups = ({ groups, setReload }) => {
 
     const handleToggleGroupFilter = async (groupId, isFiltering) => {
         try {
-            await axiosInstance.put(
-                `/api/admin/filter/${isFiltering}/group/${groupId}`,
-                {
-                    withCredentials: true
-                }
-            )
+            let status = toggleGroupFilter(groupId, isFiltering);
+            if (!status) {
+                return;
+            }
             if (isFiltering) {
                 await dbRef.current.filterGroup(groupId)
             }
@@ -184,6 +183,7 @@ const AllGroups = ({ groups, setReload }) => {
                     }}
                 >
                     <button
+                        data-testid='toggle-filter-button'
                         onClick={() => handleToggleGroupFilter(contextMenu.group.chatId, !contextMenu.group.filter)}
                         className={`filter-button ${contextMenu.group.filter ? 'unfilter' : 'filter'}`}
                     >

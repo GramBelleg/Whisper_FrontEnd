@@ -32,7 +32,9 @@ const AdminSettings = () => {
             setGroups(allGroups)
             console.log(allUsers, allGroups)
             setLoading(false)
+            console.log("norrr")
         } catch (error) {
+            console.log("err")
             openModal(<ErrorMesssage errorMessage={error.message} appearFor={3000} onClose={closeModal} />)
         }
     }, [dbRef, openModal, closeModal])
@@ -71,11 +73,11 @@ const AdminSettings = () => {
             <div className='list-container'>
                 <h2 className='subtitle'>Admin Dashboard</h2>
 
-                <div className='item' onClick={handleUsersClick}>
+                <div className='item' onClick={handleUsersClick} data-testid='all-users-icon'>
                     <FontAwesomeIcon icon={faUser} className='list-item-icon' />
                     <span>Users ({users.length})</span>
                 </div>
-                <div className='item' onClick={handleGroupsClick}>
+                <div className='item' onClick={handleGroupsClick} data-testid='all-groups-icon'>
                     <FontAwesomeIcon icon={faUserGroup} className='list-item-icon' />
                     <span>Groups ({groups.length})</span>
                 </div>
