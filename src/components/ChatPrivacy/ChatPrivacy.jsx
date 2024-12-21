@@ -10,6 +10,7 @@ const ChatPrivacy = ({privacy, title, handlePrivacyChange, handlePrivacySubmit})
                         value='Public'
                         checked={privacy === 'Public'}
                         onChange={handlePrivacyChange}
+                        data-testid='public'
                     />
                     Public
                 </label>
