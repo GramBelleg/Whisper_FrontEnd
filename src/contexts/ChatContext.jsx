@@ -168,11 +168,11 @@ export const ChatProvider = ({ children }) => {
 
     const sendMessage = async (data, chat = null) => {
         setSending(true);
-        const usedChat = chat ? chat : currentChat
+        const usedChat = chat ? chat : currentChatRef.current
         const newMessage = {
             chatId: usedChat.id,
             forwarded: false,
-            expiresAfter: currentChat.selfDestruct ? currentChat.selfDestruct : null,
+            expiresAfter: usedChat.selfDestruct ? usedChat.selfDestruct : null,
             sentAt: new Date().toISOString(),
             media: '',
             extension: '',
@@ -200,7 +200,7 @@ export const ChatProvider = ({ children }) => {
         newMessage.deliveredAt = ''
         newMessage.readAt = ''
         newMessage.deleted = false
-        newMessage.sender = user.name
+        newMessage.sender = user.userName
         newMessage.state = 4
         newMessage.time = new Date()
 
@@ -211,7 +211,7 @@ export const ChatProvider = ({ children }) => {
                     if (prevMessages) {
                         return [{ id: Date.now(), ...newMessage }, ...prevMessages]
                     }
-                    return [newMessage]
+                    return [{...newMessage}]
                 })
                 setParentMessage(null)
             }
@@ -571,7 +571,7 @@ export const ChatProvider = ({ children }) => {
             }
             const chat = await dbRef.current.getChat(myMessageData.chatId)
 
-            if(myMessageData.type == "EVENT") {
+            if(myMessageData.type === "EVENT") {
                 let participantKeys = chat.participantKeys;
                 if(!participantKeys[1]) {
                     participantKeys[1] = parseInt(myMessageData.content);
@@ -606,7 +606,9 @@ export const ChatProvider = ({ children }) => {
             }
             
             try {
+                
                 const mappedMessage = await mapMessage(myMessageData)
+                console.log(mappedMessage)
                 await dbRef.current.insertMessageWrapper({ ...mappedMessage, drafted: false })
                 setMessageReceived(true)
                 setChatAltered(true)
