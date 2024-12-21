@@ -8,8 +8,10 @@ import useAuth from '@/hooks/useAuth'
 import ChatSocket from '@/services/sockets/ChatSocket'
 import { cleanChat } from '@/services/chatservice/getChats'
 import apiUrl from '@/config'
+
 import { useSidebar } from './SidebarContext'
 import { getMembers } from '@/services/chatservice/getChatMembers'
+import { getMemberPermissions, getSubscriberPermissions } from '@/services/chatservice/getChatMemberPermissions'
 import { muteChat, unMuteChat } from '@/services/chatservice/muteUnmuteChat'
 import { getGroupSettings, setPrivacy } from '@/services/chatservice/groupSettings'
 import { setGroupLimit } from '@/services/chatservice/groupSettings'
@@ -17,11 +19,12 @@ import { getChannelSettings } from '@/services/chatservice/channelSettings'
 import axios from 'axios'
 import axiosInstance from '@/services/axiosInstance'
 import { addNewContact } from '@/services/userservices/addNewContact'
-
-
+import { useModal } from '@/contexts/ModalContext'
+import ErrorMesssage from '../components/ErrorMessage/ErrorMessage'
 export const ChatContext = createContext()
 
 export const ChatProvider = ({ children }) => {
+    const { openModal, closeModal } = useModal()
     const [currentChat, setCurrentChat] = useState(null)
     const [messages, setMessages] = useState([])
     const [pinnedMessages, setPinnedMessages] = useState([])
@@ -310,6 +313,12 @@ export const ChatProvider = ({ children }) => {
                 isAdmin: false,
                 hasStory: false
             }
+            /// sockets get received many time
+            const allMembers = await dbRef.current.getChatMembers(userData.chatId)
+            if (allMembers.some((member) => member.id === userData.user.id)) {
+                return;
+            }
+
             console.log("member",member)
             await dbRef.current.addChatMember(userData.chatId,member)
             console.log("will reload")
@@ -458,6 +467,35 @@ export const ChatProvider = ({ children }) => {
             console.log(error)
         }
     }
+    const handleGetMembersPermissions = async () => {
+        try {
+            const members = await dbRef.current.getChatMembers(currentChat.id)
+            const permissionsDictionary = {}
+            for (let i = 0; i < members.length; i++)
+                {
+                    const permissions = await getMemberPermissions(currentChat.id, members[i].id)
+                    permissionsDictionary[members[i].id] = permissions
+                }
+            return permissionsDictionary;
+        } catch (error) {
+            console.log(error)
+        }
+    }
+    const handleGetSubscribersPermissions = async () => {
+        try {
+            const members = await dbRef.current.getChatMembers(currentChat.id)
+            const permissionsDictionary = {}
+            for (let i = 0; i < members.length; i++)
+                {
+                    const permissions = await getSubscriberPermissions(currentChat.id, members[i].id)
+                    permissionsDictionary[members[i].id] = permissions
+                }
+            return permissionsDictionary;
+        } catch (error) {
+            console.log(error)
+        }
+    }
+
 
     const deleteChat = async (chatId) => {
         try {
@@ -840,8 +878,14 @@ export const ChatProvider = ({ children }) => {
             console.log(error)
         }
     }
-
-
+    const handleErrorReceival = (errorReceived) => {
+        try{
+            openModal(<ErrorMesssage errorMessage={errorReceived.message} onClose={closeModal} appearFor={3000} />)
+        }
+        catch(error){
+            console.log(error)
+        }
+    }
     useEffect(() => {
         if (messagesSocket) {
             messagesSocket.onReceiveMessage(handleReceiveMessage)
@@ -854,6 +898,7 @@ export const ChatProvider = ({ children }) => {
             messagesSocket.onReadMessage(handleReadMessage)
             messagesSocket.onRecieveReply(handleReceiveReply)
             messagesSocket.onReceiveDeleteComment(handleReceiveDeleteReply)
+            messagesSocket.onDeliverError(handleErrorReceival)
         }
 
         return () => {
@@ -950,8 +995,10 @@ export const ChatProvider = ({ children }) => {
                 saveGroupSettings,
                 handleGetGroupSettings,
                 handleGetChannelSettings,
-                saveChannelPrivacy,
-                addNewContactByUser
+                addNewContactByUser,
+                handleGetMembersPermissions,
+                handleGetSubscribersPermissions,
+                saveChannelPrivacy
             }}
         >
             {children}
