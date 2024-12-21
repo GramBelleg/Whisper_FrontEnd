@@ -24,6 +24,7 @@ const GroupSettings = ({
                 </label>
                 <input
                     id="group-limit"
+                    data-testid="group-limit"
                     type="number"
                     min={1}
                     max={1000}
