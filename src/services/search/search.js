@@ -23,7 +23,7 @@ export const chatsGlobalSearch = async (query) => {
 export const messagesGlobalSearch = async (query, type) => {
     try {
         const token = localStorage.getItem('token')
-        const response = await axios.get(`${apiUrl}/api/messages/global/search?query=${query}&type=${type}`,
+        const response = await axios.get(`${apiUrl}/api/messages/global/searchMessages?query=${query}&type=${type}`,
                 { withCredentials: true }, {
                 headers: {
                     Authorization: `Bearer ${token}`
@@ -47,17 +47,17 @@ export const chatsLocalSearch = async (chatId, query) => {
                 }
             },
         )
-        return response.data.chats
+        return response.data.users
     } catch (error) {
         console.log(error)
     }
 }
 
 
-export const messagesLocalSearch = async (query, type) => {
+export const messagesLocalSearch = async (chatId, query, type) => {
     try {
         const token = localStorage.getItem('token')
-        const response = await axios.get(`${apiUrl}/api/messages/global/search?query=${query}&type=${type}`,
+        const response = await axios.get(`${apiUrl}/api/messages/${chatId}/search?query=${query}&type=${type}`,
                 { withCredentials: true }, {
                 headers: {
                     Authorization: `Bearer ${token}`
