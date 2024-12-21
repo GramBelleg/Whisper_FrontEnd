@@ -10,7 +10,7 @@ import { messagesLocalSearch } from '@/services/search/search';
 const ChatSearch = ({ onClose }) => {
     const [isVisible, setIsVisible] = useState(false);
     const [query, setQuery] = useState('');
-    const [filter, setFilter] = useState(null);
+    const [filter, setFilter] = useState('text');
     const [searchResults, setSearchResults] = useState(null)
     const { push } = useStackedNavigation();
     const { searchChat, currentChat } = useChat();
@@ -33,6 +33,13 @@ const ChatSearch = ({ onClose }) => {
         else
             type = "TEXT"
         const response = await messagesLocalSearch(currentChat.id,query,type)
+        console.log("res",response)
+        const updatedResults = response.map(result => ({
+            ...result,
+            sender: result.sender.username, 
+        }));
+        setSearchResults(updatedResults)
+
     }
 
     const handleOnSearch = async () => {
@@ -50,7 +57,7 @@ const ChatSearch = ({ onClose }) => {
         {
             filteredResults = results.filter(result => result.extension?.split('/')[0] === 'video'); 
         }
-
+        
         setSearchResults(filteredResults)
         console.log("filtered results", filteredResults);
     };
