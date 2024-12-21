@@ -1,0 +1,43 @@
+.mentions {
+    flex-grow: 1;
+  }
+  
+  .mentions--multiLine .mentions__control {
+    font-size: 16px;
+  }
+  .mentions--multiLine .mentions__highlighter {
+    border: none;
+    outline: none;
+    padding: 5px 15px;
+  }
+  .mentions--multiLine .mentions__input {
+    border: none;
+    padding: 5px 15px;
+    outline: none;
+  }
+  
+  .mentions__suggestions__list {
+    background-color: var(--primary-color);
+    border: 1px solid rgba(0, 0, 0, 0.15);
+    font-size: 10pt;
+  }
+  
+  .mentions__suggestions__item {
+    padding: 5px 15px;
+    border-bottom: 1px solid rgba(0, 0, 0, 0.15);
+  }
+  
+  .mentions__suggestions__item--focused {
+    background-color: var(--accent-color);
+  }
+  
+  .mentions__mention {
+    position: relative;
+    z-index: 1;
+    color: blue;
+    text-shadow: 1px 1px 1px white, 1px -1px 1px white, -1px 1px 1px white,
+      -1px -1px 1px white;
+    text-decoration: underline;
+    pointer-events: none;
+  }
+  

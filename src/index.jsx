@@ -12,7 +12,6 @@ import { StoriesProvider } from './contexts/StoryContext.jsx'
 import { ChatProvider } from './contexts/ChatContext.jsx'
 import { SidebarProvider } from './contexts/SidebarContext.jsx'
 import AgoraRTC, { AgoraRTCProvider } from 'agora-rtc-react';
-
 AgoraRTC.setLogLevel(3)
 const agoraClient = AgoraRTC.createClient({ mode: 'rtc', codec: 'vp8' })
 

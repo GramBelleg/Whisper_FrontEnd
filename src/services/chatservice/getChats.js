@@ -32,9 +32,9 @@ export const mapMessageState = (read, delivered) => {
     }
 }
 
-export const mapPicture = async (picture) => {
+export const mapPicture = async (picture, isBlocked = false) => {
     try {
-        if (picture) {
+        if (picture && !isBlocked) {
             const type = picture.substring(picture.lastIndexOf('.') + 1)
             const presignedUrl = await readMedia(picture)
             const { blob } = await downloadBlob({ presignedUrl: presignedUrl })
@@ -53,12 +53,16 @@ export const mapPicture = async (picture) => {
 export const cleanChat = async (chat) => {
     try {
         console.log("chattt", chat)
+        const isBlocked = chat.isBlocked ? chat.isBlocked : false;
+        const makeBlocked = chat.makeBlocked ? chat.makeBlocked : false;
         const flattenedChat = {
             id: chat.id, //
             othersId: chat.othersId, //
             name: chat.name, //
             type: chat.type, //
             selfDestruct: chat.selfDestruct ? chat.selfDestruct : null, //
+            isBlocked: isBlocked, //
+            makeBlocked: makeBlocked, //
             lastMessage: chat.lastMessage ? chat.lastMessage.content : null, //
             draftMessageContent: chat.draftMessage ? chat.draftMessage.draftContent : "", //
             draftMessageTime: chat.draftMessage ? chat.draftMessage.draftTime : "", //
@@ -77,7 +81,7 @@ export const cleanChat = async (chat) => {
             hasStory: chat.hasStory !== null ? chat.hasStory : false, //
             isMuted: chat.isMuted !== null ? chat.isMuted : false,
             participantKeys: chat.participantKeys, //
-            profilePic: await mapPicture(chat.picture), //
+            profilePic: await mapPicture(chat.picture, (isBlocked || makeBlocked)), //
             unreadMessageCount: chat.unreadMessageCount, //
             sender: chat.lastMessage ? chat.lastMessage.sender.userName : null,
             lastSeen: chat.lastSeen ? chat.lastSeen.slice(0, 19).replace('T', ' ') : null, //

@@ -1,11 +1,8 @@
 .last-message {
-    display: flex;
-    align-items: center;
-    justify-content: flex-start;
-    width: 80%;
+    display: inline-block;
     height: 100%;
+    width: 50%;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+    overflow: hidden;
 }
-
-
-
-

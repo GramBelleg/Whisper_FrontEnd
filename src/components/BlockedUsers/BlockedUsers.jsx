@@ -14,8 +14,8 @@ const BlockedUsers = () => {
     const { openModal, openConfirmationModal } = useModal()
     const { pop } = useStackedNavigation()
 
-    const blockUser = async (chat) => {
-        await setBlockedStateForUser(chat.othersId ? chat.othersId : chat.other.id, true)
+    const blockUser = async (userId) => {
+        await setBlockedStateForUser(userId, true)
         refresh()
     }
 

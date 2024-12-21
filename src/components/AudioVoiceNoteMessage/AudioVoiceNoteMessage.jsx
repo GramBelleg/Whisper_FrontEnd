@@ -34,7 +34,8 @@ const AudioVoiceNoteMessage = ({ messageType, messageState, message }) => {
             </audio>
 
             <FontAwesomeIcon icon={faMicrophone} className={`mic-icon ${messageState === 2 ? 'active' : ''}`} />
-            {audioDuration && <span className={`audio-duration ${messageState === 2 ? 'active' : ''}`}>{audioDuration}s</span>}
+            Audio
+            {audioDuration && <span className={`audio-duration ${messageState === 2 ? 'active' : ''}`}> {audioDuration}s</span>}
         </div>
     )
 }

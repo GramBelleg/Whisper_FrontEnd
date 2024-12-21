@@ -2,6 +2,10 @@ import { render, screen, fireEvent } from '@testing-library/react';
 import { describe, it, expect, vi } from 'vitest';
 import GroupMembers from '@/components/GroupMembers/GroupMembers';
 import noUser from '@/assets/images/no-user.png';
+import { useChat } from '@/contexts/ChatContext';
+vi.mock('@/contexts/ChatContext', () => ({
+    useChat: vi.fn(),
+  }));
 
 const mockMembers = [
   { id: 1, userName: 'John Doe', profilePic: 'https://example.com/john.jpg' },
@@ -10,6 +14,19 @@ const mockMembers = [
 ];
 
 describe('GroupMembers Component', () => {
+  let mockHandleGetGroupSettings;
+  let mockSaveGroupSettings;
+  beforeEach(() => {
+      mockHandleGetGroupSettings = vi.fn().mockResolvedValue({ privacy: true, maxSize: 100 });
+      mockSaveGroupSettings = vi.fn();
+  
+      useChat.mockReturnValue({
+        handleGetGroupSettings: mockHandleGetGroupSettings,
+        saveGroupSettings: mockSaveGroupSettings,
+      });
+  
+
+    });
   vi.mock('@/hooks/useAuth', () => {
     const mockUseAuth = () => ({
       user: {
@@ -27,7 +44,14 @@ describe('GroupMembers Component', () => {
       <GroupMembers
         filteredMembers={mockMembers}
         handleQueryChange={() => {}}
+        amIAdmin={true}
+        handleAddAmin={() => {
+            
+        }}
+        handleRemoveFromChat={() => {}}
+        type="group"
       />
+      
     );
 
     expect(screen.getByText('Group Members')).toBeInTheDocument();
@@ -47,7 +71,12 @@ describe('GroupMembers Component', () => {
     render(
       <GroupMembers
         filteredMembers={mockMembers}
-        handleQueryChange={handleQueryChange}
+        handleQueryChange={handleQueryChange}amIAdmin={true}
+        handleAddAmin={() => {
+            
+        }}
+        handleRemoveFromChat={() => {}}
+        type="group"
       />
     );
 
@@ -61,7 +90,12 @@ describe('GroupMembers Component', () => {
     render(
       <GroupMembers
         filteredMembers={[]}
-        handleQueryChange={() => {}}
+        handleQueryChange={() => {}}amIAdmin={true}
+        handleAddAmin={() => {
+            
+        }}
+        handleRemoveFromChat={() => {}}
+        type="group"
       />
     );
 

@@ -17,7 +17,13 @@ const ChooseGroupMembers = ({ selectedUsers, setSelectedUsers, Users }) => {
                 console.log(error)
             }
         }
-        myGetAllUsers() 
+        if (!Users) {
+            myGetAllUsers() 
+        }
+        else
+        {
+            setAllUsers(Users)
+        }
     }, [])
 
     const handleCheckboxChange = (user) => {
