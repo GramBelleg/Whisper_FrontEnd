@@ -13,6 +13,12 @@ const GroupMembersContainer = ({chatType}) => {
     const handleAddAmin = async (userId) => {
         try {
             await addAdmin(userId)
+            setMembers(members.map((member) => {
+                if (member.id === userId) {
+                    return { ...member, isAdmin: true }
+                }
+                return member
+            }))
         } catch (error) {
             console.error(error)
         }
@@ -22,6 +28,7 @@ const GroupMembersContainer = ({chatType}) => {
         try {
             console.log(incomingUser)
             await removeFromChat(incomingUser)
+            setMembers(members.filter((member) => member.id !== incomingUser.id))
         } catch (error) {
             console.error(error)
         }
