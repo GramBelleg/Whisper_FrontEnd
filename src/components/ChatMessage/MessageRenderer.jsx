@@ -55,7 +55,7 @@ const MessageRenderer = ({ content }) => {
                         @{part.displayName}
                     </span>
                 ) : (
-                    <span key={index}>{part.content}</span>
+                    part.content
                 )
             )}
         </>
