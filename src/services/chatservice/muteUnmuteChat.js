@@ -20,7 +20,7 @@ export const muteChat = async (chatId, muteObject) => {
 export const unMuteChat = async (chatId, muteObject) => {
     try {
         const token = localStorage.getItem("token")
-        const response = await axios.post(`${apiUrl}/api/chats/${chatId}/muteChat`, muteObject, {
+        const response = await axios.post(`${apiUrl}/api/chats/${chatId}/unmuteChat`, muteObject, {
             headers: {
                 Authorization: `Bearer ${token}`  
             },

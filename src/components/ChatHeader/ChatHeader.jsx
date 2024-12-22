@@ -13,10 +13,10 @@ const ChatHeader = ({ handleInfoOpen, infoOpen, handleVoiceCall, handleSearchOpe
     const [isMuteDropdownOpen, setMuteIsDropdownOpen] = useState(false)
     const { openModal, closeModal } = useModal()
 
-    const myHandleMute = async () => {
+    const myHandleMute = async (duration) => {
         setMuteIsDropdownOpen(false)
         try {
-            await handleMute(currentChat.id, currentChat.type, 0)
+            await handleMute(currentChat.id, currentChat.type, duration)
         } catch (error) {
             console.log(error)
         }
@@ -131,13 +131,13 @@ const ChatHeader = ({ handleInfoOpen, infoOpen, handleVoiceCall, handleSearchOpe
                     )}
                     {isMuteDropdownOpen && (
                         <div className='dropdown-menu' onMouseLeave={() => setMuteIsDropdownOpen(false)}>
-                            <div className='dropdown-item' onClick={() => myHandleMute('8 Hours')}>
+                            <div className='dropdown-item' onClick={() => myHandleMute(8)}>
                                 8 Hours
                             </div>
-                            <div className='dropdown-item' onClick={() => myHandleMute('1 Week')}>
+                            <div className='dropdown-item' onClick={() => myHandleMute(1)}>
                                 1 Week
                             </div>
-                            <div className='dropdown-item' onClick={() => myHandleMute('Always')}>
+                            <div className='dropdown-item' onClick={() => myHandleMute(0)}>
                                 Always
                             </div>
                         </div>
