@@ -1,14 +1,11 @@
 import { createContext, useContext, useEffect, useRef, useState } from 'react'
 import { useWhisperDB } from './WhisperDBContext'
-import useAuth from '@/hooks/useAuth'
-import { useChat } from './ChatContext'
+
 
 export const GroupContext = createContext()
 
 export const GroupProvider = ({ children }) => {
     const { dbRef } = useWhisperDB()
-    const { user } = useAuth()
-    const { messagesSocket, currentChatRef } = useChat()
     const [allUsers, setAllUsers] = useState([])
 
     useEffect(() => {

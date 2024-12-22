@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { useProfileContext } from '@/contexts/ProfileSettingsContext'
 import {
     updateBio,

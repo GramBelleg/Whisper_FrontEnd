@@ -29,8 +29,8 @@ export const ChatProvider = ({ children }) => {
     const [pinnedMessages, setPinnedMessages] = useState([])
     const [parentMessage, setParentMessage] = useState(null)
     const [sending, setSending] = useState(false)
-    const messagesSocket = new MessagingSocket()
-    const chatSocket = new ChatSocket()
+    const messagesSocketRef = useRef(null)
+    const chatSocketRef = useRef(null)
     const { dbRef } = useWhisperDB()
     const currentChatRef = useRef(currentChat)
     const [messageReceived, setMessageReceived] = useState(false)
@@ -97,7 +97,7 @@ export const ChatProvider = ({ children }) => {
     useEffect(() => {
         if (currentChat) {
             try {
-                messagesSocket.readAllMessages(currentChat.id)
+                messagesSocketRef.current.readAllMessages(currentChat.id)
             } catch (error) {
                 console.log(error)
             }
@@ -121,7 +121,7 @@ export const ChatProvider = ({ children }) => {
         if (currentChat.type === 'DM') {
             finalContent = await encryptMessage(content, currentChat)
         }
-        messagesSocket.updateData({
+        messagesSocketRef.current.updateData({
             chatId: currentChat.id,
             id: messageId,
             content: finalContent
@@ -129,14 +129,14 @@ export const ChatProvider = ({ children }) => {
     }
 
     const deleteMessage = async (messageId) => {
-        messagesSocket.deleteMessage({
+        messagesSocketRef.current.deleteMessage({
             chatId: currentChat.id,
             messages: [messageId]
         })
     }
 
     const deleteComment = async (messageId) => {
-        messagesSocket.deleteComment({
+        messagesSocketRef.current.deleteComment({
             ids: [messageId],
             chatId: currentChat.id,
             messageId: threadRef.current.id
@@ -161,7 +161,7 @@ export const ChatProvider = ({ children }) => {
         }
 
         try {
-            messagesSocket.sendReply({...newReply})
+            messagesSocketRef.current.sendReply({...newReply})
         } catch (error) {
             console.log(error)
         }
@@ -207,7 +207,7 @@ export const ChatProvider = ({ children }) => {
         newMessage.time = new Date()
 
         try {
-            messagesSocket.sendData(newMessageForBackend)
+            messagesSocketRef.current.sendData(newMessageForBackend)
             if(!chat) {
                 setMessages((prevMessages) => {
                     if (prevMessages) {
@@ -245,7 +245,7 @@ export const ChatProvider = ({ children }) => {
                 },
                 chatId: currentChat.id
             }
-            chatSocket.removeFromChat(toSend)
+            chatSocketRef.current.removeFromChat(toSend)
         } catch (error) {
             console.error(error)
         }
@@ -258,7 +258,7 @@ export const ChatProvider = ({ children }) => {
                 chatId: currentChat.id,
             }
 
-            chatSocket.addAdmin(toSend)
+            chatSocketRef.current.addAdmin(toSend)
         } catch (error) {
             console.error(error)
         }
@@ -276,7 +276,7 @@ export const ChatProvider = ({ children }) => {
                 chatId: currentChat.id,
             }
             console.log("toSend",toSend)
-            chatSocket.addUser(toSend)
+            chatSocketRef.current.addUser(toSend)
         } catch (error) {
             console.error(error)
         }
@@ -406,21 +406,21 @@ export const ChatProvider = ({ children }) => {
     }
 
     const pinMessage = (messsageId, durtaion = 0) => {
-        messagesSocket.pinMessage({
+        messagesSocketRef.current.pinMessage({
             chatId: currentChat.id,
             id: messsageId
         })
     }
 
     const unPinMessage = (messsageId) => {
-        messagesSocket.unPinMessage({
+        messagesSocketRef.current.unPinMessage({
             chatId: currentChat.id,
             id: messsageId
         })
     }
 
     const leaveGroup = async (chatId) => {
-        chatSocket.leaveGroup({
+        chatSocketRef.current.leaveGroup({
             chatId: chatId
         })
     }
@@ -508,7 +508,7 @@ export const ChatProvider = ({ children }) => {
 
     const deleteChat = async (chatId) => {
         try {
-            chatSocket.deleteChat({
+            chatSocketRef.current.deleteChat({
                 chatId: chatId
             })
         } catch (error) {
@@ -668,7 +668,7 @@ export const ChatProvider = ({ children }) => {
 
             try {
                 if (messageData.sender.id !== user.id) {
-                    messagesSocket.sendDeliverMessage({
+                    messagesSocketRef.current.sendDeliverMessage({
                         messageId: messageData.id,
                         chatId: messageData.chatId
                     })
@@ -680,7 +680,7 @@ export const ChatProvider = ({ children }) => {
             if (activeChat && activeChat.id === myMessageData.chatId) {
                 try {
                     await loadMessages(activeChat.id)
-                    messagesSocket.readAllMessages(activeChat.id)
+                    messagesSocketRef.current.readAllMessages(activeChat.id)
                 } catch (error) {
                     console.log(error)
                 }
@@ -913,49 +913,60 @@ export const ChatProvider = ({ children }) => {
             console.log(error)
         }
     }
+
     useEffect(() => {
-        if (messagesSocket) {
-            messagesSocket.onReceiveMessage(handleReceiveMessage)
-            messagesSocket.onExpireMessage(handleExpireMessage)
-            messagesSocket.onReceiveEditMessage(handleReceiveEditMessage)
-            messagesSocket.onReceiveDeleteMessage(handleReceiveDeleteMessage)
-            messagesSocket.onPinMessage(handlePinMessage)
-            messagesSocket.onUnPinMessage(handleUnpinMessage)
-            messagesSocket.onDeliverMessage(handleDeliverMessage)
-            messagesSocket.onReadMessage(handleReadMessage)
-            messagesSocket.onRecieveReply(handleReceiveReply)
-            messagesSocket.onReceiveDeleteComment(handleReceiveDeleteReply)
-            messagesSocket.onDeliverError(handleErrorReceival)
+        if (user) {
+            messagesSocketRef.current = new MessagingSocket()
+            chatSocketRef.current = new ChatSocket()
+        }
+    }, [user])
+    useEffect(() => {
+        if (messagesSocketRef.current) {
+            messagesSocketRef.current.onReceiveMessage(handleReceiveMessage)
+            messagesSocketRef.current.onExpireMessage(handleExpireMessage)
+            messagesSocketRef.current.onReceiveEditMessage(handleReceiveEditMessage)
+            messagesSocketRef.current.onReceiveDeleteMessage(handleReceiveDeleteMessage)
+            messagesSocketRef.current.onPinMessage(handlePinMessage)
+            messagesSocketRef.current.onUnPinMessage(handleUnpinMessage)
+            messagesSocketRef.current.onDeliverMessage(handleDeliverMessage)
+            messagesSocketRef.current.onReadMessage(handleReadMessage)
+            messagesSocketRef.current.onRecieveReply(handleReceiveReply)
+            messagesSocketRef.current.onReceiveDeleteComment(handleReceiveDeleteReply)
+            messagesSocketRef.current.onDeliverError(handleErrorReceival)
         }
 
         return () => {
-            messagesSocket.offReceiveMessage(handleReceiveMessage)
-            messagesSocket.offExpireMessage(handleExpireMessage)
-            messagesSocket.offReceiveEditMessage(handleReceiveEditMessage)
-            messagesSocket.offReceiveDeleteMessage(handleReceiveDeleteMessage)
-            messagesSocket.offPinMessage(handlePinMessage)
-            messagesSocket.offUnPinMessage(handleUnpinMessage)
-            messagesSocket.offDeliverMessage(handleDeliverMessage)
-            messagesSocket.offReadMessage(handleReadMessage)
-            messagesSocket.disconnect()
+            if (messagesSocketRef.current) {
+                messagesSocketRef.current.offReceiveMessage(handleReceiveMessage)
+                messagesSocketRef.current.offExpireMessage(handleExpireMessage)
+                messagesSocketRef.current.offReceiveEditMessage(handleReceiveEditMessage)
+                messagesSocketRef.current.offReceiveDeleteMessage(handleReceiveDeleteMessage)
+                messagesSocketRef.current.offPinMessage(handlePinMessage)
+                messagesSocketRef.current.offUnPinMessage(handleUnpinMessage)
+                messagesSocketRef.current.offDeliverMessage(handleDeliverMessage)
+                messagesSocketRef.current.offReadMessage(handleReadMessage)
+                messagesSocketRef.current.disconnect()
+            }
         }
-    }, [messagesSocket])
+    }, [messagesSocketRef])
 
     useEffect(() => {
-        if (chatSocket) {
-            chatSocket.onReceiveCreateChat(handleChatCreate)
-            chatSocket.onReceiveUpdateChat(handleChatUpdate)
-            chatSocket.onReceiveLeaveChat(handleReceiveLeaveGroup)
-            chatSocket.onReceiveAddAdmin(handleReceiveAddAdmin)
-            chatSocket.onReceiveRemoveFromChat(handleReceiveRemoveFromChat)
-            chatSocket.onReceiveAddUser(handleReceiveAddUser)
-            chatSocket.onReceiveDeleteChat(handleReceiveDeleteChat)
+        if (chatSocketRef.current) {
+            chatSocketRef.current.onReceiveCreateChat(handleChatCreate)
+            chatSocketRef.current.onReceiveUpdateChat(handleChatUpdate)
+            chatSocketRef.current.onReceiveLeaveChat(handleReceiveLeaveGroup)
+            chatSocketRef.current.onReceiveAddAdmin(handleReceiveAddAdmin)
+            chatSocketRef.current.onReceiveRemoveFromChat(handleReceiveRemoveFromChat)
+            chatSocketRef.current.onReceiveAddUser(handleReceiveAddUser)
+            chatSocketRef.current.onReceiveDeleteChat(handleReceiveDeleteChat)
         }
         return () => {
-            chatSocket.offReceiveCreateChat(handleChatCreate)
-            chatSocket.offReceiveUpdateChat(handleChatUpdate)
+            if (chatSocketRef.current) {
+                chatSocketRef.current.offReceiveCreateChat(handleChatCreate)
+                chatSocketRef.current.offReceiveUpdateChat(handleChatUpdate)
+            }
         }
-    }, [chatSocket,handleChatCreate,handleChatUpdate])
+    }, [chatSocketRef,handleChatCreate,handleChatUpdate])
 
     useEffect(() => {}, [messages, pinnedMessages])
 

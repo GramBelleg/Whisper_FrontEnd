@@ -8,7 +8,7 @@ class Socket {
     constructor() {
         if (!Socket.socketInstance) {
             const token = localStorage.getItem("token")
-
+            console.log("SOCKKKKKEEEEEET", token)
             Socket.socketInstance = io(this.serverUrl, {
                 query: {
                     token: token,
