@@ -20,7 +20,7 @@ export const StoriesProvider = ({ children }) => {
     const [isDeleteing, setIsDeleteing] = useState(false)
     const [changedLikes, setChangedLikes] = useState(false)
     const [changedViews, setChangedViews] = useState(false)
-    const storiesSocket = new StorySocket()
+    const storiesSocketRef = useRef()
     const currentUserRef = useRef()
     const currentStoryRef = useRef()
     const [loading, setLoading] = useState(true)
@@ -29,8 +29,11 @@ export const StoriesProvider = ({ children }) => {
     const { user, handleUpdateUser } = useAuth()
     const [appLoaded, setAppLoaded] = useState(false)
 
-    const selectUser = (userIn) => {
+    const selectUser = async (userIn) => {
         setCurrentUser(userIn)
+        if (currentUser) {
+            await loadUserStories(userIn.userId)
+        }
     }
 
     const selectStory = (next) => {
@@ -61,6 +64,7 @@ export const StoriesProvider = ({ children }) => {
                 const hasStories = await dbRef.current.userHasStories(userId)
                 if (hasStories) {
                     data = await dbRef.current.getUserStories(userId)
+                    console.log(data)
                     setStories([...data])
                 } 
             } catch (error) {
@@ -134,7 +138,7 @@ export const StoriesProvider = ({ children }) => {
         try {
             setIsDeleteing(true)
             if (stories) {
-                storiesSocket.deleteData(stories[currentIndex].id)
+                storiesSocketRef.current.deleteData(stories[currentIndex].id)
             }
         } catch (error) {
             console.log(error.message)
@@ -190,7 +194,8 @@ export const StoriesProvider = ({ children }) => {
                     media: blobName,
                     type: newStory.type
                 }
-                storiesSocket.sendData(storyToSend)
+                console.log(storyToSend)
+                storiesSocketRef.current.sendData(storyToSend)
             }
         } catch (error) {
             console.log(error)
@@ -207,7 +212,7 @@ export const StoriesProvider = ({ children }) => {
                 try {
                     liked = await dbRef.current.isLiked(currentStory.id)
                     if (!liked) {
-                        storiesSocket.likeStory({
+                        storiesSocketRef.current.likeStory({
                             storyId: currentStory.id,
                             userName: user.userName,
                             profilePic: user.profilePic,
@@ -230,7 +235,7 @@ export const StoriesProvider = ({ children }) => {
                 try {
                     viewed = await dbRef.current.isViewed(currentStory.id)
                     if (!viewed) {
-                        storiesSocket.viewStory({
+                        storiesSocketRef.current.viewStory({
                             storyId: currentStory.id,
                             userName: user.userName,
                             profilePic: user.profilePic
@@ -285,26 +290,32 @@ export const StoriesProvider = ({ children }) => {
                 setError(error)
             } finally {
                 setLoading(false)
-            }
+            }   
         }
     }, [currentStory])
 
     useEffect(() => {
-        if (storiesSocket) {
-            storiesSocket.onReceiveStory(handleRecieveStory)
-            storiesSocket.onReceiveDeleteStory(handleReceiveDeleteStory)
-            storiesSocket.onReceiveLikeStory(handleRecieveLikeStory)
-            storiesSocket.onReceiveViewStory(handleRecieveViewStory)
+        if(user) {
+            storiesSocketRef.current = new StorySocket()
+        }
+    }, [user])
+
+    useEffect(() => {
+        if (storiesSocketRef.current) {
+            storiesSocketRef.current.onReceiveStory(handleRecieveStory)
+            storiesSocketRef.current.onReceiveDeleteStory(handleReceiveDeleteStory)
+            storiesSocketRef.current.onReceiveLikeStory(handleRecieveLikeStory)
+            storiesSocketRef.current.onReceiveViewStory(handleRecieveViewStory)
         }
 
         return () => {
-            storiesSocket.offReceiveStory(handleRecieveStory)
-            storiesSocket.offRecieveDeleteStory(handleReceiveDeleteStory)
-            storiesSocket.offReceiveLikeStory(handleRecieveLikeStory)
-            storiesSocket.offReceiveViewStory(handleRecieveViewStory)
+            storiesSocketRef.current.offReceiveStory(handleRecieveStory)
+            storiesSocketRef.current.offRecieveDeleteStory(handleReceiveDeleteStory)
+            storiesSocketRef.current.offReceiveLikeStory(handleRecieveLikeStory)
+            storiesSocketRef.current.offReceiveViewStory(handleRecieveViewStory)
         }
 
-    }, [storiesSocket])
+    }, [storiesSocketRef.current])
 
     useEffect(() => {
         if (stories) {
@@ -347,7 +358,6 @@ export const StoriesProvider = ({ children }) => {
                 sendViewStory,
                 uploadStory,
                 handleDeleteStory,
-                storiesSocket,
                 selectStory,
                 appLoaded,
                 setAppLoaded
