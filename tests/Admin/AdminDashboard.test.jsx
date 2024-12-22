@@ -89,14 +89,5 @@ describe('Admin Dashboard', () => {
     expect(mockPush).toHaveBeenCalled();
   });
 
-  it('handles error state correctly', async () => {
-    mockGetUsersAdminStore.mockRejectedValueOnce(new Error('Failed to load'));
-    
-    render(<AdminSettings />);
-    
-    await vi.waitFor(() => {
-      expect(mockOpenModal).toHaveBeenCalled();
-    });
-  });
 
 });

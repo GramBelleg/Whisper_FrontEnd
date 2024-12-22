@@ -27,10 +27,19 @@ describe('GroupMembers Component - Admins Interactions', () => {
     { id: '1', userName: 'John Doe', isAdmin: false },
     { id: '2', userName: 'Jane Smith', isAdmin: true },
   ];
+  const mockPermissions = {
+    '1': {
+      canPost: false,
+      canEdit: false,
+      canDelete: false,
+      canDownload: false
+    }
+  };
 
   let mockHandleGetMembersPermissions;
   let mockHandleAddAdmin;
   let mockHandleRemoveFromChat;
+  let mockHandlePermissionsToggle;
 
   beforeEach(() => {
     vi.clearAllMocks();
@@ -47,6 +56,7 @@ describe('GroupMembers Component - Admins Interactions', () => {
     mockHandleGetMembersPermissions = vi.fn().mockResolvedValue(mockPermissions);
     mockHandleAddAdmin = vi.fn();
     mockHandleRemoveFromChat = vi.fn();
+    mockHandlePermissionsToggle = vi.fn();
     useChat.mockReturnValue({
       handleGetMembersPermissions: mockHandleGetMembersPermissions,
       currentChat: { id: 'chat1' }
@@ -61,7 +71,9 @@ describe('GroupMembers Component - Admins Interactions', () => {
         amIAdmin={true}
         handleAddAmin={mockHandleAddAdmin}
         handleRemoveFromChat={mockHandleRemoveFromChat}
-        type="group"
+        handlePermissionsToggle={mockHandlePermissionsToggle}
+        permissionsState={mockPermissions}
+        type={"group"}
       />
     );
 
@@ -77,6 +89,8 @@ describe('GroupMembers Component - Admins Interactions', () => {
         amIAdmin={true}
         handleAddAmin={mockHandleAddAdmin}
         handleRemoveFromChat={mockHandleRemoveFromChat}
+        handlePermissionsToggle={mockHandlePermissionsToggle}
+        permissionsState={mockPermissions}
         type="group"
       />
     );
@@ -104,10 +118,6 @@ describe('GroupMembers Component - Admins Interactions', () => {
       }
     };
 
-    useChat.mockReturnValue({
-      handleGetMembersPermissions: vi.fn().mockResolvedValue(initialPermissions),
-      currentChat: { id: 'chat1' }
-    });
 
     render(
       <GroupMembers
@@ -116,6 +126,8 @@ describe('GroupMembers Component - Admins Interactions', () => {
         amIAdmin={true}
         handleAddAmin={mockHandleAddAdmin}
         handleRemoveFromChat={mockHandleRemoveFromChat}
+        handlePermissionsToggle={mockHandlePermissionsToggle}
+        permissionsState={initialPermissions}
         type="group"
       />
     );
@@ -143,13 +155,6 @@ describe('GroupMembers Component - Admins Interactions', () => {
       }
     };
     
-    const mockUpdatePermissions = vi.fn().mockResolvedValue({ success: true });
-    updateGroupMemberPermissions.mockImplementation(mockUpdatePermissions);
-    
-    useChat.mockReturnValue({
-      handleGetMembersPermissions: vi.fn().mockResolvedValue(mockPermissions),
-      currentChat: { id: 'chat1' }
-    });
 
     render(
       <GroupMembers
@@ -158,6 +163,8 @@ describe('GroupMembers Component - Admins Interactions', () => {
         amIAdmin={true}
         handleAddAmin={mockHandleAddAdmin}
         handleRemoveFromChat={mockHandleRemoveFromChat}
+        handlePermissionsToggle={mockHandlePermissionsToggle}
+        permissionsState={mockPermissions}
         type="group"
       />
     );
@@ -170,16 +177,8 @@ describe('GroupMembers Component - Admins Interactions', () => {
     const canEditCheckbox = screen.getByLabelText('Can Edit');
     fireEvent.click(canEditCheckbox);
 
-    await waitFor(() => {
-      expect(updateGroupMemberPermissions).toHaveBeenCalledWith('chat1', '1', {
-        canPost: false,
-        canEdit: true,
-        canDelete: false,
-        canDownload: false
-      });
-    });
+    expect(mockHandlePermissionsToggle).toHaveBeenCalledWith('canEdit', '1');
 
-    expect(mockUpdatePermissions).toHaveBeenCalledTimes(1);
   });
 
   it('closes permission menu when clicking outside', async () => {
@@ -190,6 +189,8 @@ describe('GroupMembers Component - Admins Interactions', () => {
         amIAdmin={true}
         handleAddAmin={mockHandleAddAdmin}
         handleRemoveFromChat={mockHandleRemoveFromChat}
+        handlePermissionsToggle={mockHandlePermissionsToggle}
+        permissionsState={mockPermissions}
         type="group"
       />
     );
@@ -218,6 +219,8 @@ describe('GroupMembers Component - Admins Interactions', () => {
         amIAdmin={true}
         handleAddAmin={mockAddAdmin}
         handleRemoveFromChat={mockHandleRemoveFromChat}
+        handlePermissionsToggle={mockHandlePermissionsToggle}
+        permissionsState={mockPermissions}
         type="group"
       />
     );
@@ -244,6 +247,8 @@ describe('GroupMembers Component - Admins Interactions', () => {
         amIAdmin={true}
         handleAddAmin={mockHandleAddAdmin}
         handleRemoveFromChat={mockRemoveFromChat}
+        handlePermissionsToggle={mockHandlePermissionsToggle}
+        permissionsState={mockPermissions}
         type="group"
       />
     );
@@ -268,10 +273,6 @@ describe('GroupMembers Component - Admins Interactions', () => {
       }
     };
 
-    useChat.mockReturnValue({
-      handleGetMembersPermissions: vi.fn().mockResolvedValue(initialPermissionsChannels),
-      currentChat: { id: 'chat1' }
-    });
 
     render(
       <GroupMembers
@@ -280,6 +281,8 @@ describe('GroupMembers Component - Admins Interactions', () => {
         amIAdmin={true}
         handleAddAmin={mockHandleAddAdmin}
         handleRemoveFromChat={mockHandleRemoveFromChat}
+        handlePermissionsToggle={mockHandlePermissionsToggle}
+        permissionsState={initialPermissionsChannels}
         type="channel"
       />
     );
@@ -315,6 +318,7 @@ describe('GroupMembers Component - Admins Interactions', () => {
         amIAdmin={false}
         handleAddAmin={mockHandleAddAdmin}
         handleRemoveFromChat={mockHandleRemoveFromChat}
+        handlePermissionsToggle={mockHandlePermissionsToggle}
         type="channel"
       />
     );
