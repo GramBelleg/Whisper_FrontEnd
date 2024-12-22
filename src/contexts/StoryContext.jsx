@@ -108,7 +108,7 @@ export const StoriesProvider = ({ children }) => {
             try {
                 await dbRef.current.deleteStory(storyData.storyId)
             } catch (error) {
-                console.log(error)
+                console.log(error)  
             }
             try {
                 const localStories = await dbRef.current.getUserStories(storyData.userId)

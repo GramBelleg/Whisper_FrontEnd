@@ -46,7 +46,7 @@ const AddNewStoryModal = ({ file, filePreview, onClose }) => {
         setStoryText('')
     }
 
-    const handleEmojiClick = () => {
+    const handleEmojiClick = (emojiObject) => {
         setStoryText((prevMessage) => prevMessage + emojiObject.emoji)
     }
 
