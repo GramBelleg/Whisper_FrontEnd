@@ -1,13 +1,11 @@
-import React, { useEffect, useState } from 'react';
+import React from 'react';
 import {
   RemoteUser,
   LocalAudioTrack,
-  useLocalMicrophoneTrack,
-  RemoteAudioTrack
 } from 'agora-rtc-react';
 import useVoiceCall from '@/hooks/useVoiceCall';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faMicrophone, faMicrophoneAlt, faMicrophoneAltSlash, faPhoneSlash, faVolumeUp } from '@fortawesome/free-solid-svg-icons';
+import { faMicrophone, faMicrophoneAlt, faMicrophoneAltSlash, faPhoneSlash } from '@fortawesome/free-solid-svg-icons';
 import './VoiceCallHeader.css';
 const VoiceCallHeader = () => {
 
@@ -15,7 +13,6 @@ const VoiceCallHeader = () => {
     localVolume,
     remoteVolumes,
     remoteUsers,
-    channel,
     isMuted,
     isConnected,
     isJoiningCall,
@@ -26,18 +23,11 @@ const VoiceCallHeader = () => {
     endCall,
     localMicrophoneTrack
   } = useVoiceCall();
-
-  useEffect(() => {
-    console.log('Remote users:', remoteUsers);
-    remoteUsers.forEach((user) => {
-    console.log(`User ${user.uid} audio track:`, user.audioTrack);
-    });
-  }, [remoteUsers]);
   
     return (
       <div className="voice-call-header">
         <div className="call-controls">
-              <button onClick={toggleMute}>
+              <button data-testid="toggleMute" onClick={toggleMute}>
                 <FontAwesomeIcon icon={isMuted ? faMicrophoneAltSlash : faMicrophoneAlt} style={{color:isMuted ? 'red' : 'black'}} />
                 </button>
               <div className="volume-control">
@@ -49,13 +39,14 @@ const VoiceCallHeader = () => {
                   type="range"
                   min="0"
                   max="100"
+                  data-testid="localVolume"
                   step={1}
                   value={localVolume}
                   onChange={(e) => adjustLocalVolume(e.target.value)}
                 />
               </div>
             </div>
-            <div className="participants">
+            <div data-testid="joinedUsers" className="participants">
         {!isConnected ? (isJoiningCall ? 'Joining...' : 'Joined') : (
             <>
                 {remoteUsers.length === 0 && <h3>Ringing...</h3>}
@@ -66,6 +57,7 @@ const VoiceCallHeader = () => {
                           {user.audioTrack ? <>
                             <label>Volume</label>
                             <input
+                                data-testid="remoteVolumes"
                                 type="range"
                                 min="0"
                                 max="100"
@@ -75,7 +67,7 @@ const VoiceCallHeader = () => {
                                     adjustRemoteVolume(user.uid, e.target.value)}}
                             />
                           </> : (
-                            <span>User muted his voice</span>
+                            <span data-testid="muted">User muted his voice</span>
                           )}
                         </div>
                       ))
@@ -84,7 +76,7 @@ const VoiceCallHeader = () => {
         )}
         </div>
 
-        <button onClick={() => {endCall()}}>
+        <button data-testid="endCall" onClick={() => {endCall()}}>
             <FontAwesomeIcon icon={faPhoneSlash} />
         </button>
       
