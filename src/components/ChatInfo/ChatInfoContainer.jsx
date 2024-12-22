@@ -30,7 +30,7 @@ const ChatInfoContainer = ({currentChat, onClose}) => {
         }
         if(currentChat.type === "CHANNEL")
             getChannelInvite()
-    }, []);
+    }, [currentChat]);
     const handleAddUsers = () => {
         push(<GroupAddMembers type={currentChat?.type === 'GROUP' ? 'group' : 'channel'} />);    
     }
