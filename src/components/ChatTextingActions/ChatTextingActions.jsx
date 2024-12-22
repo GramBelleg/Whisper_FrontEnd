@@ -73,18 +73,6 @@ const ChatTextingActions = ({ textMessage, setTextMessage, triggerSendMessage })
                     style={mentionStyle}
                     />
                 </MentionsInput>
-
-            {/* <textarea
-                type='text'
-                ref={textareaRef}
-                value={textMessage}
-                onInput={updateNewMessage}
-                onKeyDown={handleKeyPress}
-                data-testid='text-input'
-                className='message-input'
-                placeholder='Message Here'
-                rows={1}
-            /> */}
         </>
     )
 }

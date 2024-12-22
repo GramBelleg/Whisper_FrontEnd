@@ -1,8 +1,6 @@
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import { faTimes } from '@fortawesome/free-solid-svg-icons'
+
 import { useModal } from '@/contexts/ModalContext'
 import { useChat } from '@/contexts/ChatContext'
-import parentRelationshipTypes from '@/services/chatservice/parentRelationshipTypes'
 import ChatSelector from '@/components/ChatSelector/ChatSelector'
 import './ForwardMessageModal.css'
 import { useEffect, useState } from 'react'

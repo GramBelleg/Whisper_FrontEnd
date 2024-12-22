@@ -35,7 +35,7 @@ const ChatSelector = ({ onChatSelect, searchPlaceholder = 'Search chats...', ren
 
     const renderChatItem = (chat, index) => {
         return (
-            <div key={index} className='chat-item' onClick={() => onChatSelect(chat)}>
+            <div key={index} data-testid="chat-item" className='chat-item' onClick={() => onChatSelect(chat)}>
                 <div className='chat-avatar'>
                     <img src={chat.profilePic} alt={chat.name} />
                     {chat.group && (
@@ -58,11 +58,12 @@ const ChatSelector = ({ onChatSelect, searchPlaceholder = 'Search chats...', ren
         <div className={`chat-selector ${className}`}>
             {renderCustomHeader?.()}
             <div className='search-container'>
-                <span className='close-icon'>
+                <span data-testid="close-modal" className='close-icon'>
                     <FontAwesomeIcon icon={faTimes} onClick={closeModal} />
                 </span>
                 <input
                     type='text'
+                    data-testid="search-input"
                     placeholder={searchPlaceholder}
                     value={filters.keyword}
                     onChange={handleSearch}
@@ -70,7 +71,7 @@ const ChatSelector = ({ onChatSelect, searchPlaceholder = 'Search chats...', ren
                 />
             </div>
 
-            <div className='chats-container'>
+            <div className='chats-container' data-testid="chats-container">
                 {loadingChats ? (
                     <div className='loading'>Loading chats...</div>
                 ) : errorChats ? (
