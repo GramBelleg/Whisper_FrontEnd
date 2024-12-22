@@ -2,7 +2,7 @@ const NotificationMessage = ({ notification, type }) => {
   console.log(notification);
 
   const truncateText = (text, maxLength) =>
-      text.length > maxLength ? text.slice(0, maxLength) + "..." : text;
+      (text && (text.length > maxLength) )? text.slice(0, maxLength) + "..." : text;
 
   return (
       <div className="flex flex-col text-left">
