@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react'
 import PropTypes from 'prop-types'
-import { getStickers } from '@/services/chatservice/getStickers'
+import { addStickers, getStickers } from '@/services/chatservice/getStickers'
 
 const CustomStickersPicker = ({ handleStickerClick }) => {
     const [stickers, setStickers] = useState([])
@@ -19,7 +19,20 @@ const CustomStickersPicker = ({ handleStickerClick }) => {
         }
 
         fetchStickers()
-    }, [])
+    }, [stickers])
+
+    const handleFileChange = async (event) => {
+        const file = event.target.files[0]
+        console.log(file)
+        if (file) {
+            try {
+                const blobName = await addStickers(file)
+                setStickers([...stickers,blobName])
+            } catch (error) {
+                console.log("error adding stickers")
+            }
+        }
+    }
 
     return (
         <div className='p-2' id='stickers-picker' data-testid='stickers-picker'>
@@ -42,12 +55,26 @@ const CustomStickersPicker = ({ handleStickerClick }) => {
             ) : (
                 <p className='text-gray-400 text-center'>No stickers available</p>
             )}
+
+            {/* Add Sticker Button - Positioned at Top Right */}
+            <div className='absolute top-2 right-2'>
+                <label htmlFor='sticker-upload' className='cursor-pointer text-primary text-lg hover:text-highlight transition m-2'>
+                    <span className='text-3xl'>+</span>
+                </label>
+                <input
+                    type='file'
+                    id='sticker-upload'
+                    accept='image/*'
+                    className='hidden'
+                    onChange={handleFileChange}
+                />
+            </div>
         </div>
     )
 }
 
 CustomStickersPicker.propTypes = {
-    handleStickerClick: PropTypes.func.isRequired
+    handleStickerClick: PropTypes.func.isRequired,
 }
 
 export default CustomStickersPicker

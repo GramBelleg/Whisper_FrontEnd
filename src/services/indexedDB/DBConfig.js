@@ -1,7 +1,16 @@
 export const DB_CONFIG = {
     name: 'WhisperApp',
-    version: 6,
+    version: 8,
     stores: {
+        users: {
+            name: 'users',
+            keyPath: 'id',
+        },
+        keys: {
+            name: 'keys',
+            keyPath: 'id',
+            indexes: [{ name: 'id', keyPath: 'id', options: { unique: true } }]
+        },
         chats: {
             name: 'chats',
             keyPath: 'id',
@@ -26,6 +35,16 @@ export const DB_CONFIG = {
             name: 'stories_temp',
             keyPath: 'userId',
             indexes: [{ name: 'userId', keyPath: 'userId', options: { unique: true } }]
-        }
+        },
+        usersadmin: {
+            name: 'usersadmin',
+            keyPath: 'id',
+            indexes: []
+        },
+        groups: {
+            name: 'groups',
+            keyPath: 'chatId',
+            indexes: []
+        },
     }
 }

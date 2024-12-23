@@ -14,13 +14,13 @@
 .story-content-text {
     width: 100%;
     position: absolute;
-    bottom: 50px; /* Adjust as needed */
+    bottom: 50px; 
     left: 50%;
     transform: translateX(-50%);
-    color: white; /* Adjust text color for better readability */
+    color: white; 
     padding: 5px 10px;
     border-radius: 5px;
-    font-size: 14px; /* Adjust font size as needed */
+    font-size: 14px; 
     text-align: center;
 }
 

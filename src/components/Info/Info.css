@@ -18,16 +18,15 @@
     white-space: nowrap; /* Prevent wrapping of content */
 }
 
-/* Add this to your Info.css */
 .dropdown {
     position: absolute;
-    right: 0; /* Align to the rightmost edge */
+    right: 0; 
     background-color: #081d3c;
     border: 1px solid #081d3c;
     border-radius: 10px;
     text-align: left;
-    z-index: 1000; /* Ensure it stays on top */
-    width: 200px; /* Set width of dropdown */
+    z-index: 1000; 
+    width: 200px; 
   }
   
   .dropdown ul {
@@ -46,6 +45,6 @@
   }
   
   .dropdown li:hover {
-    background-color: var(--third-color); /* Add a hover effect */
+    background-color: var(--third-color); 
   }
   

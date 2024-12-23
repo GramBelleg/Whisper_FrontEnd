@@ -17,7 +17,6 @@ export const StackedNavigationProvider = ({ children }) => {
 
     const pop = () => {
         if (stack.length === 0) return
-
         setStack((prevStack) => prevStack.slice(0, -1))
     }
 

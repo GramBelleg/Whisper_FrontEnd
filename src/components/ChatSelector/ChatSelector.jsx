@@ -1,14 +1,12 @@
 import { useEffect, useState } from 'react'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faTimes, faUsers } from '@fortawesome/free-solid-svg-icons'
-import useFetch from '@/services/useFetch'
-import { handleNoUserImage } from '@/services/chatservice/addDefaultImage'
 import './ChatSelector.css'
 import { useModal } from '@/contexts/ModalContext'
 import { getChatsCleaned } from '@/services/chatservice/getChats'
 
 const ChatSelector = ({ onChatSelect, searchPlaceholder = 'Search chats...', renderCustomHeader, className = '' }) => {
-    const [filters, setFilters] = useState({ keyword: '', usersOnly: 1, unblockedOnly: 1 })
+    const [filters, setFilters] = useState({ keyword: '', unblockedOnly: 1 })
     const [chatList, setChatList] = useState([])
     const [loadingChats, setLoadingChats] = useState(false)
     const [errorChats, setErrorChats] = useState(null)
@@ -37,9 +35,9 @@ const ChatSelector = ({ onChatSelect, searchPlaceholder = 'Search chats...', ren
 
     const renderChatItem = (chat, index) => {
         return (
-            <div key={index} className='chat-item' onClick={() => onChatSelect(chat)}>
+            <div key={index} data-testid="chat-item" className='chat-item' onClick={() => onChatSelect(chat)}>
                 <div className='chat-avatar'>
-                    <img src={chat.picture} alt={chat.name} onError={handleNoUserImage} />
+                    <img src={chat.profilePic} alt={chat.name} />
                     {chat.group && (
                         <span className='group-indicator'>
                             <FontAwesomeIcon icon={faUsers} />
@@ -60,11 +58,12 @@ const ChatSelector = ({ onChatSelect, searchPlaceholder = 'Search chats...', ren
         <div className={`chat-selector ${className}`}>
             {renderCustomHeader?.()}
             <div className='search-container'>
-                <span className='close-icon'>
+                <span data-testid="close-modal" className='close-icon'>
                     <FontAwesomeIcon icon={faTimes} onClick={closeModal} />
                 </span>
                 <input
                     type='text'
+                    data-testid="search-input"
                     placeholder={searchPlaceholder}
                     value={filters.keyword}
                     onChange={handleSearch}
@@ -72,7 +71,7 @@ const ChatSelector = ({ onChatSelect, searchPlaceholder = 'Search chats...', ren
                 />
             </div>
 
-            <div className='chats-container'>
+            <div className='chats-container' data-testid="chats-container">
                 {loadingChats ? (
                     <div className='loading'>Loading chats...</div>
                 ) : errorChats ? (

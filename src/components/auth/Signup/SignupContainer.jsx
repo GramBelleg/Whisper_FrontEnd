@@ -50,11 +50,12 @@ const SignupContainer = () => {
             password: '',
             confirmPassword: '',
             phoneNumber: '',
-            captcha: ''
+            captcha: process.env.NODE_ENV === 'test'?'test-robot-token':''
         },
         validationSchema: signupSchema,
         onSubmit
     })
+
     return (
         <SignupForm
             handleChange={formik.handleChange}

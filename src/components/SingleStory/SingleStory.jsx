@@ -7,12 +7,13 @@ import ErrorMesssage from '../ErrorMessage/ErrorMessage'
 import { setStoryPrivacySettings } from '@/services/storiesservice/setStoryVisibility'
 import { useStories } from '@/contexts/StoryContext'
 import useAuth from '@/hooks/useAuth'
+import { useWhisperDB } from '@/contexts/WhisperDBContext'
 
 const SingleStory = ({ onNextStory, handleAddNewStoryClick, onClose }) => {
     const { loading, error, currentStory, currentUser, isDeleteing, handleDeleteStory, sendLikeStory } = useStories()
     const [dropdownVisible, setDropdownVisible] = useState(false)
     const [visibilityDropDownVisible, setVisibilityDropDownVisible] = useState(false)
-    const [storyVisibility, setStoryVisibility] = useState('Everyone')
+    const [storyVisibility, setStoryVisibility] = useState(currentStory ? currentStory.privacy : "Everyone")
     const [isPaused, setIsPaused] = useState(false)
     const storyVisibilityChangedRef = useRef(false)
     const videoRef = useRef()
@@ -22,8 +23,10 @@ const SingleStory = ({ onNextStory, handleAddNewStoryClick, onClose }) => {
     const { openModal, closeModal } = useModal()
     const [remainingTime, setRemainingTime] = useState(20000)
     const { user } = useAuth()
+    const { dbRef } = useWhisperDB()
+    const storyVisRef = useRef()
 
-    const handleClickOutside = (event) => {
+    const handleClickOutside = async (event) => {
         if (dropdownRef.current && !dropdownRef.current.contains(event.target) && !event.target.closest('.within-story-visibility')) {
             setDropdownVisible(false)
             setVisibilityDropDownVisible(false)
@@ -32,7 +35,8 @@ const SingleStory = ({ onNextStory, handleAddNewStoryClick, onClose }) => {
 
             if (storyVisibilityChangedRef.current === true) {
                 try {
-                    setStoryPrivacySettings(currentStory?.id, storyVisibility)
+                    await setStoryPrivacySettings(currentStory?.id, storyVisRef.current)
+                    await dbRef.current.updateStoryVisibility(currentStory?.id, storyVisRef.current)
                 } catch (error) {
                     openModal(<ErrorMesssage errorMessage={error.message} onClose={closeModal} appearFor={3000} />)
                     setTimeout(() => {
@@ -113,12 +117,13 @@ const SingleStory = ({ onNextStory, handleAddNewStoryClick, onClose }) => {
     const handleVisibilityChange = (value) => {
         setStoryVisibility(value)
         storyVisibilityChangedRef.current = true
+        storyVisRef.current = value
     }
 
     const renderContent = () => {
         if (loading || isDeleteing) {
             return (
-                <div className='flex items-center justify-center w-full h-full'>
+                <div data-testid="loading-spinner" className='flex items-center justify-center w-full h-full'>
                     <div className='animate-spin rounded-full h-8 w-8 border-b-2 border-white' />
                 </div>
             )
@@ -221,6 +226,7 @@ const SingleStory = ({ onNextStory, handleAddNewStoryClick, onClose }) => {
             <div className='story-content'>
                 <div className={`likes ${currentStory?.liked ? 'liked' : ''}`}>
                     <FontAwesomeIcon
+                        data-testid="icon-heart"
                         icon={faHeart}
                         className='h-6 w-6'
                         onClick={

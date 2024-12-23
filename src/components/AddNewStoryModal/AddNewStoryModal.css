@@ -10,22 +10,22 @@
 
 .cancel-modal {
     position: absolute;
-    top: 0%; /* Adjust as needed */
-    right: 0%; /* Adjust as needed */
+    top: 0%; 
+    right: 0%; 
     font-size: 20px;
     color: var(--accent-color);
-    cursor: pointer; /* Optional: makes it clear it's clickable */
+    cursor: pointer; 
 }
 
 .story-preview {
     padding-top: 5%;
-    max-width: 100%; /* Limit width to container */
-    max-height: 70%; /* Limit height to half the viewport */
+    max-width: 100%; 
+    max-height: 80%; 
     object-fit: contain;
 }
 
 .story-data {
-    position: static; /* or use 'position: relative' if you want */
+    position: static; 
     margin-top: 10px;
     display: flex;
     flex-direction: row;

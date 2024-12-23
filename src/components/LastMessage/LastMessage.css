@@ -1,20 +1,9 @@
-:root {
-    --primary-color: #0a122f; /* Define the color as a CSS variable */
-    --dots-color: #0a122f;
-    --secondary-color: #0a254a;
-}
-
-/* Container for the last message */
 .last-message {
-    display: flex;
-    align-items: center;
-    justify-content: flex-start;
-    width: 80%;
+    display: inline-block;
     height: 100%;
+    width: 50%;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+    text-align: left;
+    overflow: hidden;
 }
-
-
-
-
-
-

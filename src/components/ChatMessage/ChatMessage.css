@@ -1,4 +1,13 @@
 
+.message-container {
+    display: flex;
+    flex-direction: column;
+}
+
+.message-container.thread {
+    max-width: 70%;
+}
+
 .message {
     display: flex;
     flex-direction: column;
@@ -13,6 +22,14 @@
     text-align: right;
     border-bottom-right-radius: 0;
     background-color: var(--accent-color);
+}
+
+.message.sender.thread {
+    align-self: flex-end;
+    text-align: right;
+    border-bottom-right-radius: 0;
+    background-color: #48357a;
+    max-width: 100%;
 }
 
 .message.reciever {
@@ -82,25 +99,25 @@
     display: flex;
     flex-direction: column;
     gap: 8px;
-  }
+}
   
-  .message-text {
+.message-text {
     word-wrap: break-word;
     max-width: 100%;
-  }
+}
   
-  .message-file {
+.message-file {
     max-width: 100%;
     overflow: hidden;
     margin-bottom: 8px;
-  }
+}
   
-  .message-image {
+.message-image {
     max-width: 100%;
     border-radius: 8px;
-  }
+}
   
-  .message-file a {
+.message-file a {
     display: inline-block;
     max-width: 100%;
     overflow: hidden;
@@ -109,4 +126,16 @@
     /* color: var(--link-color); */
     text-decoration: none;
     font-weight: 500;
-  }
+}
+
+.num-replies.sender {
+    align-self: flex-end;
+    text-align: right;
+    color: #c129e7;
+}
+
+.num-replies.reciever {
+    align-self: flex-start;
+    text-align: left;
+    color: aqua;
+}

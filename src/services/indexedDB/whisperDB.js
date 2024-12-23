@@ -3,7 +3,10 @@ import { ChatsStore } from './ChatsStore'
 import { StoriesStore } from './StoriesStore'
 import { StoriesTempStore } from './StoriesTempStore'
 import { PinnedMessagesStore } from './PinnedMessagesStore'
-
+import { KeysStore } from './KeysStore'
+import { UsersStore } from './UsersStore'
+import { UsersAdminStore } from './UsersAdminStore'
+import { GroupsStore } from './GroupsStore'
 import { DB_CONFIG } from './DBConfig'
 
 class WhisperDB {
@@ -12,10 +15,14 @@ class WhisperDB {
             return WhisperDB.instance
         }
 
-        this._db = null
+        this.db = null
         this._chats = null
         this._messages = null
         this._stories = null
+        this._keys = null
+        this._users = null
+        this._usersAdmin = null
+        this._groups = null
 
         WhisperDB.instance = this
     }
@@ -49,12 +56,41 @@ class WhisperDB {
         })
     }
 
+    async clearDB(clearKeys = false) {
+        if (this.db) {
+            console.log(Object.keys(DB_CONFIG.stores))
+            const transaction = this.db.transaction(Object.keys(DB_CONFIG.stores), "readwrite");
+        
+            transaction.oncomplete = () => {
+                console.log("All stores cleared successfully.");
+            };
+        
+            transaction.onerror = (event) => {
+                console.error("Error clearing stores:", transaction.error || event.target.error);
+            };
+        
+            Object.values(DB_CONFIG.stores).forEach((storeConfig) => {
+                if (storeConfig.name === 'keys' && !clearKeys) {
+                    return;
+                }
+                const store = transaction.objectStore(storeConfig.name);
+                store.clear();
+            });
+        } else {
+            console.log("Can't Clear Stores")
+        }
+    }
+
     _initializeStores() {
+        this._usersAdmin = new UsersAdminStore(this.db)
+        this._groups = new GroupsStore(this.db)
         this._chats = new ChatsStore(this.db)
         this._messages = new MessagesStore(this.db)
         this._stories = new StoriesStore(this.db)
         this._stories_temp = new StoriesTempStore(this.db)
         this._pinned_messages = new PinnedMessagesStore(this.db)
+        this._keys = new KeysStore(this.db)
+        this._users = new UsersStore(this.db)
     }
 
     _createStores(db) {
@@ -74,38 +110,53 @@ class WhisperDB {
         })
     }
 
-    /**
-     * Deletes the WhisperDB IndexedDB database.
-     * @returns {Promise<void>}
-     */
-    async delete() {
-        return new Promise((resolve, reject) => {
-            if (this.db) {
-                this.db.close() // Close any open connections to the database
-            }
+    getKeysStore() {
+        return this._keys;
+    }
 
-            const deleteRequest = indexedDB.deleteDatabase(DB_CONFIG.name)
+    async getChat(id) {
+        if (this._chats !== null) {
+            return this._chats.getChat(id)
+        } else {
+            throw new Error('Users store is not initiaslized.')
+        }
+    }
 
-            deleteRequest.onsuccess = () => {
-                console.log(`Database "${DB_CONFIG.name}" deleted successfully.`)
-                resolve()
-            }
+    async updateChat(id,data) {
+        if (this._chats !== null) {
+            return this._chats.updateChat(id, data)
+        } else {
+            throw new Error('Users store is not initiaslized.')
+        }
+    }
 
-            deleteRequest.onerror = (event) => {
-                console.error(`Error deleting database "${DB_CONFIG.name}":`, event.target.error)
-                reject(event.target.error)
-            }
+    async insertUsers(users) {
+        if (this._users !== null) {
+            return this._users.insertUsers(users)
+        } else {
+            throw new Error('Users store is not initiaslized.')
+        }
+    }
 
-            deleteRequest.onblocked = () => {
-                console.warn(`Database deletion is blocked. Please close all other tabs using this database.`)
-                reject(new Error('Database deletion is blocked.'))
-            }
-        })
+    async getUsers() {
+        if (this._users !== null) {
+            return this._users.getUsers()
+        } else {
+            throw new Error('Users store is not initiaslized.')
+        }
     }
 
     async insertChats(chats) {
         if (this._chats != null) {
             return this._chats.insertChats(chats)
+        } else {
+            throw new Error('Chats Store is not initialized')
+        }
+    }
+
+    async insertChat(chat) {
+        if (this._chats != null) {
+            return this._chats.insertChat(chat)
         } else {
             throw new Error('Chats Store is not initialized')
         }
@@ -118,10 +169,128 @@ class WhisperDB {
             throw new Error('Chats store is not initiaslized.')
         }
     }
+    async insertUsersAdminStore(users) {
+        if (this._usersAdmin != null) {
+            return this._usersAdmin.insertUsers(users)
+        } else {
+            throw new Error('Users Store is not initialized')
+        }
+    }
 
+    async addGroupAdmin(chatId, userId) {
+        if (this._chats !== null) {
+            return this._chats.addGroupAdmin(chatId, userId)
+        } else {
+            throw new Error('Chats store is not initiaslized.')
+        }
+    }
+
+    async getChatMembers(chatId) {
+        if (this._chats !== null) {
+            return this._chats.getChatMembers(chatId)
+        } else {
+            throw new Error('Chats store is not initiaslized.')
+        }
+    }
+
+    async getAllDMs() {
+        if (this._chats !== null) {
+            return this._chats.getAllDMs()
+        } else {
+            throw new Error('Chats store is not initiaslized.')
+        }
+    }
+
+    async getUsersAdminStore() {
+        if (this._usersAdmin !== null) {
+            return this._usersAdmin.getUsers()
+        } else {
+            throw new Error('Users store is not initiaslized.')
+        }
+    }
+    async insertGroups(groups) {
+        if (this._groups != null) {
+            return this._groups.insertGroups(groups)
+        } else {
+            throw new Error('Groups Store is not initialized')
+        }
+    }
+
+    async getGroups() {
+        if (this._groups !== null) {
+            return this._groups.getGroups()
+        } else {
+            throw new Error('Groups store is not initiaslized.')
+        }
+    }
+    async banUser(id) {
+        if (this._usersAdmin !== null) {
+            return this._usersAdmin.banUser(id)
+        } else {
+            throw new Error('Users store is not initiaslized.')
+        }
+    }
+    async unBanUser(id) {
+        if (this._usersAdmin !== null) {
+            return this._usersAdmin.unBanUser(id)
+        } else {
+            throw new Error('Users store is not initiaslized.')
+        }
+    }
+    async filterGroup(id) {
+        if (this._groups !== null) {
+            return this._groups.filterGroup(id)
+        } else {
+            throw new Error('Groups store is not initiaslized.')
+        }
+    }
+    async unFilterGroup(id) {
+        if (this._groups !== null) {
+            return this._groups.unFilterGroup(id)
+        } else {
+            throw new Error('Groups store is not initiaslized.')
+        }
+    }
+    async updateUser(id, data) {
+        if (this._usersAdmin !== null) {
+            return this._usersAdmin.updateUser(id, data)
+        } else {
+            throw new Error('Users store is not initiaslized.')
+        }
+    }
+    async updateGroup(id, data) {
+        if (this._groups !== null) {
+            return this._groups.updateGroup(id, data)
+        } else {
+            throw new Error('Groups store is not initiaslized.')
+        }
+    }
     async getDraftedMessage(chatId) {
         if (this._chats != null) {
             return this._chats.getDraftedMessage(chatId)
+        } else {
+            throw new Error('Chats store is not initiaslized.')
+        }
+    }
+
+    async removeChat(chatId) {
+        if (this._chats != null) {
+            return this._chats.removeChat(chatId)
+        } else {
+            throw new Error('Chats store is not initiaslized.')
+        }
+    }
+
+    async removeChatMember(chatId, memberId) {
+        if (this._chats != null) {
+            return this._chats.removeChatMember(chatId, memberId)
+        } else {
+            throw new Error('Chats store is not initiaslized.')
+        }
+    }
+    async addChatMember(chatId, member) {
+        if (this._chats != null) {
+            return this._chats.addChatMember(chatId, member)
         } else {
             throw new Error('Chats store is not initiaslized.')
         }
@@ -185,10 +354,12 @@ class WhisperDB {
 
     async insertMessages(messages) {
         if (this._messages !== null) {
-            return this._messages.insertMessages(messages)
+           await this._messages.insertMessages(messages)
         } else {
             throw new Error('Messages store is not initiaslized.')
         }
+        console.log("storingParent MEssage", messages.at(-1))
+        return await this.insertMessageInChat(messages.at(-1))
     }
 
     async getMessagesForChat(chatId) {
@@ -199,9 +370,65 @@ class WhisperDB {
         }
     }
 
+    async getMessage(id) {
+        if (this._messages !== null) {
+            return this._messages.getMessage(id)
+        } else {
+            throw new Error('Messages store is not initiaslized.')
+        }
+    }
+
+    async getAllImages(query) {
+        if (this._messages !== null) {
+            return this._messages.getAllImages(query)
+        } else {
+            throw new Error('Messages store is not initiaslized.')
+        }
+    }
+
+    async getAllVideos(query) {
+        if (this._messages !== null) {
+            return this._messages.getAllVideos(query)
+        } else {
+            throw new Error('Messages store is not initiaslized.')
+        }
+    }
+
     async insertMessage(message) {
         if (this._messages !== null) {
             return this._messages.insertMessage(message)
+        } else {
+            throw new Error('Messages store is not initiaslized.')
+        }
+    }
+
+    async updateReplyCount(messageId) {
+        if (this._messages !== null) {
+            return this._messages.updateReplyCount(messageId)
+        } else {
+            throw new Error('Messages store is not initiaslized.')
+        }
+    }
+
+    async insertReply(replyData) {
+        if (this._messages !== null) {
+            return this._messages.insertReply(replyData)
+        } else {
+            throw new Error('Messages store is not initiaslized.')
+        }
+    } 
+
+    async deleteComment(parentMessageId, replyId) {
+        if (this._messages !== null) {
+            return this._messages.deleteComment(parentMessageId, replyId)
+        } else {
+            throw new Error('Messages store is not initiaslized.')
+        }
+    }
+
+    async getThread(messageId) {
+        if (this._messages !== null) {
+            return this._messages.getThread(messageId)
         } else {
             throw new Error('Messages store is not initiaslized.')
         }
@@ -274,6 +501,14 @@ class WhisperDB {
     async postStory(story) {
         if (this._stories !== null) {
             return this._stories.postStory(story)
+        } else {
+            throw new Error('Stories store is not initialized')
+        }
+    }
+
+    async updateStoryVisibility(storyId, setting) {
+        if (this._stories !== null) {
+            return this._stories.updateStoryVisibility(storyId, setting)
         } else {
             throw new Error('Stories store is not initialized')
         }
@@ -444,5 +679,4 @@ class WhisperDB {
         }
     }
 }
-
 export default WhisperDB

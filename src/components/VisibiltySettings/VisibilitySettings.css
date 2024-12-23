@@ -128,3 +128,19 @@ input:checked + .toggle-label {
 input:checked + .toggle-label:before {
     transform: translateX(20px);
 }
+
+.visibility-settings {
+    display: flex;
+    flex-direction: column;
+    height: 100vh;
+    overflow-y: auto;
+}
+
+.who-can {
+    flex-grow: 1;
+    overflow-y: auto; 
+}
+
+.who-can-item {
+    margin-bottom: 16px;
+}
