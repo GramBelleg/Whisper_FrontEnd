@@ -34,8 +34,8 @@ vi.mock('@fortawesome/react-fontawesome', () => ({
 
 describe('AllUsers Component', () => {
   const mockUsers = [
-    { id: 1, name: 'User 1', email: 'user1@example.com', profilePic: null, ban: false },
-    { id: 2, name: 'User 2', email: 'user2@example.com', profilePic: null, ban: false },
+    { id: 1, name: 'User 1', email: 'user1@example.com', profilePic: null, banned: false },
+    { id: 2, name: 'User 2', email: 'user2@example.com', profilePic: null, banned: false },
   ];
 
   beforeEach(() => {

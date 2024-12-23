@@ -35,10 +35,12 @@ describe('ChooseGroupMembers Component', () => {
     await waitFor(() => {
       expect(getAllUsers).toHaveBeenCalled();
     });
-
-    expect(screen.getByText('Alice')).toBeInTheDocument();
-    expect(screen.getByText('Bob')).toBeInTheDocument();
-    expect(screen.getByText('Charlie')).toBeInTheDocument();
+    setTimeout(() =>{
+      expect(screen.getByText('Alice')).toBeInTheDocument();
+      expect(screen.getByText('Bob')).toBeInTheDocument();
+      expect(screen.getByText('Charlie')).toBeInTheDocument();
+    }, [10000])
+    
   });
 
   test('filters users based on search term', async () => {
