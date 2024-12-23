@@ -95,7 +95,7 @@ const AllUsers = ({ users, setReload}) => {
             }
             setUserList(prevUsers =>
                 prevUsers.map(u =>
-                    u.id === userId ? { ...u, ban: isBanning } : u
+                    u.id === userId ? { ...u, banned: isBanning } : u
                 )
             )
             setContextMenu(null)
@@ -171,7 +171,7 @@ const AllUsers = ({ users, setReload}) => {
                             <span className='user-name'>{user.name}</span>
                             <span className='user-email'>{user.email}</span>
                         </div>
-                        {user.ban && <span data-testid ='banned-badge' className='banned-badge'>Banned</span>}
+                        {user.banned && <span data-testid ='banned-badge' className='banned-badge'>Banned</span>}
                     </div>
                 ))}
             </div>
@@ -187,11 +187,11 @@ const AllUsers = ({ users, setReload}) => {
                 >
                     <button
                         data-testid='toggle-ban-button'
-                        onClick={() => handleToggleUserBan(contextMenu.user.id, !contextMenu.user.ban)}
-                        className={`ban-button ${contextMenu.user.ban ? 'unban' : 'ban'}`}
+                        onClick={() => handleToggleUserBan(contextMenu.user.id, !contextMenu.user.banned)}
+                        className={`ban-button ${contextMenu.user.banned ? 'unban' : 'ban'}`}
                     >
-                        <FontAwesomeIcon icon={contextMenu.user.ban ? faCheckCircle : faBan} /> 
-                        {contextMenu.user.ban ? 'Unban User' : 'Ban User'}
+                        <FontAwesomeIcon icon={contextMenu.user.banned ? faCheckCircle : faBan} /> 
+                        {contextMenu.user.banned ? 'Unban User' : 'Ban User'}
                     </button>
                 </div>
             )}

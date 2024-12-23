@@ -46,7 +46,7 @@ export class UsersAdminStore extends BaseStore {
                 })
 
                 if (existingUser) {
-                    existingUser.ban = true
+                    existingUser.banned = true
                     const updateRequest = store.put(existingUser)
                     await new Promise((resolve, reject) => {
                         updateRequest.onsuccess = () => resolve()
@@ -71,7 +71,7 @@ export class UsersAdminStore extends BaseStore {
                     request.onerror = () => reject(request.error)
                 })
                 if (existingUser) {
-                    existingUser.ban = false
+                    existingUser.banned = false
                     const updateRequest = store.put(existingUser)
                     await new Promise((resolve, reject) => {
                         updateRequest.onsuccess = () => resolve()

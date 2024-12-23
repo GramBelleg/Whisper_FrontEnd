@@ -93,7 +93,7 @@ const AllGroups = ({ groups, setReload }) => {
             }
             setGroupList(prevGroups =>
                 prevGroups.map(u =>
-                    u.chatId === groupId ? { ...u, filter: isFiltering } : u
+                    u.chatId === groupId ? { ...u, filtered: isFiltering } : u
                 )
             )
             setContextMenu(null)
@@ -168,7 +168,7 @@ const AllGroups = ({ groups, setReload }) => {
                         <div className='group-details'>
                             <span className='group-name'>{group.name}</span>
                         </div>
-                        {group.filter && <span className='filtered-badge'>Content Filtered</span>}
+                        {group.filtered && <span className='filtered-badge'>Content Filtered</span>}
                     </div>
                 ))}
             </div>
@@ -184,11 +184,11 @@ const AllGroups = ({ groups, setReload }) => {
                 >
                     <button
                         data-testid='toggle-filter-button'
-                        onClick={() => handleToggleGroupFilter(contextMenu.group.chatId, !contextMenu.group.filter)}
-                        className={`filter-button ${contextMenu.group.filter ? 'unfilter' : 'filter'}`}
+                        onClick={() => handleToggleGroupFilter(contextMenu.group.chatId, !contextMenu.group.filtered)}
+                        className={`filter-button ${contextMenu.group.filtered ? 'unfilter' : 'filter'}`}
                     >
-                        <FontAwesomeIcon icon={contextMenu.group.filter ? faCheckCircle : faFilter} /> 
-                        {contextMenu.group.filter ? 'Remove Filter' : 'Filter Content'}
+                        <FontAwesomeIcon icon={contextMenu.group.filtered ? faCheckCircle : faFilter} /> 
+                        {contextMenu.group.filtered ? 'Remove Filter' : 'Filter Content'}
                     </button>
                 </div>
             )}

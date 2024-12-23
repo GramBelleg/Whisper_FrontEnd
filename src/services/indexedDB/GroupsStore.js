@@ -45,7 +45,7 @@ export class GroupsStore extends BaseStore {
                 })
 
                 if (existingGroup) {
-                    existingGroup.filter = true
+                    existingGroup.filtered = true
                     const updateRequest = store.put(existingGroup)
                     await new Promise((resolve, reject) => {
                         updateRequest.onsuccess = () => resolve()
@@ -70,7 +70,7 @@ export class GroupsStore extends BaseStore {
                     request.onerror = () => reject(request.error)
                 })
                 if (existingGroup) {
-                    existingGroup.filter = false
+                    existingGroup.filtered = false
                     const updateRequest = store.put(existingGroup)
                     await new Promise((resolve, reject) => {
                         updateRequest.onsuccess = () => resolve()
