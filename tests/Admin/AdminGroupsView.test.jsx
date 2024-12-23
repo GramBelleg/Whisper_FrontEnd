@@ -34,8 +34,8 @@ vi.mock('@fortawesome/react-fontawesome', () => ({
 
 describe('AllGroups Component', () => {
   const mockGroups = [
-    { chatId: 1, name: 'Group 1', filter: false, picture: null, blobData: null },
-    { chatId: 2, name: 'Group 2', filter: false, picture: null, blobData: null },
+    { chatId: 1, name: 'Group 1', filtered: false, picture: null, blobData: null },
+    { chatId: 2, name: 'Group 2', filtered: false, picture: null, blobData: null },
 
   ];
 
