@@ -10,6 +10,13 @@ import { useChat } from "@/contexts/ChatContext";
 import { useSidebar } from "@/contexts/SidebarContext";
 import { chatsGlobalSearch, messagesGlobalSearch } from "@/services/search/search";
 
+const Spinner = () => (
+    <div className="spinner">
+        <div className="double-bounce1"></div>
+        <div className="double-bounce2"></div>
+    </div>
+);
+
 const SearchSideBar = () => {
     const [activeFilters, setActiveFilters] = useState([false, false, false, false])
     const [searchQuery, setSearchQuery] = useState("")
@@ -17,6 +24,7 @@ const SearchSideBar = () => {
     const { dbRef } = useWhisperDB()
     const { selectChat, handlePinnedClick, searchChat } = useChat()
     const { setActivePage } = useSidebar()
+    const [loading, setLoading] = useState(false)
 
     const handleSearchMessageClick = async (result) => {
         setActivePage('chat')
@@ -34,9 +42,11 @@ const SearchSideBar = () => {
         const updatedFilters = [...activeFilters];
         updatedFilters[index] = !updatedFilters[index];
         setActiveFilters(updatedFilters);
+        setSearchResults([])
     };
 
     const test = async () => {
+        setLoading(true)        
         if (activeFilters[0]) {
             try {
                 const results = await chatsGlobalSearch(searchQuery)
@@ -58,6 +68,8 @@ const SearchSideBar = () => {
                 setSearchResults(chats)
             } catch (error) {
                 console.log(error)
+            } finally {
+                setLoading(false)
             }
         }
         else if (activeFilters[1] || activeFilters[2] || activeFilters[3]) {
@@ -95,6 +107,8 @@ const SearchSideBar = () => {
                             })
                     } catch (error) {
                         console.log(error)
+                    } finally {
+                        setLoading(false)
                     }
                 });
                 await Promise.all(resultsPromises);
@@ -112,19 +126,24 @@ const SearchSideBar = () => {
                         videos.map((video) => searchResultsSet.add(video))
                     } catch (error) {
                         console.log(error)
+                    } finally {
+                        setLoading(false)
                     }
                 }
                 console.log(Array.from(searchResultsSet))
                 setSearchResults(Array.from(searchResultsSet))
             } catch (error) {
                 console.log(error)
+            } finally {
+                setLoading(false)
             }
-        }      
+        }  
     };
 
 
     return (
         <div className="search-side-bar">
+            
             <div
                 className="outer-search-bar"
                 style={{
@@ -132,10 +151,13 @@ const SearchSideBar = () => {
                     width: "95%",
                 }}
             >
-                <SearchBar setSearchQuery={setSearchQuery} searchQuery={searchQuery} onEnter={test}/>
+                <SearchBar
+                    setSearchQuery={setSearchQuery}
+                    searchQuery={searchQuery}
+                    onEnter={test}
+                />
             </div>
             <div className="filters-search">
-
                 {["Chats", "Text", "Image", "Video"].map((filter, index) => (
                     <div
                         key={index}
@@ -146,18 +168,32 @@ const SearchSideBar = () => {
                     </div>
                 ))}
             </div>
-
+            { loading ? <Spinner/> : 
             <div className="search-results">
-                {activeFilters[0] && searchResults?.map((searchResult) => (
-                    <ChatItem index={false} standaloneChat={searchResult} />
-                ))} 
-                {(activeFilters[1] || activeFilters[2] || activeFilters[3]) &&  !activeFilters[0] && searchResults?.map((searchResult) => (
-                    <div className="message-search-result" 
-                        onClick={() => handleSearchMessageClick(searchResult)}>
-                        <ChatMessage message={searchResult} hideActions={true} />
-                    </div>
-                ))}
+                {activeFilters[0] &&
+                    searchResults?.map((searchResult) => (
+                        <ChatItem
+                            key={searchResult.id || searchResult.index} // Ensure a unique key
+                            index={false}
+                            standaloneChat={searchResult}
+                        />
+                    ))}
+                {(activeFilters[1] || activeFilters[2] || activeFilters[3]) &&
+                    !activeFilters[0] &&
+                    searchResults?.map((searchResult) => (
+                        <div
+                            key={searchResult.id || searchResult.index} // Ensure a unique key
+                            className="message-search-result"
+                            onClick={() => handleSearchMessageClick(searchResult)}
+                        >
+                            <ChatMessage
+                                message={searchResult}
+                                hideActions={true}
+                            />
+                        </div>
+                    ))}
             </div>
+            }
         </div>
     );
 };
