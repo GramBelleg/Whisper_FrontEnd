@@ -630,28 +630,36 @@ export const ChatProvider = ({ children }) => {
                 if(!participantKeys[0]) {
                     participantKeys[0] = parseInt(myMessageData.content);
                 }
-                
-                await dbRef.current.updateChat(myMessageData.chatId,{
-                    participantKeys:participantKeys
-                });
-                if(activeChat && chat.id === activeChat.id) {
-                    setCurrentChat({
-                        ...chat,
+                try {
+                    await dbRef.current.updateChat(myMessageData.chatId,{
                         participantKeys:participantKeys
-                    })
-                    setIsThreadOpenned(false)
-                    setThreadMessage(null)
+                    });
+                    if(activeChat && chat.id === activeChat.id) {
+                        setCurrentChat({
+                            ...chat,
+                            participantKeys:participantKeys
+                        })
+                        setIsThreadOpenned(false)
+                        setThreadMessage(null)
+                    }
+                    setChatAltered(true);
+                    return;
+                } catch (error) {
+                    console.error(error);
+                    return;
                 }
-                setChatAltered(true);
-                return;
             }
             
             if (chat.type == "DM" && myMessageData.type != "CALL") {
-                myMessageData.content = await decryptMessage(myMessageData.content, chat)
-                if(myMessageData.parentMessage) {
-                    const parent = {...myMessageData.parentMessage}
-                    parent.content = await decryptMessage(parent.content, chat)
-                    myMessageData.parentMessage = parent;
+                try {
+                    myMessageData.content = await decryptMessage(myMessageData.content, chat)
+                    if(myMessageData.parentMessage) {
+                        const parent = {...myMessageData.parentMessage}
+                        parent.content = await decryptMessage(parent.content, chat)
+                        myMessageData.parentMessage = parent;
+                    }
+                } catch (error) {
+                    console.log(error)
                 }
             }
             
