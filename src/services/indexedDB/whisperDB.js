@@ -70,7 +70,7 @@ class WhisperDB {
             };
         
             Object.values(DB_CONFIG.stores).forEach((storeConfig) => {
-                if (!(storeConfig.name === 'keys' && !clearKeys)) {
+                if (storeConfig.name !== 'keys') {
                     const store = transaction.objectStore(storeConfig.name);
                     store.clear();
                 }
