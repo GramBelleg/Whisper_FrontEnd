@@ -1,10 +1,12 @@
+import apiUrl from '@/config'
 import axiosInstance from '../axiosInstance'
+import axios from 'axios'
 
 export const uploadMedia = async (fileData) => {
     try {
         const token = localStorage.getItem("token")
-        const uploadCredentials = await axiosInstance.post(
-            '/api/media/write',
+        const uploadCredentials = await axios.post(
+            `${apiUrl}/api/media/write`,
             {
                 fileExtension: fileData.extension
             },
@@ -39,7 +41,7 @@ export const uploadMedia = async (fileData) => {
 export const readMedia = async (blobName) => {
     try {
         const token = localStorage.getItem("token")
-        const downloadData = await axiosInstance.post('/api/media/read', { blobName }, { 
+        const downloadData = await axios.post(`${apiUrl}/api/media/read`, { blobName }, { 
             headers: {
                 Authorization: `Bearer ${token}`  
             },

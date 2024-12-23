@@ -1,12 +1,12 @@
 import './LoadingData.css'
-import whisper_logo from '/assets/images/whisper_logo.png' // Adjust path as needed
+import whisper_logo from '../../assets/images/whisper_logo.png' 
 
 const LoadingData = () => {
     return (
         <div className='loading-container'>
             <div className='loading-logo'>
                 <img
-                    src={whisper_logo} // Placeholder logo
+                    src={whisper_logo} 
                     alt='Whisper Logo'
                 />
             </div>

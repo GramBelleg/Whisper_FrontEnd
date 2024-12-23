@@ -6,7 +6,7 @@
     margin-right: 10px;
     margin-left: 10px;
     margin-top: 5px;
-    width: 90%; 
+    width: 100%; 
     background-color: #0A254A; 
   }
   
@@ -17,7 +17,7 @@
     margin-left: 10px;
   }
   
-  .search-input {
+.search-bar .search-input {
     flex: 1;
     width: 90%;
     border: none;
@@ -28,7 +28,7 @@
     background-color: #0A254A; 
   }
   
-  .search-input::placeholder {
+.search-bar .search-input::placeholder {
     color: #8D6AEE; 
   }
   

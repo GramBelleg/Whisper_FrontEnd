@@ -12,6 +12,8 @@
     --accent-color-darker: #6c52b6;
     --danger-color: #ff4d4f;
     --light-danger-color: rgba(255, 89, 90, 0.08);
+    --accent-color-threads: #6f53bd;
+    --threads-color: #09244a;
 }
 
 .dark {

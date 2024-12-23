@@ -15,8 +15,8 @@ import {
 } from '../services/authService'
 import axios from 'axios'
 import LoadingData from '@/components/LoadingData/LoadingData'
-import { useStories } from './StoryContext'
 import apiUrl from '@/config'
+import { useWhisperDB } from './WhisperDBContext'
 
 const AuthContext = createContext()
 
@@ -26,6 +26,7 @@ export const AuthProvider = ({ children }) => {
     const [loading, setLoading] = useState(false)
     const [error, setError] = useState(null)
     const [isFetching, setIsFetching] = useState(true)
+    const { dbRef } = useWhisperDB()
 
     useEffect(() => {
         const fetchUser = async () => {
@@ -66,6 +67,11 @@ export const AuthProvider = ({ children }) => {
             const data = await signUp(userData)
             console.log('user data', data)
             setUser(data.userData)
+            try {
+                await dbRef.current.clearDB(true)
+            } catch (error) {
+                console.log(error)
+            }
             setAuthData(data.userData, data.userToken)
             return { data: data, success: true }
         } catch (err) {
@@ -88,6 +94,11 @@ export const AuthProvider = ({ children }) => {
                 userId: data.user.id,
             })
             setToken(data.userToken)
+            try {
+                await dbRef.current.clearDB(true)
+            } catch (error) {
+                console.log(error)
+            }
             setAuthData(data.user, data.userToken)
         } catch (err) {
             setError(err.message)
@@ -104,6 +115,11 @@ export const AuthProvider = ({ children }) => {
             console.log(data)
             setUser(data.user)
             setToken(data.userToken)
+            try {
+                await dbRef.current.clearDB(true)
+            } catch (error) {
+                console.log(error)
+            }
             setAuthData(data.user, data.userToken)
         } catch (err) {
             setError(err.message)
@@ -123,6 +139,11 @@ export const AuthProvider = ({ children }) => {
                 userId: data.user.id,
             })
             setToken(data.userToken)
+            try {
+                await dbRef.current.clearDB(true)
+            } catch (error) {
+                console.log(error)
+            }
             setAuthData(data.user, data.userToken)
         } catch (err) {
             setError(err.message)
@@ -141,6 +162,11 @@ export const AuthProvider = ({ children }) => {
                 userId: data.data.user.id,
             })
             setToken(data.data.userToken)
+            try {
+                await dbRef.current.clearDB(true)
+            } catch (error) {
+                console.log(error)
+            }
             setAuthData(data.data.user, data.data.userToken)
             return { data: data, success: true }
         } catch (err) {
@@ -175,6 +201,11 @@ export const AuthProvider = ({ children }) => {
                 ...data.user,
                 userId: data.user.id,
             })
+            try {
+                await dbRef.current.clearDB(true)
+            } catch (error) {
+                console.log(error)
+            }
             setAuthData(data.user, data.userToken)
             if (userData.logoutCheck) {
                 await handleLogoutAll()
@@ -199,6 +230,11 @@ export const AuthProvider = ({ children }) => {
                 ...data.user,
                 userId: data.user.id,
             })
+            try {
+                await dbRef.current.clearDB(true)
+            } catch (error) {
+                console.log(error)
+            }
             setAuthData(data.user, data.userToken)
 
             return { data, success: true }
@@ -234,6 +270,11 @@ export const AuthProvider = ({ children }) => {
             setToken(null)
             localStorage.removeItem('token')
             localStorage.removeItem('user')
+            try {
+                await dbRef.current.clearDB(true)
+            } catch (error) {
+                console.log(error)
+            }
             return { success: true }
         } catch (err) {
             console.log(err)

@@ -6,7 +6,7 @@ let myStories = []
 export const getStoriesAPI = async (id) => {
     try {
         const token = localStorage.getItem("token")
-        const user = localStorage.getItem("user")
+        const user = JSON.parse(localStorage.getItem("user"))
         const response = await axios.get(`${apiUrl}/api/user/story/${id}`, {
             headers: {
                 Authorization: `Bearer ${token}`  
@@ -40,12 +40,20 @@ export const getStories = async (id) => {
                 }
 
                 try {
-                    const { iLiked, likes, iViewed, views } = await getStoryLikesAndViews(story.id)
-                    flattenedStory.liked = iLiked
-                    flattenedStory.viewed = iViewed
-                    flattenedStory.likes = likes
-                    flattenedStory.views = views
+                    // const { iLiked, likes, iViewed, views } = await getStoryLikesAndViews(story.id)
+                    // flattenedStory.liked = iLiked
+                    // flattenedStory.viewed = iViewed
+                    // flattenedStory.likes = likes
+                    // flattenedStory.views = views
+                    flattenedStory.liked = false
+                    flattenedStory.viewed = false
+                    flattenedStory.likes = 0
+                    flattenedStory.views = 0
                 } catch (error) {
+                    flattenedStory.liked = false
+                    flattenedStory.viewed = false
+                    flattenedStory.likes = 0
+                    flattenedStory.views = 0
                     console.error(`Error fetching likes and views for story ID ${story.id}:`, error)
                 }
 
@@ -77,13 +85,13 @@ export const getUsersWithStoriesAPI = async () => {
     }
 }
 
-export const getUsersWithStoriesCleaned = async (iHaveStory) => {
+export const getUsersWithStoriesCleaned = async () => {
     try {
         const stories = await getUsersWithStoriesAPI()
         myStories = []
-        const user = localStorage.getItem("user")
-        iHaveStory = false
-        stories.users.users.map((story) => {
+        const user = JSON.parse(localStorage.getItem("user"))
+        let iHaveStory = false
+        stories.users.map((story) => {
             if (story.id === user.id) {
                 iHaveStory = true
             }
@@ -94,8 +102,10 @@ export const getUsersWithStoriesCleaned = async (iHaveStory) => {
             }
             myStories.push(flattenedStory)
         })
-        return myStories
+        console.log("STORIES", myStories)
+        return [myStories, iHaveStory]
     } catch (error) {
         console.log('Error ', error.message)
+        return [[], []]
     }
 }

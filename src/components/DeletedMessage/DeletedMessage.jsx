@@ -1,6 +1,3 @@
-// This renders sent or recieved stickers
-// It is used by the last message
-
 import './DeletedMessage.css'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faBan } from '@fortawesome/free-solid-svg-icons'

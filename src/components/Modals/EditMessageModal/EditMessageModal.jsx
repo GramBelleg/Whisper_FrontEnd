@@ -27,7 +27,9 @@ const EditMessageModal = ({ message }) => {
             </div>
 
             <div className='edit-message-content'>
-                <ChatMessage message={message} hideActions={true} />
+                <div className='w-3/4'>
+                    <ChatMessage message={message} hideActions={true} />
+                </div>
             </div>
 
             <div className='edit-message-actions'>

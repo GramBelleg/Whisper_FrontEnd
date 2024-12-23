@@ -1,6 +1,7 @@
 import axios from 'axios'
 import noUser from '../../assets/images/no-user.png'
 import apiUrl from '@/config'
+import { getMessageRepliesCleaned } from '../messagingservice/getMessagesReplies'
 
 export const getMessagesForChatFromAPI = async (id) => {
     try {
@@ -11,7 +12,6 @@ export const getMessagesForChatFromAPI = async (id) => {
             },
             withCredentials: true
         })
-
         return response.data
     } catch (error) {
         throw error
@@ -29,7 +29,7 @@ const mapMessageState = (read, delivered) => {
     }
 }
 
-export const mapMessage = (message) => {
+export const mapMessage = async (message) => {
     const tempMessage = {
         id: message.id,
         chatId: message.chatId,
@@ -53,25 +53,23 @@ export const mapMessage = (message) => {
         sender: message.sender.userName,
         senderId: message.sender.id,
         profilePic: noUser,
+        attachmentName: message.attachmentName,
         attachmentType: message.attachmentType,
         size: message.size,
-        attachmentName: message.attachmentName
-
-        // TODO: See comments
+        replyCount: message.replyCount ? message.replyCount : 0,
+        replies : message.replyCount && message.replyCount > 0 ? await getMessageRepliesCleaned(message.id) : []
     }
-
     return tempMessage
 }
 
 export const getMessagesForChatCleaned = async (id) => {
     try {
         const messages = await getMessagesForChatFromAPI(id)
-        const myMessages = []
+        let myMessages;
 
         if (messages && messages.messages) {
-            messages.messages.map((message) => {
-                myMessages.push(mapMessage(message))
-            })
+            myMessages = await Promise.all(
+                messages.messages.map((message) => mapMessage(message)));
         }
 
         return myMessages

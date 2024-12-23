@@ -22,6 +22,27 @@ export const putReadReceiptsSetting = async (enabled) => {
     }
 }
 
+export const putMessagePreviewSetting = async (enabled) => {
+    try {
+        const token = localStorage.getItem("token")
+        const response = await axios.put(
+            `${apiUrl}/api/user/messagePreview`,
+            { messagePreview: enabled },
+            { 
+                headers: {
+                    Authorization: `Bearer ${token}`  
+                    },
+                withCredentials: true
+            }
+        )
+
+        console.log('Response:', response.data)
+        return response.data
+    } catch (error) {
+        throw error
+    }
+}
+
 export const putLastSeenVisibilitySettings = async (setting) => {
     try {
         const token = localStorage.getItem("token")

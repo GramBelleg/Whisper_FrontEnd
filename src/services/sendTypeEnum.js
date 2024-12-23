@@ -5,5 +5,7 @@ export const messageTypes = {
     VOICE: 'VOICE',
     AUDIO: 'AUDIO',
     SICKER: 'SICKER',
-    GIF: 'GIF'
+    GIF: 'GIF',
+    EVENT: 'EVENT',
+    CALL: 'CALL',
 }

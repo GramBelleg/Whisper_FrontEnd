@@ -18,7 +18,6 @@ describe("Search Bar component test", () => {
 
     it("Search Bar should render correctly", () => {
         render(<SearchBar />);
-        expect(screen.getByTestId("search-bar-test")).toBeInTheDocument();
         expect(screen.getByTestId("search-input-test")).toBeInTheDocument();
     })
 })

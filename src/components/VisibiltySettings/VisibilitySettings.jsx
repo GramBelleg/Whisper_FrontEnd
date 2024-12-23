@@ -4,6 +4,7 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { useEffect, useState } from 'react'
 import {
     putLastSeenVisibilitySettings,
+    putMessagePreviewSetting,
     putProfilePicVisibilitySettings,
     putReadReceiptsSetting,
     putStoriesVisibilitySettings
@@ -19,6 +20,7 @@ const VisibilitySettings = () => {
     const [storyVisibility, setStoryVisibility] = useState(user.storyPrivacy)
     const [lastSeenVisibility, setLastSeenVisibility] = useState(user.lastSeenPrivacy)
     const [readReceiptsEnabled, setReadReceiptsEnabled] = useState(user.readReceipts)
+    const [msgPreviewEnabled, setMsgPreviewEnabled] = useState(user.messagePreview)
 
     const { openModal, closeModal } = useModal()
     const { pop } = useStackedNavigation()
@@ -30,7 +32,7 @@ const VisibilitySettings = () => {
     const updateLastSeenVisibilitySettings = async (setting) => {
         const prev = lastSeenVisibility
         setLastSeenVisibility(setting)
-        handleUpdateUser("lastSeenPrivacy", setting)
+        handleUpdateUser('lastSeenPrivacy', setting)
 
         try {
             await putLastSeenVisibilitySettings(setting)
@@ -43,7 +45,7 @@ const VisibilitySettings = () => {
     const updateProfilePicVisibiitySettings = async (setting) => {
         const prev = profilePictureVisibility
         setProfilePictureVisibility(setting)
-        handleUpdateUser("pfpPrivacy", setting)
+        handleUpdateUser('pfpPrivacy', setting)
 
         try {
             await putProfilePicVisibilitySettings(setting)
@@ -55,7 +57,7 @@ const VisibilitySettings = () => {
     const updateStoryVisibilitySettings = async (setting) => {
         const prev = storyVisibility
         setStoryVisibility(setting)
-        handleUpdateUser("storyPrivacy", setting)
+        handleUpdateUser('storyPrivacy', setting)
         try {
             await putStoriesVisibilitySettings(setting)
         } catch (error) {
@@ -69,11 +71,23 @@ const VisibilitySettings = () => {
         setReadReceiptsEnabled(!prev)
         try {
             await putReadReceiptsSetting(!prev)
-            
-            handleUpdateUser("readReceipts", !prev)
+
+            handleUpdateUser('readReceipts', !prev)
         } catch (error) {
             openModal(<ErrorMesssage errorMessage={error.message} onClose={closeModal} appearFor={3000} />)
             setReadReceiptsEnabled(prev)
+        }
+    }
+
+    const updateMessagePreviewSetting = async () => {
+        const prev = msgPreviewEnabled
+        setMsgPreviewEnabled(!prev)
+        try {
+            await putMessagePreviewSetting(!prev)
+            handleUpdateUser('messagePreview', !prev)
+        } catch (error) {
+            openModal(<ErrorMesssage errorMessage={error.message} onClose={closeModal} appearFor={3000} />)
+            setMsgPreviewEnabled(prev)
         }
     }
 
@@ -82,6 +96,7 @@ const VisibilitySettings = () => {
         setProfilePictureVisibility(user.pfpPrivacy)
         setLastSeenVisibility(user.lastSeenPrivacy)
         setReadReceiptsEnabled(user.readReceiptsEnabled)
+        setMsgPreviewEnabled(user.readReceiptsEnabled)
     }, [])
     return (
         <div className='visibility-settings' data-testid='test-visibility-page'>
@@ -206,6 +221,22 @@ const VisibilitySettings = () => {
                             onChange={() => updateReadReceiptsSetting()}
                         />
                         <label htmlFor='readReceipts' className='toggle-label'></label>
+                    </div>
+                </div>
+                <div className='who-can-item'>
+                    <h2>Notifications</h2>
+                    <div className='flex justify-between'>
+                            Message Preview
+                            <div className='toggle-switch'>
+                            <input
+                                data-testid='toggle-switch-message-preview'
+                                type='checkbox'
+                                id='messagePreview'
+                                checked={msgPreviewEnabled}
+                                onChange={updateMessagePreviewSetting}
+                            />
+                            <label htmlFor='messagePreview' className='toggle-label'></label>
+                        </div>
                     </div>
                 </div>
             </div>

@@ -1,0 +1,21 @@
+.permission-checkboxes {
+    display: flex;         /* Align the boxes in a row */
+    gap: 10px;             /* Adds space between the boxes */
+    flex-wrap: wrap;       /* Allows wrapping if the screen is too small */
+}
+
+.permission-box {
+    padding: 10px;
+    border-radius: 5px;
+    display: flex;
+    align-items: center;
+    min-width: 100px;      /* Set a minimum width for each box */
+}
+
+.permission-box input {
+    margin-right: 8px;     /* Adds space between checkbox and label */
+}
+
+.permission-box label {
+    font-size: 14px;
+}

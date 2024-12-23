@@ -15,7 +15,6 @@ export class MessagesStore extends BaseStore {
                         messageRequest.onsuccess = () => resolve(messageRequest.result)
                         messageRequest.onerror = () => reject(messageRequest.error)
                     })
-                    console.log(response)
                 })
                 console.log('Messages inserted successfully!')
             } catch (error) {
@@ -36,9 +35,62 @@ export class MessagesStore extends BaseStore {
         })
     }
 
+    async getMessage(id) {
+        return this._executeTransaction('readonly', async (store) => {
+            const request = store.get(id)
+            const message = await new Promise((resolve, reject) => {
+                request.onsuccess = () => resolve(request.result)
+                request.onerror = () => reject(request.error)
+            })
+            return message
+        })
+    }
+
+    async getAllImages(query) {
+        return this._executeTransaction('readonly', async (store) => {
+            const request = store.getAll()
+            const messages = await new Promise((resolve, reject) => {
+                request.onsuccess = () => resolve(request.result)
+                request.onerror = () => reject(request.error)
+            })
+            const imageExtensions = ['jpg', 'jpeg', 'png', 'gif', 'bmp', 'webp'];
+            const images = messages.filter(message => {
+                if (message.attachmentName && message.attachmentName.length > 0) {
+                    const extension = message.attachmentName.split('.').pop().toLowerCase();
+                    const containsQuery = message.attachmentName.split('.')[0].toLowerCase().includes(query.toLowerCase());
+                    return imageExtensions.includes(extension) && containsQuery;
+                }
+                return false
+            });
+            return images
+        })
+    }
+
+    async getAllVideos(query) {
+        return this._executeTransaction('readonly', async (store) => {
+            const request = store.getAll()
+            const messages = await new Promise((resolve, reject) => {
+                request.onsuccess = () => resolve(request.result)
+                request.onerror = () => reject(request.error)
+            })
+            const videoExtensions = ['mp4', 'mkv', 'avi', 'mov', 'flv', 'wmv', 'webm'];
+            const videos = messages.filter(message => {
+                if (message.attachmentName) {
+                    const extension = message.attachmentName.split('.').pop().toLowerCase();
+                    const containsQuery = message.attachmentName.toLowerCase().includes(query.toLowerCase());
+                    return videoExtensions.includes(extension) && containsQuery;
+                }
+                return false;
+            });
+
+            return videos
+        })
+    }
+
     async insertMessage(message) {
         return this._executeTransaction('readwrite', async (store) => {
             try {
+                console.log(message)
                 const check = store.get(message.id)
                 const res = await new Promise((resolve, reject) => {
                     check.onsuccess = () => resolve()
@@ -57,6 +109,99 @@ export class MessagesStore extends BaseStore {
             } catch (error) {
                 console.error('Failed to insert messag:', error)
                 throw new Error('Failed to insert message or update chat: ' + error.message)
+            }
+        })
+    }
+
+    async updateReplyCount(messageId) {
+        return this._executeTransaction('readwrite', async (store) => {
+            try {
+                const request = store.get(messageId)
+                const existingMessage = await new Promise((resolve, reject) => {
+                    request.onsuccess = () => resolve(request.result)
+                    request.onerror = () => reject(request.error)
+                })
+                if (existingMessage) {
+                    existingMessage.replyCount++
+                    const newRequest = store.put(existingMessage)
+                    await new Promise((resolve, reject) => {
+                        newRequest.onsuccess = () => resolve(newRequest.result)
+                        newRequest.onerror = () => reject(newRequest.error)
+                    })
+                }
+
+            } catch (error) {
+                console.error('Failed to insert messag:', error)
+                throw new Error('Failed to insert message or update chat: ' + error.message)
+            }
+        })
+    }
+
+    async insertReply(replyData) {
+        return this._executeTransaction('readwrite', async (store) => {
+            try {
+                const request = store.get(replyData.messageId)
+                const existingMessage = await new Promise((resolve, reject) => {
+                    request.onsuccess = () => resolve(request.result)
+                    request.onerror = () => reject(request.error)
+                })
+                if (existingMessage) {
+                    existingMessage.replies.push({...replyData})
+                    const newRequest = store.put(existingMessage)
+                    await new Promise((resolve, reject) => {
+                        newRequest.onsuccess = () => resolve(newRequest.result)
+                        newRequest.onerror = () => reject(newRequest.error)
+                    })
+                }
+                
+                console.log('Reply inserted and message updated successfully.')
+            } catch (error) {
+                console.error('Failed to insert message:', error)
+                throw new Error('Failed to insert message or update chat: ' + error.message)
+            }
+        })
+    }
+
+    async deleteComment(parentMessageId, replyId) {
+        return this._executeTransaction('readwrite', async (store) => {
+            try {
+                const request = store.get(parentMessageId)
+                const existingMessage = await new Promise((resolve, reject) => {
+                    request.onsuccess = () => resolve(request.result)
+                    request.onerror = () => reject(request.error)
+                })
+                if (existingMessage) {
+                    existingMessage.replies = existingMessage.replies.filter(reply => reply.id !== replyId)
+                    const updateRequest = store.put(existingMessage)
+                    await new Promise((resolve, reject) => {
+                        updateRequest.onsuccess = () => resolve(updateRequest.result);
+                        updateRequest.onerror = () => reject(updateRequest.error);
+                    })
+                }
+                
+                console.log('Reply deleted and message updated successfully.')
+            } catch (error) {
+                console.error('Failed to delete reply:', error)
+                throw new Error('Failed to delete reply or update chat: ' + error.message)
+            }
+        })
+    }
+
+    async getThread(messageId) {
+        return this._executeTransaction('readwrite', async (store) => {
+            try {
+                const request = store.get(messageId)
+                const existingMessage = await new Promise((resolve, reject) => {
+                    request.onsuccess = () => resolve(request.result)
+                    request.onerror = () => reject(request.error)
+                })
+                if (existingMessage) {
+                    return existingMessage
+                }
+                return null
+            } catch (error) {
+                console.error('Failed to insert messag:', error)
+                return null
             }
         })
     }
@@ -80,10 +225,10 @@ export class MessagesStore extends BaseStore {
 
                     console.log(`Message with id ${id} was successfully updated.`)
                 } else {
-                    throw new Error(`Message with id ${id} not found.`)
+                    console.log(`Message with id ${id} not found.`)
                 }
             } catch (error) {
-                throw new Error('Failed to update message: ' + error.message)
+                console.log('Failed to update message: ' + error.message)
             }
         })
     }

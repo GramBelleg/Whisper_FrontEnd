@@ -1,0 +1,79 @@
+.single-chat-header {
+    background-color: var(--primary-color);
+    display: flex;
+    justify-content: space-between;
+    color: var(--text-color);
+    align-items: center;
+    gap: 1rem;
+    padding: 10px 16px;
+}
+
+.header-avatar img {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+}
+
+.header-details {
+    flex-grow: 1;
+    display: flex;
+    align-items: flex-start;
+    flex-direction: column;
+    margin-left: 10px;
+    cursor: pointer;
+}
+
+.header-title {
+    font-size: 18px;
+    font-weight: 500;
+}
+
+.header-subtitle {
+    font-size: 14px;
+    color: rgba(var(--text-color-rgb), 0.6);
+}
+
+.header-icons {
+    display: flex;
+    gap: 1.5rem;
+    font-size: 24px;
+    margin-right: 1rem;
+}
+.header-icons .icon {
+    cursor: pointer;
+    color: var(--accent-color);
+
+}
+
+.dropdown-container {
+    position: relative;
+}
+
+.dropdown-menu {
+    position: absolute;
+    top: 30px; 
+    right: 0;
+    background-color: var(--secondary-color);
+    border: 1px solid rgba(var(--text-color-rgb), 0.2);
+    box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
+    border-radius: 8px;
+    z-index: 100;
+    width: 150px;
+}
+
+.dropdown-item {
+    display: flex;
+    padding: 10px;
+    font-size: 14px;
+    color: var(--text-color);
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+
+.dropdown-item:hover {
+    background-color: rgba(var(--text-color-rgb), 0.1);
+}
+
+.menu-icon {
+    margin-right: 10px;
+}

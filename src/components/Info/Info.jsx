@@ -2,17 +2,14 @@ import React, { useRef, useState, useEffect } from 'react'
 import './Info.css'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faChevronDown } from '@fortawesome/free-solid-svg-icons'
-import { useModal } from '@/contexts/ModalContext'
-import MuteDurationModal from '../MuteDurationModal/MuteDurationModal'
+import { useChat } from '@/contexts/ChatContext'
 
-const Info = ({ index, group, onMute, onUnMute, muted }) => {
+const Info = ({index,  myChat }) => {
     const infoRef = useRef(null)
     const dropdownRef = useRef(null)
     const [dropdownPosition, setDropdownPosition] = useState('down')
     const [isVisible, setIsVisible] = useState(false)
-    const { openModal, closeModal } = useModal()
-    const [muteDuration, setMuteDuration] = useState(null)
-    const [clicked, setClicked] = useState(false)
+    const { leaveGroup, handleMute, handleUnMute, deleteChat } = useChat()
 
     const toggleDropdown = () => {
         setIsVisible(!isVisible)
@@ -30,26 +27,39 @@ const Info = ({ index, group, onMute, onUnMute, muted }) => {
         const spaceAbove = infoRect.top
 
         if (spaceBelow < dropdownHeight && spaceAbove >= dropdownHeight) {
-            setDropdownPosition('up') // Position dropdown above
+            setDropdownPosition('up') 
         } else {
-            setDropdownPosition('down') // Position dropdown below
+            setDropdownPosition('down') 
         }
     }
 
-    const handleMute = () => {
-        openModal(<MuteDurationModal setMuteDuration={setMuteDuration} onClose={closeModal} setClicked={setClicked} />)
+    const myHandleMute = async () => {
+        try {
+            await handleMute(myChat.id, myChat.type)
+        } catch (error) {
+            console.error(error)
+        }
+    }
+
+    const myHandleUnMute = async () => {
+        try {
+            await handleUnMute(myChat.id, myChat.type)
+        } catch (error) {
+            console.error(error)
+        }
+    }
+
+    const handleLeaveGroup = () => {
+        leaveGroup(myChat.id)
+    }
+
+    const handleDeleteGroup = () => {
+        deleteChat(myChat.id)
     }
 
     useEffect(() => {
-        if (clicked) {
-            setClicked(false)
-            if (muteDuration) {
-                onMute(0)
-            }
-            setMuteDuration(null)
-        }
-    }, [clicked, muteDuration])
-
+        setIsVisible(false)
+    }, [])
     useEffect(() => {
         if (isVisible) {
             handlePositioning()
@@ -63,9 +73,6 @@ const Info = ({ index, group, onMute, onUnMute, muted }) => {
         }
     }, [isVisible])
 
-    useEffect(() => {
-        setMuteDuration(null)
-    }, [])
 
     return (
         <>
@@ -74,7 +81,7 @@ const Info = ({ index, group, onMute, onUnMute, muted }) => {
                     <FontAwesomeIcon icon={faChevronDown} style={{ color: 'grey' }} />
                     {isVisible && (
                         <div
-                            className='dropdown' // Add a class for dropdown styling
+                            className='dropdown' 
                             onMouseLeave={() => {
                                 setIsVisible(false)
                             }}
@@ -85,26 +92,27 @@ const Info = ({ index, group, onMute, onUnMute, muted }) => {
                             }}
                         >
                             <ul>
-                                {!muted ? (
-                                    <li onClick={handleMute}>Mute notifications</li>
+                                {!myChat.isMuted ? (
+                                    <li onClick={myHandleMute}>Mute notifications</li>
                                 ) : (
-                                    <li
-                                        onClick={() => {
-                                            onUnMute()
-                                        }}
-                                    >
-                                        Unmute notifications
-                                    </li>
+                                    <li onClick={myHandleUnMute}>Unmute notifications</li>
                                 )}
-                                <li onClick={() => handleAction('Block')}>Block</li>
-                                <li onClick={() => handleAction('Archive')}>Archive</li>
-                                {group && (
-                                    <li
-                                        style={{ padding: '8px 12px', cursor: 'pointer', color: 'red' }}
-                                        onClick={() => handleAction('Leave group')}
-                                    >
-                                        Leave group
-                                    </li>
+                                {myChat.type !== "DM" && (
+                                    myChat.isAdmin ? (
+                                        <li
+                                            style={{ padding: '8px 12px', cursor: 'pointer', color: 'red' }}
+                                            onClick={handleDeleteGroup}
+                                        >
+                                            Delete {myChat.type.toLowerCase()}
+                                        </li>
+                                    ) : (
+                                        <li
+                                            style={{ padding: '8px 12px', cursor: 'pointer', color: 'red' }}
+                                            onClick={handleLeaveGroup}
+                                        >
+                                            Leave {myChat.type.toLowerCase()}
+                                        </li>
+                                    ) 
                                 )}
                             </ul>
                         </div>
