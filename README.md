@@ -51,7 +51,7 @@ This project utilizes a modern stack to ensure scalability, performance, and eas
 - **Frontend**: [JavaScript, React, Vite, CSS, Tailwind, Vitest]
 
 ## Demo
-<iframe src="https://drive.google.com/file/d/1W5jL0Tg6N3zvE66CLtnQ0JCb8-q0oo2y/preview" width="800" height="450"></iframe>
+[![Watch the video](https://via.placeholder.com/800x450?text=Click+to+Watch+Video)](https://drive.google.com/file/d/1W5jL0Tg6N3zvE66CLtnQ0JCb8-q0oo2y/view?usp=sharing)
 
 ## 🛠️ Getting Started
 
