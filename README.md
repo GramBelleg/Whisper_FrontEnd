@@ -43,17 +43,15 @@ We’ve begun implementing the core messaging capabilities, including:
 
 Our team is actively working on expanding messaging features to enhance user interaction and engagement further.
 
-## 📈 Roadmap
 
-Here’s what’s coming next in our development pipeline:
-- **Enhanced Messaging Features**: Delivery/read receipts, message editing, and deleting.
-- **Group Chat Support**: Create and manage group conversations.
-- **End-to-End Encryption**: Ensure secure communication across all messages and calls.
 
 ## 📦 Tech Stack
 
 This project utilizes a modern stack to ensure scalability, performance, and ease of maintenance:
 - **Frontend**: [JavaScript, React, Vite, CSS, Tailwind, Vitest]
+
+## Demo
+<iframe src="https://drive.google.com/file/d/1W5jL0Tg6N3zvE66CLtnQ0JCb8-q0oo2y/preview" width="800" height="450"></iframe>
 
 ## 🛠️ Getting Started
 
